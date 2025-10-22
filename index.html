@@ -101,213 +101,125 @@
             background: #e8ecf1;
         }
 
-        .hero-background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 0;
-        }
-
-        .hero-bg-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
-            opacity: 0;
-            transition: opacity 2.5s ease-in-out;
-        }
-
-        .hero-bg-image.active {
-            opacity: 1;
-        }
-
-        .hero::before,
-        .hero::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.6s ease;
-            z-index: 1;
-        }
-
-        .hero::before {
-            background:
-                radial-gradient(ellipse 400px 300px at top left, rgba(3, 5, 6, 0.7) 0%, rgba(3, 5, 6, 0.4) 40%, transparent 70%),
-                radial-gradient(ellipse 400px 300px at top right, rgba(3, 5, 6, 0.7) 0%, rgba(3, 5, 6, 0.4) 40%, transparent 70%);
-        }
-
-        .hero::after {
-            background: conic-gradient(from 120deg at 50% 20%, rgba(35, 75, 59, 0.22), transparent 45%, rgba(43, 60, 86, 0.32));
-            mix-blend-mode: screen;
-            animation: auroraPulse 18s ease-in-out infinite;
-        }
-
-        .hero[data-reveal="true"]::after {
-            opacity: 1;
-        }
-
-        .hero[data-reveal="true"]::before {
-            opacity: 1;
-        }
-
-        @keyframes auroraPulse {
-            0% { opacity: 0.25; }
-            30% { opacity: 0.55; }
-            55% { opacity: 0.4; }
-            80% { opacity: 0.6; }
-            100% { opacity: 0.25; }
-        }
-
         .hero-video {
             position: absolute;
-            inset: 0;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            display: block;
-            filter: saturate(1.12) contrast(1.05);
-            transform: scale(1.05);
-            transition: transform 0.9s ease, opacity 0.6s ease;
-            opacity: 1;
             z-index: 0;
         }
 
-        .hero[data-reveal="true"] .hero-video {
-            transform: scale(1.02);
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.35);
+            z-index: 1;
         }
 
-        .hero-video.is-paused {
-            opacity: 0;
-        }
-
-        .hero.reduced-motion .hero-video {
-            display: none;
-        }
 
         .hero-content {
-            position: relative;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             z-index: 2;
-            max-width: clamp(35rem, 75vw, 70rem);
             display: flex;
             flex-direction: column;
             gap: clamp(1.4rem, 4vw, 2rem);
-            color: var(--color-text);
-            text-align: left;
+            color: #ffffff;
+            text-align: center;
             opacity: 0;
-            transform: translateY(45px);
-            filter: blur(10px);
-            transition: opacity 0.9s ease, transform 0.9s ease, filter 0.9s ease;
+            transition: opacity 0.9s ease;
         }
 
         .hero-content.show {
             opacity: 1;
-            transform: translateY(0);
-            filter: blur(0);
+            transform: translate(-50%, -50%);
         }
 
         .hero-title {
             font-family: var(--font-serif);
-            font-weight: 100;
-            font-size: clamp(2.5rem, 5.8vw, 5.1rem);
-            line-height: 1.08;
-            letter-spacing: -0.025em;
-            overflow: hidden;
-            color: rgba(244, 246, 246, 0.96);
-            text-shadow: 0 18px 48px rgba(2, 5, 7, 0.6), 0 2px 16px rgba(0, 0, 0, 0.25);
+            font-weight: 300;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            line-height: 1.1;
+            letter-spacing: 0.15em;
+            color: #ffffff;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
         }
 
         .hero-title .line {
             display: block;
-            transform: translateY(100%);
-            transition: transform 0.8s ease;
         }
 
-        .hero-content.show .hero-title .line:nth-child(1) {
-            transform: translateY(0);
-            transition-delay: 0.1s;
+        .hero-title .line:first-child {
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
         }
 
-        .hero-content.show .hero-title .line:nth-child(2) {
-            transform: translateY(0);
-            transition-delay: 0.24s;
+        .hero-title .line:last-child {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 100;
+            letter-spacing: 0.05em;
+            text-transform: lowercase;
         }
 
         .hero-actions {
             position: absolute;
-            bottom: clamp(2rem, 6vw, 4rem);
-            left: clamp(1.5rem, 5vw, 3.5rem);
+            bottom: clamp(2rem, 5vw, 3rem);
+            left: 0;
+            right: 0;
             display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
+            justify-content: space-evenly;
+            align-items: center;
             z-index: 2;
+            padding: 0 clamp(2rem, 5vw, 4rem);
         }
 
         .hero-cta {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 0.95rem 2.65rem;
-            border-radius: 999px;
-            border: 1px solid rgba(255, 255, 255, 0.45);
             text-transform: uppercase;
-            letter-spacing: 0.36rem;
-            font-size: 0.82rem;
+            letter-spacing: 0.2em;
+            font-size: clamp(0.75rem, 1.5vw, 0.9rem);
             font-family: var(--font-sans);
-            background: rgba(0, 0, 0, 0.65);
-            backdrop-filter: blur(8px);
-            color: rgba(255, 255, 255, 0.95);
-            transition: var(--transition);
-            cursor: pointer;
+            font-weight: 300;
+            color: #ffffff;
             text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: none;
+            border: none;
+            position: relative;
+            padding: 0.5rem 1rem;
         }
 
-        [data-theme="light"] .hero-cta {
-            background: rgba(255, 255, 255, 0.85);
-            border-color: rgba(0, 0, 0, 0.3);
-            color: rgba(0, 0, 0, 0.9);
+        .hero-cta::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.4);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
         }
 
-        .hero-cta.primary {
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(10px);
-            border-color: rgba(255, 255, 255, 0.7);
-            color: rgba(255, 255, 255, 0.98);
+        .hero-cta:hover {
+            color: rgba(255, 255, 255, 0.7);
         }
 
-        [data-theme="light"] .hero-cta.primary {
-            background: rgba(255, 255, 255, 0.95);
-            border-color: rgba(0, 0, 0, 0.4);
-            color: rgba(0, 0, 0, 0.95);
-        }
-
-        .hero-cta:hover,
-        .hero-cta:focus-visible {
-            border-color: rgba(255, 255, 255, 0.82);
-            background: rgba(255, 255, 255, 0.16);
-            transform: translateY(-2px);
-        }
-
-        [data-theme="light"] .hero-cta:hover,
-        [data-theme="light"] .hero-cta:focus-visible {
-            border-color: rgba(0, 0, 0, 0.5);
-            background: rgba(0, 0, 0, 0.08);
-        }
-
-        .hero-cta:focus-visible {
-            outline: 2px solid rgba(255, 255, 255, 0.75);
-            outline-offset: 3px;
-        }
-
-        [data-theme="light"] .hero-cta:focus-visible {
-            outline-color: rgba(0, 0, 0, 0.5);
+        .hero-cta:hover::after {
+            transform: scaleX(1);
         }
 
 
@@ -377,33 +289,41 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: clamp(1.5rem, 4vw, 2.8rem) clamp(1.8rem, 5vw, 3.5rem);
+            padding: 0;
+            min-height: 136px;
             z-index: 1000000;
-            opacity: 0;
-            transform: translateY(-20px);
-            transition: opacity 0.7s ease, transform 0.7s ease;
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.4s ease, transform 0.4s ease, background 0.3s ease, min-height 0.3s ease;
             background: transparent;
             border-bottom: none;
             backdrop-filter: none;
             box-shadow: none;
+            pointer-events: none;
         }
 
         .nav-header.show {
-            opacity: 1;
-            transform: translateY(0);
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(12px);
+            pointer-events: auto;
         }
 
         .nav-header.hidden {
             opacity: 0;
             transform: translateY(-100%);
-            pointer-events: none;
         }
 
         .nav-header.pinned {
             background: transparent;
             border-bottom: none;
-            padding: clamp(1.5rem, 4vw, 2.8rem) clamp(1.8rem, 5vw, 3.5rem);
+            min-height: 160px;
             box-shadow: none;
+        }
+
+        .nav-header.pinned.hidden {
+            opacity: 1;
+            transform: translateY(0);
+            background: transparent;
         }
 
         .logo {
@@ -411,24 +331,23 @@
             align-items: center;
             justify-content: center;
             text-decoration: none;
-            position: absolute;
-            left: 20px;
-            top: 20px;
+            position: fixed;
+            left: clamp(1.5rem, 4vw, 3rem);
+            top: clamp(1.5rem, 3vw, 2rem);
+            z-index: 1000001;
+            transition: all 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .nav-header.pinned .logo {
+            top: clamp(2.5rem, 5vw, 4rem);
         }
 
         .logo img {
             height: clamp(50px, 6vw, 70px);
             width: auto;
-            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
-            transition: all 0.4s ease;
-        }
-
-        [data-theme="light"] .logo img {
-            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
-        }
-
-        .nav-header.pinned .logo img {
-            height: clamp(40px, 5vw, 55px);
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+            transition: all 0.3s ease;
         }
 
         .logo:hover img {
@@ -921,16 +840,23 @@
             background: none;
             border: none;
             color: white;
-            font-size: 1.75rem;
+            font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
             cursor: pointer;
-            padding: 0.5rem;
+            padding: 0.5rem 1rem;
             transition: all 0.3s ease;
-            position: absolute;
-            right: clamp(1.8rem, 5vw, 3.5rem);
-            top: 50%;
-            transform: translateY(-50%);
+            position: fixed;
+            right: clamp(1.5rem, 4vw, 3rem);
+            top: clamp(1.5rem, 3vw, 2rem);
             z-index: 1000001;
             filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+            pointer-events: auto;
+        }
+
+        .nav-header.pinned .mobile-menu-toggle {
+            top: clamp(2.5rem, 5vw, 4rem);
         }
 
         /* In hero section, burger stays white (override light theme) */
@@ -944,7 +870,7 @@
         }
 
         .mobile-menu-toggle:hover {
-            transform: translateY(-50%) scale(1.1);
+            color: rgba(255, 255, 255, 0.7);
             filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
         }
 
@@ -1057,23 +983,21 @@
                 top: 1.5rem;
             }
 
-            .logo img {
-                height: clamp(45px, 8vw, 65px);
+            .nav-header.pinned .logo {
+                top: 2rem;
             }
 
-            .nav-header.pinned .logo img {
-                height: clamp(35px, 6vw, 50px);
+            .logo img {
+                height: clamp(45px, 8vw, 60px);
             }
 
             .mobile-menu-toggle {
                 right: 1.5rem;
                 top: 1.5rem;
-                transform: none;
-                font-size: 1.6rem;
             }
 
-            .mobile-menu-toggle:hover {
-                transform: scale(1.1);
+            .nav-header.pinned .mobile-menu-toggle {
+                top: 2rem;
             }
 
             .hero {
@@ -3708,29 +3632,16 @@
                 <div class="nav-main">
                     <ul class="nav-links">
                         <li><a href="#map" class="nav-link">Explore</a></li>
-                        <li class="has-submenu">
-                            <a href="#journeys" class="nav-link">Journeys</a>
-                            <ul class="submenu">
-                                <li><a href="#journeys/nature-wellness">Nature & Wellness</a></li>
-                                <li><a href="#journeys/design-innovation">Design & Innovation</a></li>
-                                <li><a href="#journeys/culinary-storytelling">Culinary & Storytelling</a></li>
-                                <li><a href="#journeys/celebration-lifestyle">Celebration & Lifestyle</a></li>
-                                <li><a href="#journeys/royal-art-culture">Royal, Art & Culture</a></li>
-                                <li><a href="#journeys/legacy-meaningful">Legacy & Meaningful Travel</a></li>
-                            </ul>
-                        </li>
-                        <li class="has-submenu">
-                            <a href="#corporate" class="nav-link">Corporate & Incentives</a>
-                            <ul class="submenu">
-                                <li><a href="#corporate/signature-chapters">Signature Corporate Chapters</a></li>
-                            </ul>
-                        </li>
+                        <li><a href="#journeys" class="nav-link">Experiences</a></li>
+                        <li><a href="#corporate" class="nav-link">Corporate & Incentives</a></li>
                         <li><a href="#storytellers" class="nav-link">Storytellers</a></li>
                         <li><a href="#concierge" class="nav-link" data-open-liv>LIV / Concierge</a></li>
                         <li><a href="#stories" class="nav-link">Journal</a></li>
-                        <li><a href="#press" class="nav-link">What Media Says About Us</a></li>
-                        <li><a href="#about" class="nav-link">About Us</a></li>
+                        <li><a href="#press" class="nav-link">Press & Media</a></li>
+                        <li><a href="#services" class="nav-link">Our Services</a></li>
+                        <li><a href="#about" class="nav-link">Our Story</a></li>
                         <li><a href="#booking-process" class="nav-link">Booking Process</a></li>
+                        <li><a href="#contact" class="nav-link">Contact</a></li>
                     </ul>
                 </div>
 
@@ -3799,13 +3710,16 @@
                     </div>
                 </div>
             </div>
-            <button type="button" class="mobile-menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="primaryNavigation">☰</button>
+            <button type="button" class="mobile-menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="primaryNavigation">MENU</button>
         </nav>
     </header>
 
     <div class="hero" id="top">
-        <!-- Hero Background Slideshow -->
-        <div class="hero-background" id="heroBackground"></div>
+        <!-- Hero Video Background -->
+        <video class="hero-video" autoplay muted loop playsinline id="heroVideo">
+            <source src="https://privateluxuryevents.com/staging2024/wp-content/uploads/2024/10/PLE-2024-Header-Video-V1_sml.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
 
         <div class="hero-content" id="heroContent">
             <h1 class="hero-title">
@@ -3815,9 +3729,9 @@
         </div>
 
         <div class="hero-actions">
-            <a href="#map" class="hero-cta primary">Start Explore</a>
-            <button type="button" class="hero-cta" data-open-liv>Design My Journey with LIV</button>
-            <a href="#choose-path" class="hero-cta">Enter the Experience</a>
+            <a href="#map" class="hero-cta">START EXPLORE</a>
+            <button type="button" class="hero-cta" data-open-liv>DESIGN MY JOURNEY WITH LIV</button>
+            <a href="#choose-path" class="hero-cta">ENTER THE EXPERIENCE</a>
         </div>
     </div>
 
@@ -4596,23 +4510,12 @@ unique.</p>
                 }
             };
 
-            // Helper function to update logo based on theme and scroll position
+            // Helper function to update logo - keep white at all times
             const updateLogoAndBurger = () => {
                 const logo = document.getElementById('siteLogo');
-                const navHeader = document.querySelector('.nav-header');
-                const currentTheme = htmlElement.getAttribute('data-theme');
-                const isScrolledPastHero = navHeader && navHeader.classList.contains('scrolled-past-hero');
-                const isNavOpen = document.body.classList.contains('nav-open');
-
                 if (logo) {
-                    // When nav is open in light mode: black logo (for visibility against light nav background)
-                    // Scrolled past hero in light mode: black logo
-                    // Otherwise: white logo
-                    if (currentTheme === 'light' && (isNavOpen || isScrolledPastHero)) {
-                        logo.src = 'lts-logo-black.png';
-                    } else {
-                        logo.src = 'lts-logo-white.png';
-                    }
+                    // Always use white logo
+                    logo.src = 'lts-logo-white.png';
                 }
             };
 
@@ -4654,8 +4557,6 @@ unique.</p>
             const updateNavPinnedState = () => {
                 if (!navHeader) return;
                 const currentScrollY = window.scrollY;
-                const threshold = window.innerHeight > 720 ? 28 : 16;
-
                 // Determine scroll direction
                 if (currentScrollY > lastScrollY && currentScrollY > 100) {
                     scrollDirection = 'down';
@@ -4663,37 +4564,28 @@ unique.</p>
                     scrollDirection = 'up';
                 }
 
-                // Handle pinned state
-                if (currentScrollY > threshold) {
+                // Get hero height
+                const heroHeight = hero ? hero.offsetHeight : window.innerHeight;
+                const inHeroArea = currentScrollY < heroHeight;
+
+                // Handle pinned state (when in hero area)
+                if (inHeroArea) {
+                    // In hero: no dark bar background
                     navHeader.classList.add('pinned');
-                } else {
-                    navHeader.classList.remove('pinned');
-                }
-
-                // Handle visibility based on scroll direction
-                if (scrollDirection === 'down' && currentScrollY > 100) {
                     navHeader.classList.add('hidden');
+                    navHeader.classList.remove('show');
                 } else {
-                    navHeader.classList.remove('hidden');
-                }
+                    // Outside hero: show dark bar and handle scroll behavior
+                    navHeader.classList.remove('pinned');
+                    navHeader.classList.add('show');
 
-                // Handle scrolled past hero state for logo/burger color switching
-                if (hero) {
-                    const heroHeight = hero.offsetHeight;
-                    const wasScrolledPast = navHeader.classList.contains('scrolled-past-hero');
-                    const isScrolledPast = currentScrollY > heroHeight - 100;
-
-                    if (isScrolledPast) {
-                        navHeader.classList.add('scrolled-past-hero');
-                        navHeader.setAttribute('data-theme', htmlElement.getAttribute('data-theme'));
+                    // Handle visibility based on scroll direction
+                    if (scrollDirection === 'down' && currentScrollY > heroHeight + 50) {
+                        // Scrolling down - hide header
+                        navHeader.classList.add('hidden');
                     } else {
-                        navHeader.classList.remove('scrolled-past-hero');
-                        navHeader.removeAttribute('data-theme');
-                    }
-
-                    // Update logo/burger if scroll state changed
-                    if (wasScrolledPast !== isScrolledPast) {
-                        updateLogoAndBurger();
+                        // Scrolling up or just left hero - show header
+                        navHeader.classList.remove('hidden');
                     }
                 }
 
@@ -4823,7 +4715,7 @@ unique.</p>
                     mobileToggle.classList.remove('is-open');
                     mobileToggle.setAttribute('aria-expanded', 'false');
                     mobileToggle.setAttribute('aria-label', 'Open menu');
-                    mobileToggle.textContent = '☰';
+                    mobileToggle.textContent = 'MENU';
                     navMenu.setAttribute('aria-hidden', 'true');
                     document.body.classList.remove('nav-open');
                     updateLogoAndBurger();
@@ -4837,7 +4729,7 @@ unique.</p>
                     mobileToggle.classList.toggle('is-open', isOpen);
                     mobileToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
                     mobileToggle.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
-                    mobileToggle.textContent = isOpen ? '×' : '☰';
+                    mobileToggle.textContent = isOpen ? '×' : 'MENU';
                     navMenu.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
                     document.body.classList.toggle('nav-open', isOpen);
                     updateLogoAndBurger();
@@ -4854,11 +4746,7 @@ unique.</p>
 
                 navLinks.forEach(link => {
                     link.addEventListener('click', (e) => {
-                        // Only close menu if it's not a parent link with submenu
-                        const parentLi = link.closest('li');
-                        if (!parentLi.classList.contains('has-submenu')) {
-                            closeMenu();
-                        }
+                        closeMenu();
                     });
                 });
 
@@ -4866,36 +4754,6 @@ unique.</p>
                     if (event.key === 'Escape' && navMenu.classList.contains('open')) {
                         closeMenu(true);
                     }
-                });
-
-                // Submenu interactions
-                const submenuParents = document.querySelectorAll('.has-submenu');
-                submenuParents.forEach(parent => {
-                    const parentLink = parent.querySelector('.nav-link');
-
-                    if (parentLink) {
-                        parentLink.addEventListener('click', (event) => {
-                            event.preventDefault();
-
-                            // Close other submenus
-                            submenuParents.forEach(otherParent => {
-                                if (otherParent !== parent) {
-                                    otherParent.classList.remove('open');
-                                }
-                            });
-
-                            // Toggle current submenu
-                            parent.classList.toggle('open');
-                        });
-                    }
-                });
-
-                // Close submenu when clicking submenu links
-                const submenuLinks = document.querySelectorAll('.submenu a');
-                submenuLinks.forEach(link => {
-                    link.addEventListener('click', () => {
-                        closeMenu();
-                    });
                 });
             }
 
@@ -5941,54 +5799,8 @@ unique.</p>
             // Initialize footer slideshow
             initFooterSlideshow();
 
-            // Hero background slideshow
-            const heroBackgroundImages = [
-                'https://images.pexels.com/photos/3225528/pexels-photo-3225528.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1', // Northern Lights
-                'https://images.pexels.com/photos/1761279/pexels-photo-1761279.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280', // Lapland winter landscape
-                'https://images.pexels.com/photos/1287460/pexels-photo-1287460.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280', // Swedish winter wonderland
-                'https://images.pexels.com/photos/1670732/pexels-photo-1670732.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280', // Stockholm waterfront at dusk
-                'https://images.pexels.com/photos/3408744/pexels-photo-3408744.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280', // Swedish archipelago
-                'https://images.pexels.com/photos/1266810/pexels-photo-1266810.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280'  // Archipelago sunset
-            ];
-
-            function initHeroSlideshow() {
-                const heroBg = document.getElementById('heroBackground');
-                if (!heroBg) return;
-
-                let currentHeroIndex = 0;
-
-                // Create image elements
-                heroBackgroundImages.forEach((imageUrl, index) => {
-                    const imageDiv = document.createElement('div');
-                    imageDiv.className = 'hero-bg-image';
-                    imageDiv.style.backgroundImage = `url('${imageUrl}')`;
-                    if (index === 0) {
-                        imageDiv.classList.add('active');
-                    }
-                    heroBg.appendChild(imageDiv);
-                });
-
-                const heroImageElements = heroBg.querySelectorAll('.hero-bg-image');
-
-                // Cycle through images
-                function cycleHeroImages() {
-                    const currentImage = heroImageElements[currentHeroIndex];
-                    const nextImageIndex = (currentHeroIndex + 1) % heroBackgroundImages.length;
-                    const nextImage = heroImageElements[nextImageIndex];
-
-                    // Fade out current, fade in next
-                    currentImage.classList.remove('active');
-                    nextImage.classList.add('active');
-
-                    currentHeroIndex = nextImageIndex;
-                }
-
-                // Change image every 7 seconds
-                setInterval(cycleHeroImages, 7000);
-            }
-
-            // Initialize hero slideshow
-            initHeroSlideshow();
+            // Hero video is now handled directly via HTML video element
+            // No slideshow initialization needed
         });
     </script>
 
