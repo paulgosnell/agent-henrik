@@ -3661,7 +3661,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 10000;
+            z-index: 1000002;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -3840,6 +3840,39 @@
 
         .pillar-modal-body #modal-cta {
             margin-top: 2rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
+            letter-spacing: 0.32rem;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.95);
+            text-decoration: none;
+            padding: 0.85rem 1.8rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pillar-modal-body #modal-cta:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.7);
+            transform: translateY(-2px);
+        }
+
+        [data-theme="light"] .pillar-modal-body #modal-cta {
+            color: rgba(0, 0, 0, 0.85);
+            border-color: rgba(0, 0, 0, 0.25);
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="light"] .pillar-modal-body #modal-cta:hover {
+            background: rgba(0, 0, 0, 0.12);
+            border-color: rgba(0, 0, 0, 0.45);
         }
 
         /* Read More Button Styles */
@@ -4216,7 +4249,7 @@ unique.</p>
             <div class="section-inner">
                 <div class="section-heading">
                     <span class="eyebrow">Corporate & Incentives</span>
-                    <h2>Create experiences that move<br>the company culture forward</h2>
+                    <h2>Create experiences that move the company culture forward</h2>
                     <p>Sweden is not only a destination — it is a stage for creativity, inspiration, and transformation. We design corporate journeys that reward, engage, and inspire through experiences no traditional DMC can offer.</p>
                 </div>
 
@@ -4320,6 +4353,7 @@ unique.</p>
                     <span class="eyebrow">Featured Storytellers</span>
                     <h2>Experience Sweden Beyond the Ordinary</h2>
                     <p>Led by local storytellers — from Sami elders and Michelin chefs to artists, designers, and innovators — each encounter offers an authentic glimpse into Swedish life, culture, and creativity. Whether you travel solo or with others, our curated experiences, workshops, and destinations promise meaningful connections and stories that stay with you long after the journey ends.</p>
+                    <br />
                     <p>You need inspiration? Take a peek at our curated selection of storytellers, destinations, workshops, and businesses for eventful, meaningful trips.</p>
                 </div>
 
