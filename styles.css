@@ -990,13 +990,13 @@
             .hero {
                 padding: 1.25rem;
                 padding-top: clamp(5.5rem, 12vw, 7rem);
-                padding-bottom: 1.5rem;
+                padding-bottom: 2rem;
                 display: flex;
                 flex-direction: column;
-                justify-content: flex-end;
+                justify-content: center;
                 align-items: center;
                 min-height: 100vh;
-                gap: 0;
+                gap: clamp(4rem, 12vw, 8rem);
             }
 
             .hero-content {
@@ -1006,7 +1006,7 @@
                 transform: none;
                 max-width: 100%;
                 margin-top: 0;
-                margin-bottom: 4.5rem;
+                margin-bottom: 0;
                 width: 100%;
                 flex-shrink: 0;
             }
@@ -1078,12 +1078,13 @@
             .hero {
                 padding: 1rem;
                 padding-top: 4.5rem;
-                padding-bottom: 1.25rem;
-                justify-content: flex-end;
+                padding-bottom: 1.5rem;
+                justify-content: center;
+                gap: clamp(3rem, 10vw, 6rem);
             }
 
             .hero-content {
-                margin-bottom: 3.5rem;
+                margin-bottom: 0;
             }
 
             .hero-title .line:first-child {
