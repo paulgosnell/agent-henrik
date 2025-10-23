@@ -10,7 +10,12 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <style>
+    <!-- External Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-remove-inline-styles>
+    <!-- Inline styles below will be removed - keeping for reference during migration -->
+    <style style="display: none;">
         @font-face {
             font-family: 'Aventa';
             src: url('Aventa-Variable.ttf') format('truetype');
@@ -3969,9 +3974,10 @@
                         <li><a href="#concierge" class="nav-link" data-open-liv data-liv-context-type="general" data-liv-context-name="Navigation">LIV / Concierge</a></li>
                         <li><a href="#stories" class="nav-link">Journal</a></li>
                         <li><a href="#press" class="nav-link">Press & Media</a></li>
-                        <li><a href="#services" class="nav-link">Our Services</a></li>
-                        <li><a href="#about" class="nav-link">Our Story</a></li>
-                        <li><a href="#booking-process" class="nav-link">Booking Process</a></li>
+                        <li><a href="our-services.html" class="nav-link">Our Services</a></li>
+                        <li><a href="our-story.html" class="nav-link">Our Story</a></li>
+                        <li><a href="our-team.html" class="nav-link">Our Team</a></li>
+                        <li><a href="booking-process.html" class="nav-link">Booking Process</a></li>
                         <li><a href="#contact" class="nav-link">Contact</a></li>
                     </ul>
                 </div>
@@ -4779,7 +4785,8 @@ unique.</p>
         </div>
     </div>
 
-    <script>
+    <!-- Inline script removed - now using external scripts.js file below -->
+    <!-- <script>
         document.addEventListener('DOMContentLoaded', function() {
             if (window.lucide && typeof window.lucide.createIcons === 'function') {
                 window.lucide.createIcons();
@@ -6348,7 +6355,10 @@ unique.</p>
             // Hero video is now handled directly via HTML video element
             // No slideshow initialization needed
         });
-    </script>
+    */ </script> -->
+
+    <!-- External JavaScript -->
+    <script src="scripts.js"></script>
 
     <!-- LIV Concierge Button - Positioned at top of DOM hierarchy -->
     <div class="ai-concierge-wrapper">
