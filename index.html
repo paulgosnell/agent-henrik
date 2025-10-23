@@ -1112,6 +1112,24 @@
             color: rgba(0, 0, 0, 0.5);
         }
 
+        /* Eyebrow styling for headline-block and contact-cta */
+        .headline-block .eyebrow,
+        .contact-cta .eyebrow {
+            font-family: var(--font-sans);
+            text-transform: uppercase;
+            letter-spacing: 0.4rem;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.55);
+            display: inline-block;
+            margin-bottom: 1rem;
+            transition: color 0.4s ease;
+        }
+
+        [data-theme="light"] .headline-block .eyebrow,
+        [data-theme="light"] .contact-cta .eyebrow {
+            color: rgba(0, 0, 0, 0.5);
+        }
+
         .section-heading h2 {
             font-family: var(--font-serif);
             font-size: clamp(2.2rem, 5vw, 3.4rem);
@@ -2088,6 +2106,21 @@
             background: linear-gradient(135deg, rgba(35, 75, 59, 0.82), rgba(43, 60, 86, 0.82));
             border: 1px solid rgba(255, 255, 255, 0.18);
             color: rgba(255, 255, 255, 0.95);
+        }
+
+        .liv-experience-card {
+            background: #000 !important;
+            transition: background 0.4s ease;
+        }
+
+        [data-theme="light"] .liv-experience-card {
+            background: #fff !important;
+            color: rgba(0, 0, 0, 0.9) !important;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+        }
+
+        [data-theme="light"] .liv-experience-card p {
+            color: rgba(0, 0, 0, 0.75) !important;
         }
 
         .accent-card ul {
@@ -3620,6 +3653,271 @@
                 font-size: 1.5rem;
             }
         }
+
+        /* Pillar Modal Styles */
+        .pillar-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .pillar-modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: background 0.4s ease;
+        }
+
+        [data-theme="light"] .pillar-modal-overlay {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .pillar-modal-container {
+            position: relative;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 85vh;
+            background: var(--color-card-bg);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--color-border);
+            transform: scale(0.9);
+            animation: modalSlideUp 0.4s ease forwards;
+        }
+
+        @keyframes modalSlideUp {
+            to {
+                transform: scale(1);
+            }
+        }
+
+        [data-theme="light"] .pillar-modal-container {
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.15);
+        }
+
+        .pillar-modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 44px;
+            height: 44px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 2rem;
+            line-height: 1;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .pillar-modal-close:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: rotate(90deg);
+        }
+
+        [data-theme="light"] .pillar-modal-close {
+            background: rgba(255, 255, 255, 0.95);
+            color: #111;
+        }
+
+        [data-theme="light"] .pillar-modal-close:hover {
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .pillar-modal-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            max-height: 85vh;
+            overflow: hidden;
+        }
+
+        .pillar-modal-media {
+            position: relative;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .pillar-modal-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .pillar-modal-body {
+            padding: 3rem;
+            overflow-y: auto;
+            max-height: 85vh;
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-border) transparent;
+        }
+
+        .pillar-modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .pillar-modal-body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .pillar-modal-body::-webkit-scrollbar-thumb {
+            background: var(--color-border);
+            border-radius: 4px;
+        }
+
+        .pillar-modal-body::-webkit-scrollbar-thumb:hover {
+            background: var(--color-border-strong);
+        }
+
+        .pillar-modal-body h2 {
+            font-family: var(--font-serif);
+            font-size: clamp(1.8rem, 4vw, 2.4rem);
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            color: var(--color-text);
+        }
+
+        .pillar-modal-body p {
+            color: var(--color-text-muted);
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .pillar-modal-body ul {
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0;
+        }
+
+        .pillar-modal-body li {
+            color: var(--color-text-muted);
+            font-size: 1rem;
+            line-height: 1.8;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .pillar-modal-body li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--color-text);
+        }
+
+        .pillar-modal-body h3 {
+            font-family: var(--font-serif);
+            font-size: 1.4rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--color-text);
+        }
+
+        .pillar-modal-body #modal-cta {
+            margin-top: 2rem;
+        }
+
+        /* Read More Button Styles */
+        .read-more-btn {
+            background: none;
+            border: none;
+            color: var(--color-text);
+            font-family: var(--font-sans);
+            font-size: 0.95rem;
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 0;
+            margin-top: 0.75rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+            opacity: 0.8;
+        }
+
+        .read-more-btn:hover {
+            opacity: 1;
+            color: var(--color-text);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .pillar-modal-container {
+                width: 95%;
+                max-height: 90vh;
+            }
+
+            .pillar-modal-content {
+                grid-template-columns: 1fr;
+            }
+
+            .pillar-modal-media {
+                height: 250px;
+            }
+
+            .pillar-modal-body {
+                padding: 2rem 1.5rem;
+                max-height: calc(90vh - 250px);
+            }
+
+            .pillar-modal-close {
+                top: 1rem;
+                right: 1rem;
+                width: 40px;
+                height: 40px;
+                font-size: 1.75rem;
+            }
+
+            .pillar-modal-body h2 {
+                font-size: 1.6rem;
+                margin-bottom: 1rem;
+            }
+
+            .pillar-modal-body p,
+            .pillar-modal-body li {
+                font-size: 0.95rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .pillar-modal-container {
+                width: 100%;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+
+            .pillar-modal-body {
+                padding: 1.5rem 1.25rem;
+                max-height: calc(100vh - 200px);
+            }
+
+            .pillar-modal-media {
+                height: 200px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -3747,22 +4045,27 @@
                 <!-- Map Filters -->
                 <div class="map-controls">
                     <div class="seasonal-toggle">
-                        <button type="button" class="season-btn active" data-season="summer">Summer</button>
+                        <button type="button" class="season-btn active" data-season="spring">Spring</button>
+                        <button type="button" class="season-btn" data-season="summer">Summer</button>
+                        <button type="button" class="season-btn" data-season="autumn">Autumn</button>
                         <button type="button" class="season-btn" data-season="winter">Winter</button>
                     </div>
                     <div class="theme-filters">
                         <button type="button" class="filter-btn active" data-filter="all">All</button>
                         <button type="button" class="filter-btn" data-filter="nature">Nature & Wellness</button>
                         <button type="button" class="filter-btn" data-filter="design">Design & Innovation</button>
-                        <button type="button" class="filter-btn" data-filter="royal">Royal</button>
-                        <button type="button" class="filter-btn" data-filter="art">Art & Culture</button>
+                        <button type="button" class="filter-btn" data-filter="royal-culture">Royal, Art & Culture</button>
                         <button type="button" class="filter-btn" data-filter="culinary">Culinary</button>
                         <button type="button" class="filter-btn" data-filter="nightlife">Nightlife & Celebrations</button>
                         <button type="button" class="filter-btn" data-filter="legacy">Legacy & Purpose</button>
                     </div>
                     <div class="category-filters">
-                        <button type="button" class="category-filter-btn active" data-category="region">Regions</button>
-                        <button type="button" class="category-filter-btn active" data-category="city">Cities</button>
+                        <button type="button" class="category-filter-btn active" data-category="province">Provinces</button>
+                        <button type="button" class="category-filter-btn active" data-category="city">Cities & towns</button>
+                        <button type="button" class="category-filter-btn active" data-category="seaside">Seaside Towns & Summer Hotspots</button>
+                        <button type="button" class="category-filter-btn active" data-category="beach">Beaches</button>
+                        <button type="button" class="category-filter-btn active" data-category="ski">Ski areas</button>
+                        <button type="button" class="category-filter-btn active" data-category="park">National parks</button>
                         <button type="button" class="category-filter-btn active" data-category="storyteller">Storytellers</button>
                     </div>
                 </div>
@@ -3795,7 +4098,7 @@
         <section class="section" id="journeys">
             <div class="section-inner">
                 <div class="section-heading">
-                    <span class="eyebrow">Journeys</span>
+                    <span class="eyebrow">Experiences</span>
                     <h2>Six pillars to compose your narrative.</h2>
                     <p>For discerning travelers who want more than a holiday — who want to step into Sweden's soul. Our journeys are cinematic narratives, curated with exclusive access, emotional storytelling, and ultra-luxury comfort.</p>
                 </div>
@@ -3810,9 +4113,10 @@
                                 <h3>Nature &amp; Wellness</h3>
                                 <p>Disappear into silence and reconnect with yourself. Stay in glass igloos under the Northern
 Lights, mirrored forest cabins, or private archipelago villas. Practice sauna rituals, forest
-meditation, and guided digital detoxes. For those who seek more, Sweden’s biohacking
+meditation, and guided digital detoxes. For those who seek more, Sweden's biohacking
 pioneers and longevity experts curate programs blending nature with the science of
 performance and wellbeing.</p>
+                                <button type="button" class="read-more-btn">read more</button>
                                 <button type="button" class="pillar-cta" data-open-liv>Design My Journey with LIV</button>
                             </div>
                         </div>
@@ -3825,10 +4129,11 @@ performance and wellbeing.</p>
                             <div class="pillar-icon" aria-hidden="true"><i data-lucide="cpu"></i></div>
                             <div class="pillar-copy">
                                 <h3>Design &amp; Innovation</h3>
-                                <p>Stockholm is one of the world’s unicorn capitals — a cradle of startups and cutting-edge
+                                <p>Stockholm is one of the world's unicorn capitals — a cradle of startups and cutting-edge
 design. We open doors to private design studios, fashion ateliers, and sustainable innovation
 labs. Meet the entrepreneurs behind global icons and enjoy one-on-one encounters with
-Sweden’s creatives and thinkers.</p>
+Sweden's creatives and thinkers.</p>
+                                <button type="button" class="read-more-btn">read more</button>
                                 <button type="button" class="pillar-cta" data-open-liv>Design My Journey with LIV</button>
                             </div>
                         </div>
@@ -3841,9 +4146,10 @@ Sweden’s creatives and thinkers.</p>
                             <div class="pillar-icon" aria-hidden="true"><i data-lucide="crown"></i></div>
                             <div class="pillar-copy">
                                 <h3>Royal, Art &amp; Culture</h3>
-                                <p>Discover Sweden’s refined blend of heritage and creativity. Explore private castles and royal
+                                <p>Discover Sweden's refined blend of heritage and creativity. Explore private castles and royal
 palaces after hours, then step into the world of contemporary art, design studios, and collector
 salons. A journey where history, culture, and innovation meet in timeless Scandinavian style.</p>
+                                <button type="button" class="read-more-btn">read more</button>
                                 <button type="button" class="pillar-cta" data-open-liv>Design My Journey with LIV</button>
                             </div>
                         </div>
@@ -3860,8 +4166,9 @@ salons. A journey where history, culture, and innovation meet in timeless Scandi
 sessions inspired by the seasons. Forage for wild herbs and mushrooms with local experts,
 then dine in forest kitchens where nature sets the table. Enjoy gourmet food tours, private
 tasting visits, and warm home dinners that open the door to authentic Swedish life. Hear Sami
-stories and share traditional dishes around the fire — each meal a chapter of Sweden’s land,
+stories and share traditional dishes around the fire — each meal a chapter of Sweden's land,
 culture, and culinary heritage.</p>
+                                <button type="button" class="read-more-btn">read more</button>
                                 <button type="button" class="pillar-cta" data-open-liv>Design My Journey with LIV</button>
                             </div>
                         </div>
@@ -3876,9 +4183,10 @@ culture, and culinary heritage.</p>
                                 <h3>Nightlife &amp; Celebration</h3>
                                 <p>Swedes know how to party — and we bring you inside their most exclusive scenes. Sip
 champagne in members-only clubs, dance under the midnight sun at a private island
-midsummer gala, or host your own soirée in a designer’s loft. For the bold, rent out a mansion
+midsummer gala, or host your own soirée in a designer's loft. For the bold, rent out a mansion
 and let us curate an unforgettable night with live acts, local creatives, and a guest list to
 remember.</p>
+                                <button type="button" class="read-more-btn">read more</button>
                                 <button type="button" class="pillar-cta" data-open-liv>Design My Journey with LIV</button>
                             </div>
                         </div>
@@ -3895,6 +4203,7 @@ remember.</p>
 initiatives, or participate in sustainable design collaborations. Every journey leaves a positive
 footprint — giving back to the land, the culture, and the communities that make Sweden
 unique.</p>
+                                <button type="button" class="read-more-btn">read more</button>
                                 <button type="button" class="pillar-cta" data-open-liv>Design My Journey with LIV</button>
                             </div>
                         </div>
@@ -3907,7 +4216,7 @@ unique.</p>
             <div class="section-inner">
                 <div class="section-heading">
                     <span class="eyebrow">Corporate & Incentives</span>
-                    <h2>Architect experiences that move culture forward</h2>
+                    <h2>Create experiences that move<br>the company culture forward</h2>
                     <p>Sweden is not only a destination — it is a stage for creativity, inspiration, and transformation. We design corporate journeys that reward, engage, and inspire through experiences no traditional DMC can offer.</p>
                 </div>
 
@@ -3921,6 +4230,7 @@ unique.</p>
                             <div class="pillar-copy">
                                 <h3>Leadership Retreats</h3>
                                 <p>Swap the boardroom for a castle, a mirrored forest lodge, or a private island villa. Executive retreats combine strategic focus with Swedish wellness: sauna rituals, guided silence, and outdoor adventure.</p>
+                                <button type="button" class="read-more-btn">read more</button>
                                 <button type="button" class="pillar-cta" data-open-enquiry>Plan Your Retreat</button>
                             </div>
                         </div>
@@ -3935,6 +4245,7 @@ unique.</p>
                             <div class="pillar-copy">
                                 <h3>Innovation & Creativity</h3>
                                 <p>Bring your team into Sweden's unicorn factory. Meet startup founders, green-tech pioneers, and design thinkers. Workshops woven into inspiring environments — from design studios to innovation labs.</p>
+                                <button type="button" class="read-more-btn">read more</button>
                                 <button type="button" class="pillar-cta" data-open-enquiry>Explore Innovation</button>
                             </div>
                         </div>
@@ -3949,6 +4260,7 @@ unique.</p>
                             <div class="pillar-copy">
                                 <h3>Celebration & Recognition</h3>
                                 <p>Business milestones deserve more than a ballroom. Celebrate with a Scandi White Party on a private island, a royal gala in a candlelit palace, or an Innovation Party Night with startup founders and Michelin catering.</p>
+                                <button type="button" class="read-more-btn">read more</button>
                                 <button type="button" class="pillar-cta" data-open-enquiry>Design Your Event</button>
                             </div>
                         </div>
@@ -3963,6 +4275,7 @@ unique.</p>
                             <div class="pillar-copy">
                                 <h3>Culture & Purpose</h3>
                                 <p>Sweden's cultural and social legacy inspires transformation. Backstage access to Stockholm Fashion Week, private design fairs, or CSR narratives supporting Sami communities and eco-startups.</p>
+                                <button type="button" class="read-more-btn">read more</button>
                                 <button type="button" class="pillar-cta" data-open-enquiry>Create Impact</button>
                             </div>
                         </div>
@@ -3977,6 +4290,7 @@ unique.</p>
                             <div class="pillar-copy">
                                 <h3>Wellness & Biohacking</h3>
                                 <p>Executive performance meets longevity. Transform your leadership team through cutting-edge wellness protocols, Nordic cold therapy, and personalized biohacking experiences in pristine Swedish nature.</p>
+                                <button type="button" class="read-more-btn">read more</button>
                                 <button type="button" class="pillar-cta" data-open-enquiry>Optimize Performance</button>
                             </div>
                         </div>
@@ -3991,6 +4305,7 @@ unique.</p>
                             <div class="pillar-copy">
                                 <h3>Creative Incentives</h3>
                                 <p>Reward your team with unforgettable experiences. Sailing races through the archipelago, gastronomy contests with Michelin chefs, design sprints in iconic studios, or adventure challenges in Lapland.</p>
+                                <button type="button" class="read-more-btn">read more</button>
                                 <button type="button" class="pillar-cta" data-open-enquiry>Reward Excellence</button>
                             </div>
                         </div>
@@ -4005,6 +4320,7 @@ unique.</p>
                     <span class="eyebrow">Featured Storytellers</span>
                     <h2>Experience Sweden Beyond the Ordinary</h2>
                     <p>Led by local storytellers — from Sami elders and Michelin chefs to artists, designers, and innovators — each encounter offers an authentic glimpse into Swedish life, culture, and creativity. Whether you travel solo or with others, our curated experiences, workshops, and destinations promise meaningful connections and stories that stay with you long after the journey ends.</p>
+                    <p>You need inspiration? Take a peek at our curated selection of storytellers, destinations, workshops, and businesses for eventful, meaningful trips.</p>
                 </div>
 
                 <div class="stories-grid">
@@ -4050,7 +4366,7 @@ unique.</p>
             <div class="section-inner">
                 <div class="dual-columns">
                     <div class="headline-block">
-                        <span class="eyebrow">Concierge</span>
+                        <span class="eyebrow">CONCIERGE</span>
                         <h3>Meet LIV — Luxury Itinerary Visionary.</h3>
                         <p>Embedded across the experience, LIV begins your dialogue, sketches the first draft of your itinerary, and invites you to pass the narrative to our human curators for refinement.</p>
                         <div class="cta-group" style="margin-top:2rem;">
@@ -4058,7 +4374,7 @@ unique.</p>
                             <a href="#contact">Talk to us</a>
                         </div>
                     </div>
-                    <div class="accent-card" style="background: linear-gradient(135deg, rgba(35,75,59,0.92), rgba(17,25,34,0.9));">
+                    <div class="accent-card liv-experience-card">
                         <h4 style="font-family: var(--font-serif); font-size: 1.4rem; margin-bottom:1rem;">Experience LIV</h4>
                         <p style="font-style: italic; margin-bottom: 1.5rem; color: rgba(255,255,255,0.85);">"Share your vision—Nordic forests, design studios, archipelago dinners—and I'll compose your opening itinerary in moments."</p>
                         <ul>
@@ -4094,9 +4410,9 @@ unique.</p>
         <section class="section" id="stories">
             <div class="section-inner">
                 <div class="section-heading">
-                    <span class="eyebrow">Stories</span>
+                    <span class="eyebrow">Journal</span>
                     <h2>Editorial previews from the Journal.</h2>
-                    <p>Original storytelling capturing seasonal journeys, local visionaries, and the textures of Swedish life that shape every itinerary.</p>
+                    <p>Editorial previews from our latest scoops.</p>
                 </div>
                 <div class="stories-grid">
                     <article class="story-card" data-story="lapland" aria-label="Lapland Midnight Solstice">
@@ -4129,7 +4445,7 @@ unique.</p>
                 <div class="section-heading">
                     <span class="eyebrow">Press &amp; Media</span>
                     <h2>What Media Says About Us</h2>
-                    <p>Our journeys have been profiled by the world's leading travel, design, and business publications.</p>
+                    <p>Our work has been recognized by the world's leading voices in luxury and travel.</p>
                 </div>
                 <div class="press-strip" role="list">
                     <span role="listitem">Monocle</span>
@@ -4145,7 +4461,7 @@ unique.</p>
         <section class="section" id="instagram">
             <div class="section-inner">
                 <div class="section-heading">
-                    <span class="eyebrow">Follow Our Journey</span>
+                    <span class="eyebrow">Follow Our Discoveries</span>
                     <h2>@LuxuryTravelSweden</h2>
                     <p><a href="https://www.instagram.com/LuxuryTravelSweden/" target="_blank" rel="noopener noreferrer">Follow us on Instagram</a></p>
                 </div>
@@ -4161,18 +4477,6 @@ unique.</p>
                     <div class="instagram-card">
                         <img src="https://images.pexels.com/photos/1054289/pexels-photo-1054289.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Swedish cuisine" loading="lazy">
                         <div class="instagram-title">Nordic Culinary Experience</div>
-                    </div>
-                    <div class="instagram-card">
-                        <img src="https://images.pexels.com/photos/1266810/pexels-photo-1266810.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Swedish archipelago" loading="lazy">
-                        <div class="instagram-title">Archipelago Escape</div>
-                    </div>
-                    <div class="instagram-card">
-                        <img src="https://images.pexels.com/photos/1287460/pexels-photo-1287460.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Swedish winter" loading="lazy">
-                        <div class="instagram-title">Winter Wonderland</div>
-                    </div>
-                    <div class="instagram-card">
-                        <img src="https://images.pexels.com/photos/2387873/pexels-photo-2387873.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Swedish nature" loading="lazy">
-                        <div class="instagram-title">Midnight Sun Journey</div>
                     </div>
                 </div>
             </div>
@@ -4262,9 +4566,9 @@ unique.</p>
             <div class="section-inner">
                 <div class="contact-cta">
                     <div>
-                        <span class="eyebrow">Contact</span>
-                        <h3>Ready to compose your Swedish masterpiece?</h3>
-                        <p>Share your ambitions and we will reply within 24 hours with the next steps, schedule a call, or deliver a curated dossier.</p>
+                        <span class="eyebrow">CONTACT</span>
+                        <h3>Ready to create your Swedish adventure?</h3>
+                        <p>Share your ambitions and we will reply within 24 hours with the next steps, schedule a call, or deliver a curated dossier. Every enquiry is handled by a personal curator, who will design a bespoke narrative just for you.</p>
                     </div>
                     <div class="cta-group">
                         <a href="#" class="primary" data-open-enquiry="fit">Design My Journey</a>
@@ -4321,22 +4625,6 @@ unique.</p>
         <div class="footer-background" id="footerBackground"></div>
         <div class="footer-bg-overlay"></div>
 
-        <!-- Footer Hero Section -->
-        <div class="footer-hero">
-            <h2 class="footer-hero-title">Your Swedish Story Begins Here</h2>
-            <p class="footer-hero-subtitle">
-                Where wilderness whispers, design speaks, and every journey becomes a legacy.
-                Let us craft your unforgettable chapter in Sweden's endless narrative.
-            </p>
-            <div class="footer-destinations">
-                <span>Stockholm</span>
-                <span>Lapland</span>
-                <span>Göta Archipelago</span>
-                <span>Gothenburg</span>
-                <span>Kiruna</span>
-                <span>Malmö</span>
-            </div>
-        </div>
 
         <!-- Footer Main Content -->
         <div class="footer-content">
@@ -4373,7 +4661,7 @@ unique.</p>
                     <a href="#about" class="footer-link">Our Story</a>
                     <a href="#booking-process" class="footer-link">Booking Process</a>
                     <a href="#" class="footer-link">Pricing & FAQ</a>
-                    <a href="#press" class="footer-link">What Media Says</a>
+                    <a href="#press" class="footer-link">Press & Media</a>
                 </nav>
             </div>
 
@@ -5244,70 +5532,70 @@ unique.</p>
                     title: 'Stockholm',
                     description: 'Sweden\'s capital blends royal heritage, innovative design, and vibrant cultural scenes. Explore after-hours palace access, Michelin dining, and Stockholm\'s creative underground.',
                     image: 'https://images.pexels.com/photos/1388030/pexels-photo-1388030.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1',
-                    themes: ['Nature & Wellness', 'Design & Innovation', 'Royal', 'Art & Culture', 'Culinary', 'Nightlife & Celebrations'],
-                    seasons: ['Summer', 'Winter'],
+                    themes: ['Nature & Wellness', 'Design & Innovation', 'Royal, Art & Culture', 'Culinary', 'Nightlife & Celebrations'],
+                    seasons: ['Spring', 'Summer', 'Autumn', 'Winter'],
                     coordinates: [18.0686, 59.3293],
-                    themeKeys: ['nature', 'design', 'royal', 'art', 'culinary', 'nightlife'],
+                    themeKeys: ['nature', 'design', 'royal-culture', 'culinary', 'nightlife'],
                     category: 'city'
                 },
                 gothenburg: {
                     title: 'Gothenburg',
                     description: 'Sweden\'s west coast gem combines maritime heritage with innovative cuisine. Explore seafood markets, contemporary art museums, and the charming Haga district.',
                     image: 'https://images.pexels.com/photos/2901209/pexels-photo-2901209.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1',
-                    themes: ['Culinary', 'Art & Culture', 'Design & Innovation'],
-                    seasons: ['Summer', 'Winter'],
+                    themes: ['Culinary', 'Royal, Art & Culture', 'Design & Innovation'],
+                    seasons: ['Spring', 'Summer', 'Autumn', 'Winter'],
                     coordinates: [11.9746, 57.7089],
-                    themeKeys: ['culinary', 'art', 'design'],
+                    themeKeys: ['culinary', 'royal-culture', 'design'],
                     category: 'city'
                 },
                 gotland: {
                     title: 'Gotland & Visby',
                     description: 'Medieval walls surround Visby on this Baltic island paradise. Discover ancient rune stones, limestone formations, and summer festivals in Sweden\'s sunniest region.',
                     image: 'https://images.pexels.com/photos/2901209/pexels-photo-2901209.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1',
-                    themes: ['Royal', 'Art & Culture', 'Nature & Wellness'],
-                    seasons: ['Summer'],
+                    themes: ['Royal, Art & Culture', 'Nature & Wellness'],
+                    seasons: ['Spring', 'Summer', 'Autumn'],
                     coordinates: [18.2948, 57.6348],
-                    themeKeys: ['royal', 'art', 'nature'],
-                    category: 'region'
+                    themeKeys: ['royal-culture', 'nature'],
+                    category: 'seaside'
                 },
                 dalarna: {
                     title: 'Dalarna',
                     description: 'The heart of Swedish folklore and tradition. Experience genuine Swedish culture, traditional crafts, Lake Siljan, and the iconic red Dala horses.',
                     image: 'https://images.pexels.com/photos/1770809/pexels-photo-1770809.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1',
-                    themes: ['Art & Culture', 'Legacy & Purpose', 'Nature & Wellness'],
-                    seasons: ['Summer', 'Winter'],
+                    themes: ['Royal, Art & Culture', 'Legacy & Purpose', 'Nature & Wellness'],
+                    seasons: ['Spring', 'Summer', 'Autumn', 'Winter'],
                     coordinates: [14.5636, 60.6034],
-                    themeKeys: ['art', 'legacy', 'nature'],
-                    category: 'region'
+                    themeKeys: ['royal-culture', 'legacy', 'nature'],
+                    category: 'province'
                 },
                 lapland: {
                     title: 'Lapland',
                     description: 'Enter the Arctic wilderness for aurora vigils, glass-roof lodges, and transformative silence. Experience indigenous Sámi culture and winter\'s profound beauty.',
                     image: 'https://images.pexels.com/photos/2024881/pexels-photo-2024881.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1',
                     themes: ['Nature & Wellness', 'Legacy & Purpose'],
-                    seasons: ['Winter'],
+                    seasons: ['Spring', 'Summer', 'Autumn', 'Winter'],
                     coordinates: [23.6850, 67.9222],
                     themeKeys: ['nature', 'legacy'],
-                    category: 'region'
+                    category: 'province'
                 },
                 archipelago: {
                     title: 'Stockholm Archipelago',
                     description: 'Over 30,000 islands form Sweden\'s maritime playground. Private yacht journeys, foraging expeditions, and hidden island retreats await your discovery.',
                     image: 'https://images.pexels.com/photos/3408353/pexels-photo-3408353.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1',
                     themes: ['Nature & Wellness', 'Culinary'],
-                    seasons: ['Summer'],
+                    seasons: ['Spring', 'Summer', 'Autumn'],
                     coordinates: [18.5500, 59.4500],
                     themeKeys: ['nature', 'culinary'],
-                    category: 'region'
+                    category: 'seaside'
                 },
                 malmo: {
                     title: 'Malmö',
                     description: 'Sweden\'s gateway to Europe combines Scandinavian cool with continental flair. Explore sustainable architecture, diverse culinary scenes, and proximity to Copenhagen.',
                     image: 'https://images.pexels.com/photos/2901209/pexels-photo-2901209.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1',
-                    themes: ['Design & Innovation', 'Culinary', 'Art & Culture'],
-                    seasons: ['Summer', 'Winter'],
+                    themes: ['Design & Innovation', 'Culinary', 'Royal, Art & Culture'],
+                    seasons: ['Spring', 'Summer', 'Autumn', 'Winter'],
                     coordinates: [13.0038, 55.6050],
-                    themeKeys: ['design', 'culinary', 'art'],
+                    themeKeys: ['design', 'culinary', 'royal-culture'],
                     category: 'city'
                 },
                 abisko: {
@@ -5315,49 +5603,49 @@ unique.</p>
                     description: 'Prime aurora viewing location in Swedish Lapland. Experience the Midnight Sun, pristine wilderness, and some of Europe\'s clearest skies for northern lights.',
                     image: 'https://images.pexels.com/photos/2024881/pexels-photo-2024881.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1',
                     themes: ['Nature & Wellness'],
-                    seasons: ['Winter', 'Summer'],
+                    seasons: ['Spring', 'Summer', 'Autumn', 'Winter'],
                     coordinates: [18.8306, 68.3540],
                     themeKeys: ['nature'],
-                    category: 'region'
+                    category: 'park'
                 },
                 vastergotland: {
                     title: 'Västergötland',
                     description: 'Ancient Viking heritage meets rolling countryside. Discover medieval churches, archaeological sites, and the birthplace of Swedish history.',
                     image: 'https://images.pexels.com/photos/2901209/pexels-photo-2901209.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1',
-                    themes: ['Art & Culture', 'Legacy & Purpose', 'Royal'],
-                    seasons: ['Summer', 'Winter'],
+                    themes: ['Royal, Art & Culture', 'Legacy & Purpose'],
+                    seasons: ['Spring', 'Summer', 'Autumn', 'Winter'],
                     coordinates: [13.4, 58.3],
-                    themeKeys: ['art', 'legacy', 'royal'],
-                    category: 'region'
+                    themeKeys: ['royal-culture', 'legacy'],
+                    category: 'province'
                 },
                 uppsala: {
                     title: 'Uppsala',
                     description: 'Sweden\'s ancient university city combines academic excellence with Viking heritage. Explore Scandinavia\'s largest cathedral and historic botanical gardens.',
                     image: 'https://images.pexels.com/photos/2901209/pexels-photo-2901209.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1',
-                    themes: ['Royal', 'Art & Culture', 'Legacy & Purpose'],
-                    seasons: ['Summer', 'Winter'],
+                    themes: ['Royal, Art & Culture', 'Legacy & Purpose'],
+                    seasons: ['Spring', 'Summer', 'Autumn', 'Winter'],
                     coordinates: [17.6389, 59.8586],
-                    themeKeys: ['royal', 'art', 'legacy'],
+                    themeKeys: ['royal-culture', 'legacy'],
                     category: 'city'
                 },
                 skane: {
                     title: 'Skåne Region',
                     description: 'Southern Sweden\'s fertile plains offer castle trails, sandy beaches, and Europe\'s leading New Nordic cuisine scene.',
                     image: 'https://images.pexels.com/photos/2901209/pexels-photo-2901209.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1',
-                    themes: ['Culinary', 'Royal', 'Nature & Wellness'],
-                    seasons: ['Summer'],
+                    themes: ['Culinary', 'Royal, Art & Culture', 'Nature & Wellness'],
+                    seasons: ['Spring', 'Summer', 'Autumn'],
                     coordinates: [13.5, 55.9],
-                    themeKeys: ['culinary', 'royal', 'nature'],
-                    category: 'region'
+                    themeKeys: ['culinary', 'royal-culture', 'nature'],
+                    category: 'beach'
                 },
                 orebro: {
                     title: 'Örebro',
                     description: 'Lakeside charm with a fairytale castle. Experience innovative Swedish design, vibrant cultural scenes, and authentic local traditions.',
                     image: 'https://images.pexels.com/photos/2901209/pexels-photo-2901209.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1',
-                    themes: ['Royal', 'Art & Culture', 'Design & Innovation'],
-                    seasons: ['Summer', 'Winter'],
+                    themes: ['Royal, Art & Culture', 'Design & Innovation'],
+                    seasons: ['Spring', 'Summer', 'Autumn', 'Winter'],
                     coordinates: [15.2134, 59.2753],
-                    themeKeys: ['royal', 'art', 'design'],
+                    themeKeys: ['royal-culture', 'design'],
                     category: 'city'
                 },
                 jamtland: {
@@ -5365,49 +5653,49 @@ unique.</p>
                     description: 'Mountain wilderness perfect for outdoor adventures. Discover ski resorts, hiking trails, and authentic Sami cultural experiences.',
                     image: 'https://images.pexels.com/photos/2024881/pexels-photo-2024881.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1',
                     themes: ['Nature & Wellness', 'Legacy & Purpose'],
-                    seasons: ['Winter', 'Summer'],
+                    seasons: ['Spring', 'Summer', 'Autumn', 'Winter'],
                     coordinates: [14.6, 63.2],
                     themeKeys: ['nature', 'legacy'],
-                    category: 'region'
+                    category: 'ski'
                 },
                 storyteller_astrid: {
                     title: 'Astrid\'s Sweden',
                     description: 'Follow the literary journey of Astrid Lindgren. Explore Vimmerby, storytelling experiences, and the landscapes that inspired Pippi Longstocking.',
                     image: 'https://images.pexels.com/photos/2901209/pexels-photo-2901209.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1',
-                    themes: ['Art & Culture', 'Legacy & Purpose'],
-                    seasons: ['Summer', 'Winter'],
+                    themes: ['Royal, Art & Culture', 'Legacy & Purpose'],
+                    seasons: ['Spring', 'Summer', 'Autumn', 'Winter'],
                     coordinates: [15.8551, 57.6681],
-                    themeKeys: ['art', 'legacy'],
+                    themeKeys: ['royal-culture', 'legacy'],
                     category: 'storyteller'
                 },
                 storyteller_bergman: {
                     title: 'Bergman\'s Fårö',
                     description: 'Discover Ingmar Bergman\'s island retreat. Explore film locations, the director\'s home, and the stark landscapes that shaped cinematic masterpieces.',
                     image: 'https://images.pexels.com/photos/2901209/pexels-photo-2901209.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1',
-                    themes: ['Art & Culture', 'Nature & Wellness'],
-                    seasons: ['Summer'],
+                    themes: ['Royal, Art & Culture', 'Nature & Wellness'],
+                    seasons: ['Spring', 'Summer', 'Autumn'],
                     coordinates: [19.1, 57.95],
-                    themeKeys: ['art', 'nature'],
+                    themeKeys: ['royal-culture', 'nature'],
                     category: 'storyteller'
                 },
                 storyteller_abba: {
                     title: 'ABBA Experience',
                     description: 'Immerse yourself in ABBA\'s musical legacy. Visit the interactive museum, recording studios, and Stockholm venues where the legends performed.',
                     image: 'https://images.pexels.com/photos/1388030/pexels-photo-1388030.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1',
-                    themes: ['Art & Culture', 'Nightlife & Celebrations'],
-                    seasons: ['Summer', 'Winter'],
+                    themes: ['Royal, Art & Culture', 'Nightlife & Celebrations'],
+                    seasons: ['Spring', 'Summer', 'Autumn', 'Winter'],
                     coordinates: [18.09, 59.32],
-                    themeKeys: ['art', 'nightlife'],
+                    themeKeys: ['royal-culture', 'nightlife'],
                     category: 'storyteller'
                 },
                 storyteller_nobel: {
                     title: 'Nobel Legacy',
                     description: 'Trace Alfred Nobel\'s footsteps through Stockholm. Experience the Nobel Prize Museum, annual ceremony venues, and the inventor\'s innovative spirit.',
                     image: 'https://images.pexels.com/photos/1388030/pexels-photo-1388030.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1',
-                    themes: ['Legacy & Purpose', 'Design & Innovation', 'Royal'],
-                    seasons: ['Summer', 'Winter'],
+                    themes: ['Legacy & Purpose', 'Design & Innovation', 'Royal, Art & Culture'],
+                    seasons: ['Spring', 'Summer', 'Autumn', 'Winter'],
                     coordinates: [18.07, 59.325],
-                    themeKeys: ['legacy', 'design', 'royal'],
+                    themeKeys: ['legacy', 'design', 'royal-culture'],
                     category: 'storyteller'
                 }
             };
@@ -5417,9 +5705,9 @@ unique.</p>
             const filterBtns = document.querySelectorAll('.filter-btn');
             const categoryFilterBtns = document.querySelectorAll('.category-filter-btn');
 
-            let currentSeason = 'summer';
+            let currentSeason = 'spring';
             let currentFilter = 'all';
-            let activeCategories = new Set(['region', 'city', 'storyteller']); // All active by default
+            let activeCategories = new Set(['province', 'city', 'seaside', 'beach', 'ski', 'park', 'storyteller']); // All active by default
             let selectedCities = new Set();
             let markers = {};
             let map;
@@ -5697,58 +5985,204 @@ unique.</p>
                 });
             });
 
-            // Pillar card text truncation
-            const MAX_CHARS = 200; // Character limit before truncation
+            // Pillar Modal Functionality
+            const pillarModal = document.getElementById('pillarModal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalImage = document.getElementById('modal-image');
+            const modalDescription = document.getElementById('modal-description');
+            const modalCta = document.getElementById('modal-cta');
+            const modalClose = document.querySelector('.pillar-modal-close');
+            const modalOverlay = document.querySelector('.pillar-modal-overlay');
 
-            function truncateText() {
-                const pillarCards = document.querySelectorAll('.pillar-copy p');
+            // Modal data for each pillar
+            const pillarData = {
+                nature: {
+                    title: "Nature & Wellness in Sweden",
+                    image: "https://images.pexels.com/photos/2024881/pexels-photo-2024881.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1",
+                    content: `
+                        <p><strong>Rewild your senses. Restore your balance. Rediscover yourself.</strong></p>
+                        <p>Experience the art of slowing down in Sweden's pure, healing landscapes. Stay in mirrored forest cabins, glass igloos beneath the Northern Lights, or secluded seaside villas across the archipelago. Wake to birdsong, swim in crystal-clear lakes, and let the stillness of nature guide you back to balance.</p>
+                        <p>Here, ancient Nordic rituals meet cutting-edge wellness innovation. Whether you seek deep rest, reconnection, or transformation, Sweden offers experiences that harmonize body, mind, and spirit—rooted in the elements and inspired by simplicity.</p>
 
-                pillarCards.forEach(paragraph => {
-                    const fullText = paragraph.textContent.trim();
+                        <h3>Nature Experiences</h3>
+                        <p>Immerse yourself in pristine landscapes designed to restore and inspire:</p>
+                        <ul>
+                            <li>Forest Bathing in Tyresta National Park or Dalarna's pine forests</li>
+                            <li>Hiking the King's Trail (Kungsleden) in Swedish Lapland</li>
+                            <li>Canoeing & Wild Camping among Värmland's serene lakes</li>
+                            <li>Dog Sledding & Aurora Safaris in Abisko National Park</li>
+                            <li>Foraging for Wild Berries & Mushrooms in Småland</li>
+                            <li>Ice Swimming & Sauna Rituals on frozen lake shores</li>
+                            <li>Archipelago Kayaking through Stockholm's 30,000 islands</li>
+                        </ul>
 
-                    // Only truncate if text exceeds limit
-                    if (fullText.length > MAX_CHARS) {
-                        const truncatedText = fullText.substring(0, MAX_CHARS);
+                        <h3>Spa & Wellness Experiences</h3>
+                        <p>Soothe your senses and embrace Sweden's natural approach to wellbeing:</p>
+                        <ul>
+                            <li>Sauna & Cold Plunge Rituals at Arctic Bath, Harads</li>
+                            <li>Floating Spa & Japanese-Inspired Treatments at Yasuragi, Stockholm</li>
+                            <li>Seaweed & Salt Scrub Therapies at Varberg Kusthotell</li>
+                            <li>Forest Meditation & Sound Healing at Stedsans in the Woods, Halland</li>
+                            <li>Yoga & Mindfulness Retreats at Shambala Gatherings, Dalarna</li>
+                            <li>Cryotherapy & Biohacking Workshops in Stockholm</li>
+                            <li>Thermal Bathing & Spa Journeys at Raison d'Être Spa, Grand Hôtel Stockholm</li>
+                        </ul>
 
-                        // Store original text as data attribute
-                        paragraph.setAttribute('data-full-text', fullText);
-                        paragraph.setAttribute('data-truncated-text', truncatedText);
+                        <h3>Transformative Wellness Journeys</h3>
+                        <p>For those seeking more than rest, Sweden's wellness innovators and longevity experts design holistic programs that merge nature, neuroscience, and nutrition—helping you recharge, rebalance, and reconnect in one of the world's most peaceful settings.</p>
+                    `,
+                    cta: "Design My Journey with LIV"
+                },
+                design: {
+                    title: "Design & Innovation",
+                    image: "https://images.pexels.com/photos/3184328/pexels-photo-3184328.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1",
+                    content: `
+                        <p>Stockholm is one of the world's unicorn capitals — a cradle of startups and cutting-edge design. We open doors to private design studios, fashion ateliers, and sustainable innovation labs. Meet the entrepreneurs behind global icons and enjoy one-on-one encounters with Sweden's creatives and thinkers.</p>
+                    `,
+                    cta: "Design My Journey with LIV"
+                },
+                "royal-culture": {
+                    title: "Royal, Art & Culture",
+                    image: "https://images.pexels.com/photos/18499031/pexels-photo-18499031.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1",
+                    content: `
+                        <p>Discover Sweden's refined blend of heritage and creativity. Explore private castles and royal palaces after hours, then step into the world of contemporary art, design studios, and collector salons. A journey where history, culture, and innovation meet in timeless Scandinavian style.</p>
+                    `,
+                    cta: "Design My Journey with LIV"
+                },
+                culinary: {
+                    title: "Culinary Experiences",
+                    image: "https://images.pexels.com/photos/4253312/pexels-photo-4253312.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1",
+                    content: `
+                        <p>Discover Sweden through its flavors. Join Michelin-trained chefs in hands-on cooking sessions inspired by the seasons. Forage for wild herbs and mushrooms with local experts, then dine in forest kitchens where nature sets the table. Enjoy gourmet food tours, private tasting visits, and warm home dinners that open the door to authentic Swedish life. Hear Sami stories and share traditional dishes around the fire — each meal a chapter of Sweden's land, culture, and culinary heritage.</p>
+                    `,
+                    cta: "Design My Journey with LIV"
+                },
+                nightlife: {
+                    title: "Nightlife & Celebration",
+                    image: "https://images.pexels.com/photos/274192/pexels-photo-274192.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1",
+                    content: `
+                        <p>Swedes know how to party — and we bring you inside their most exclusive scenes. Sip champagne in members-only clubs, dance under the midnight sun at a private island midsummer gala, or host your own soirée in a designer's loft. For the bold, rent out a mansion and let us curate an unforgettable night with live acts, local creatives, and a guest list to remember.</p>
+                    `,
+                    cta: "Design My Journey with LIV"
+                },
+                legacy: {
+                    title: "Legacy & Meaningful Travel",
+                    image: "https://images.pexels.com/photos/2879991/pexels-photo-2879991.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1",
+                    content: `
+                        <p>Travel with purpose and perspective. Support Sami heritage projects, experience rewilding initiatives, or participate in sustainable design collaborations. Every journey leaves a positive footprint — giving back to the land, the culture, and the communities that make Sweden unique.</p>
+                    `,
+                    cta: "Design My Journey with LIV"
+                },
+                innovation: {
+                    title: "Innovation & Creativity",
+                    image: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1",
+                    content: `
+                        <p><strong>Where bold ideas meet Nordic design and future thinking.</strong></p>
+                        <p>Step into Sweden's innovation playground — a nation of unicorns, sustainability pioneers, and design visionaries. Here, creativity thrives in co-working lofts, waterfront tech hubs, and repurposed industrial spaces turned into idea labs.</p>
+                        <p>Bring your team into this dynamic environment where business meets inspiration. Meet startup founders and green-tech trailblazers, join hands-on workshops in innovation and leadership, and explore how Swedish culture turns collaboration into creation. Each experience is designed to spark ideas, strengthen team connection, and ignite forward-thinking energy that lasts long after the trip ends.</p>
 
-                        // Create read more button
-                        const readMoreBtn = document.createElement('button');
-                        readMoreBtn.className = 'read-more-btn';
-                        readMoreBtn.textContent = 'read more';
-                        readMoreBtn.setAttribute('aria-expanded', 'false');
+                        <h3>Innovation Safaris</h3>
+                        <p>Discover the ideas shaping the future. Guided tours and encounters that reveal Sweden's creative ecosystem.</p>
+                        <ul>
+                            <li>Startup & Scaleup Tours — Visit leading tech hubs and incubators in Stockholm and Gothenburg</li>
+                            <li>Green-Tech Encounters — Explore labs pioneering clean energy, recycling tech, and circular economy solutions</li>
+                            <li>Founder Meetups — Learn directly from entrepreneurs and changemakers</li>
+                            <li>Innovation Labs — Join hands-on sessions in AI, biotech, and smart mobility</li>
+                            <li>Trend Scouting Expeditions — Spot emerging ideas in design, lifestyle, and sustainability</li>
+                        </ul>
 
-                        // Set truncated text
-                        paragraph.textContent = truncatedText + '...';
-                        paragraph.classList.add('truncated');
-                        paragraph.appendChild(readMoreBtn);
+                        <h3>Creative Incentives</h3>
+                        <p>Boost creativity and team spirit through inspiring, interactive experiences.</p>
+                        <ul>
+                            <li>Archipelago Sailing Races — Collaborative team challenges on the Baltic Sea</li>
+                            <li>Nordic Gastronomy Contests — Cook with top chefs using local, sustainable ingredients</li>
+                            <li>Entrepreneurial Workshops — Build innovation leadership and agile mindsets</li>
+                            <li>Cool Hunting & Design Walks — Explore Stockholm's trendsetting districts, concept stores, and studios</li>
+                            <li>Design Sprints & Creative Hackathons — Co-create ideas guided by Swedish designers</li>
+                            <li>Music & Innovation Experiences — Learn from world-leading producers and creative entrepreneurs</li>
+                        </ul>
 
-                        // Toggle functionality
-                        readMoreBtn.addEventListener('click', function() {
-                            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                        <h3>Transformative Learning Journeys</h3>
+                        <p>For teams seeking meaningful growth, Sweden offers immersive programs that blend innovation with wellbeing. Tailored learning journeys combine startup insights, creative collaboration, and leadership development — turning inspiration into actionable strategy.</p>
+                    `,
+                    cta: "Plan with LIV"
+                },
+                leadership: {
+                    title: "Leadership Retreats",
+                    image: "https://images.pexels.com/photos/3184398/pexels-photo-3184398.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1",
+                    content: `
+                        <p>Swap the boardroom for a castle, a mirrored forest lodge, or a private island villa. Executive retreats combine strategic focus with Swedish wellness: sauna rituals, guided silence, and outdoor adventure.</p>
+                    `,
+                    cta: "Plan Your Retreat"
+                },
+                celebration: {
+                    title: "Celebration & Recognition",
+                    image: "https://images.pexels.com/photos/3171837/pexels-photo-3171837.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1",
+                    content: `
+                        <p>Business milestones deserve more than a ballroom. Celebrate with a Scandi White Party on a private island, a royal gala in a candlelit palace, or an Innovation Party Night with startup founders and Michelin catering.</p>
+                    `,
+                    cta: "Design Your Event"
+                },
+                purpose: {
+                    title: "Culture & Purpose",
+                    image: "https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1",
+                    content: `
+                        <p>Sweden's cultural and social legacy inspires transformation. Backstage access to Stockholm Fashion Week, private design fairs, or CSR narratives supporting Sami communities and eco-startups.</p>
+                    `,
+                    cta: "Create Impact"
+                },
+                wellness: {
+                    title: "Wellness & Biohacking",
+                    image: "https://images.pexels.com/photos/3771097/pexels-photo-3771097.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1",
+                    content: `
+                        <p>Executive performance meets longevity. Transform your leadership team through cutting-edge wellness protocols, Nordic cold therapy, and personalized biohacking experiences in pristine Swedish nature.</p>
+                    `,
+                    cta: "Optimize Performance"
+                },
+                incentive: {
+                    title: "Creative Incentives",
+                    image: "https://images.pexels.com/photos/1658967/pexels-photo-1658967.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1",
+                    content: `
+                        <p>Reward your team with unforgettable experiences. Sailing races through the archipelago, gastronomy contests with Michelin chefs, design sprints in iconic studios, or adventure challenges in Lapland.</p>
+                    `,
+                    cta: "Reward Excellence"
+                }
+            };
 
-                            if (isExpanded) {
-                                // Collapse
-                                paragraph.textContent = truncatedText + '...';
-                                paragraph.appendChild(this);
-                                this.textContent = 'read more';
-                                this.setAttribute('aria-expanded', 'false');
-                            } else {
-                                // Expand
-                                paragraph.textContent = fullText;
-                                paragraph.appendChild(this);
-                                this.textContent = 'read less';
-                                this.setAttribute('aria-expanded', 'true');
-                            }
-                        });
+            // Open modal when read-more button is clicked
+            document.querySelectorAll('.read-more-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const card = this.closest('.pillar-card');
+                    const pillarType = card.dataset.pillar;
+                    const data = pillarData[pillarType];
+
+                    if (data) {
+                        modalTitle.textContent = data.title;
+                        modalImage.src = data.image;
+                        modalImage.alt = data.title;
+                        modalDescription.innerHTML = data.content;
+                        modalCta.textContent = data.cta;
+                        pillarModal.style.display = 'flex';
+                        document.body.style.overflow = 'hidden';
                     }
                 });
+            });
+
+            // Close modal
+            function closePillarModal() {
+                pillarModal.style.display = 'none';
+                document.body.style.overflow = '';
             }
 
-            // Initialize truncation
-            truncateText();
+            modalClose?.addEventListener('click', closePillarModal);
+            modalOverlay?.addEventListener('click', closePillarModal);
+
+            // Close on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && pillarModal.style.display === 'flex') {
+                    closePillarModal();
+                }
+            });
 
             // Footer background slideshow
             const footerBackgroundImages = [
@@ -5809,6 +6243,24 @@ unique.</p>
         <button class="ai-concierge-btn" id="aiConciergeBtn" aria-label="Launch LIV concierge - AI travel curator" data-open-liv>
             ✦
         </button>
+    </div>
+
+    <!-- Pillar Modal -->
+    <div id="pillarModal" class="pillar-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" style="display: none;">
+        <div class="pillar-modal-overlay"></div>
+        <div class="pillar-modal-container">
+            <button type="button" class="pillar-modal-close" aria-label="Close modal">&times;</button>
+            <div class="pillar-modal-content">
+                <div class="pillar-modal-media">
+                    <img id="modal-image" src="" alt="" loading="lazy">
+                </div>
+                <div class="pillar-modal-body">
+                    <h2 id="modal-title"></h2>
+                    <div id="modal-description"></div>
+                    <button type="button" class="pillar-cta" id="modal-cta" data-open-liv></button>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
