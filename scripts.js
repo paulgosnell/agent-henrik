@@ -1,7 +1,9 @@
+// Call lucide.createIcons() immediately since scripts are at bottom of HTML
+if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    window.lucide.createIcons();
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-            if (window.lucide && typeof window.lucide.createIcons === 'function') {
-                window.lucide.createIcons();
-            }
 
             // Theme Toggle Functionality
             const themeToggle = document.getElementById('themeToggle');
