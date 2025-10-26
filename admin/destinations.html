@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Destinations Management - Luxury Travel Sweden CMS</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin="" />
+
+  <!-- Admin CSS -->
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="admin-container">
+    <!-- Header -->
+    <header class="admin-header">
+      <div>
+        <h1>Destinations Management</h1>
+        <p>Manage destinations for Luxury Travel Sweden</p>
+      </div>
+      <div>
+        <button class="btn btn-secondary" onclick="window.location.href='/'">
+          View Site
+        </button>
+      </div>
+    </header>
+
+    <!-- Alert Container -->
+    <div id="alertContainer"></div>
+
+    <!-- Toolbar -->
+    <div class="admin-toolbar">
+      <div class="admin-toolbar-left">
+        <div class="search-box">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Search destinations..."
+            aria-label="Search destinations"
+          >
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" for="categoryFilter">Category:</label>
+          <select id="categoryFilter">
+            <option value="">All Categories</option>
+            <option value="city">City</option>
+            <option value="seaside">Seaside</option>
+            <option value="province">Province</option>
+            <option value="beach">Beach</option>
+            <option value="ski">Ski</option>
+            <option value="park">Park</option>
+            <option value="storyteller">Storyteller</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" for="statusFilter">Status:</label>
+          <select id="statusFilter">
+            <option value="all">All</option>
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
+          </select>
+        </div>
+      </div>
+      <div class="admin-toolbar-right">
+        <button class="btn btn-primary" onclick="openAddDestinationModal()">
+          <span>+</span>
+          Add New Destination
+        </button>
+      </div>
+    </div>
+
+    <!-- Destinations Table -->
+    <div id="destinationsContainer">
+      <!-- Loading state -->
+      <div id="loadingState" class="empty-state">
+        <div class="empty-state-icon">
+          <div class="loading" style="width: 60px; height: 60px; border-width: 6px;"></div>
+        </div>
+        <h3>Loading destinations...</h3>
+      </div>
+
+      <!-- Empty state -->
+      <div id="emptyState" class="empty-state hidden">
+        <div class="empty-state-icon">📍</div>
+        <h3>No destinations found</h3>
+        <p>Get started by adding your first destination</p>
+        <button class="btn btn-primary" onclick="openAddDestinationModal()">
+          <span>+</span>
+          Add Destination
+        </button>
+      </div>
+
+      <!-- Table -->
+      <div id="tableContainer" class="destinations-table hidden">
+        <table>
+          <thead>
+            <tr>
+              <th>Destination</th>
+              <th>Category</th>
+              <th>Themes</th>
+              <th>Seasons</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="destinationsTableBody">
+            <!-- Populated by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit/Add Destination Modal -->
+  <div id="destinationModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add New Destination</h2>
+        <button class="modal-close" onclick="closeDestinationModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="destinationForm">
+          <input type="hidden" id="destinationId">
+
+          <div class="form-grid">
+            <!-- Title -->
+            <div class="form-group">
+              <label class="form-label required" for="title">Title</label>
+              <input
+                type="text"
+                id="title"
+                class="form-input"
+                placeholder="e.g., Stockholm"
+                required
+              >
+            </div>
+
+            <!-- Slug -->
+            <div class="form-group">
+              <label class="form-label required" for="slug">Slug</label>
+              <input
+                type="text"
+                id="slug"
+                class="form-input"
+                placeholder="e.g., stockholm"
+                required
+              >
+              <span class="form-hint">Auto-generated from title, can be customized</span>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group full-width">
+              <label class="form-label required" for="description">Description</label>
+              <textarea
+                id="description"
+                class="form-textarea"
+                placeholder="Describe this destination..."
+                required
+              ></textarea>
+            </div>
+
+            <!-- Category -->
+            <div class="form-group">
+              <label class="form-label required" for="category">Category</label>
+              <select id="category" class="form-input" required>
+                <option value="">Select category</option>
+                <option value="city">City</option>
+                <option value="seaside">Seaside</option>
+                <option value="province">Province</option>
+                <option value="beach">Beach</option>
+                <option value="ski">Ski</option>
+                <option value="park">Park</option>
+                <option value="storyteller">Storyteller</option>
+              </select>
+            </div>
+
+            <!-- Published Toggle -->
+            <div class="form-group">
+              <label class="form-label" for="published">Published</label>
+              <label class="toggle-switch">
+                <input type="checkbox" id="published">
+                <span class="toggle-slider"></span>
+              </label>
+              <span class="form-hint">Make this destination visible on the site</span>
+            </div>
+
+            <!-- Image Upload -->
+            <div class="form-group full-width">
+              <label class="form-label" for="imageUpload">Image</label>
+              <div class="image-upload-area" id="imageUploadArea">
+                <input
+                  type="file"
+                  id="imageUpload"
+                  accept="image/*"
+                  style="display: none;"
+                  onchange="handleImageSelect(event)"
+                >
+                <div id="uploadPlaceholder" class="upload-placeholder">
+                  <div class="upload-icon">📷</div>
+                  <div class="upload-text">Click to upload or drag and drop</div>
+                  <div class="upload-hint">PNG, JPG, WebP up to 10MB</div>
+                </div>
+                <div id="imagePreviewContainer" class="image-preview-container hidden">
+                  <img id="imagePreview" class="image-preview" src="" alt="Preview">
+                  <button type="button" class="image-remove" onclick="removeImage()">Remove Image</button>
+                </div>
+              </div>
+              <div id="uploadProgress" class="upload-progress">
+                <div class="progress-bar">
+                  <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+                </div>
+                <div id="progressText" class="progress-text">Uploading...</div>
+              </div>
+              <input type="hidden" id="imageUrl">
+            </div>
+
+            <!-- Map Picker -->
+            <div class="form-group full-width">
+              <label class="form-label required">Location</label>
+              <div class="map-picker-container">
+                <div class="map-wrapper">
+                  <div id="map"></div>
+                </div>
+                <div class="coordinates-inputs">
+                  <div class="form-group">
+                    <label class="form-label required" for="latitude">Latitude</label>
+                    <input
+                      type="number"
+                      id="latitude"
+                      class="form-input"
+                      step="0.000001"
+                      min="-90"
+                      max="90"
+                      placeholder="62.0"
+                      required
+                    >
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label required" for="longitude">Longitude</label>
+                    <input
+                      type="number"
+                      id="longitude"
+                      class="form-input"
+                      step="0.000001"
+                      min="-180"
+                      max="180"
+                      placeholder="15.0"
+                      required
+                    >
+                  </div>
+                </div>
+                <span class="form-hint">Click on the map to set the destination location, or enter coordinates manually</span>
+              </div>
+            </div>
+
+            <!-- Themes -->
+            <div class="form-group full-width">
+              <label class="form-label">Themes</label>
+              <div id="themesCheckboxes" class="checkbox-group">
+                <!-- Populated by JavaScript -->
+              </div>
+            </div>
+
+            <!-- Seasons -->
+            <div class="form-group full-width">
+              <label class="form-label">Seasons</label>
+              <div class="checkbox-group">
+                <div class="checkbox-item">
+                  <input type="checkbox" id="seasonSpring" value="Spring">
+                  <label for="seasonSpring">Spring</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="seasonSummer" value="Summer">
+                  <label for="seasonSummer">Summer</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="seasonAutumn" value="Autumn">
+                  <label for="seasonAutumn">Autumn</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="seasonWinter" value="Winter">
+                  <label for="seasonWinter">Winter</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeDestinationModal()">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-success" onclick="saveDestination(event)" id="saveBtn">
+          <span id="saveBtnText">Save Destination</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal">
+    <div class="modal-content confirm-dialog">
+      <div class="modal-body">
+        <div class="confirm-icon danger">⚠️</div>
+        <h3 class="confirm-title">Delete Destination?</h3>
+        <p class="confirm-message">
+          Are you sure you want to delete "<span id="deleteDestinationName"></span>"?
+          This action cannot be undone.
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
+          <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+          <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
+
+  <!-- Supabase Client -->
+  <script src="../supabase-client.js"></script>
+
+  <!-- Map Picker Component -->
+  <script src="components/map-picker.js"></script>
+
+  <!-- Main Application Script -->
+  <script>
+    // ==========================================
+    // STATE
+    // ==========================================
+    let destinations = [];
+    let themes = [];
+    let filteredDestinations = [];
+    let mapPicker = null;
+    let currentDestination = null;
+    let deleteDestinationId = null;
+    let currentImageFile = null;
+    let existingImageUrl = null;
+
+    // ==========================================
+    // INITIALIZATION
+    // ==========================================
+    async function init() {
+      try {
+        // Check if Supabase is configured
+        if (!window.Supabase.isConfigured()) {
+          showAlert('error', 'Supabase is not configured. Please update your credentials in supabase-client.js');
+          return;
+        }
+
+        // Load data
+        await Promise.all([
+          loadDestinations(),
+          loadThemes()
+        ]);
+
+        // Setup event listeners
+        setupEventListeners();
+
+        console.log('Admin panel initialized successfully');
+      } catch (error) {
+        console.error('Initialization error:', error);
+        showAlert('error', 'Failed to initialize admin panel: ' + error.message);
+      }
+    }
+
+    // ==========================================
+    // DATA LOADING
+    // ==========================================
+    async function loadDestinations() {
+      try {
+        showLoading();
+        destinations = await window.Supabase.db.getDestinations(true); // Include unpublished
+        filteredDestinations = [...destinations];
+        renderDestinations();
+      } catch (error) {
+        console.error('Error loading destinations:', error);
+        showAlert('error', 'Failed to load destinations: ' + error.message);
+        showEmpty();
+      }
+    }
+
+    async function loadThemes() {
+      try {
+        themes = await window.Supabase.db.getThemes();
+        renderThemesCheckboxes();
+      } catch (error) {
+        console.error('Error loading themes:', error);
+        showAlert('error', 'Failed to load themes: ' + error.message);
+      }
+    }
+
+    // ==========================================
+    // RENDERING
+    // ==========================================
+    function renderDestinations() {
+      const tbody = document.getElementById('destinationsTableBody');
+      const tableContainer = document.getElementById('tableContainer');
+      const emptyState = document.getElementById('emptyState');
+      const loadingState = document.getElementById('loadingState');
+
+      loadingState.classList.add('hidden');
+
+      if (filteredDestinations.length === 0) {
+        tableContainer.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      tableContainer.classList.remove('hidden');
+
+      tbody.innerHTML = filteredDestinations.map(dest => `
+        <tr onclick="editDestination('${dest.id}')">
+          <td>
+            <div class="destination-preview">
+              <img
+                src="${dest.image_url || 'https://via.placeholder.com/60'}"
+                alt="${dest.title}"
+                class="destination-image"
+              >
+              <div class="destination-info">
+                <h3>${dest.title}</h3>
+                <p>${dest.slug}</p>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span class="badge badge-category">${dest.category}</span>
+          </td>
+          <td>
+            <div class="tags">
+              ${dest.themes && dest.themes.length > 0
+                ? dest.themes.slice(0, 3).map(t => `<span class="tag">${t.label}</span>`).join('')
+                : '<span class="text-muted">No themes</span>'
+              }
+              ${dest.themes && dest.themes.length > 3
+                ? `<span class="tag">+${dest.themes.length - 3} more</span>`
+                : ''
+              }
+            </div>
+          </td>
+          <td>
+            <div class="tags">
+              ${dest.seasons && dest.seasons.length > 0
+                ? dest.seasons.map(s => `<span class="tag">${s}</span>`).join('')
+                : '<span class="text-muted">All seasons</span>'
+              }
+            </div>
+          </td>
+          <td>
+            <span class="badge ${dest.published ? 'badge-published' : 'badge-draft'}">
+              ${dest.published ? 'Published' : 'Draft'}
+            </span>
+          </td>
+          <td>
+            <div class="action-buttons" onclick="event.stopPropagation()">
+              <button
+                class="action-btn action-btn-edit"
+                onclick="editDestination('${dest.id}')"
+                title="Edit"
+              >✏️</button>
+              <button
+                class="action-btn action-btn-delete"
+                onclick="deleteDestination('${dest.id}', '${dest.title}')"
+                title="Delete"
+              >🗑️</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderThemesCheckboxes() {
+      const container = document.getElementById('themesCheckboxes');
+
+      if (themes.length === 0) {
+        container.innerHTML = '<p class="text-muted">No themes available</p>';
+        return;
+      }
+
+      container.innerHTML = themes.map(theme => `
+        <div class="checkbox-item">
+          <input type="checkbox" id="theme-${theme.id}" value="${theme.id}">
+          <label for="theme-${theme.id}">${theme.label}</label>
+        </div>
+      `).join('');
+    }
+
+    // ==========================================
+    // FILTERING & SEARCH
+    // ==========================================
+    function applyFilters() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const categoryFilter = document.getElementById('categoryFilter').value;
+      const statusFilter = document.getElementById('statusFilter').value;
+
+      filteredDestinations = destinations.filter(dest => {
+        // Search filter
+        const matchesSearch = !searchTerm ||
+          dest.title.toLowerCase().includes(searchTerm) ||
+          dest.description.toLowerCase().includes(searchTerm) ||
+          dest.slug.toLowerCase().includes(searchTerm);
+
+        // Category filter
+        const matchesCategory = !categoryFilter || dest.category === categoryFilter;
+
+        // Status filter
+        const matchesStatus = statusFilter === 'all' ||
+          (statusFilter === 'published' && dest.published) ||
+          (statusFilter === 'draft' && !dest.published);
+
+        return matchesSearch && matchesCategory && matchesStatus;
+      });
+
+      renderDestinations();
+    }
+
+    // ==========================================
+    // MODAL MANAGEMENT
+    // ==========================================
+    function openAddDestinationModal() {
+      currentDestination = null;
+      document.getElementById('modalTitle').textContent = 'Add New Destination';
+      document.getElementById('destinationForm').reset();
+      document.getElementById('destinationId').value = '';
+
+      // Reset image
+      currentImageFile = null;
+      existingImageUrl = null;
+      document.getElementById('imageUrl').value = '';
+      document.getElementById('uploadPlaceholder').classList.remove('hidden');
+      document.getElementById('imagePreviewContainer').classList.add('hidden');
+      document.getElementById('imageUploadArea').classList.remove('has-image');
+
+      // Open modal
+      document.getElementById('destinationModal').classList.add('active');
+
+      // Initialize map after modal is visible
+      setTimeout(() => {
+        initMap(62.0, 15.0);
+      }, 100);
+    }
+
+    function closeDestinationModal() {
+      document.getElementById('destinationModal').classList.remove('active');
+
+      // Destroy map
+      if (mapPicker) {
+        mapPicker.destroy();
+        mapPicker = null;
+      }
+    }
+
+    function editDestination(id) {
+      currentDestination = destinations.find(d => d.id === id);
+      if (!currentDestination) return;
+
+      document.getElementById('modalTitle').textContent = 'Edit Destination';
+      document.getElementById('destinationId').value = currentDestination.id;
+      document.getElementById('title').value = currentDestination.title;
+      document.getElementById('slug').value = currentDestination.slug;
+      document.getElementById('description').value = currentDestination.description;
+      document.getElementById('category').value = currentDestination.category;
+      document.getElementById('published').checked = currentDestination.published;
+      document.getElementById('latitude').value = currentDestination.latitude;
+      document.getElementById('longitude').value = currentDestination.longitude;
+
+      // Set image
+      if (currentDestination.image_url) {
+        existingImageUrl = currentDestination.image_url;
+        document.getElementById('imageUrl').value = currentDestination.image_url;
+        document.getElementById('imagePreview').src = currentDestination.image_url;
+        document.getElementById('uploadPlaceholder').classList.add('hidden');
+        document.getElementById('imagePreviewContainer').classList.remove('hidden');
+        document.getElementById('imageUploadArea').classList.add('has-image');
+      }
+
+      // Set themes
+      themes.forEach(theme => {
+        const checkbox = document.getElementById(`theme-${theme.id}`);
+        if (checkbox) {
+          checkbox.checked = currentDestination.theme_ids && currentDestination.theme_ids.includes(theme.id);
+        }
+      });
+
+      // Set seasons
+      const seasons = ['Spring', 'Summer', 'Autumn', 'Winter'];
+      seasons.forEach(season => {
+        const checkbox = document.getElementById(`season${season}`);
+        if (checkbox) {
+          checkbox.checked = currentDestination.seasons && currentDestination.seasons.includes(season);
+        }
+      });
+
+      // Open modal
+      document.getElementById('destinationModal').classList.add('active');
+
+      // Initialize map with destination coordinates
+      setTimeout(() => {
+        initMap(currentDestination.latitude, currentDestination.longitude);
+      }, 100);
+    }
+
+    function deleteDestination(id, name) {
+      deleteDestinationId = id;
+      document.getElementById('deleteDestinationName').textContent = name;
+      document.getElementById('deleteModal').classList.add('active');
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').classList.remove('active');
+      deleteDestinationId = null;
+    }
+
+    async function confirmDelete() {
+      if (!deleteDestinationId) return;
+
+      try {
+        await window.Supabase.db.deleteDestination(deleteDestinationId);
+        showAlert('success', 'Destination deleted successfully');
+        closeDeleteModal();
+        await loadDestinations();
+      } catch (error) {
+        console.error('Error deleting destination:', error);
+        showAlert('error', 'Failed to delete destination: ' + error.message);
+      }
+    }
+
+    // ==========================================
+    // MAP MANAGEMENT
+    // ==========================================
+    function initMap(lat, lng) {
+      // Destroy existing map
+      if (mapPicker) {
+        mapPicker.destroy();
+      }
+
+      // Create new map
+      mapPicker = new MapPicker();
+      mapPicker.init('map', lat, lng);
+
+      // Bind to coordinate inputs
+      const latInput = document.getElementById('latitude');
+      const lngInput = document.getElementById('longitude');
+      mapPicker.bindInputs(latInput, lngInput);
+
+      // Refresh map display
+      mapPicker.refresh();
+    }
+
+    // ==========================================
+    // IMAGE UPLOAD
+    // ==========================================
+    function setupImageUpload() {
+      const uploadArea = document.getElementById('imageUploadArea');
+      const fileInput = document.getElementById('imageUpload');
+
+      // Click to upload
+      uploadArea.addEventListener('click', (e) => {
+        if (e.target.classList.contains('image-remove')) return;
+        fileInput.click();
+      });
+
+      // Drag and drop
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('drag-over');
+      });
+
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('drag-over');
+      });
+
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('drag-over');
+
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          handleImageFile(files[0]);
+        }
+      });
+    }
+
+    function handleImageSelect(event) {
+      const file = event.target.files[0];
+      if (file) {
+        handleImageFile(file);
+      }
+    }
+
+    function handleImageFile(file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        showAlert('error', 'Please select an image file');
+        return;
+      }
+
+      // Validate file size (10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        showAlert('error', 'Image size must be less than 10MB');
+        return;
+      }
+
+      currentImageFile = file;
+
+      // Show preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById('imagePreview').src = e.target.result;
+        document.getElementById('uploadPlaceholder').classList.add('hidden');
+        document.getElementById('imagePreviewContainer').classList.remove('hidden');
+        document.getElementById('imageUploadArea').classList.add('has-image');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeImage() {
+      currentImageFile = null;
+      existingImageUrl = null;
+      document.getElementById('imageUrl').value = '';
+      document.getElementById('imageUpload').value = '';
+      document.getElementById('uploadPlaceholder').classList.remove('hidden');
+      document.getElementById('imagePreviewContainer').classList.add('hidden');
+      document.getElementById('imageUploadArea').classList.remove('has-image');
+    }
+
+    async function uploadImage() {
+      if (!currentImageFile) {
+        return existingImageUrl || null;
+      }
+
+      const progressDiv = document.getElementById('uploadProgress');
+      const progressFill = document.getElementById('progressFill');
+      const progressText = document.getElementById('progressText');
+
+      try {
+        progressDiv.classList.add('active');
+        progressFill.style.width = '0%';
+        progressText.textContent = 'Uploading...';
+
+        // Simulate progress (Supabase doesn't provide upload progress)
+        const progressInterval = setInterval(() => {
+          const currentWidth = parseInt(progressFill.style.width) || 0;
+          if (currentWidth < 90) {
+            progressFill.style.width = (currentWidth + 10) + '%';
+          }
+        }, 200);
+
+        const result = await window.Supabase.storage.uploadFile(currentImageFile);
+
+        clearInterval(progressInterval);
+        progressFill.style.width = '100%';
+        progressText.textContent = 'Upload complete!';
+
+        setTimeout(() => {
+          progressDiv.classList.remove('active');
+        }, 1000);
+
+        return result.url;
+      } catch (error) {
+        progressDiv.classList.remove('active');
+        throw error;
+      }
+    }
+
+    // ==========================================
+    // SAVE DESTINATION
+    // ==========================================
+    async function saveDestination(event) {
+      event.preventDefault();
+
+      const saveBtn = document.getElementById('saveBtn');
+      const saveBtnText = document.getElementById('saveBtnText');
+      const originalText = saveBtnText.textContent;
+
+      try {
+        // Disable button
+        saveBtn.disabled = true;
+        saveBtnText.innerHTML = '<div class="loading"></div> Saving...';
+
+        // Get form data
+        const id = document.getElementById('destinationId').value;
+        const title = document.getElementById('title').value.trim();
+        const slug = document.getElementById('slug').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const category = document.getElementById('category').value;
+        const published = document.getElementById('published').checked;
+        const latitude = parseFloat(document.getElementById('latitude').value);
+        const longitude = parseFloat(document.getElementById('longitude').value);
+
+        // Validate
+        if (!title || !slug || !description || !category) {
+          showAlert('error', 'Please fill in all required fields');
+          return;
+        }
+
+        if (isNaN(latitude) || isNaN(longitude)) {
+          showAlert('error', 'Please select a valid location on the map');
+          return;
+        }
+
+        // Get selected themes
+        const themeIds = themes
+          .filter(theme => document.getElementById(`theme-${theme.id}`)?.checked)
+          .map(theme => theme.id);
+
+        // Get selected seasons
+        const seasons = ['Spring', 'Summer', 'Autumn', 'Winter']
+          .filter(season => document.getElementById(`season${season}`)?.checked);
+
+        // Upload image if new one selected
+        let imageUrl = existingImageUrl;
+        if (currentImageFile) {
+          imageUrl = await uploadImage();
+        }
+
+        // Prepare data
+        const destinationData = {
+          title,
+          slug,
+          description,
+          category,
+          published,
+          latitude,
+          longitude,
+          image_url: imageUrl,
+          theme_ids: themeIds,
+          seasons: seasons
+        };
+
+        // Save to database
+        if (id) {
+          await window.Supabase.db.updateDestination(id, destinationData);
+          showAlert('success', 'Destination updated successfully');
+        } else {
+          await window.Supabase.db.createDestination(destinationData);
+          showAlert('success', 'Destination created successfully');
+        }
+
+        // Close modal and refresh
+        closeDestinationModal();
+        await loadDestinations();
+
+      } catch (error) {
+        console.error('Error saving destination:', error);
+        showAlert('error', 'Failed to save destination: ' + error.message);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtnText.textContent = originalText;
+      }
+    }
+
+    // ==========================================
+    // UTILITY FUNCTIONS
+    // ==========================================
+    function generateSlug(title) {
+      return title
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/--+/g, '-')
+        .trim();
+    }
+
+    function showAlert(type, message) {
+      const container = document.getElementById('alertContainer');
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.innerHTML = `
+        <span>${type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ'}</span>
+        <span>${message}</span>
+      `;
+
+      container.appendChild(alert);
+
+      setTimeout(() => {
+        alert.remove();
+      }, 5000);
+    }
+
+    function showLoading() {
+      document.getElementById('loadingState').classList.remove('hidden');
+      document.getElementById('tableContainer').classList.add('hidden');
+      document.getElementById('emptyState').classList.add('hidden');
+    }
+
+    function showEmpty() {
+      document.getElementById('loadingState').classList.add('hidden');
+      document.getElementById('tableContainer').classList.add('hidden');
+      document.getElementById('emptyState').classList.remove('hidden');
+    }
+
+    // ==========================================
+    // EVENT LISTENERS
+    // ==========================================
+    function setupEventListeners() {
+      // Search and filters
+      document.getElementById('searchInput').addEventListener('input', applyFilters);
+      document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+      document.getElementById('statusFilter').addEventListener('change', applyFilters);
+
+      // Auto-generate slug from title
+      document.getElementById('title').addEventListener('input', (e) => {
+        if (!document.getElementById('destinationId').value) {
+          document.getElementById('slug').value = generateSlug(e.target.value);
+        }
+      });
+
+      // Image upload
+      setupImageUpload();
+
+      // Close modal on outside click
+      document.getElementById('destinationModal').addEventListener('click', (e) => {
+        if (e.target.id === 'destinationModal') {
+          closeDestinationModal();
+        }
+      });
+
+      document.getElementById('deleteModal').addEventListener('click', (e) => {
+        if (e.target.id === 'deleteModal') {
+          closeDeleteModal();
+        }
+      });
+
+      // Keyboard shortcuts
+      document.addEventListener('keydown', (e) => {
+        // ESC to close modal
+        if (e.key === 'Escape') {
+          closeDestinationModal();
+          closeDeleteModal();
+        }
+      });
+    }
+
+    // ==========================================
+    // START APPLICATION
+    // ==========================================
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

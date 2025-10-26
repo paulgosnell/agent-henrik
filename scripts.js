@@ -848,7 +848,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            const destinationData = {
+            // Fallback destination data - will be overwritten by Supabase data when available
+            let destinationData = {
                 stockholm: {
                     title: 'Stockholm',
                     description: 'Sweden\'s capital blends royal heritage, innovative design, and vibrant cultural scenes. Explore after-hours palace access, Michelin dining, and Stockholm\'s creative underground.',
@@ -1036,9 +1037,19 @@ document.addEventListener('DOMContentLoaded', function() {
             // Initialize Leaflet Map with OpenStreetMap (Free!) - Only if map container exists
             const mapContainer = document.getElementById('map');
             if (mapContainer) {
-                console.log('Initializing Leaflet map...');
+                console.log('Waiting for Supabase data to load...');
+
+                // Function to initialize the map
+                function initializeMap() {
+                    console.log('Initializing Leaflet map...');
 
             try {
+                // Hide loading indicator
+                const loadingIndicator = document.getElementById('mapLoadingIndicator');
+                if (loadingIndicator) {
+                    loadingIndicator.style.display = 'none';
+                }
+
                 // Check if map is already initialized and remove it
                 if (mapContainer._leaflet_id) {
                     console.log('Map already initialized, removing old instance');
@@ -1318,6 +1329,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
             } // End of if (map) check - map successfully initialized
+            } // End of initializeMap function
+
+            // Listen for Supabase data loaded event
+            window.addEventListener('supabaseDataLoaded', (event) => {
+                console.log('Supabase data loaded event received');
+                const { destinations, themes } = event.detail;
+                console.log(`Loaded ${destinations.length} destinations and ${themes.length} themes from Supabase`);
+
+                // Update local reference to point to the global data
+                destinationData = window.destinationData || destinationData;
+
+                console.log('Using destinationData with', Object.keys(destinationData).length, 'destinations');
+
+                // Data is already populated in window.destinationData and window.LIV_THEME_LIBRARY
+                // by supabase-client.js, so we just need to initialize the map
+                initializeMap();
+            });
+
+            // Error handling if Supabase fails
+            window.addEventListener('supabaseDataError', (event) => {
+                console.error('Failed to load data from Supabase:', event.detail?.error);
+                const loadingIndicator = document.getElementById('mapLoadingIndicator');
+                if (loadingIndicator) {
+                    loadingIndicator.innerHTML = '<div class="spinner"></div><p>Unable to load destinations. Please refresh the page.</p>';
+                }
+            });
+
             } // End of map container check
 
             // Pillar Modal Functionality

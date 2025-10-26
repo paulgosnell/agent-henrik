@@ -1508,6 +1508,55 @@
             z-index: 1;
         }
 
+        /* Map Loading Indicator */
+        .map-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            background: rgba(15, 17, 20, 0.95);
+            padding: 2.5rem 3rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        .map-loading p {
+            color: var(--color-text);
+            font-size: 1rem;
+            margin: 0;
+            text-align: center;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top-color: var(--color-text);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        [data-theme="light"] .map-loading {
+            background: rgba(248, 249, 250, 0.95);
+        }
+
+        [data-theme="light"] .spinner {
+            border: 3px solid rgba(0, 0, 0, 0.2);
+            border-top-color: var(--color-text);
+        }
+
         .map-overlay-card {
             position: absolute;
             top: 20px;
@@ -3987,3 +4036,268 @@
                 height: 200px;
             }
         }
+
+/* ==========================================
+   INLINE EDITOR STYLES
+   ========================================== */
+
+/* Editable elements in edit mode */
+.editable-active {
+    outline: 2px dashed #4a9eff;
+    outline-offset: 4px;
+    cursor: text;
+    transition: outline 0.2s ease, background 0.2s ease;
+    position: relative;
+    border-radius: 4px;
+}
+
+.editable-active:hover {
+    outline-color: #2d7fd8;
+    background: rgba(74, 158, 255, 0.05);
+}
+
+.editable-active.changed {
+    outline-color: #f59e0b;
+    outline-style: solid;
+}
+
+.editable-active.changed:hover {
+    background: rgba(245, 158, 11, 0.05);
+}
+
+/* Light theme adjustments */
+[data-theme="light"] .editable-active {
+    outline-color: #3b82f6;
+}
+
+[data-theme="light"] .editable-active:hover {
+    outline-color: #2563eb;
+    background: rgba(59, 130, 246, 0.08);
+}
+
+[data-theme="light"] .editable-active.changed {
+    outline-color: #f59e0b;
+}
+
+[data-theme="light"] .editable-active.changed:hover {
+    background: rgba(245, 158, 11, 0.08);
+}
+
+/* Edit mode toggle button */
+.edit-mode-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    padding: 12px 24px;
+    background: #1a1a1a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-family: var(--font-sans);
+}
+
+.edit-mode-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.edit-mode-btn.active {
+    background: #10b981;
+}
+
+.edit-mode-btn .edit-mode-icon {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.edit-mode-btn .edit-mode-text {
+    line-height: 1;
+}
+
+/* Light theme button */
+[data-theme="light"] .edit-mode-btn {
+    background: #2d3748;
+    color: white;
+}
+
+[data-theme="light"] .edit-mode-btn.active {
+    background: #10b981;
+}
+
+/* Save changes button */
+.save-changes-btn {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    z-index: 9999;
+    padding: 12px 24px;
+    background: #10b981;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-family: var(--font-sans);
+}
+
+.save-changes-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+    background: #059669;
+}
+
+.save-changes-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.save-changes-btn.has-changes {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.save-changes-btn.saving {
+    background: #6b7280;
+}
+
+.save-changes-btn .save-icon {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.save-changes-btn .save-text {
+    line-height: 1;
+}
+
+/* Pulse animation for save button */
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    50% {
+        box-shadow: 0 4px 20px rgba(16, 185, 129, 0.6);
+    }
+}
+
+/* Notification styles */
+.editor-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    padding: 16px 24px;
+    background: white;
+    color: #1a1a1a;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    transform: translateX(400px);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.editor-notification.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.editor-notification-success {
+    background: #10b981;
+    color: white;
+}
+
+.editor-notification-error {
+    background: #ef4444;
+    color: white;
+}
+
+.editor-notification-info {
+    background: #3b82f6;
+    color: white;
+}
+
+.editor-notification .notification-icon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.editor-notification .notification-message {
+    line-height: 1.4;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .edit-mode-btn,
+    .save-changes-btn {
+        bottom: 80px;
+        right: 10px;
+        padding: 10px 18px;
+        font-size: 13px;
+    }
+
+    .save-changes-btn {
+        bottom: 140px;
+    }
+
+    .editor-notification {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: calc(100vw - 20px);
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .edit-mode-btn .edit-mode-text,
+    .save-changes-btn .save-text {
+        display: none;
+    }
+
+    .edit-mode-btn,
+    .save-changes-btn {
+        width: 48px;
+        height: 48px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 50%;
+    }
+
+    .edit-mode-btn .edit-mode-icon,
+    .save-changes-btn .save-icon {
+        font-size: 20px;
+    }
+}
+
+/* Ensure editable elements don't interfere with layout */
+[data-editable] {
+    min-height: 1em;
+}
+
+/* Prevent outline from being cut off */
+section,
+.section-inner,
+.hero-content,
+.footer-content {
+    overflow: visible;
+}

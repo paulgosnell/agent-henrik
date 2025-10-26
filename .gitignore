@@ -1,0 +1,22 @@
+# Environment variables (Contentful credentials)
+.env
+.env.local
+.env.production
+
+# Node modules (if you add build tools later)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# OS files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Contentful credentials backup
+contentful-credentials.txt
+
+# Build output (if you add build tools later)
+dist/
+build/

@@ -4061,15 +4061,15 @@
 
         <div class="hero-content" id="heroContent">
             <h1 class="hero-title">
-                <span class="line">Sweden, Composed For You</span>
-                <span class="line">Curated by Insiders</span>
+                <span class="line" data-editable="hero.headline.line1">Sweden, Composed For You</span>
+                <span class="line" data-editable="hero.headline.line2">Curated by Insiders</span>
             </h1>
         </div>
 
         <div class="hero-actions">
-            <a href="#map" class="hero-cta">START EXPLORE</a>
-            <button type="button" class="hero-cta" data-open-liv data-liv-context-type="general" data-liv-context-name="Hero">DESIGN MY JOURNEY WITH LIV</button>
-            <a href="#choose-path" class="hero-cta">ENTER THE EXPERIENCE</a>
+            <a href="#map" class="hero-cta" data-editable="hero.cta.explore">START EXPLORE</a>
+            <button type="button" class="hero-cta" data-open-liv data-liv-context-type="general" data-liv-context-name="Hero" data-editable="hero.cta.design">DESIGN MY JOURNEY WITH LIV</button>
+            <a href="#choose-path" class="hero-cta" data-editable="hero.cta.enter">ENTER THE EXPERIENCE</a>
         </div>
     </div>
 
@@ -4077,9 +4077,9 @@
         <section class="section map-section">
             <div class="section-inner">
                 <div class="section-heading">
-                    <span class="eyebrow">Explore Sweden & Beyond</span>
-                    <h2>Tap a destination to discover your journey</h2>
-                    <p>Tap a destination to explore a region, city, place or hidden gem. Whether you're drawn to Stockholm's history, Lapland's auroras, or the archipelago's private islands, each pin opens the gateway to your journey with help of LIV.</p>
+                    <span class="eyebrow" data-editable="map.eyebrow">Explore Sweden & Beyond</span>
+                    <h2 data-editable="map.headline">Tap a destination to discover your journey</h2>
+                    <p data-editable="map.description">Tap a destination to explore a region, city, place or hidden gem. Whether you're drawn to Stockholm's history, Lapland's auroras, or the archipelago's private islands, each pin opens the gateway to your journey with help of LIV.</p>
                 </div>
 
                 <!-- Map Filters -->
@@ -4114,6 +4114,12 @@
                 <div class="map-wrapper">
                     <div id="map" class="interactive-map-container"></div>
 
+                    <!-- Loading Indicator -->
+                    <div id="mapLoadingIndicator" class="map-loading" style="display: flex;">
+                        <div class="spinner"></div>
+                        <p>Loading destinations from database...</p>
+                    </div>
+
                     <!-- Map Overlay Card -->
                     <div class="map-overlay-card" id="mapOverlayCard" style="display: none;">
                         <button class="map-card-close" id="mapCardClose" aria-label="Close destination card">×</button>
@@ -4138,9 +4144,9 @@
         <section class="section" id="journeys">
             <div class="section-inner">
                 <div class="section-heading">
-                    <span class="eyebrow">Experiences</span>
-                    <h2>Six pillars to compose your narrative.</h2>
-                    <p>For discerning travelers who want more than a holiday — who want to step into Sweden's soul. Our journeys are cinematic narratives, curated with exclusive access, emotional storytelling, and ultra-luxury comfort.</p>
+                    <span class="eyebrow" data-editable="pillars.eyebrow">Experiences</span>
+                    <h2 data-editable="pillars.headline">Six pillars to compose your narrative.</h2>
+                    <p data-editable="pillars.description">For discerning travelers who want more than a holiday — who want to step into Sweden's soul. Our journeys are cinematic narratives, curated with exclusive access, emotional storytelling, and ultra-luxury comfort.</p>
                 </div>
                 <div class="pillars-grid">
                     <article class="pillar-card" data-pillar="nature">
@@ -4255,9 +4261,9 @@ unique.</p>
         <section class="section" id="corporate">
             <div class="section-inner">
                 <div class="section-heading">
-                    <span class="eyebrow">Corporate & Incentives</span>
-                    <h2>Create experiences that move the company culture forward</h2>
-                    <p>Sweden is not only a destination — it is a stage for creativity, inspiration, and transformation. We design corporate journeys that reward, engage, and inspire through experiences no traditional DMC can offer.</p>
+                    <span class="eyebrow" data-editable="corporate.eyebrow">Corporate & Incentives</span>
+                    <h2 data-editable="corporate.headline">Create experiences that move the company culture forward</h2>
+                    <p data-editable="corporate.description">Sweden is not only a destination — it is a stage for creativity, inspiration, and transformation. We design corporate journeys that reward, engage, and inspire through experiences no traditional DMC can offer.</p>
                 </div>
 
                 <div class="pillars-grid">
@@ -4357,11 +4363,11 @@ unique.</p>
         <section class="section" id="storytellers">
             <div class="section-inner">
                 <div class="section-heading">
-                    <span class="eyebrow">Featured Storytellers</span>
-                    <h2>Experience Sweden Beyond the Ordinary</h2>
-                    <p>Led by local storytellers — from Sami elders and Michelin chefs to artists, designers, and innovators — each encounter offers an authentic glimpse into Swedish life, culture, and creativity. Whether you travel solo or with others, our curated experiences, workshops, and destinations promise meaningful connections and stories that stay with you long after the journey ends.</p>
+                    <span class="eyebrow" data-editable="stories.eyebrow">Featured Storytellers</span>
+                    <h2 data-editable="stories.headline">Experience Sweden Beyond the Ordinary</h2>
+                    <p data-editable="stories.description">Led by local storytellers — from Sami elders and Michelin chefs to artists, designers, and innovators — each encounter offers an authentic glimpse into Swedish life, culture, and creativity. Whether you travel solo or with others, our curated experiences, workshops, and destinations promise meaningful connections and stories that stay with you long after the journey ends.</p>
                     <br />
-                    <p>You need inspiration? Take a peek at our curated selection of storytellers, destinations, workshops, and businesses for eventful, meaningful trips.</p>
+                    <p data-editable="stories.subheadline">You need inspiration? Take a peek at our curated selection of storytellers, destinations, workshops, and businesses for eventful, meaningful trips.</p>
                 </div>
 
                 <div class="stories-grid">
@@ -4407,9 +4413,9 @@ unique.</p>
             <div class="section-inner">
                 <div class="dual-columns">
                     <div class="headline-block">
-                        <span class="eyebrow">CONCIERGE</span>
-                        <h3>Meet LIV — Luxury Itinerary Visionary.</h3>
-                        <p>Embedded across the experience, LIV begins your dialogue, sketches the first draft of your itinerary, and invites you to pass the narrative to our human curators for refinement.</p>
+                        <span class="eyebrow" data-editable="concierge.eyebrow">CONCIERGE</span>
+                        <h3 data-editable="concierge.headline">Meet LIV — Luxury Itinerary Visionary.</h3>
+                        <p data-editable="concierge.description">Embedded across the experience, LIV begins your dialogue, sketches the first draft of your itinerary, and invites you to pass the narrative to our human curators for refinement.</p>
                         <div class="cta-group" style="margin-top:2rem;">
                             <a href="#" class="primary" data-open-liv data-liv-context-type="general" data-liv-context-name="LIV Concierge">Design with LIV</a>
                             <a href="#contact">Talk to us</a>
@@ -4451,9 +4457,9 @@ unique.</p>
         <section class="section" id="stories">
             <div class="section-inner">
                 <div class="section-heading">
-                    <span class="eyebrow">Journal</span>
-                    <h2>Editorial previews from the Journal.</h2>
-                    <p>Editorial previews from our latest scoops.</p>
+                    <span class="eyebrow" data-editable="journal.eyebrow">Journal</span>
+                    <h2 data-editable="journal.headline">Editorial previews from the Journal.</h2>
+                    <p data-editable="journal.description">Editorial previews from our latest scoops.</p>
                 </div>
                 <div class="stories-grid">
                     <article class="story-card" data-story="lapland" aria-label="Lapland Midnight Solstice">
@@ -4484,9 +4490,9 @@ unique.</p>
         <section class="section" id="press">
             <div class="section-inner">
                 <div class="section-heading">
-                    <span class="eyebrow">Press &amp; Media</span>
-                    <h2>What Media Says About Us</h2>
-                    <p>Our work has been recognized by the world's leading voices in luxury and travel.</p>
+                    <span class="eyebrow" data-editable="press.eyebrow">Press &amp; Media</span>
+                    <h2 data-editable="press.headline">What Media Says About Us</h2>
+                    <p data-editable="press.description">Our work has been recognized by the world's leading voices in luxury and travel.</p>
                 </div>
                 <div class="press-strip" role="list">
                     <span role="listitem">Monocle</span>
@@ -4502,9 +4508,9 @@ unique.</p>
         <section class="section" id="instagram">
             <div class="section-inner">
                 <div class="section-heading">
-                    <span class="eyebrow">Follow Our Discoveries</span>
-                    <h2>@LuxuryTravelSweden</h2>
-                    <p><a href="https://www.instagram.com/LuxuryTravelSweden/" target="_blank" rel="noopener noreferrer">Follow us on Instagram</a></p>
+                    <span class="eyebrow" data-editable="instagram.eyebrow">Follow Our Discoveries</span>
+                    <h2 data-editable="instagram.headline">@LuxuryTravelSweden</h2>
+                    <p data-editable="instagram.description"><a href="https://www.instagram.com/LuxuryTravelSweden/" target="_blank" rel="noopener noreferrer">Follow us on Instagram</a></p>
                 </div>
                 <div class="instagram-grid">
                     <div class="instagram-card">
@@ -4607,9 +4613,9 @@ unique.</p>
             <div class="section-inner">
                 <div class="contact-cta">
                     <div>
-                        <span class="eyebrow">CONTACT</span>
-                        <h3>Ready to create your Swedish adventure?</h3>
-                        <p>Share your ambitions and we will reply within 24 hours with the next steps, schedule a call, or deliver a curated dossier. Every enquiry is handled by a personal curator, who will design a bespoke narrative just for you.</p>
+                        <span class="eyebrow" data-editable="contact.eyebrow">CONTACT</span>
+                        <h3 data-editable="contact.headline">Ready to create your Swedish adventure?</h3>
+                        <p data-editable="contact.description">Share your ambitions and we will reply within 24 hours with the next steps, schedule a call, or deliver a curated dossier. Every enquiry is handled by a personal curator, who will design a bespoke narrative just for you.</p>
                     </div>
                     <div class="cta-group">
                         <a href="#" class="primary" data-open-enquiry="fit">Design My Journey</a>
@@ -4736,8 +4742,8 @@ unique.</p>
 
             <!-- Newsletter Column -->
             <div class="footer-column">
-                <h3 class="footer-column-title">Stay Inspired</h3>
-                <p style="color: rgba(255, 255, 255, 0.65); font-size: 0.9rem; margin-bottom: 0.5rem; line-height: 1.6;">
+                <h3 class="footer-column-title" data-editable="footer.newsletter.title">Stay Inspired</h3>
+                <p style="color: rgba(255, 255, 255, 0.65); font-size: 0.9rem; margin-bottom: 0.5rem; line-height: 1.6;" data-editable="footer.newsletter.description">
                     Join our community and receive exclusive stories, insider tips, and curated experiences from Sweden.
                 </p>
                 <form class="footer-newsletter" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
@@ -4753,9 +4759,9 @@ unique.</p>
         <div class="footer-bottom">
             <div class="footer-bottom-inner">
                 <div class="footer-copyright">
-                    <span>© 2025 Luxury Travel Sweden</span>
+                    <span data-editable="footer.copyright">© 2025 Luxury Travel Sweden</span>
                     <span style="opacity: 0.5;">·</span>
-                    <span>Crafted with passion in Sweden</span>
+                    <span data-editable="footer.tagline">Crafted with passion in Sweden</span>
                 </div>
                 <nav class="footer-legal-links">
                     <a href="https://luxurytravelsweden.com/terms-conditions/" class="footer-legal-link" target="_blank" rel="noopener noreferrer">Terms & Conditions</a>
@@ -6360,7 +6366,18 @@ unique.</p>
 
     <!-- External JavaScript -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Our Supabase Client Wrapper (loads data automatically) -->
+    <script src="supabase-client.js"></script>
+
+    <!-- Main application scripts (uses data loaded by supabase-client.js) -->
     <script src="scripts.js"></script>
+
+    <!-- Inline Editor (allows authenticated clients to edit static content) -->
+    <script src="inline-editor.js"></script>
 
     <!-- LIV Concierge Button - Positioned at top of DOM hierarchy -->
     <div class="ai-concierge-wrapper">

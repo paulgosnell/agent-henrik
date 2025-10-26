@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Luxury Travel Sweden CMS</title>
+    <link rel="stylesheet" href="admin.css">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../supabase-client.js"></script>
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card">
+            <!-- Logo -->
+            <div class="auth-logo">
+                <svg width="48" height="48" viewBox="0 0 32 32" fill="none">
+                    <path d="M16 2L26 8L26 24L16 30L6 24L6 8L16 2Z" fill="currentColor" opacity="0.15"/>
+                    <path d="M16 2L26 8M26 8L26 24M26 24L16 30M16 30L6 24M6 24L6 8M6 8L16 2M16 2L16 30M6 8L26 24M26 8L6 24" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+            </div>
+
+            <!-- Header -->
+            <div class="auth-header">
+                <h1>Welcome back</h1>
+                <p>Sign in to access the Luxury Travel Sweden CMS</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form">
+                <!-- Error Message -->
+                <div id="errorMessage" class="error-message" style="display: none;">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M10 6V10M10 13V13.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <span id="errorText">An error occurred</span>
+                </div>
+
+                <!-- Email Field -->
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="admin@luxurytravelsweden.com"
+                        required
+                        autocomplete="email"
+                        autofocus
+                    >
+                </div>
+
+                <!-- Password Field -->
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        required
+                        autocomplete="current-password"
+                    >
+                </div>
+
+                <!-- Remember Me & Forgot Password -->
+                <div class="form-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="rememberMe" name="rememberMe">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" id="forgotPasswordLink" class="forgot-password">Forgot password?</a>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary" id="loginBtn">
+                    <span class="btn-text">Sign in</span>
+                    <span class="btn-loader" style="display: none;">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2" stroke-opacity="0.2"/>
+                            <path d="M10 2C14.4183 2 18 5.58172 18 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Signing in...
+                    </span>
+                </button>
+            </form>
+
+            <!-- Footer -->
+            <div class="auth-footer">
+                <p>Don't have an account? Contact your administrator</p>
+            </div>
+        </div>
+
+        <!-- Background decoration -->
+        <div class="auth-decoration">
+            <div class="decoration-circle"></div>
+            <div class="decoration-circle"></div>
+            <div class="decoration-circle"></div>
+        </div>
+    </div>
+
+    <!-- Password Reset Modal -->
+    <div id="resetModal" class="modal" style="display: none;">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Reset password</h2>
+                <button type="button" class="modal-close" id="closeResetModal">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M5 5L15 15M15 5L5 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+
+            <form id="resetForm" class="modal-form">
+                <p class="modal-description">
+                    Enter your email address and we'll send you a link to reset your password.
+                </p>
+
+                <div id="resetMessage" class="success-message" style="display: none;">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M6 10L9 13L14 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span id="resetMessageText">Check your email for reset instructions</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="resetEmail">Email address</label>
+                    <input
+                        type="email"
+                        id="resetEmail"
+                        name="resetEmail"
+                        placeholder="admin@luxurytravelsweden.com"
+                        required
+                    >
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelReset">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="resetBtn">
+                        <span class="btn-text">Send reset link</span>
+                        <span class="btn-loader" style="display: none;">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2" stroke-opacity="0.2"/>
+                                <path d="M10 2C14.4183 2 18 5.58172 18 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            Sending...
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Auth Script -->
+    <script src="auth.js"></script>
+    <script>
+        // Initialize login page
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check if already logged in
+            const user = await window.AuthManager.checkAuth();
+            if (user) {
+                // Already logged in, redirect to dashboard
+                window.location.href = '/admin/index.html';
+                return;
+            }
+
+            // Setup login form
+            const loginForm = document.getElementById('loginForm');
+            const loginBtn = document.getElementById('loginBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                // Get form values
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const rememberMe = document.getElementById('rememberMe').checked;
+
+                // Hide error message
+                errorMessage.style.display = 'none';
+
+                // Validate
+                if (!email || !password) {
+                    showError('Please enter both email and password');
+                    return;
+                }
+
+                // Show loading state
+                loginBtn.disabled = true;
+                loginBtn.querySelector('.btn-text').style.display = 'none';
+                loginBtn.querySelector('.btn-loader').style.display = 'flex';
+
+                try {
+                    // Attempt login
+                    await window.AuthManager.login(email, password, rememberMe);
+
+                    // Success - redirect to dashboard
+                    window.location.href = '/admin/index.html';
+                } catch (error) {
+                    // Show error
+                    showError(getErrorMessage(error));
+
+                    // Reset button state
+                    loginBtn.disabled = false;
+                    loginBtn.querySelector('.btn-text').style.display = 'block';
+                    loginBtn.querySelector('.btn-loader').style.display = 'none';
+                }
+            });
+
+            // Password reset functionality
+            const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+            const resetModal = document.getElementById('resetModal');
+            const closeResetModal = document.getElementById('closeResetModal');
+            const cancelReset = document.getElementById('cancelReset');
+            const resetForm = document.getElementById('resetForm');
+            const resetBtn = document.getElementById('resetBtn');
+            const resetMessage = document.getElementById('resetMessage');
+            const resetMessageText = document.getElementById('resetMessageText');
+
+            forgotPasswordLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                resetModal.style.display = 'block';
+                resetMessage.style.display = 'none';
+            });
+
+            const closeModal = () => {
+                resetModal.style.display = 'none';
+                resetForm.reset();
+                resetMessage.style.display = 'none';
+            };
+
+            closeResetModal.addEventListener('click', closeModal);
+            cancelReset.addEventListener('click', closeModal);
+
+            // Close on overlay click
+            resetModal.querySelector('.modal-overlay').addEventListener('click', closeModal);
+
+            resetForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const resetEmail = document.getElementById('resetEmail').value;
+
+                if (!resetEmail) {
+                    return;
+                }
+
+                // Show loading state
+                resetBtn.disabled = true;
+                resetBtn.querySelector('.btn-text').style.display = 'none';
+                resetBtn.querySelector('.btn-loader').style.display = 'flex';
+
+                try {
+                    await window.AuthManager.resetPassword(resetEmail);
+
+                    // Show success message
+                    resetMessage.style.display = 'flex';
+                    resetMessageText.textContent = 'Check your email for password reset instructions';
+
+                    // Reset form
+                    resetForm.reset();
+
+                    // Close modal after delay
+                    setTimeout(closeModal, 3000);
+                } catch (error) {
+                    resetMessage.style.display = 'flex';
+                    resetMessage.classList.remove('success-message');
+                    resetMessage.classList.add('error-message');
+                    resetMessageText.textContent = getErrorMessage(error);
+                } finally {
+                    // Reset button state
+                    resetBtn.disabled = false;
+                    resetBtn.querySelector('.btn-text').style.display = 'block';
+                    resetBtn.querySelector('.btn-loader').style.display = 'none';
+                }
+            });
+
+            function showError(message) {
+                errorText.textContent = message;
+                errorMessage.style.display = 'flex';
+            }
+
+            function getErrorMessage(error) {
+                if (error.message.includes('Invalid login credentials')) {
+                    return 'Invalid email or password';
+                }
+                if (error.message.includes('Email not confirmed')) {
+                    return 'Please confirm your email address';
+                }
+                if (error.message.includes('Too many requests')) {
+                    return 'Too many login attempts. Please try again later';
+                }
+                return error.message || 'An error occurred. Please try again';
+            }
+        });
+    </script>
+</body>
+</html>

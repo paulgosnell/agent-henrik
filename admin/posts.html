@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog Posts Management - Luxury Travel Sweden CMS</title>
+
+  <!-- Quill.js CSS -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+  <!-- Admin CSS -->
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="admin-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M16 2L26 8L26 24L16 30L6 24L6 8L16 2Z" fill="currentColor" opacity="0.2"/>
+            <path d="M16 2L26 8M26 8L26 24M26 24L16 30M16 30L6 24M6 24L6 8M6 8L16 2M16 2L16 30M6 8L26 24M26 8L6 24" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+          <div>
+            <h1>LTS</h1>
+            <span>CMS</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="index.html" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="3" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="11" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="3" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="11" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="destinations.html" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M10 2C10 2 4 6 4 11C4 14.3137 6.68629 17 10 17C13.3137 17 16 14.3137 16 11C16 6 10 2 10 2Z" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="10" cy="11" r="2" fill="currentColor"/>
+          </svg>
+          <span>Destinations</span>
+        </a>
+
+        <a href="posts.html" class="nav-item active">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M3 4H17M3 8H17M3 12H17M3 16H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>Blog Posts</span>
+        </a>
+
+        <a href="stories.html" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M7 7H13M7 11H13M7 14H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>Stories</span>
+        </a>
+
+        <a href="media.html" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="7.5" cy="7.5" r="1.5" fill="currentColor"/>
+            <path d="M17 13L13 9L8 14M8 14L6 12L3 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Media Library</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M4 17C4 14 6 12 10 12C14 12 16 14 16 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="user-details">
+            <div class="user-name">Admin</div>
+            <div class="user-email" id="userEmail">Loading...</div>
+          </div>
+        </div>
+        <button id="logoutBtn" class="logout-btn" title="Logout">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M13 13L17 10L13 7M17 10H7M7 3H5C3.89543 3 3 3.89543 3 5V15C3 16.1046 3.89543 17 5 17H7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="content-header">
+        <div class="header-left">
+          <h1>Blog Posts</h1>
+          <p class="subtitle">Manage your blog posts and articles</p>
+        </div>
+        <div class="header-right">
+          <a href="/" class="btn-secondary" target="_blank">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+              <path d="M10 3L3 8V17H7V12H13V17H17V8L10 3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+            View Site
+          </a>
+        </div>
+      </header>
+
+      <!-- Alert Container -->
+      <div id="alertContainer"></div>
+
+      <!-- Toolbar -->
+      <div class="admin-toolbar">
+        <div class="admin-toolbar-left">
+          <div class="search-box">
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Search blog posts..."
+              aria-label="Search blog posts"
+            >
+          </div>
+          <div class="filter-group">
+            <label class="filter-label" for="statusFilter">Status:</label>
+            <select id="statusFilter">
+              <option value="all">All</option>
+              <option value="published">Published</option>
+              <option value="draft">Draft</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label" for="featuredFilter">Featured:</label>
+            <select id="featuredFilter">
+              <option value="all">All</option>
+              <option value="featured">Featured Only</option>
+              <option value="not-featured">Not Featured</option>
+            </select>
+          </div>
+        </div>
+        <div class="admin-toolbar-right">
+          <button class="btn btn-primary" onclick="openAddPostModal()">
+            <span>+</span>
+            Add New Post
+          </button>
+        </div>
+      </div>
+
+      <!-- Posts Container -->
+      <div id="postsContainer">
+        <!-- Loading state -->
+        <div id="loadingState" class="empty-state">
+          <div class="empty-state-icon">
+            <div class="loading" style="width: 60px; height: 60px; border-width: 6px;"></div>
+          </div>
+          <h3>Loading blog posts...</h3>
+        </div>
+
+        <!-- Empty state -->
+        <div id="emptyState" class="empty-state hidden">
+          <div class="empty-state-icon">📝</div>
+          <h3>No blog posts found</h3>
+          <p>Get started by creating your first blog post</p>
+          <button class="btn btn-primary" onclick="openAddPostModal()">
+            <span>+</span>
+            Add Blog Post
+          </button>
+        </div>
+
+        <!-- Table -->
+        <div id="tableContainer" class="destinations-table hidden">
+          <table>
+            <thead>
+              <tr>
+                <th>Post</th>
+                <th>Author</th>
+                <th>Published</th>
+                <th>Featured</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="postsTableBody">
+              <!-- Populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add/Edit Post Modal -->
+  <div id="postModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add New Blog Post</h2>
+        <button class="modal-close" onclick="closePostModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="postForm">
+          <input type="hidden" id="postId">
+
+          <div class="form-grid">
+            <!-- Title -->
+            <div class="form-group full-width">
+              <label class="form-label required" for="title">Title</label>
+              <input
+                type="text"
+                id="title"
+                class="form-input"
+                placeholder="e.g., Exploring the Northern Lights of Swedish Lapland"
+                required
+              >
+            </div>
+
+            <!-- Slug -->
+            <div class="form-group full-width">
+              <label class="form-label required" for="slug">Slug</label>
+              <input
+                type="text"
+                id="slug"
+                class="form-input"
+                placeholder="e.g., exploring-northern-lights-swedish-lapland"
+                required
+              >
+              <span class="form-hint">Auto-generated from title, can be customized</span>
+            </div>
+
+            <!-- Excerpt -->
+            <div class="form-group full-width">
+              <label class="form-label required" for="excerpt">Excerpt</label>
+              <textarea
+                id="excerpt"
+                class="form-textarea"
+                placeholder="Brief summary of the post (max 200 characters)"
+                maxlength="200"
+                required
+                style="min-height: 80px;"
+              ></textarea>
+              <span class="form-hint"><span id="excerptCount">0</span>/200 characters</span>
+            </div>
+
+            <!-- Content (Rich Text Editor) -->
+            <div class="form-group full-width">
+              <label class="form-label required">Content</label>
+              <div id="editor" style="min-height: 300px; background: var(--admin-surface-raised); border: 1px solid var(--admin-border); border-radius: var(--admin-radius);"></div>
+              <input type="hidden" id="content">
+            </div>
+
+            <!-- Hero Image Upload -->
+            <div class="form-group full-width">
+              <label class="form-label" for="imageUpload">Hero Image</label>
+              <div class="image-upload-area" id="imageUploadArea">
+                <input
+                  type="file"
+                  id="imageUpload"
+                  accept="image/*"
+                  style="display: none;"
+                  onchange="handleImageSelect(event)"
+                >
+                <div id="uploadPlaceholder" class="upload-placeholder">
+                  <div class="upload-icon">📷</div>
+                  <div class="upload-text">Click to upload or drag and drop</div>
+                  <div class="upload-hint">PNG, JPG, WebP up to 10MB</div>
+                </div>
+                <div id="imagePreviewContainer" class="image-preview-container hidden">
+                  <img id="imagePreview" class="image-preview" src="" alt="Preview">
+                  <button type="button" class="image-remove" onclick="removeImage()">Remove Image</button>
+                </div>
+              </div>
+              <div id="uploadProgress" class="upload-progress">
+                <div class="progress-bar">
+                  <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+                </div>
+                <div id="progressText" class="progress-text">Uploading...</div>
+              </div>
+              <input type="hidden" id="heroImageUrl">
+            </div>
+
+            <!-- Author -->
+            <div class="form-group">
+              <label class="form-label required" for="author">Author</label>
+              <input
+                type="text"
+                id="author"
+                class="form-input"
+                placeholder="e.g., LIV Team"
+                value="LIV Team"
+                required
+              >
+            </div>
+
+            <!-- Published Date/Time -->
+            <div class="form-group">
+              <label class="form-label" for="publishedAt">Published Date/Time</label>
+              <input
+                type="datetime-local"
+                id="publishedAt"
+                class="form-input"
+              >
+              <span class="form-hint">Leave empty to save as draft</span>
+            </div>
+
+            <!-- Featured Toggle -->
+            <div class="form-group">
+              <label class="form-label" for="featured">Featured Post</label>
+              <label class="toggle-switch">
+                <input type="checkbox" id="featured">
+                <span class="toggle-slider"></span>
+              </label>
+              <span class="form-hint">Show on homepage</span>
+            </div>
+
+            <!-- Related Destinations -->
+            <div class="form-group">
+              <label class="form-label" for="relatedDestinations">Related Destinations</label>
+              <select id="relatedDestinations" class="form-input" multiple size="5">
+                <!-- Populated by JavaScript -->
+              </select>
+              <span class="form-hint">Hold Cmd/Ctrl to select multiple</span>
+            </div>
+
+            <!-- Meta Description -->
+            <div class="form-group full-width">
+              <label class="form-label" for="metaDescription">Meta Description (SEO)</label>
+              <textarea
+                id="metaDescription"
+                class="form-textarea"
+                placeholder="Brief description for search engines (max 160 characters)"
+                maxlength="160"
+                style="min-height: 80px;"
+              ></textarea>
+              <span class="form-hint"><span id="metaCount">0</span>/160 characters</span>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closePostModal()">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-secondary" onclick="savePost(event, true)" id="saveDraftBtn">
+          Save as Draft
+        </button>
+        <button type="submit" class="btn btn-success" onclick="savePost(event, false)" id="saveBtn">
+          <span id="saveBtnText">Publish Post</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal">
+    <div class="modal-content confirm-dialog">
+      <div class="modal-body">
+        <div class="confirm-icon danger">⚠️</div>
+        <h3 class="confirm-title">Delete Blog Post?</h3>
+        <p class="confirm-message">
+          Are you sure you want to delete "<span id="deletePostName"></span>"?
+          This action cannot be undone.
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
+          <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+          <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Quill.js -->
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+  <!-- Supabase Client -->
+  <script src="../supabase-client.js"></script>
+
+  <!-- Main Application Script -->
+  <script>
+    // ==========================================
+    // STATE
+    // ==========================================
+    let posts = [];
+    let destinations = [];
+    let filteredPosts = [];
+    let quillEditor = null;
+    let currentPost = null;
+    let deletePostId = null;
+    let currentImageFile = null;
+    let existingImageUrl = null;
+
+    // ==========================================
+    // INITIALIZATION
+    // ==========================================
+    async function init() {
+      try {
+        // Check authentication
+        const user = await window.Supabase.auth.getUser();
+        if (!user) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        // Update user info
+        const userEmailEl = document.getElementById('userEmail');
+        if (userEmailEl && user.email) {
+          userEmailEl.textContent = user.email;
+        }
+
+        // Check if Supabase is configured
+        if (!window.Supabase) {
+          showAlert('error', 'Supabase is not configured. Please update your credentials in supabase-client.js');
+          return;
+        }
+
+        // Load data
+        await Promise.all([
+          loadPosts(),
+          loadDestinations()
+        ]);
+
+        // Setup event listeners
+        setupEventListeners();
+
+        console.log('Blog posts admin panel initialized successfully');
+      } catch (error) {
+        console.error('Initialization error:', error);
+        showAlert('error', 'Failed to initialize admin panel: ' + error.message);
+      }
+    }
+
+    // ==========================================
+    // DATA LOADING
+    // ==========================================
+    async function loadPosts() {
+      try {
+        showLoading();
+        posts = await window.Supabase.db.getBlogPosts(false); // Include drafts
+        filteredPosts = [...posts];
+        renderPosts();
+      } catch (error) {
+        console.error('Error loading posts:', error);
+        showAlert('error', 'Failed to load blog posts: ' + error.message);
+        showEmpty();
+      }
+    }
+
+    async function loadDestinations() {
+      try {
+        destinations = await window.Supabase.db.getDestinations(false); // Only published
+        renderDestinationsSelect();
+      } catch (error) {
+        console.error('Error loading destinations:', error);
+      }
+    }
+
+    // ==========================================
+    // RENDERING
+    // ==========================================
+    function renderPosts() {
+      const tbody = document.getElementById('postsTableBody');
+      const tableContainer = document.getElementById('tableContainer');
+      const emptyState = document.getElementById('emptyState');
+      const loadingState = document.getElementById('loadingState');
+
+      loadingState.classList.add('hidden');
+
+      if (filteredPosts.length === 0) {
+        tableContainer.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      tableContainer.classList.remove('hidden');
+
+      tbody.innerHTML = filteredPosts.map(post => `
+        <tr onclick="editPost('${post.id}')">
+          <td>
+            <div class="destination-preview">
+              <img
+                src="${post.hero_image_url || 'https://via.placeholder.com/60'}"
+                alt="${post.title}"
+                class="destination-image"
+              >
+              <div class="destination-info">
+                <h3>${escapeHtml(post.title)}</h3>
+                <p>${escapeHtml(post.excerpt.substring(0, 50))}${post.excerpt.length > 50 ? '...' : ''}</p>
+              </div>
+            </div>
+          </td>
+          <td>${escapeHtml(post.author || 'LIV Team')}</td>
+          <td>
+            <span class="badge ${post.published_at ? 'badge-published' : 'badge-draft'}">
+              ${post.published_at ? formatDate(post.published_at) : 'Draft'}
+            </span>
+          </td>
+          <td>
+            ${post.featured ? '<span class="badge badge-category">⭐ Featured</span>' : '<span class="text-muted">—</span>'}
+          </td>
+          <td>
+            <div class="action-buttons" onclick="event.stopPropagation()">
+              <button
+                class="action-btn action-btn-edit"
+                onclick="editPost('${post.id}')"
+                title="Edit"
+              >✏️</button>
+              <button
+                class="action-btn action-btn-delete"
+                onclick="deletePost('${post.id}', '${escapeHtml(post.title)}')"
+                title="Delete"
+              >🗑️</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderDestinationsSelect() {
+      const select = document.getElementById('relatedDestinations');
+
+      if (destinations.length === 0) {
+        select.innerHTML = '<option disabled>No destinations available</option>';
+        return;
+      }
+
+      select.innerHTML = destinations.map(dest => `
+        <option value="${dest.id}">${escapeHtml(dest.title)}</option>
+      `).join('');
+    }
+
+    // ==========================================
+    // FILTERING & SEARCH
+    // ==========================================
+    function applyFilters() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const statusFilter = document.getElementById('statusFilter').value;
+      const featuredFilter = document.getElementById('featuredFilter').value;
+
+      filteredPosts = posts.filter(post => {
+        // Search filter
+        const matchesSearch = !searchTerm ||
+          post.title.toLowerCase().includes(searchTerm) ||
+          post.excerpt.toLowerCase().includes(searchTerm) ||
+          (post.content && post.content.toLowerCase().includes(searchTerm));
+
+        // Status filter
+        const matchesStatus = statusFilter === 'all' ||
+          (statusFilter === 'published' && post.published_at) ||
+          (statusFilter === 'draft' && !post.published_at);
+
+        // Featured filter
+        const matchesFeatured = featuredFilter === 'all' ||
+          (featuredFilter === 'featured' && post.featured) ||
+          (featuredFilter === 'not-featured' && !post.featured);
+
+        return matchesSearch && matchesStatus && matchesFeatured;
+      });
+
+      renderPosts();
+    }
+
+    // ==========================================
+    // MODAL MANAGEMENT
+    // ==========================================
+    function openAddPostModal() {
+      currentPost = null;
+      document.getElementById('modalTitle').textContent = 'Add New Blog Post';
+      document.getElementById('postForm').reset();
+      document.getElementById('postId').value = '';
+      document.getElementById('author').value = 'LIV Team';
+
+      // Reset image
+      currentImageFile = null;
+      existingImageUrl = null;
+      document.getElementById('heroImageUrl').value = '';
+      document.getElementById('uploadPlaceholder').classList.remove('hidden');
+      document.getElementById('imagePreviewContainer').classList.add('hidden');
+      document.getElementById('imageUploadArea').classList.remove('has-image');
+
+      // Clear editor
+      if (quillEditor) {
+        quillEditor.root.innerHTML = '';
+      }
+
+      // Reset character counts
+      updateCharacterCount('excerpt', 'excerptCount');
+      updateCharacterCount('metaDescription', 'metaCount');
+
+      // Open modal
+      document.getElementById('postModal').classList.add('active');
+
+      // Initialize Quill editor
+      setTimeout(() => {
+        initQuillEditor();
+      }, 100);
+    }
+
+    function closePostModal() {
+      document.getElementById('postModal').classList.remove('active');
+
+      // Destroy Quill editor
+      if (quillEditor) {
+        quillEditor = null;
+      }
+    }
+
+    function editPost(id) {
+      currentPost = posts.find(p => p.id === id);
+      if (!currentPost) return;
+
+      document.getElementById('modalTitle').textContent = 'Edit Blog Post';
+      document.getElementById('postId').value = currentPost.id;
+      document.getElementById('title').value = currentPost.title;
+      document.getElementById('slug').value = currentPost.slug;
+      document.getElementById('excerpt').value = currentPost.excerpt || '';
+      document.getElementById('author').value = currentPost.author || 'LIV Team';
+      document.getElementById('featured').checked = currentPost.featured || false;
+      document.getElementById('metaDescription').value = currentPost.meta_description || '';
+
+      // Set published date if exists
+      if (currentPost.published_at) {
+        const date = new Date(currentPost.published_at);
+        // Format for datetime-local input
+        const localDateTime = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+          .toISOString()
+          .slice(0, 16);
+        document.getElementById('publishedAt').value = localDateTime;
+      } else {
+        document.getElementById('publishedAt').value = '';
+      }
+
+      // Set image
+      if (currentPost.hero_image_url) {
+        existingImageUrl = currentPost.hero_image_url;
+        document.getElementById('heroImageUrl').value = currentPost.hero_image_url;
+        document.getElementById('imagePreview').src = currentPost.hero_image_url;
+        document.getElementById('uploadPlaceholder').classList.add('hidden');
+        document.getElementById('imagePreviewContainer').classList.remove('hidden');
+        document.getElementById('imageUploadArea').classList.add('has-image');
+      }
+
+      // Set related destinations
+      const relatedSelect = document.getElementById('relatedDestinations');
+      Array.from(relatedSelect.options).forEach(option => {
+        option.selected = currentPost.related_destination_ids &&
+                         currentPost.related_destination_ids.includes(option.value);
+      });
+
+      // Update character counts
+      updateCharacterCount('excerpt', 'excerptCount');
+      updateCharacterCount('metaDescription', 'metaCount');
+
+      // Open modal
+      document.getElementById('postModal').classList.add('active');
+
+      // Initialize Quill editor with content
+      setTimeout(() => {
+        initQuillEditor(currentPost.content);
+      }, 100);
+    }
+
+    function deletePost(id, title) {
+      deletePostId = id;
+      document.getElementById('deletePostName').textContent = title;
+      document.getElementById('deleteModal').classList.add('active');
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').classList.remove('active');
+      deletePostId = null;
+    }
+
+    async function confirmDelete() {
+      if (!deletePostId) return;
+
+      try {
+        await window.Supabase.db.deleteBlogPost(deletePostId);
+        showAlert('success', 'Blog post deleted successfully');
+        closeDeleteModal();
+        await loadPosts();
+      } catch (error) {
+        console.error('Error deleting post:', error);
+        showAlert('error', 'Failed to delete blog post: ' + error.message);
+      }
+    }
+
+    // ==========================================
+    // QUILL EDITOR
+    // ==========================================
+    function initQuillEditor(content = '') {
+      if (quillEditor) return;
+
+      quillEditor = new Quill('#editor', {
+        theme: 'snow',
+        modules: {
+          toolbar: [
+            [{ 'header': [2, 3, false] }],
+            ['bold', 'italic', 'underline'],
+            ['link', 'image'],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            ['blockquote', 'code-block'],
+            ['clean']
+          ]
+        },
+        placeholder: 'Write your blog post content here...'
+      });
+
+      // Set initial content
+      if (content) {
+        quillEditor.root.innerHTML = content;
+      }
+    }
+
+    // ==========================================
+    // IMAGE UPLOAD
+    // ==========================================
+    function setupImageUpload() {
+      const uploadArea = document.getElementById('imageUploadArea');
+      const fileInput = document.getElementById('imageUpload');
+
+      // Click to upload
+      uploadArea.addEventListener('click', (e) => {
+        if (e.target.classList.contains('image-remove')) return;
+        fileInput.click();
+      });
+
+      // Drag and drop
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('drag-over');
+      });
+
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('drag-over');
+      });
+
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('drag-over');
+
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          handleImageFile(files[0]);
+        }
+      });
+    }
+
+    function handleImageSelect(event) {
+      const file = event.target.files[0];
+      if (file) {
+        handleImageFile(file);
+      }
+    }
+
+    function handleImageFile(file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        showAlert('error', 'Please select an image file');
+        return;
+      }
+
+      // Validate file size (10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        showAlert('error', 'Image size must be less than 10MB');
+        return;
+      }
+
+      currentImageFile = file;
+
+      // Show preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById('imagePreview').src = e.target.result;
+        document.getElementById('uploadPlaceholder').classList.add('hidden');
+        document.getElementById('imagePreviewContainer').classList.remove('hidden');
+        document.getElementById('imageUploadArea').classList.add('has-image');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeImage() {
+      currentImageFile = null;
+      existingImageUrl = null;
+      document.getElementById('heroImageUrl').value = '';
+      document.getElementById('imageUpload').value = '';
+      document.getElementById('uploadPlaceholder').classList.remove('hidden');
+      document.getElementById('imagePreviewContainer').classList.add('hidden');
+      document.getElementById('imageUploadArea').classList.remove('has-image');
+    }
+
+    async function uploadImage() {
+      if (!currentImageFile) {
+        return existingImageUrl || null;
+      }
+
+      const progressDiv = document.getElementById('uploadProgress');
+      const progressFill = document.getElementById('progressFill');
+      const progressText = document.getElementById('progressText');
+
+      try {
+        progressDiv.classList.add('active');
+        progressFill.style.width = '0%';
+        progressText.textContent = 'Uploading...';
+
+        // Simulate progress
+        const progressInterval = setInterval(() => {
+          const currentWidth = parseInt(progressFill.style.width) || 0;
+          if (currentWidth < 90) {
+            progressFill.style.width = (currentWidth + 10) + '%';
+          }
+        }, 200);
+
+        const result = await window.Supabase.storage.uploadFile(currentImageFile);
+
+        clearInterval(progressInterval);
+        progressFill.style.width = '100%';
+        progressText.textContent = 'Upload complete!';
+
+        setTimeout(() => {
+          progressDiv.classList.remove('active');
+        }, 1000);
+
+        return result.url;
+      } catch (error) {
+        progressDiv.classList.remove('active');
+        throw error;
+      }
+    }
+
+    // ==========================================
+    // SAVE POST
+    // ==========================================
+    async function savePost(event, asDraft = false) {
+      event.preventDefault();
+
+      const saveBtn = document.getElementById('saveBtn');
+      const saveDraftBtn = document.getElementById('saveDraftBtn');
+      const saveBtnText = document.getElementById('saveBtnText');
+      const originalText = saveBtnText.textContent;
+
+      try {
+        // Disable buttons
+        saveBtn.disabled = true;
+        saveDraftBtn.disabled = true;
+        saveBtnText.innerHTML = '<div class="loading"></div> Saving...';
+
+        // Get form data
+        const id = document.getElementById('postId').value;
+        const title = document.getElementById('title').value.trim();
+        const slug = document.getElementById('slug').value.trim();
+        const excerpt = document.getElementById('excerpt').value.trim();
+        const author = document.getElementById('author').value.trim();
+        const featured = document.getElementById('featured').checked;
+        const metaDescription = document.getElementById('metaDescription').value.trim();
+        const publishedAtInput = document.getElementById('publishedAt').value;
+
+        // Get content from Quill
+        const content = quillEditor ? quillEditor.root.innerHTML : '';
+
+        // Get related destinations
+        const relatedSelect = document.getElementById('relatedDestinations');
+        const relatedDestinationIds = Array.from(relatedSelect.selectedOptions).map(opt => opt.value);
+
+        // Validate
+        if (!title || !slug || !excerpt) {
+          showAlert('error', 'Please fill in all required fields');
+          return;
+        }
+
+        if (!content || content === '<p><br></p>') {
+          showAlert('error', 'Please add content to your blog post');
+          return;
+        }
+
+        // Upload image if new one selected
+        let heroImageUrl = existingImageUrl;
+        if (currentImageFile) {
+          heroImageUrl = await uploadImage();
+        }
+
+        // Prepare published_at
+        let publishedAt = null;
+        if (!asDraft) {
+          if (publishedAtInput) {
+            publishedAt = new Date(publishedAtInput).toISOString();
+          } else {
+            publishedAt = new Date().toISOString();
+          }
+        }
+
+        // Prepare data
+        const postData = {
+          title,
+          slug,
+          excerpt,
+          content,
+          author,
+          featured,
+          meta_description: metaDescription,
+          hero_image_url: heroImageUrl,
+          related_destination_ids: relatedDestinationIds,
+          published_at: publishedAt
+        };
+
+        // Save to database
+        if (id) {
+          await window.Supabase.db.updateBlogPost(id, postData);
+          showAlert('success', asDraft ? 'Post saved as draft' : 'Post updated successfully');
+        } else {
+          await window.Supabase.db.createBlogPost(postData);
+          showAlert('success', asDraft ? 'Post saved as draft' : 'Post published successfully');
+        }
+
+        // Close modal and refresh
+        closePostModal();
+        await loadPosts();
+
+      } catch (error) {
+        console.error('Error saving post:', error);
+        showAlert('error', 'Failed to save post: ' + error.message);
+      } finally {
+        saveBtn.disabled = false;
+        saveDraftBtn.disabled = false;
+        saveBtnText.textContent = originalText;
+      }
+    }
+
+    // ==========================================
+    // UTILITY FUNCTIONS
+    // ==========================================
+    function generateSlug(title) {
+      return title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
+    function updateCharacterCount(inputId, countId) {
+      const input = document.getElementById(inputId);
+      const counter = document.getElementById(countId);
+      if (input && counter) {
+        counter.textContent = input.value.length;
+      }
+    }
+
+    function formatDate(dateString) {
+      if (!dateString) return 'N/A';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function showAlert(type, message) {
+      const container = document.getElementById('alertContainer');
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.innerHTML = `
+        <span>${type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ'}</span>
+        <span>${message}</span>
+      `;
+
+      container.appendChild(alert);
+
+      setTimeout(() => {
+        alert.remove();
+      }, 5000);
+    }
+
+    function showLoading() {
+      document.getElementById('loadingState').classList.remove('hidden');
+      document.getElementById('tableContainer').classList.add('hidden');
+      document.getElementById('emptyState').classList.add('hidden');
+    }
+
+    function showEmpty() {
+      document.getElementById('loadingState').classList.add('hidden');
+      document.getElementById('tableContainer').classList.add('hidden');
+      document.getElementById('emptyState').classList.remove('hidden');
+    }
+
+    // ==========================================
+    // EVENT LISTENERS
+    // ==========================================
+    function setupEventListeners() {
+      // Logout
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+          await window.Supabase.auth.signOut();
+          window.location.href = 'login.html';
+        });
+      }
+
+      // Search and filters
+      document.getElementById('searchInput').addEventListener('input', applyFilters);
+      document.getElementById('statusFilter').addEventListener('change', applyFilters);
+      document.getElementById('featuredFilter').addEventListener('change', applyFilters);
+
+      // Auto-generate slug from title
+      document.getElementById('title').addEventListener('input', (e) => {
+        if (!document.getElementById('postId').value) {
+          document.getElementById('slug').value = generateSlug(e.target.value);
+        }
+      });
+
+      // Character counters
+      document.getElementById('excerpt').addEventListener('input', () => {
+        updateCharacterCount('excerpt', 'excerptCount');
+      });
+      document.getElementById('metaDescription').addEventListener('input', () => {
+        updateCharacterCount('metaDescription', 'metaCount');
+      });
+
+      // Image upload
+      setupImageUpload();
+
+      // Close modal on outside click
+      document.getElementById('postModal').addEventListener('click', (e) => {
+        if (e.target.id === 'postModal') {
+          closePostModal();
+        }
+      });
+
+      document.getElementById('deleteModal').addEventListener('click', (e) => {
+        if (e.target.id === 'deleteModal') {
+          closeDeleteModal();
+        }
+      });
+
+      // Keyboard shortcuts
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closePostModal();
+          closeDeleteModal();
+        }
+      });
+    }
+
+    // ==========================================
+    // START APPLICATION
+    // ==========================================
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
