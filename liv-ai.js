@@ -1,0 +1,380 @@
+/**
+ * LIV AI - AI-Powered Luxury Itinerary Visionary
+ *
+ * This module handles the AI-powered chat with LIV using OpenAI GPT-4o
+ * via Supabase Edge Functions with context-aware conversations.
+ */
+
+class LivAI {
+  constructor() {
+    this.supabaseUrl = null;
+    this.supabaseAnonKey = null;
+    this.edgeFunctionUrl = null;
+    this.chatOverlay = null;
+    this.chatMessages = null;
+    this.chatInput = null;
+    this.sendButton = null;
+    this.closeButton = null;
+    this.conversationHistory = [];
+    this.context = null;
+    this.isStreaming = false;
+    this.isInitialized = false;
+  }
+
+  /**
+   * Initialize LIV AI with Supabase configuration
+   */
+  async init() {
+    if (this.isInitialized) return;
+
+    // Get Supabase config from existing client
+    if (!window.Supabase || !window.Supabase.isConfigured()) {
+      console.error('❌ Supabase not configured. LIV AI requires Supabase.');
+      return;
+    }
+
+    // Extract config from supabase-client.js
+    this.supabaseUrl = SUPABASE_URL;
+    this.supabaseAnonKey = SUPABASE_ANON_KEY;
+    this.edgeFunctionUrl = `${this.supabaseUrl}/functions/v1/liv-chat`;
+
+    // Get DOM elements
+    this.chatOverlay = document.getElementById('chatOverlay');
+    this.chatMessages = document.getElementById('chatMessages');
+    this.chatInput = document.getElementById('chatInput');
+    this.sendButton = document.getElementById('sendButton');
+    this.closeButton = document.getElementById('closeChat');
+
+    if (!this.chatOverlay || !this.chatMessages || !this.chatInput) {
+      console.error('❌ Chat UI elements not found');
+      return;
+    }
+
+    // Setup event listeners
+    this.setupEventListeners();
+
+    // Initialize conversation history with welcome message
+    this.resetConversation();
+
+    this.isInitialized = true;
+    console.log('✅ LIV AI initialized');
+  }
+
+  /**
+   * Setup event listeners for chat interactions
+   */
+  setupEventListeners() {
+    // Send button
+    if (this.sendButton) {
+      this.sendButton.addEventListener('click', () => this.handleSendMessage());
+    }
+
+    // Enter key in input
+    if (this.chatInput) {
+      this.chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          this.handleSendMessage();
+        }
+      });
+    }
+
+    // Close button
+    if (this.closeButton) {
+      this.closeButton.addEventListener('click', () => this.closeChat());
+    }
+
+    // Setup context-aware triggers (map, stories, experiences)
+    this.setupContextTriggers();
+  }
+
+  /**
+   * Setup triggers that pass context to LIV
+   */
+  setupContextTriggers() {
+    // Map marker clicks
+    document.addEventListener('mapMarkerClicked', (event) => {
+      const { destination } = event.detail;
+      this.openChatWithContext({
+        type: 'map',
+        name: destination.title,
+        category: destination.category,
+        themes: destination.themes?.map(t => t.label) || [],
+        location: destination.title
+      });
+    });
+
+    // Story clicks
+    document.addEventListener('storyClicked', (event) => {
+      const { story } = event.detail;
+      this.openChatWithContext({
+        type: 'story',
+        name: story.title
+      });
+    });
+
+    // Experience clicks
+    document.addEventListener('experienceClicked', (event) => {
+      const { experience } = event.detail;
+      this.openChatWithContext({
+        type: 'experience',
+        name: experience.title,
+        themes: experience.themes || []
+      });
+    });
+
+    // Theme filter selections
+    document.addEventListener('themeSelected', (event) => {
+      const { theme } = event.detail;
+      this.openChatWithContext({
+        type: 'theme',
+        name: theme
+      });
+    });
+
+    // General LIV triggers (existing buttons)
+    const livTriggers = document.querySelectorAll('[data-open-liv]');
+    livTriggers.forEach(trigger => {
+      trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        const contextData = trigger.dataset.livContext;
+        if (contextData) {
+          try {
+            this.openChatWithContext(JSON.parse(contextData));
+          } catch {
+            this.openChat();
+          }
+        } else {
+          this.openChat();
+        }
+      });
+    });
+  }
+
+  /**
+   * Open chat with specific context
+   */
+  openChatWithContext(context) {
+    this.context = context;
+    this.openChat();
+
+    // Send initial AI greeting with context
+    this.sendContextualGreeting();
+  }
+
+  /**
+   * Open chat without context (general inquiry)
+   */
+  openChat() {
+    if (this.chatOverlay) {
+      this.chatOverlay.classList.add('active');
+      if (this.chatInput) {
+        this.chatInput.focus();
+      }
+    }
+  }
+
+  /**
+   * Close chat
+   */
+  closeChat() {
+    if (this.chatOverlay) {
+      this.chatOverlay.classList.remove('active');
+    }
+  }
+
+  /**
+   * Reset conversation
+   */
+  resetConversation() {
+    this.conversationHistory = [];
+
+    // Clear chat messages except the initial welcome
+    if (this.chatMessages) {
+      this.chatMessages.innerHTML = `
+        <div class="chat-message ai">
+          <p>Welcome. I'm LIV — Luxury Itinerary Visionary. I'm here to craft extraordinary Swedish journeys tailored to your desires.</p>
+        </div>
+      `;
+    }
+  }
+
+  /**
+   * Send contextual greeting based on where user clicked
+   */
+  async sendContextualGreeting() {
+    if (!this.context) return;
+
+    // The AI will use the context to generate an intelligent greeting
+    // We'll let the AI handle the greeting naturally in the first response
+
+    // Add a small delay to feel natural
+    await new Promise(resolve => setTimeout(resolve, 800));
+  }
+
+  /**
+   * Handle sending a message
+   */
+  async handleSendMessage() {
+    const message = this.chatInput?.value.trim();
+    if (!message || this.isStreaming) return;
+
+    // Clear input
+    if (this.chatInput) {
+      this.chatInput.value = '';
+    }
+
+    // Add user message to UI
+    this.appendMessage('user', message);
+
+    // Add to conversation history
+    this.conversationHistory.push({
+      role: 'user',
+      content: message
+    });
+
+    // Get AI response
+    await this.getAIResponse();
+  }
+
+  /**
+   * Get AI response from Edge Function
+   */
+  async getAIResponse() {
+    this.isStreaming = true;
+
+    // Disable input while streaming
+    if (this.chatInput) this.chatInput.disabled = true;
+    if (this.sendButton) this.sendButton.disabled = true;
+
+    try {
+      const response = await fetch(this.edgeFunctionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.supabaseAnonKey}`,
+          'apikey': this.supabaseAnonKey
+        },
+        body: JSON.stringify({
+          messages: this.conversationHistory,
+          context: this.context,
+          stream: true
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Create AI message element
+      const messageEl = document.createElement('div');
+      messageEl.classList.add('chat-message', 'ai');
+      const paragraph = document.createElement('p');
+      messageEl.appendChild(paragraph);
+
+      if (this.chatMessages) {
+        this.chatMessages.appendChild(messageEl);
+        this.scrollToBottom();
+      }
+
+      // Handle streaming response
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let aiResponse = '';
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value);
+          const lines = chunk.split('\n');
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6);
+              if (data === '[DONE]') continue;
+
+              try {
+                const parsed = JSON.parse(data);
+                const content = parsed.choices?.[0]?.delta?.content;
+
+                if (content) {
+                  aiResponse += content;
+                  paragraph.textContent = aiResponse;
+                  this.scrollToBottom();
+                }
+              } catch (e) {
+                // Skip invalid JSON
+              }
+            }
+          }
+        }
+      }
+
+      // Add complete response to conversation history
+      if (aiResponse) {
+        this.conversationHistory.push({
+          role: 'assistant',
+          content: aiResponse
+        });
+      }
+
+      // Clear context after first exchange
+      if (this.context) {
+        this.context = null;
+      }
+
+    } catch (error) {
+      console.error('Error getting AI response:', error);
+      this.appendMessage('ai', 'I apologize, but I\'m having trouble connecting right now. Please try again in a moment, or contact our team directly.');
+    } finally {
+      this.isStreaming = false;
+      if (this.chatInput) this.chatInput.disabled = false;
+      if (this.sendButton) this.sendButton.disabled = false;
+      if (this.chatInput) this.chatInput.focus();
+    }
+  }
+
+  /**
+   * Append message to chat
+   */
+  appendMessage(role, text) {
+    if (!this.chatMessages) return;
+
+    const messageEl = document.createElement('div');
+    messageEl.classList.add('chat-message', role);
+
+    const paragraph = document.createElement('p');
+    paragraph.textContent = text;
+    messageEl.appendChild(paragraph);
+
+    this.chatMessages.appendChild(messageEl);
+    this.scrollToBottom();
+  }
+
+  /**
+   * Scroll chat to bottom
+   */
+  scrollToBottom() {
+    if (this.chatMessages) {
+      this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+    }
+  }
+}
+
+// Initialize LIV AI when DOM is ready
+let livAIInstance = null;
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    livAIInstance = new LivAI();
+    livAIInstance.init();
+  });
+} else {
+  livAIInstance = new LivAI();
+  livAIInstance.init();
+}
+
+// Export for manual initialization if needed
+window.LivAI = livAIInstance;

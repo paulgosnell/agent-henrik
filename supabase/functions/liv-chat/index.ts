@@ -1,0 +1,209 @@
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from 'jsr:@supabase/supabase-js@2';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*', // Allow all domains (or change to 'https://luxury-travel-sweden.netlify.app' for production only)
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+interface ChatMessage {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
+}
+
+interface ChatRequest {
+  messages: ChatMessage[];
+  context?: {
+    type?: 'map' | 'story' | 'experience' | 'theme' | 'destination' | 'general';
+    name?: string;
+    category?: string;
+    themes?: string[];
+    season?: string;
+    location?: string;
+  };
+  stream?: boolean;
+}
+
+// Initialize Supabase client
+const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const openaiApiKey = Deno.env.get('OPENAI_API_KEY')!;
+
+Deno.serve(async (req) => {
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  }
+
+  try {
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    const { messages, context, stream = true }: ChatRequest = await req.json();
+
+    // Load destinations and themes from Supabase to build knowledge base
+    const [destinationsResult, themesResult] = await Promise.all([
+      supabase.from('destinations').select('*').eq('published', true),
+      supabase.from('themes').select('*')
+    ]);
+
+    const destinations = destinationsResult.data || [];
+    const themes = themesResult.data || [];
+
+    // Build LIV's system prompt with full knowledge base
+    const systemPrompt = buildSystemPrompt(destinations, themes, context);
+
+    // Prepare messages for OpenAI
+    const openaiMessages: ChatMessage[] = [
+      { role: 'system', content: systemPrompt },
+      ...messages
+    ];
+
+    // Call OpenAI API
+    const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openaiApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        messages: openaiMessages,
+        temperature: 0.8,
+        max_tokens: 2000,
+        stream: stream,
+      }),
+    });
+
+    if (!openaiResponse.ok) {
+      const error = await openaiResponse.text();
+      throw new Error(`OpenAI API error: ${error}`);
+    }
+
+    // If streaming, pipe the response
+    if (stream) {
+      return new Response(openaiResponse.body, {
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+        },
+      });
+    }
+
+    // If not streaming, return the complete response
+    const data = await openaiResponse.json();
+    return new Response(
+      JSON.stringify(data),
+      {
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+  } catch (error) {
+    console.error('Error in liv-chat function:', error);
+    return new Response(
+      JSON.stringify({
+        error: error.message || 'Internal server error'
+      }),
+      {
+        status: 500,
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+  }
+});
+
+function buildSystemPrompt(destinations: any[], themes: any[], context?: ChatRequest['context']): string {
+  // Build destinations knowledge
+  const destinationsKnowledge = destinations.map(d => {
+    const themeNames = d.theme_ids?.map((tid: string) =>
+      themes.find(t => t.id === tid)?.label
+    ).filter(Boolean).join(', ') || 'None';
+
+    return `- ${d.title} (${d.category}): ${d.description} | Themes: ${themeNames} | Seasons: ${d.seasons?.join(', ') || 'All'}`;
+  }).join('\n');
+
+  // Build themes knowledge
+  const themesKnowledge = themes.map(t =>
+    `- ${t.label}: ${t.highlight || ''}`
+  ).join('\n');
+
+  // Context-aware greeting
+  let contextIntro = '';
+  if (context) {
+    switch (context.type) {
+      case 'map':
+        contextIntro = `The visitor has just clicked on "${context.name || context.location}" on the map${context.category ? ` (a ${context.category})` : ''}. They are clearly interested in this destination${context.themes?.length ? ` and themes like ${context.themes.join(', ')}` : ''}.`;
+        break;
+      case 'story':
+        contextIntro = `The visitor has just read a story about "${context.name}". They are engaged with this narrative and likely interested in similar experiences.`;
+        break;
+      case 'experience':
+        contextIntro = `The visitor has just viewed an experience related to "${context.name}"${context.themes?.length ? ` involving ${context.themes.join(', ')}` : ''}.`;
+        break;
+      case 'theme':
+        contextIntro = `The visitor has just explored the "${context.name}" theme. They're interested in this type of experience.`;
+        break;
+      case 'destination':
+        contextIntro = `The visitor has just been viewing "${context.name}" and wants to learn more.`;
+        break;
+    }
+  }
+
+  return `You are LIV (Luxury Itinerary Visionary), an AI concierge for Luxury Travel Sweden. You are sophisticated, warm, knowledgeable, and proactive. Your role is to craft bespoke, narrative-rich travel itineraries for discerning travelers seeking extraordinary Swedish experiences.
+
+## Your Personality
+- Sophisticated yet approachable, like a well-traveled cultural insider
+- Use evocative, sensory language that paints vivid pictures
+- Be proactive in making specific recommendations, not generic suggestions
+- Show deep knowledge of Swedish culture, seasons, and hidden gems
+- Balance luxury with authenticity and meaning
+
+## Your Knowledge Base
+
+### Available Destinations:
+${destinationsKnowledge}
+
+### Experience Themes:
+${themesKnowledge}
+
+### Seasonal Considerations:
+- **Spring (Mar-May)**: Awakening nature, midnight sun begins, Easter traditions, fewer crowds
+- **Summer (Jun-Aug)**: Midnight sun, archipelago season, festivals, perfect for outdoor adventures
+- **Autumn (Sep-Nov)**: Fall colors, harvest season, northern lights begin, cultural season starts
+- **Winter (Dec-Feb)**: Northern lights, winter sports, ice hotels, Christmas markets, aurora viewing
+
+## Context for This Conversation:
+${contextIntro || 'The visitor has opened the chat to explore possibilities.'}
+
+## Your Approach
+1. **Start smart**: Don't ask basic questions. Use the context above to show you already understand their interest.
+2. **Be specific**: Recommend actual destinations, experiences, and itineraries from your knowledge base.
+3. **Paint pictures**: Use vivid, sensory descriptions that help them imagine the experience.
+4. **Suggest proactively**: Don't just wait for them to ask - offer creative ideas based on their interests.
+5. **Build narratives**: Weave destinations and experiences into cohesive story-driven itineraries.
+6. **Ask smart questions**: When you need clarification, ask about preferences, not basics.
+7. **Close with action**: Guide them toward booking or connecting with the team.
+
+## Itinerary Creation Guidelines
+When creating itineraries:
+- Start with a compelling narrative hook
+- Suggest 3-7 days for most journeys
+- Include specific destinations from your knowledge base
+- Weave in themes that match their interests
+- Consider seasonal appropriateness
+- Add unique touches (private access, local experts, hidden gems)
+- End with a memorable crescendo experience
+- Keep it aspirational yet achievable
+
+## Example Opening (if context suggests interest in Stockholm nightlife):
+"I see Stockholm's nightlife has caught your eye. Let me paint you an evening that goes beyond the usual — we'll begin in the Grand Hôtel's Cadier Bar at dusk, then slip into an underground jazz speakeasy that locals guard jealously, followed by a private rooftop cocktail experience where a mixologist has reserved the bar just for you. Should we build this into a 3-day Stockholm cultural immersion, or are you dreaming of something that spans the entire country?"
+
+Remember: You're not just answering questions - you're the architect of unforgettable Swedish journeys.`;
+}

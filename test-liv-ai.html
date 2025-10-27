@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LIV AI Test Page</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .container {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 800px;
+      width: 100%;
+      padding: 3rem;
+    }
+
+    h1 {
+      color: #1a202c;
+      margin-bottom: 0.5rem;
+      font-size: 2rem;
+    }
+
+    .subtitle {
+      color: #718096;
+      margin-bottom: 2rem;
+      font-size: 1rem;
+    }
+
+    .status {
+      background: #f7fafc;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      font-size: 0.95rem;
+    }
+
+    .status-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .status-icon {
+      font-size: 1.25rem;
+      margin-right: 0.75rem;
+      min-width: 1.5rem;
+    }
+
+    .test-section {
+      margin-bottom: 2rem;
+    }
+
+    .test-section h2 {
+      color: #2d3748;
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .test-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .test-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-align: left;
+    }
+
+    .test-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .test-btn:active {
+      transform: translateY(0);
+    }
+
+    .test-btn-label {
+      display: block;
+      font-size: 0.875rem;
+      opacity: 0.9;
+      margin-top: 0.25rem;
+    }
+
+    .info-box {
+      background: #edf2f7;
+      border-left: 4px solid #667eea;
+      padding: 1rem;
+      border-radius: 0.25rem;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #4a5568;
+    }
+
+    .code {
+      background: #2d3748;
+      color: #68d391;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.875rem;
+    }
+
+    .log {
+      background: #1a202c;
+      color: #a0aec0;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 1rem;
+    }
+
+    .log-entry {
+      margin-bottom: 0.5rem;
+      line-height: 1.5;
+    }
+
+    .log-success { color: #68d391; }
+    .log-error { color: #fc8181; }
+    .log-info { color: #63b3ed; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🤖 LIV AI Test Console</h1>
+    <p class="subtitle">Test your AI-powered concierge integration</p>
+
+    <!-- Status Check -->
+    <div class="status" id="statusCheck">
+      <div class="status-item">
+        <span class="status-icon">⏳</span>
+        <span>Checking Supabase connection...</span>
+      </div>
+      <div class="status-item">
+        <span class="status-icon">⏳</span>
+        <span>Checking LIV AI initialization...</span>
+      </div>
+      <div class="status-item">
+        <span class="status-icon">⏳</span>
+        <span>Checking Edge Function availability...</span>
+      </div>
+    </div>
+
+    <!-- Test Scenarios -->
+    <div class="test-section">
+      <h2>🎯 Test Context Entry Points</h2>
+      <p style="color: #718096; font-size: 0.9rem; margin-bottom: 1rem;">
+        These buttons simulate different entry points (map, stories, experiences)
+      </p>
+      <div class="test-buttons">
+        <button class="test-btn" onclick="testMapContext('Stockholm', 'city', ['Design & Innovation', 'Nightlife'])">
+          📍 Stockholm
+          <span class="test-btn-label">City + Nightlife</span>
+        </button>
+        <button class="test-btn" onclick="testMapContext('Lapland', 'province', ['Hidden Nature', 'Wellness'])">
+          🌲 Lapland
+          <span class="test-btn-label">Nature + Wellness</span>
+        </button>
+        <button class="test-btn" onclick="testStoryContext('Northern Lights Adventure')">
+          ✨ Story Click
+          <span class="test-btn-label">Aurora Experience</span>
+        </button>
+        <button class="test-btn" onclick="testExperienceContext('Private Chef Dinner', ['Culinary', 'Royal'])">
+          🍽️ Experience Click
+          <span class="test-btn-label">Culinary + Royal</span>
+        </button>
+        <button class="test-btn" onclick="testThemeContext('Art & Culture')">
+          🎨 Theme Filter
+          <span class="test-btn-label">Art & Culture</span>
+        </button>
+        <button class="test-btn" onclick="testGeneralChat()">
+          💬 General Chat
+          <span class="test-btn-label">No context</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <strong>💡 How to test:</strong> Click any button above to simulate that entry point.
+      The chat should open with LIV already understanding the context (no basic questions like "What are you looking for?").
+    </div>
+
+    <!-- Console Log -->
+    <div class="test-section">
+      <h2>📋 Console Log</h2>
+      <div class="log" id="consoleLog">
+        <div class="log-entry log-info">Waiting for tests...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Include required scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js"></script>
+  <script src="liv-ai.js"></script>
+
+  <!-- Test Script -->
+  <script>
+    const logEl = document.getElementById('consoleLog');
+
+    function log(message, type = 'info') {
+      const entry = document.createElement('div');
+      entry.className = `log-entry log-${type}`;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logEl.appendChild(entry);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    // Status checks
+    setTimeout(() => {
+      const statusItems = document.querySelectorAll('.status-item');
+
+      // Check Supabase
+      if (window.Supabase && window.Supabase.isConfigured()) {
+        statusItems[0].innerHTML = '<span class="status-icon">✅</span><span>Supabase connected</span>';
+        log('Supabase client initialized', 'success');
+      } else {
+        statusItems[0].innerHTML = '<span class="status-icon">❌</span><span>Supabase not configured</span>';
+        log('ERROR: Supabase not configured', 'error');
+      }
+
+      // Check LIV AI
+      if (window.LivAI && window.LivAI.isInitialized) {
+        statusItems[1].innerHTML = '<span class="status-icon">✅</span><span>LIV AI initialized</span>';
+        log('LIV AI ready', 'success');
+      } else {
+        statusItems[1].innerHTML = '<span class="status-icon">❌</span><span>LIV AI not initialized</span>';
+        log('ERROR: LIV AI not initialized', 'error');
+      }
+
+      // Check Edge Function (we'll test this on first message)
+      statusItems[2].innerHTML = '<span class="status-icon">⚠️</span><span>Edge Function untested (click a button to test)</span>';
+      log('Edge Function will be tested on first message', 'info');
+    }, 1000);
+
+    // Test functions
+    function testMapContext(location, category, themes) {
+      log(`Testing map marker click: ${location}`, 'info');
+      document.dispatchEvent(new CustomEvent('mapMarkerClicked', {
+        detail: {
+          destination: {
+            title: location,
+            category: category,
+            themes: themes,
+            seasons: ['Summer', 'Winter'],
+            description: `Beautiful ${category} destination`
+          }
+        }
+      }));
+      log(`Context dispatched: ${location} (${category}) - ${themes.join(', ')}`, 'success');
+    }
+
+    function testStoryContext(storyName) {
+      log(`Testing story click: ${storyName}`, 'info');
+      document.dispatchEvent(new CustomEvent('storyClicked', {
+        detail: {
+          story: {
+            title: storyName
+          }
+        }
+      }));
+      log(`Context dispatched: Story "${storyName}"`, 'success');
+    }
+
+    function testExperienceContext(experienceName, themes) {
+      log(`Testing experience click: ${experienceName}`, 'info');
+      document.dispatchEvent(new CustomEvent('experienceClicked', {
+        detail: {
+          experience: {
+            title: experienceName,
+            themes: themes
+          }
+        }
+      }));
+      log(`Context dispatched: Experience "${experienceName}" - ${themes.join(', ')}`, 'success');
+    }
+
+    function testThemeContext(themeName) {
+      log(`Testing theme filter: ${themeName}`, 'info');
+      document.dispatchEvent(new CustomEvent('themeSelected', {
+        detail: {
+          theme: themeName
+        }
+      }));
+      log(`Context dispatched: Theme "${themeName}"`, 'success');
+    }
+
+    function testGeneralChat() {
+      log('Testing general chat (no context)', 'info');
+      if (window.LivAI) {
+        window.LivAI.openChat();
+        log('Chat opened without context', 'success');
+      } else {
+        log('ERROR: LivAI not available', 'error');
+      }
+    }
+
+    // Monitor for Edge Function responses
+    let originalFetch = window.fetch;
+    window.fetch = async function(...args) {
+      const url = args[0];
+      if (typeof url === 'string' && url.includes('liv-chat')) {
+        log('Calling Edge Function...', 'info');
+        try {
+          const response = await originalFetch.apply(this, args);
+          if (response.ok) {
+            log('Edge Function responded successfully ✅', 'success');
+            const statusItems = document.querySelectorAll('.status-item');
+            statusItems[2].innerHTML = '<span class="status-icon">✅</span><span>Edge Function working</span>';
+          } else {
+            log(`ERROR: Edge Function returned ${response.status}`, 'error');
+            const statusItems = document.querySelectorAll('.status-item');
+            statusItems[2].innerHTML = '<span class="status-icon">❌</span><span>Edge Function error</span>';
+          }
+          return response;
+        } catch (err) {
+          log(`ERROR: ${err.message}`, 'error');
+          throw err;
+        }
+      }
+      return originalFetch.apply(this, args);
+    };
+  </script>
+</body>
+</html>

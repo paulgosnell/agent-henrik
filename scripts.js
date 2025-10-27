@@ -1150,6 +1150,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (mapCardCta) {
                     mapCardCta.setAttribute('data-liv-context-type', 'destination');
                     mapCardCta.setAttribute('data-liv-context-name', data.title);
+
+                    // Store full context for LIV AI
+                    mapCardCta.onclick = (e) => {
+                        e.preventDefault();
+                        // Dispatch event with full destination context
+                        document.dispatchEvent(new CustomEvent('mapMarkerClicked', {
+                            detail: {
+                                destination: {
+                                    title: data.title,
+                                    category: data.category,
+                                    themes: data.themes,
+                                    seasons: data.seasons,
+                                    description: data.description
+                                }
+                            }
+                        }));
+                    };
                 }
 
                 // Show card
