@@ -89,15 +89,23 @@ async function loadStaticContent() {
     // Update all elements with data-editable attributes
     document.querySelectorAll('[data-editable]').forEach(el => {
       const key = el.getAttribute('data-editable');
-      if (content[key]) {
-        // Store original value for change detection
-        InlineEditor.originalValues[key] = content[key];
 
-        // Update element content
-        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+      // Store current content as original (whether from DB or HTML)
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+        InlineEditor.originalValues[key] = content[key] || el.value;
+        if (content[key]) {
           el.value = content[key];
-        } else {
-          el.textContent = content[key];
+        }
+      } else {
+        // Use innerHTML to preserve rich content (links, spans, etc.)
+        InlineEditor.originalValues[key] = content[key] || el.innerHTML;
+        if (content[key]) {
+          // Check if content has HTML tags
+          if (/<[a-z][\s\S]*>/i.test(content[key])) {
+            el.innerHTML = content[key];
+          } else {
+            el.textContent = content[key];
+          }
         }
       }
     });
@@ -282,7 +290,8 @@ function handleElementChange(event) {
   if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
     currentValue = el.value.trim();
   } else {
-    currentValue = el.textContent.trim();
+    // Use innerHTML to preserve rich content (links, spans, etc.)
+    currentValue = el.innerHTML.trim();
   }
 
   // Get original value
