@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inline Editor Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: #f5f5f5;
+    }
+    .test-section {
+      background: white;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .status {
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+    .status.success { background: #d4edda; color: #155724; }
+    .status.error { background: #f8d7da; color: #721c24; }
+    .status.warning { background: #fff3cd; color: #856404; }
+    .editable-demo {
+      padding: 1rem;
+      border: 2px dashed #ccc;
+      margin: 1rem 0;
+    }
+    h1 { color: #333; }
+    h2 { color: #666; margin-top: 2rem; }
+    code {
+      background: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 0.9em;
+    }
+    .instruction {
+      background: #e7f3ff;
+      padding: 1rem;
+      border-left: 4px solid #2196F3;
+      margin: 1rem 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎨 Inline Editor Test Console</h1>
+
+  <div class="test-section">
+    <h2>System Status</h2>
+    <div id="statusContainer">
+      <div class="status warning">⏳ Checking...</div>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Instructions</h2>
+    <div class="instruction">
+      <strong>To test the inline editor:</strong>
+      <ol>
+        <li>Look at the bottom-right corner for the edit button (it's subtle - 30% opacity)</li>
+        <li>Hover over it to see it clearly</li>
+        <li>Click it (or press <code>Ctrl/Cmd + E</code>)</li>
+        <li>You should see the elements below get blue outlines</li>
+        <li>Click any text below to edit it</li>
+        <li>When done, click "Save Changes"</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test Editable Elements</h2>
+
+    <div class="editable-demo">
+      <h3 data-editable="test.headline">This is an editable headline</h3>
+      <p data-editable="test.paragraph">This is an editable paragraph. Click "Edit Mode" in the bottom-right, then click here to edit this text.</p>
+      <span data-editable="test.span">This is an editable span</span>
+    </div>
+
+    <p><small>These elements have <code>data-editable</code> attributes and should become editable when edit mode is on.</small></p>
+  </div>
+
+  <div class="test-section">
+    <h2>Debug Console</h2>
+    <div id="debugLog" style="font-family: monospace; font-size: 12px; max-height: 300px; overflow-y: auto; background: #1a1a1a; color: #0f0; padding: 1rem; border-radius: 4px;">
+      <div>Waiting for events...</div>
+    </div>
+  </div>
+
+  <!-- Load dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js"></script>
+  <script src="inline-editor.js"></script>
+
+  <script>
+    const statusContainer = document.getElementById('statusContainer');
+    const debugLog = document.getElementById('debugLog');
+
+    function log(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      const color = type === 'error' ? '#f00' : type === 'success' ? '#0f0' : '#0ff';
+      debugLog.innerHTML += `<div style="color: ${color}">[${timestamp}] ${message}</div>`;
+      debugLog.scrollTop = debugLog.scrollHeight;
+    }
+
+    function updateStatus(message, type = 'warning') {
+      statusContainer.innerHTML = `<div class="status ${type}">${message}</div>`;
+    }
+
+    // Check everything after a delay
+    setTimeout(() => {
+      let checks = [];
+
+      // Check 1: Supabase
+      if (window.Supabase && window.Supabase.isConfigured()) {
+        checks.push('✅ Supabase configured');
+        log('Supabase client initialized', 'success');
+      } else {
+        checks.push('❌ Supabase not configured');
+        log('ERROR: Supabase not configured', 'error');
+      }
+
+      // Check 2: InlineEditor object
+      if (typeof InlineEditor !== 'undefined') {
+        checks.push('✅ InlineEditor loaded');
+        log('InlineEditor object found', 'success');
+      } else {
+        checks.push('❌ InlineEditor not loaded');
+        log('ERROR: InlineEditor not loaded', 'error');
+      }
+
+      // Check 3: Edit button
+      const editBtn = document.getElementById('editModeBtn');
+      if (editBtn) {
+        checks.push('✅ Edit button created');
+        log('Edit mode button found in DOM', 'success');
+      } else {
+        checks.push('❌ Edit button not created');
+        log('ERROR: Edit mode button not found', 'error');
+      }
+
+      // Check 4: Authentication
+      if (typeof InlineEditor !== 'undefined' && InlineEditor.isAuthenticated) {
+        checks.push('✅ User authenticated');
+        log('User is authenticated', 'success');
+      } else {
+        checks.push('⚠️ Not authenticated (you\'ll see "Login to Edit")');
+        log('User not authenticated - will show login prompt', 'info');
+      }
+
+      // Check 5: Editable elements
+      const editableCount = document.querySelectorAll('[data-editable]').length;
+      if (editableCount > 0) {
+        checks.push(`✅ Found ${editableCount} editable elements`);
+        log(`Found ${editableCount} elements with data-editable`, 'success');
+      } else {
+        checks.push('❌ No editable elements found');
+        log('ERROR: No elements with data-editable found', 'error');
+      }
+
+      // Update status
+      const hasErrors = checks.some(c => c.includes('❌'));
+      const allGood = !hasErrors && checks.every(c => c.includes('✅') || c.includes('⚠️'));
+
+      if (allGood) {
+        updateStatus(checks.join('<br>'), 'success');
+      } else if (hasErrors) {
+        updateStatus(checks.join('<br>'), 'error');
+      } else {
+        updateStatus(checks.join('<br>'), 'warning');
+      }
+    }, 1500);
+
+    // Monitor for edit mode changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          const target = mutation.target;
+          if (target.classList.contains('editable-active')) {
+            log(`Element became editable: ${target.getAttribute('data-editable')}`, 'success');
+          }
+        }
+      });
+    });
+
+    setTimeout(() => {
+      document.querySelectorAll('[data-editable]').forEach(el => {
+        observer.observe(el, { attributes: true });
+      });
+      log('Started monitoring editable elements', 'info');
+    }, 1000);
+  </script>
+</body>
+</html>
