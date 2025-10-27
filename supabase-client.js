@@ -391,12 +391,48 @@ const DB = {
    * Get press quotes
    */
   async getPressQuotes() {
-    const { data, error } = await supabaseClient
+    const { data, error} = await supabaseClient
       .from('press_quotes')
       .select('*')
       .eq('published', true)
       .order('display_order');
 
+    if (error) throw error;
+    return data;
+  },
+
+  /**
+   * Get experiences (pillar cards)
+   */
+  async getExperiences(publishedOnly = true) {
+    let query = supabaseClient
+      .from('experiences')
+      .select('*')
+      .order('display_order');
+
+    if (publishedOnly) {
+      query = query.eq('published', true);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data;
+  },
+
+  /**
+   * Get corporate offerings
+   */
+  async getCorporateOfferings(publishedOnly = true) {
+    let query = supabaseClient
+      .from('corporate_offerings')
+      .select('*')
+      .order('display_order');
+
+    if (publishedOnly) {
+      query = query.eq('published', true);
+    }
+
+    const { data, error } = await query;
     if (error) throw error;
     return data;
   }
