@@ -141,7 +141,9 @@ function createEditorUI() {
     InlineEditor.editModeBtn.onclick = toggleEditMode;
   }
 
-  document.body.appendChild(InlineEditor.editModeBtn);
+  // Append to footer instead of body (keep it discreet)
+  const footer = document.querySelector('footer') || document.body;
+  footer.appendChild(InlineEditor.editModeBtn);
 
   // Create save changes button (initially hidden)
   InlineEditor.saveChangesBtn = document.createElement('button');
@@ -155,7 +157,7 @@ function createEditorUI() {
   `;
   InlineEditor.saveChangesBtn.onclick = saveChanges;
 
-  document.body.appendChild(InlineEditor.saveChangesBtn);
+  footer.appendChild(InlineEditor.saveChangesBtn);
 }
 
 // ==========================================

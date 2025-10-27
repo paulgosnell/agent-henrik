@@ -4083,35 +4083,42 @@
     background: rgba(245, 158, 11, 0.08);
 }
 
-/* Edit mode toggle button */
+/* Edit mode toggle button - discreet, only visible on hover */
 .edit-mode-btn {
     position: fixed;
     bottom: 20px;
     right: 20px;
     z-index: 9999;
-    padding: 12px 24px;
-    background: #1a1a1a;
-    color: white;
+    padding: 10px 20px;
+    background: rgba(26, 26, 26, 0.7);
+    color: rgba(255, 255, 255, 0.7);
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    font-size: 12px;
     font-weight: 500;
     display: flex;
     align-items: center;
     gap: 8px;
     transition: all 0.3s ease;
     font-family: var(--font-sans);
+    opacity: 0.3;
+    backdrop-filter: blur(8px);
 }
 
 .edit-mode-btn:hover {
+    opacity: 1;
+    background: #1a1a1a;
+    color: white;
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
 .edit-mode-btn.active {
     background: #10b981;
+    opacity: 1;
+    color: white;
 }
 
 .edit-mode-btn .edit-mode-icon {
