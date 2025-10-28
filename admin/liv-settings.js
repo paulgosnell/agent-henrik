@@ -129,7 +129,7 @@
         document.getElementById('instructionId').value = '';
         document.getElementById('instructionPriority').value = '50';
         document.getElementById('instructionActive').checked = true;
-        document.getElementById('instructionModal').classList.add('show');
+        document.getElementById('instructionModal').classList.add('active');
     }
 
     window.editInstruction = function(id) {
@@ -143,11 +143,11 @@
         document.getElementById('instructionText').value = instruction.instruction;
         document.getElementById('instructionPriority').value = instruction.priority;
         document.getElementById('instructionActive').checked = instruction.is_active;
-        document.getElementById('instructionModal').classList.add('show');
+        document.getElementById('instructionModal').classList.add('active');
     };
 
     window.closeInstructionModal = function() {
-        document.getElementById('instructionModal').classList.remove('show');
+        document.getElementById('instructionModal').classList.remove('active');
     };
 
     async function handleFormSubmit(e) {
