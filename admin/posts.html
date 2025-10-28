@@ -883,6 +883,18 @@
           heroImageUrl = await uploadImage();
         }
 
+        // Warning for missing image when publishing
+        if (!asDraft && !heroImageUrl && !currentImageFile) {
+          const confirmPublish = confirm(
+            '⚠️ No hero image selected!\n\n' +
+            'Publishing without an image will show a placeholder on the website.\n\n' +
+            'Do you want to continue publishing without an image?'
+          );
+          if (!confirmPublish) {
+            return;
+          }
+        }
+
         // Prepare published_at
         let publishedAt = null;
         if (!asDraft) {

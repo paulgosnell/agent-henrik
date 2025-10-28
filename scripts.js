@@ -1644,4 +1644,82 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Hero video is now handled directly via HTML video element
             // No slideshow initialization needed
+
+            // Load blog posts for journal section
+            loadJournalPosts();
         });
+
+// ==========================================
+// JOURNAL / BLOG POSTS FUNCTIONALITY
+// ==========================================
+async function loadJournalPosts() {
+    const journalGrid = document.getElementById('journalGrid');
+    if (!journalGrid) return; // Only run on pages with journal grid
+
+    try {
+        // Check if Supabase is available
+        if (!window.Supabase || !window.Supabase.db) {
+            console.warn('Supabase not available, keeping static journal posts');
+            return;
+        }
+
+        // Fetch published blog posts
+        const posts = await window.Supabase.db.getBlogPosts(true);
+
+        if (posts && posts.length > 0) {
+            // Sort by published date (newest first) and take top 3
+            const recentPosts = posts
+                .sort((a, b) => new Date(b.published_at) - new Date(a.published_at))
+                .slice(0, 3);
+
+            // Replace static content with dynamic blog posts
+            journalGrid.innerHTML = recentPosts.map(post => {
+                // Use placeholder if no image
+                const imageHtml = post.hero_image_url
+                    ? `<img src="${escapeHtml(post.hero_image_url)}" alt="${escapeHtml(post.title)}" loading="lazy">`
+                    : `<div class="journal-placeholder" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 3rem; min-height: 300px;">📰</div>`;
+
+                const featuredBadge = post.featured ? ' ⭐' : '';
+
+                return `
+                    <article class="story-card" data-story="${post.slug}" aria-label="${escapeHtml(post.title)}">
+                        <div class="story-media">
+                            ${imageHtml}
+                        </div>
+                        <div class="story-meta">
+                            <span class="eyebrow" style="margin-bottom:0.5rem;">${escapeHtml(post.author || 'LIV Team')}${featuredBadge}</span>
+                            <h3>${escapeHtml(post.title)}</h3>
+                            <p>${escapeHtml(post.excerpt || '')}</p>
+                            <a href="/journal.html?slug=${encodeURIComponent(post.slug)}" class="story-cta" style="display: inline-block; margin-top: 1rem; color: inherit; text-decoration: none; font-weight: 600;">Read More →</a>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+
+            // Add "View All" link if there are more posts
+            if (posts.length > 3) {
+                const viewAllCard = `
+                    <article class="story-card" style="display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.03);">
+                        <div class="story-meta" style="text-align: center;">
+                            <h3>View All Journal Posts</h3>
+                            <p>Explore more stories and travel insights</p>
+                            <a href="/journal.html" class="story-cta" style="display: inline-block; margin-top: 1rem; color: inherit; text-decoration: none; font-weight: 600;">View All →</a>
+                        </div>
+                    </article>
+                `;
+                journalGrid.innerHTML += viewAllCard;
+            }
+        }
+    } catch (error) {
+        console.error('Error loading journal posts:', error);
+        // Keep static content if there's an error
+    }
+}
+
+// Helper function for escaping HTML
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}

@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal - Luxury Travel Sweden</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Journal Page Styles */
+        .journal-hero {
+            padding: 8rem 2rem 4rem;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: white;
+            text-align: center;
+        }
+
+        [data-theme="light"] .journal-hero {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            color: #1a1a1a;
+        }
+
+        .journal-hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 300;
+            margin-bottom: 1rem;
+        }
+
+        .journal-hero p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .journal-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .journal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+
+        .journal-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+        }
+
+        [data-theme="light"] .journal-card {
+            background: white;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] .journal-card {
+            background: #2d2d2d;
+        }
+
+        .journal-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .journal-card-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+        }
+
+        .journal-card-image.placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .journal-card-content {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .journal-card-meta {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            font-size: 0.875rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        [data-theme="dark"] .journal-card-meta {
+            color: #aaa;
+        }
+
+        .journal-card-author {
+            font-weight: 500;
+        }
+
+        .journal-card-date {
+            opacity: 0.8;
+        }
+
+        .journal-card-featured {
+            display: inline-block;
+            background: #FFD700;
+            color: #1a1a1a;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        .journal-card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            line-height: 1.3;
+            color: #1a1a1a;
+        }
+
+        [data-theme="dark"] .journal-card-title {
+            color: #ffffff;
+        }
+
+        .journal-card-excerpt {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 1rem;
+            flex: 1;
+        }
+
+        [data-theme="dark"] .journal-card-excerpt {
+            color: #ccc;
+        }
+
+        .journal-card-cta {
+            color: #1a1a1a;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: auto;
+        }
+
+        [data-theme="dark"] .journal-card-cta {
+            color: #ffffff;
+        }
+
+        .journal-card-cta::after {
+            content: '→';
+            transition: transform 0.3s ease;
+        }
+
+        .journal-card:hover .journal-card-cta::after {
+            transform: translateX(4px);
+        }
+
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #f0f0f0;
+            border-top-color: #1a1a1a;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        [data-theme="dark"] .empty-state h2 {
+            color: #ffffff;
+        }
+
+        .empty-state p {
+            color: #666;
+            font-size: 1.125rem;
+        }
+
+        [data-theme="dark"] .empty-state p {
+            color: #aaa;
+        }
+
+        /* Filters */
+        .journal-filters {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .filter-button {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] .filter-button {
+            background: #2d2d2d;
+            border-color: #444;
+            color: #ffffff;
+        }
+
+        .filter-button:hover {
+            border-color: #1a1a1a;
+        }
+
+        [data-theme="dark"] .filter-button:hover {
+            border-color: #ffffff;
+        }
+
+        .filter-button.active {
+            background: #1a1a1a;
+            color: white;
+            border-color: #1a1a1a;
+        }
+
+        [data-theme="dark"] .filter-button.active {
+            background: #ffffff;
+            color: #1a1a1a;
+            border-color: #ffffff;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .journal-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .journal-hero {
+                padding: 6rem 1.5rem 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="main-nav" id="mainNav">
+        <div class="nav-content">
+            <a href="/" class="nav-logo" id="navLogo">
+                <img src="images/logo-white.svg" alt="Luxury Travel Sweden" class="logo-white">
+                <img src="images/logo-black.svg" alt="Luxury Travel Sweden" class="logo-black">
+            </a>
+            <button class="burger-menu" id="burgerMenu" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar-nav" id="sidebarNav">
+        <div class="sidebar-header">
+            <a href="/" class="sidebar-logo">
+                <img src="images/logo-white.svg" alt="Luxury Travel Sweden">
+            </a>
+            <button class="sidebar-close" id="sidebarClose" aria-label="Close navigation">×</button>
+        </div>
+        <ul class="sidebar-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/journal.html" class="active">Journal</a></li>
+            <li><a href="/our-services.html">Our Services</a></li>
+            <li><a href="/our-team.html">Our Team</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <button class="btn btn-primary btn-full" data-open-liv>Start Planning</button>
+        </div>
+    </aside>
+
+    <!-- Hero Section -->
+    <section class="journal-hero">
+        <h1>The Journal</h1>
+        <p>Discover the hidden gems, cultural treasures, and unforgettable experiences that make Sweden extraordinary.</p>
+    </section>
+
+    <!-- Journal Container -->
+    <div class="journal-container">
+        <!-- Filters -->
+        <div class="journal-filters">
+            <button class="filter-button active" data-filter="all">All Posts</button>
+            <button class="filter-button" data-filter="featured">Featured</button>
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading-state" id="loadingState">
+            <div class="loading-spinner"></div>
+            <p>Loading journal posts...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state hidden" id="emptyState">
+            <div class="empty-state-icon">📝</div>
+            <h2>No Journal Posts Yet</h2>
+            <p>Check back soon for exciting stories and travel insights.</p>
+        </div>
+
+        <!-- Journal Grid -->
+        <div class="journal-grid hidden" id="journalGrid">
+            <!-- Journal cards will be inserted here by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <span class="theme-toggle-track">
+            <span class="theme-toggle-thumb"></span>
+        </span>
+    </button>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-client.js"></script>
+    <script src="scripts.js"></script>
+    <script>
+        // Journal Posts State
+        let allPosts = [];
+        let currentFilter = 'all';
+
+        // Initialize
+        async function init() {
+            try {
+                await loadJournalPosts();
+            } catch (error) {
+                console.error('Error initializing journal page:', error);
+                showEmpty();
+            }
+        }
+
+        // Load journal posts from Supabase
+        async function loadJournalPosts() {
+            const loadingState = document.getElementById('loadingState');
+            const emptyState = document.getElementById('emptyState');
+            const journalGrid = document.getElementById('journalGrid');
+
+            try {
+                // Check if Supabase is available
+                if (!window.Supabase || !window.Supabase.db) {
+                    throw new Error('Supabase not configured');
+                }
+
+                // Fetch published posts only
+                allPosts = await window.Supabase.db.getBlogPosts(true);
+
+                loadingState.classList.add('hidden');
+
+                if (allPosts.length === 0) {
+                    emptyState.classList.remove('hidden');
+                    journalGrid.classList.add('hidden');
+                } else {
+                    emptyState.classList.add('hidden');
+                    journalGrid.classList.remove('hidden');
+                    renderJournalPosts();
+                }
+            } catch (error) {
+                console.error('Error loading journal posts:', error);
+                loadingState.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                journalGrid.classList.add('hidden');
+            }
+        }
+
+        // Render journal posts
+        function renderJournalPosts() {
+            const journalGrid = document.getElementById('journalGrid');
+
+            // Filter posts
+            let filteredPosts = allPosts;
+            if (currentFilter === 'featured') {
+                filteredPosts = allPosts.filter(post => post.featured);
+            }
+
+            // Sort by published date (newest first)
+            filteredPosts.sort((a, b) => new Date(b.published_at) - new Date(a.published_at));
+
+            // Generate HTML
+            journalGrid.innerHTML = filteredPosts.map(post => {
+                const imageHtml = post.hero_image_url
+                    ? `<img src="${escapeHtml(post.hero_image_url)}" alt="${escapeHtml(post.title)}" class="journal-card-image">`
+                    : `<div class="journal-card-image placeholder">📰</div>`;
+
+                const featuredBadge = post.featured
+                    ? `<span class="journal-card-featured">⭐ Featured</span>`
+                    : '';
+
+                return `
+                    <a href="journal-post.html?slug=${encodeURIComponent(post.slug)}" class="journal-card">
+                        ${imageHtml}
+                        <div class="journal-card-content">
+                            <div class="journal-card-meta">
+                                <span class="journal-card-author">${escapeHtml(post.author || 'LIV Team')}</span>
+                                <span class="journal-card-date">${formatDate(post.published_at)}</span>
+                                ${featuredBadge}
+                            </div>
+                            <h2 class="journal-card-title">${escapeHtml(post.title)}</h2>
+                            <p class="journal-card-excerpt">${escapeHtml(post.excerpt || '')}</p>
+                            <span class="journal-card-cta">Read More</span>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+        }
+
+        // Filter functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            // Filter buttons
+            const filterButtons = document.querySelectorAll('.filter-button');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    currentFilter = button.dataset.filter;
+                    renderJournalPosts();
+                });
+            });
+
+            // Initialize
+            init();
+        });
+
+        // Helper functions
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function showEmpty() {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('emptyState').classList.remove('hidden');
+            document.getElementById('journalGrid').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
