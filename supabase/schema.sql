@@ -416,6 +416,194 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- ==========================================
+-- 8. CONVERSATIONS TABLE
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS conversations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  session_id TEXT UNIQUE NOT NULL,
+  lead_id UUID REFERENCES leads(id) ON DELETE SET NULL,
+  context JSONB,
+  started_at TIMESTAMPTZ DEFAULT NOW(),
+  last_message_at TIMESTAMPTZ DEFAULT NOW(),
+  message_count INTEGER DEFAULT 0,
+  status TEXT DEFAULT 'active' CHECK (status IN ('active', 'converted', 'closed')),
+  tags TEXT[] DEFAULT ARRAY[]::TEXT[]
+);
+
+COMMENT ON TABLE conversations IS 'LIV chat conversation sessions';
+COMMENT ON COLUMN conversations.session_id IS 'Client-generated session identifier';
+COMMENT ON COLUMN conversations.context IS 'Initial context (map click, story, etc.)';
+COMMENT ON COLUMN conversations.status IS 'active, converted (became a lead), or closed';
+
+-- ==========================================
+-- 9. CONVERSATION MESSAGES TABLE
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS conversation_messages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  conversation_id UUID NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+  role TEXT NOT NULL CHECK (role IN ('user', 'assistant', 'system')),
+  content TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+COMMENT ON TABLE conversation_messages IS 'Individual messages in LIV chat conversations';
+COMMENT ON COLUMN conversation_messages.role IS 'Message sender: user, assistant (LIV), or system';
+
+-- ==========================================
+-- 10. LEADS TABLE
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS leads (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT UNIQUE NOT NULL,
+  name TEXT,
+  phone TEXT,
+  country TEXT,
+  preferences JSONB,
+  source TEXT DEFAULT 'liv_chat',
+  status TEXT DEFAULT 'new' CHECK (status IN ('new', 'contacted', 'qualified', 'converted', 'closed')),
+  notes TEXT,
+  first_conversation_id UUID REFERENCES conversations(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  contacted_at TIMESTAMPTZ,
+  converted_at TIMESTAMPTZ
+);
+
+COMMENT ON TABLE leads IS 'Lead contacts captured from LIV chat and other sources';
+COMMENT ON COLUMN leads.preferences IS 'Travel preferences, interests, budget, etc. as JSON';
+COMMENT ON COLUMN leads.source IS 'Where the lead came from: liv_chat, contact_form, etc.';
+COMMENT ON COLUMN leads.status IS 'Lead qualification status';
+
+-- ==========================================
+-- 11. BOOKING INQUIRIES TABLE
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS booking_inquiries (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  lead_id UUID REFERENCES leads(id) ON DELETE SET NULL,
+  conversation_id UUID REFERENCES conversations(id) ON DELETE SET NULL,
+  email TEXT NOT NULL,
+  name TEXT,
+  phone TEXT,
+  travel_dates_start DATE,
+  travel_dates_end DATE,
+  group_size INTEGER,
+  budget_range TEXT,
+  destinations_of_interest TEXT[] DEFAULT ARRAY[]::TEXT[],
+  themes_of_interest TEXT[] DEFAULT ARRAY[]::TEXT[],
+  special_requests TEXT,
+  itinerary_summary TEXT,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'reviewing', 'quoted', 'booked', 'cancelled')),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+COMMENT ON TABLE booking_inquiries IS 'Specific booking requests from LIV conversations';
+COMMENT ON COLUMN booking_inquiries.itinerary_summary IS 'AI-generated or user-described itinerary';
+COMMENT ON COLUMN booking_inquiries.budget_range IS 'Budget category or range';
+
+-- ==========================================
+-- INDEXES FOR LEAD MANAGEMENT
+-- ==========================================
+
+-- Conversations indexes
+CREATE INDEX IF NOT EXISTS idx_conversations_session ON conversations(session_id);
+CREATE INDEX IF NOT EXISTS idx_conversations_lead ON conversations(lead_id);
+CREATE INDEX IF NOT EXISTS idx_conversations_status ON conversations(status);
+CREATE INDEX IF NOT EXISTS idx_conversations_last_message ON conversations(last_message_at DESC);
+
+-- Conversation messages indexes
+CREATE INDEX IF NOT EXISTS idx_messages_conversation ON conversation_messages(conversation_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_messages_created ON conversation_messages(created_at DESC);
+
+-- Leads indexes
+CREATE INDEX IF NOT EXISTS idx_leads_email ON leads(email);
+CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);
+CREATE INDEX IF NOT EXISTS idx_leads_created ON leads(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_leads_source ON leads(source);
+
+-- Booking inquiries indexes
+CREATE INDEX IF NOT EXISTS idx_inquiries_lead ON booking_inquiries(lead_id);
+CREATE INDEX IF NOT EXISTS idx_inquiries_status ON booking_inquiries(status);
+CREATE INDEX IF NOT EXISTS idx_inquiries_created ON booking_inquiries(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_inquiries_email ON booking_inquiries(email);
+
+-- ==========================================
+-- TRIGGERS FOR LEAD TABLES
+-- ==========================================
+
+CREATE TRIGGER update_leads_updated_at BEFORE UPDATE ON leads
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_booking_inquiries_updated_at BEFORE UPDATE ON booking_inquiries
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ==========================================
+-- RLS POLICIES - LEAD MANAGEMENT
+-- ==========================================
+
+-- Enable RLS on lead tables
+ALTER TABLE conversations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE conversation_messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE leads ENABLE ROW LEVEL SECURITY;
+ALTER TABLE booking_inquiries ENABLE ROW LEVEL SECURITY;
+
+-- Conversations: Service role can manage (for Edge Function)
+CREATE POLICY "Service role can manage conversations"
+  ON conversations FOR ALL
+  USING (auth.role() = 'service_role');
+
+CREATE POLICY "Authenticated users can view all conversations"
+  ON conversations FOR SELECT
+  USING (auth.role() = 'authenticated');
+
+-- Conversation messages: Service role can manage
+CREATE POLICY "Service role can manage messages"
+  ON conversation_messages FOR ALL
+  USING (auth.role() = 'service_role');
+
+CREATE POLICY "Authenticated users can view all messages"
+  ON conversation_messages FOR SELECT
+  USING (auth.role() = 'authenticated');
+
+-- Leads: Authenticated users can manage
+CREATE POLICY "Service role can insert leads"
+  ON leads FOR INSERT
+  WITH CHECK (auth.role() = 'service_role');
+
+CREATE POLICY "Authenticated users can view all leads"
+  ON leads FOR SELECT
+  USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Authenticated users can update leads"
+  ON leads FOR UPDATE
+  USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Authenticated users can delete leads"
+  ON leads FOR DELETE
+  USING (auth.role() = 'authenticated');
+
+-- Booking inquiries: Authenticated users can manage
+CREATE POLICY "Service role can insert inquiries"
+  ON booking_inquiries FOR INSERT
+  WITH CHECK (auth.role() = 'service_role');
+
+CREATE POLICY "Authenticated users can view all inquiries"
+  ON booking_inquiries FOR SELECT
+  USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Authenticated users can update inquiries"
+  ON booking_inquiries FOR UPDATE
+  USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Authenticated users can delete inquiries"
+  ON booking_inquiries FOR DELETE
+  USING (auth.role() = 'authenticated');
+
+-- ==========================================
 -- SUCCESS MESSAGE
 -- ==========================================
 
@@ -436,4 +624,8 @@ BEGIN
   RAISE NOTICE '- static_content';
   RAISE NOTICE '- press_quotes';
   RAISE NOTICE '- media';
+  RAISE NOTICE '- conversations';
+  RAISE NOTICE '- conversation_messages';
+  RAISE NOTICE '- leads';
+  RAISE NOTICE '- booking_inquiries';
 END $$;

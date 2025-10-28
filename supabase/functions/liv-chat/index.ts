@@ -13,6 +13,7 @@ interface ChatMessage {
 
 interface ChatRequest {
   messages: ChatMessage[];
+  sessionId?: string;
   context?: {
     type?: 'map' | 'story' | 'experience' | 'theme' | 'destination' | 'general';
     name?: string;
@@ -22,6 +23,12 @@ interface ChatRequest {
     location?: string;
   };
   stream?: boolean;
+  leadInfo?: {
+    email?: string;
+    name?: string;
+    phone?: string;
+    country?: string;
+  };
 }
 
 // Initialize Supabase client
@@ -37,7 +44,10 @@ Deno.serve(async (req) => {
 
   try {
     const supabase = createClient(supabaseUrl, supabaseKey);
-    const { messages, context, stream = true }: ChatRequest = await req.json();
+    const { messages, sessionId, context, stream = true, leadInfo }: ChatRequest = await req.json();
+
+    // Generate session ID if not provided
+    const actualSessionId = sessionId || crypto.randomUUID();
 
     // Load destinations and themes from Supabase to build knowledge base
     const [destinationsResult, themesResult] = await Promise.all([
@@ -48,8 +58,101 @@ Deno.serve(async (req) => {
     const destinations = destinationsResult.data || [];
     const themes = themesResult.data || [];
 
+    // Save or update conversation
+    let conversationId: string | null = null;
+
+    // Check if conversation exists
+    const { data: existingConversation } = await supabase
+      .from('conversations')
+      .select('id, lead_id')
+      .eq('session_id', actualSessionId)
+      .single();
+
+    if (existingConversation) {
+      conversationId = existingConversation.id;
+
+      // Update conversation
+      await supabase
+        .from('conversations')
+        .update({
+          last_message_at: new Date().toISOString(),
+          message_count: messages.length,
+        })
+        .eq('id', conversationId);
+    } else {
+      // Create new conversation
+      const { data: newConversation } = await supabase
+        .from('conversations')
+        .insert({
+          session_id: actualSessionId,
+          context: context || null,
+          message_count: messages.length,
+        })
+        .select()
+        .single();
+
+      conversationId = newConversation?.id || null;
+    }
+
+    // Save user message to database
+    if (conversationId && messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage.role === 'user') {
+        await supabase
+          .from('conversation_messages')
+          .insert({
+            conversation_id: conversationId,
+            role: 'user',
+            content: lastMessage.content,
+          });
+      }
+    }
+
+    // Handle lead capture
+    let leadId: string | null = existingConversation?.lead_id || null;
+
+    if (leadInfo && leadInfo.email && !leadId) {
+      // Check if lead already exists
+      const { data: existingLead } = await supabase
+        .from('leads')
+        .select('id')
+        .eq('email', leadInfo.email)
+        .single();
+
+      if (existingLead) {
+        leadId = existingLead.id;
+      } else {
+        // Create new lead
+        const { data: newLead } = await supabase
+          .from('leads')
+          .insert({
+            email: leadInfo.email,
+            name: leadInfo.name || null,
+            phone: leadInfo.phone || null,
+            country: leadInfo.country || null,
+            source: 'liv_chat',
+            first_conversation_id: conversationId,
+          })
+          .select()
+          .single();
+
+        leadId = newLead?.id || null;
+      }
+
+      // Link conversation to lead
+      if (conversationId && leadId) {
+        await supabase
+          .from('conversations')
+          .update({
+            lead_id: leadId,
+            status: 'converted'
+          })
+          .eq('id', conversationId);
+      }
+    }
+
     // Build LIV's system prompt with full knowledge base
-    const systemPrompt = buildSystemPrompt(destinations, themes, context);
+    const systemPrompt = buildSystemPrompt(destinations, themes, context, !!leadInfo?.email);
 
     // Prepare messages for OpenAI
     const openaiMessages: ChatMessage[] = [
@@ -78,26 +181,91 @@ Deno.serve(async (req) => {
       throw new Error(`OpenAI API error: ${error}`);
     }
 
-    // If streaming, pipe the response
+    // If streaming, we need to capture the response for saving
     if (stream) {
-      return new Response(openaiResponse.body, {
-        headers: {
-          ...corsHeaders,
-          'Content-Type': 'text/event-stream',
-          'Cache-Control': 'no-cache',
-          'Connection': 'keep-alive',
+      const decoder = new TextDecoder();
+      let fullResponse = '';
+
+      const transformStream = new TransformStream({
+        async transform(chunk, controller) {
+          controller.enqueue(chunk);
+
+          // Also decode and capture for database
+          const text = decoder.decode(chunk, { stream: true });
+          const lines = text.split('\n');
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6);
+              if (data !== '[DONE]') {
+                try {
+                  const parsed = JSON.parse(data);
+                  const content = parsed.choices?.[0]?.delta?.content;
+                  if (content) {
+                    fullResponse += content;
+                  }
+                } catch (e) {
+                  // Skip invalid JSON
+                }
+              }
+            }
+          }
         },
+
+        async flush() {
+          // Save assistant response to database
+          if (conversationId && fullResponse) {
+            await supabase
+              .from('conversation_messages')
+              .insert({
+                conversation_id: conversationId,
+                role: 'assistant',
+                content: fullResponse,
+              });
+          }
+        }
       });
+
+      if (openaiResponse.body) {
+        const transformedStream = openaiResponse.body.pipeThrough(transformStream);
+
+        return new Response(transformedStream, {
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+            'X-Session-Id': actualSessionId,
+          },
+        });
+      }
     }
 
     // If not streaming, return the complete response
     const data = await openaiResponse.json();
+    const assistantMessage = data.choices?.[0]?.message?.content;
+
+    // Save assistant response to database
+    if (conversationId && assistantMessage) {
+      await supabase
+        .from('conversation_messages')
+        .insert({
+          conversation_id: conversationId,
+          role: 'assistant',
+          content: assistantMessage,
+        });
+    }
+
     return new Response(
-      JSON.stringify(data),
+      JSON.stringify({
+        ...data,
+        sessionId: actualSessionId,
+      }),
       {
         headers: {
           ...corsHeaders,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'X-Session-Id': actualSessionId,
         }
       }
     );
@@ -119,7 +287,7 @@ Deno.serve(async (req) => {
   }
 });
 
-function buildSystemPrompt(destinations: any[], themes: any[], context?: ChatRequest['context']): string {
+function buildSystemPrompt(destinations: any[], themes: any[], context?: ChatRequest['context'], hasContactInfo: boolean = false): string {
   // Build destinations knowledge
   const destinationsKnowledge = destinations.map(d => {
     const themeNames = d.theme_ids?.map((tid: string) =>
@@ -156,6 +324,10 @@ function buildSystemPrompt(destinations: any[], themes: any[], context?: ChatReq
     }
   }
 
+  const contactInfoGuidance = hasContactInfo
+    ? '\n\n**The visitor has provided their contact information, indicating serious interest. Focus on specific itinerary planning and next steps toward booking.**'
+    : '\n\n**When the conversation shows genuine interest (asking about specific dates, budgets, or booking), politely ask if they\'d like to share their email so you can send them a detailed itinerary and connect them with the team.**';
+
   return `You are LIV (Luxury Itinerary Visionary), an AI concierge for Luxury Travel Sweden. You are sophisticated, warm, knowledgeable, and proactive. Your role is to craft bespoke, narrative-rich travel itineraries for discerning travelers seeking extraordinary Swedish experiences.
 
 ## Your Personality
@@ -180,7 +352,7 @@ ${themesKnowledge}
 - **Winter (Dec-Feb)**: Northern lights, winter sports, ice hotels, Christmas markets, aurora viewing
 
 ## Context for This Conversation:
-${contextIntro || 'The visitor has opened the chat to explore possibilities.'}
+${contextIntro || 'The visitor has opened the chat to explore possibilities.'}${contactInfoGuidance}
 
 ## Your Approach
 1. **Start smart**: Don't ask basic questions. Use the context above to show you already understand their interest.
@@ -189,7 +361,8 @@ ${contextIntro || 'The visitor has opened the chat to explore possibilities.'}
 4. **Suggest proactively**: Don't just wait for them to ask - offer creative ideas based on their interests.
 5. **Build narratives**: Weave destinations and experiences into cohesive story-driven itineraries.
 6. **Ask smart questions**: When you need clarification, ask about preferences, not basics.
-7. **Close with action**: Guide them toward booking or connecting with the team.
+7. **Capture interest**: When engagement is high, suggest sharing contact details to receive a personalized itinerary.
+8. **Close with action**: Guide them toward booking or connecting with the team.
 
 ## Itinerary Creation Guidelines
 When creating itineraries:

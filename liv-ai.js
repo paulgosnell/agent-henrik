@@ -19,6 +19,8 @@ class LivAI {
     this.context = null;
     this.isStreaming = false;
     this.isInitialized = false;
+    this.sessionId = null;
+    this.leadInfo = null;
   }
 
   /**
@@ -188,6 +190,8 @@ class LivAI {
    */
   resetConversation() {
     this.conversationHistory = [];
+    this.sessionId = this.generateSessionId();
+    this.leadInfo = null;
 
     // Clear chat messages except the initial welcome
     if (this.chatMessages) {
@@ -197,6 +201,100 @@ class LivAI {
         </div>
       `;
     }
+  }
+
+  /**
+   * Generate unique session ID
+   */
+  generateSessionId() {
+    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  /**
+   * Show contact form to capture lead information
+   */
+  showContactForm() {
+    const formHtml = `
+      <div class="chat-message ai">
+        <p>I'd love to send you a detailed itinerary and connect you with our team. May I have your contact information?</p>
+      </div>
+      <div class="chat-contact-form" id="contactForm">
+        <div class="form-group">
+          <label for="leadName">Name</label>
+          <input type="text" id="leadName" placeholder="Your name" />
+        </div>
+        <div class="form-group">
+          <label for="leadEmail">Email *</label>
+          <input type="email" id="leadEmail" placeholder="your@email.com" required />
+        </div>
+        <div class="form-group">
+          <label for="leadPhone">Phone (optional)</label>
+          <input type="tel" id="leadPhone" placeholder="+46 xxx xxx xxx" />
+        </div>
+        <div class="form-group">
+          <label for="leadCountry">Country (optional)</label>
+          <input type="text" id="leadCountry" placeholder="Your country" />
+        </div>
+        <button class="btn-submit-contact" id="submitContact">Submit</button>
+        <button class="btn-skip-contact" id="skipContact">Maybe later</button>
+      </div>
+    `;
+
+    if (this.chatMessages) {
+      this.chatMessages.insertAdjacentHTML('beforeend', formHtml);
+      this.scrollToBottom();
+
+      // Add event listeners
+      document.getElementById('submitContact')?.addEventListener('click', () => this.handleContactSubmit());
+      document.getElementById('skipContact')?.addEventListener('click', () => this.handleContactSkip());
+    }
+  }
+
+  /**
+   * Handle contact form submission
+   */
+  async handleContactSubmit() {
+    const name = (document.getElementById('leadName') as HTMLInputElement)?.value.trim();
+    const email = (document.getElementById('leadEmail') as HTMLInputElement)?.value.trim();
+    const phone = (document.getElementById('leadPhone') as HTMLInputElement)?.value.trim();
+    const country = (document.getElementById('leadCountry') as HTMLInputElement)?.value.trim();
+
+    if (!email) {
+      alert('Please enter your email address');
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert('Please enter a valid email address');
+      return;
+    }
+
+    // Store lead info
+    this.leadInfo = {
+      name: name || undefined,
+      email,
+      phone: phone || undefined,
+      country: country || undefined
+    };
+
+    // Remove form
+    document.getElementById('contactForm')?.remove();
+
+    // Show confirmation
+    this.appendMessage('ai', `Thank you${name ? ', ' + name : ''}! I've got your details. Let me craft a perfect itinerary for you.`);
+
+    // Clear context after capturing lead
+    this.context = null;
+  }
+
+  /**
+   * Handle contact form skip
+   */
+  handleContactSkip() {
+    document.getElementById('contactForm')?.remove();
+    this.appendMessage('ai', 'No problem! Feel free to continue exploring, and let me know if you change your mind.');
   }
 
   /**
@@ -257,8 +355,10 @@ class LivAI {
         },
         body: JSON.stringify({
           messages: this.conversationHistory,
+          sessionId: this.sessionId,
           context: this.context,
-          stream: true
+          stream: true,
+          leadInfo: this.leadInfo
         })
       });
 
@@ -378,3 +478,10 @@ if (document.readyState === 'loading') {
 
 // Export for manual initialization if needed
 window.LivAI = livAIInstance;
+
+// Expose showContactForm globally for manual triggering
+window.showLivContactForm = function() {
+  if (livAIInstance && livAIInstance.isInitialized) {
+    livAIInstance.showContactForm();
+  }
+};

@@ -2472,3 +2472,306 @@ select:focus {
     padding: 1rem;
   }
 }
+
+/* ==========================================
+   Leads Page Styles
+   ========================================== */
+
+.filter-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-tab {
+  padding: 0.75rem 1.25rem;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+  cursor: pointer;
+  transition: var(--admin-transition);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--admin-text-muted);
+}
+
+.filter-tab:hover {
+  background: var(--admin-surface-raised);
+  border-color: var(--admin-border-strong);
+  color: var(--admin-text);
+}
+
+.filter-tab.active {
+  background: var(--admin-primary);
+  border-color: var(--admin-primary);
+  color: white;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table thead {
+  background: var(--admin-surface-raised);
+  border-bottom: 2px solid var(--admin-border-strong);
+}
+
+.data-table th {
+  padding: 1rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--admin-text-muted);
+}
+
+.data-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--admin-border);
+  font-size: 0.875rem;
+  color: var(--admin-text-secondary);
+}
+
+.data-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.data-table tbody tr:hover {
+  background: var(--admin-surface-raised);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-new {
+  background: rgba(74, 158, 255, 0.15);
+  color: #4A9EFF;
+}
+
+.status-contacted {
+  background: rgba(255, 193, 7, 0.15);
+  color: #FFC107;
+}
+
+.status-qualified {
+  background: rgba(156, 39, 176, 0.15);
+  color: #9C27B0;
+}
+
+.status-converted {
+  background: rgba(76, 175, 80, 0.15);
+  color: #4CAF50;
+}
+
+.status-closed {
+  background: rgba(158, 158, 158, 0.15);
+  color: #9E9E9E;
+}
+
+.status-pending {
+  background: rgba(255, 152, 0, 0.15);
+  color: #FF9800;
+}
+
+.status-reviewing {
+  background: rgba(33, 150, 243, 0.15);
+  color: #2196F3;
+}
+
+.status-quoted {
+  background: rgba(103, 58, 183, 0.15);
+  color: #673AB7;
+}
+
+.status-booked {
+  background: rgba(76, 175, 80, 0.15);
+  color: #4CAF50;
+}
+
+.status-cancelled {
+  background: rgba(244, 67, 54, 0.15);
+  color: #F44336;
+}
+
+.status-active {
+  background: rgba(76, 175, 80, 0.15);
+  color: #4CAF50;
+}
+
+.badge-liv_chat {
+  background: rgba(156, 39, 176, 0.15);
+  color: #9C27B0;
+}
+
+.badge-contact_form {
+  background: rgba(33, 150, 243, 0.15);
+  color: #2196F3;
+}
+
+.btn-icon {
+  padding: 0.5rem;
+  background: transparent;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-sm);
+  cursor: pointer;
+  transition: var(--admin-transition);
+  color: var(--admin-text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.25rem;
+}
+
+.btn-icon:hover {
+  background: var(--admin-surface-raised);
+  border-color: var(--admin-primary);
+  color: var(--admin-primary);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--admin-text-muted);
+}
+
+.empty-state svg {
+  margin: 0 auto 1.5rem;
+  opacity: 0.3;
+}
+
+.empty-state h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--admin-text);
+  font-size: 1.25rem;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.modal-large {
+  max-width: 900px;
+  width: 100%;
+}
+
+.lead-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.lead-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.info-section {
+  background: var(--admin-surface-raised);
+  padding: 1.5rem;
+  border-radius: var(--admin-radius);
+  border: 1px solid var(--admin-border);
+}
+
+.info-section h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  color: var(--admin-text);
+}
+
+.info-row {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--admin-border);
+  font-size: 0.875rem;
+  color: var(--admin-text-secondary);
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-row strong {
+  color: var(--admin-text-muted);
+  margin-right: 0.5rem;
+}
+
+.info-section textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 0.75rem;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-sm);
+  font-size: 0.875rem;
+  color: var(--admin-text);
+  resize: vertical;
+  margin-bottom: 1rem;
+}
+
+.conversation-card,
+.inquiry-card {
+  background: var(--admin-surface);
+  padding: 1rem;
+  border-radius: var(--admin-radius-sm);
+  border: 1px solid var(--admin-border);
+  margin-bottom: 1rem;
+}
+
+.conversation-header,
+.inquiry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.conversation-context {
+  font-size: 0.75rem;
+  color: var(--admin-text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.message-count {
+  font-size: 0.75rem;
+  color: var(--admin-text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .lead-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-tabs {
+    gap: 0.375rem;
+  }
+
+  .filter-tab {
+    padding: 0.625rem 1rem;
+    font-size: 0.8125rem;
+  }
+
+  .data-table {
+    font-size: 0.8125rem;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 0.75rem 0.5rem;
+  }
+}
