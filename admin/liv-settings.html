@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIV Settings - Luxury Travel Sweden CMS</title>
+    <link rel="stylesheet" href="admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .category-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .category-filter-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .category-filter-btn:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .category-filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .instruction-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .instruction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .instruction-title-group {
+            flex: 1;
+        }
+
+        .instruction-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+            margin: 0 0 4px 0;
+        }
+
+        .instruction-meta {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .category-badge.promote { background: #e8f5e9; color: #2e7d32; }
+        .category-badge.avoid { background: #ffebee; color: #c62828; }
+        .category-badge.knowledge { background: #e3f2fd; color: #1565c0; }
+        .category-badge.tone { background: #f3e5f5; color: #6a1b9a; }
+        .category-badge.general { background: #f5f5f5; color: #616161; }
+
+        .priority-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .instruction-content {
+            color: var(--text);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .instruction-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .toggle-active {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: var(--primary);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: left 0.3s;
+        }
+
+        .toggle-switch.active::after {
+            left: 22px;
+        }
+
+        .modal-form-group.textarea textarea {
+            min-height: 120px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            opacity: 0.3;
+        }
+
+        .priority-input {
+            width: 100px;
+        }
+
+        .help-text {
+            background: var(--bg-tertiary);
+            border-left: 3px solid var(--primary);
+            padding: 16px;
+            margin-bottom: 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .help-text strong {
+            color: var(--text);
+            display: block;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-spinner"></div>
+        <p>Loading LIV settings...</p>
+    </div>
+
+    <!-- Main Container -->
+    <div id="adminApp" class="admin-container" style="display: none;">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <path d="M16 2L26 8L26 24L16 30L6 24L6 8L16 2Z" fill="currentColor" opacity="0.2"/>
+                        <path d="M16 2L26 8M26 8L26 24M26 24L16 30M16 30L6 24M6 24L6 8M6 8L16 2M16 2L16 30M6 8L26 24M26 8L6 24" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                    <div>
+                        <h1>LTS</h1>
+                        <span>CMS</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="index.html" class="nav-item">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <rect x="3" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                        <rect x="11" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                        <rect x="3" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                        <rect x="11" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="destinations.html" class="nav-item">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 2C10 2 4 6 4 11C4 14.3137 6.68629 17 10 17C13.3137 17 16 14.3137 16 11C16 6 10 2 10 2Z" stroke="currentColor" stroke-width="1.5"/>
+                        <circle cx="10" cy="11" r="2" fill="currentColor"/>
+                    </svg>
+                    <span>Destinations</span>
+                </a>
+
+                <a href="leads.html" class="nav-item">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 11C12.2091 11 14 9.20914 14 7C14 4.79086 12.2091 3 10 3C7.79086 3 6 4.79086 6 7C6 9.20914 7.79086 11 10 11Z" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M2 17C2 14 6 12 10 12C14 12 18 14 18 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <span>Leads & Contacts</span>
+                </a>
+
+                <a href="liv-settings.html" class="nav-item active">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M10 1V4M10 16V19M19 10H16M4 10H1M16.95 16.95L14.83 14.83M5.17 5.17L3.05 3.05M16.95 3.05L14.83 5.17M5.17 14.83L3.05 16.95" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <span>LIV AI Settings</span>
+                </a>
+
+                <a href="posts.html" class="nav-item">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M3 4H17M3 8H17M3 12H17M3 16H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <span>Blog Posts</span>
+                </a>
+
+                <a href="stories.html" class="nav-item">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M7 7H13M7 11H13M7 14H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <span>Stories</span>
+                </a>
+
+                <a href="media.html" class="nav-item">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                        <circle cx="7.5" cy="7.5" r="1.5" fill="currentColor"/>
+                        <path d="M17 13L13 9L8 14M8 14L6 12L3 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Media Library</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/>
+                            <path d="M4 17C4 14 6 12 10 12C14 12 16 14 16 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="user-details">
+                        <div class="user-name">Admin</div>
+                        <div class="user-email" id="userEmail">Loading...</div>
+                    </div>
+                </div>
+                <button id="logoutBtn" class="logout-btn" title="Logout">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M13 13L17 10L13 7M17 10H7M7 3H5C3.89543 3 3 3.89543 3 5V15C3 16.1046 3.89543 17 5 17H7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="content-header">
+                <div class="header-left">
+                    <h1>LIV AI Settings</h1>
+                    <p class="subtitle">Control what LIV says and how LIV responds to visitors</p>
+                </div>
+                <div class="header-right">
+                    <button id="addInstructionBtn" class="btn-primary">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                            <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Add Instruction
+                    </button>
+                </div>
+            </header>
+
+            <!-- Help Text -->
+            <div class="help-text">
+                <strong>How LIV Instructions Work</strong>
+                These instructions are dynamically injected into LIV's system prompt when responding to visitors. Use them to guide LIV's behavior, promote specific offerings, avoid certain topics, or provide specialized knowledge. Active instructions with higher priority values appear first in the prompt.
+            </div>
+
+            <!-- Category Filter -->
+            <div class="category-filter">
+                <button class="category-filter-btn active" data-category="all">All</button>
+                <button class="category-filter-btn" data-category="promote">Promote</button>
+                <button class="category-filter-btn" data-category="avoid">Avoid</button>
+                <button class="category-filter-btn" data-category="knowledge">Knowledge</button>
+                <button class="category-filter-btn" data-category="tone">Tone</button>
+                <button class="category-filter-btn" data-category="general">General</button>
+            </div>
+
+            <!-- Instructions List -->
+            <div id="instructionsList" class="instructions-container">
+                <div class="overview-loading">
+                    <div class="skeleton-loader"></div>
+                    <div class="skeleton-loader"></div>
+                    <div class="skeleton-loader"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div id="instructionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Instruction</h2>
+                <button class="modal-close" onclick="closeInstructionModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+            <form id="instructionForm">
+                <input type="hidden" id="instructionId">
+
+                <div class="modal-form-group">
+                    <label for="instructionTitle">Title</label>
+                    <input type="text" id="instructionTitle" required placeholder="e.g., Promote Northern Lights Tours">
+                </div>
+
+                <div class="modal-form-group">
+                    <label for="instructionCategory">Category</label>
+                    <select id="instructionCategory" required>
+                        <option value="">Select category...</option>
+                        <option value="promote">Promote - Things to highlight and recommend</option>
+                        <option value="avoid">Avoid - Things not to mention or discuss</option>
+                        <option value="knowledge">Knowledge - Facts and information LIV should know</option>
+                        <option value="tone">Tone - How LIV should communicate</option>
+                        <option value="general">General - Other instructions</option>
+                    </select>
+                </div>
+
+                <div class="modal-form-group textarea">
+                    <label for="instructionText">Instruction</label>
+                    <textarea id="instructionText" required placeholder="Write the instruction that will be given to LIV..."></textarea>
+                    <small style="color: var(--text-secondary); font-size: 13px; margin-top: 4px; display: block;">
+                        Be specific and clear. This text will be injected directly into LIV's system prompt.
+                    </small>
+                </div>
+
+                <div class="modal-form-group">
+                    <label for="instructionPriority">Priority (0-100)</label>
+                    <input type="number" id="instructionPriority" class="priority-input" value="50" min="0" max="100">
+                    <small style="color: var(--text-secondary); font-size: 13px; margin-top: 4px; display: block;">
+                        Higher numbers appear first in LIV's prompt. Use 80+ for critical instructions.
+                    </small>
+                </div>
+
+                <div class="modal-form-group">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" id="instructionActive" checked>
+                        <span>Active (instruction is currently in use)</span>
+                    </label>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeInstructionModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Instruction</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../supabase-client.js"></script>
+    <script src="auth.js"></script>
+    <script src="liv-settings.js"></script>
+
+    <!-- Auth Protection -->
+    <script>
+        (async function() {
+            const user = await window.AuthManager.requireAuth();
+            if (user) {
+                await window.AuthManager.updateUserInfoUI();
+            }
+        })();
+    </script>
+</body>
+</html>

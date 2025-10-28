@@ -49,14 +49,16 @@ Deno.serve(async (req) => {
     // Generate session ID if not provided
     const actualSessionId = sessionId || crypto.randomUUID();
 
-    // Load destinations and themes from Supabase to build knowledge base
-    const [destinationsResult, themesResult] = await Promise.all([
+    // Load destinations, themes, and LIV instructions from Supabase to build knowledge base
+    const [destinationsResult, themesResult, instructionsResult] = await Promise.all([
       supabase.from('destinations').select('*').eq('published', true),
-      supabase.from('themes').select('*')
+      supabase.from('themes').select('*'),
+      supabase.from('liv_instructions').select('*').eq('is_active', true).order('priority', { ascending: false })
     ]);
 
     const destinations = destinationsResult.data || [];
     const themes = themesResult.data || [];
+    const instructions = instructionsResult.data || [];
 
     // Save or update conversation
     let conversationId: string | null = null;
@@ -151,8 +153,8 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Build LIV's system prompt with full knowledge base
-    const systemPrompt = buildSystemPrompt(destinations, themes, context, !!leadInfo?.email);
+    // Build LIV's system prompt with full knowledge base and admin instructions
+    const systemPrompt = buildSystemPrompt(destinations, themes, instructions, context, !!leadInfo?.email);
 
     // Prepare messages for OpenAI
     const openaiMessages: ChatMessage[] = [
@@ -287,7 +289,7 @@ Deno.serve(async (req) => {
   }
 });
 
-function buildSystemPrompt(destinations: any[], themes: any[], context?: ChatRequest['context'], hasContactInfo: boolean = false): string {
+function buildSystemPrompt(destinations: any[], themes: any[], instructions: any[], context?: ChatRequest['context'], hasContactInfo: boolean = false): string {
   // Build destinations knowledge
   const destinationsKnowledge = destinations.map(d => {
     const themeNames = d.theme_ids?.map((tid: string) =>
@@ -301,6 +303,35 @@ function buildSystemPrompt(destinations: any[], themes: any[], context?: ChatReq
   const themesKnowledge = themes.map(t =>
     `- ${t.label}: ${t.highlight || ''}`
   ).join('\n');
+
+  // Build admin instructions by category
+  const instructionsByCategory = {
+    promote: instructions.filter(i => i.category === 'promote'),
+    avoid: instructions.filter(i => i.category === 'avoid'),
+    knowledge: instructions.filter(i => i.category === 'knowledge'),
+    tone: instructions.filter(i => i.category === 'tone'),
+    general: instructions.filter(i => i.category === 'general')
+  };
+
+  const adminInstructionsSection = instructions.length > 0 ? `
+
+## ADMIN INSTRUCTIONS (CRITICAL - FOLLOW THESE CLOSELY)
+
+${instructionsByCategory.promote.length > 0 ? `### Things to Promote and Highlight:
+${instructionsByCategory.promote.map(i => `- **${i.title}**: ${i.instruction}`).join('\n')}
+` : ''}
+${instructionsByCategory.avoid.length > 0 ? `### Things to Avoid or Not Mention:
+${instructionsByCategory.avoid.map(i => `- **${i.title}**: ${i.instruction}`).join('\n')}
+` : ''}
+${instructionsByCategory.knowledge.length > 0 ? `### Special Knowledge:
+${instructionsByCategory.knowledge.map(i => `- **${i.title}**: ${i.instruction}`).join('\n')}
+` : ''}
+${instructionsByCategory.tone.length > 0 ? `### Tone and Communication Style:
+${instructionsByCategory.tone.map(i => `- **${i.title}**: ${i.instruction}`).join('\n')}
+` : ''}
+${instructionsByCategory.general.length > 0 ? `### General Guidelines:
+${instructionsByCategory.general.map(i => `- **${i.title}**: ${i.instruction}`).join('\n')}
+` : ''}` : '';
 
   // Context-aware greeting
   let contextIntro = '';
@@ -350,6 +381,7 @@ ${themesKnowledge}
 - **Summer (Jun-Aug)**: Midnight sun, archipelago season, festivals, perfect for outdoor adventures
 - **Autumn (Sep-Nov)**: Fall colors, harvest season, northern lights begin, cultural season starts
 - **Winter (Dec-Feb)**: Northern lights, winter sports, ice hotels, Christmas markets, aurora viewing
+${adminInstructionsSection}
 
 ## Context for This Conversation:
 ${contextIntro || 'The visitor has opened the chat to explore possibilities.'}${contactInfoGuidance}
