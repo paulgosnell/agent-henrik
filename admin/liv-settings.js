@@ -3,6 +3,9 @@
     let currentFilter = 'all';
     let allInstructions = [];
 
+    // Get Supabase client
+    const supabase = window.Supabase.client;
+
     // Initialize when DOM is ready
     document.addEventListener('DOMContentLoaded', async () => {
         await loadInstructions();
