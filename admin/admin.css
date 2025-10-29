@@ -26,8 +26,11 @@
     --admin-accent: #4a9eff;
     --admin-accent-hover: #6bb0ff;
     --admin-success: #3dd68c;
+    --admin-success-hover: #34c578;
     --admin-warning: #ffa94d;
+    --admin-warning-hover: #ff9933;
     --admin-danger: #ff6b6b;
+    --admin-danger-hover: #ff5252;
 
     /* Content type colors */
     --color-destinations: #5c9ce6;
@@ -763,30 +766,39 @@ a {
 .btn-success {
   background: var(--admin-success);
   color: white;
+  border-radius: var(--admin-radius);
 }
 
 .btn-success:hover:not(:disabled) {
   background: var(--admin-success-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-danger {
   background: var(--admin-danger);
   color: white;
+  border-radius: var(--admin-radius);
 }
 
 .btn-danger:hover:not(:disabled) {
   background: var(--admin-danger-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-secondary {
   background: var(--admin-surface-raised);
   color: var(--admin-text);
   border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+  padding: 0.625rem 1.25rem;
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: #2d3642;
+  background: var(--admin-surface-elevated);
   border-color: var(--admin-border-strong);
+  transform: translateY(-1px);
 }
 
 .btn-sm {
