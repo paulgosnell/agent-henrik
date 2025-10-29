@@ -1410,9 +1410,13 @@
         /* Category filters */
         .category-filters {
             display: flex;
+            flex-wrap: wrap;
             gap: 1rem;
             justify-content: center;
             margin-top: 1rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .category-filter-btn {
@@ -1491,6 +1495,48 @@
 
         .category-filter-btn[data-category="storyteller"].active {
             --filter-color-rgb: 234, 179, 8;
+        }
+
+        /* Category toggle all/none buttons */
+        .category-toggle-all {
+            padding: 0.6rem 1.4rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.85rem;
+            font-weight: 400;
+            letter-spacing: 0.08rem;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="light"] .category-toggle-all {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        .category-toggle-all:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        [data-theme="light"] .category-toggle-all:hover {
+            background: rgba(0, 0, 0, 0.1);
+            border-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .category-toggle-all.active {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: rgba(212, 175, 55, 0.6);
+            color: #d4af37;
+        }
+
+        [data-theme="light"] .category-toggle-all.active {
+            background: rgba(212, 175, 55, 0.25);
+            border-color: rgba(212, 175, 55, 0.7);
+            color: #b8941f;
         }
 
         .map-wrapper {
@@ -1953,9 +1999,9 @@
 
         .pillar-card {
             position: relative;
-            display: flex;
-            flex-direction: column;
-            min-height: 420px;
+            display: block;
+            min-height: 500px;
+            height: 100%;
             border-radius: 18px;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.16);
@@ -1998,8 +2044,8 @@
             flex-direction: column;
             gap: 1.1rem;
             padding: clamp(1.8rem, 4vw, 2.4rem);
+            padding-bottom: clamp(5rem, 8vw, 6rem);
             flex: 1;
-            justify-content: flex-end;
         }
 
         .pillar-icon {
@@ -2045,17 +2091,20 @@
 
         .read-more-btn {
             display: inline;
-            color: rgba(255, 255, 255, 0.95);
+            color: rgba(255, 255, 255, 1);
             background: none;
             border: none;
             padding: 0;
-            font-size: inherit;
+            font-size: 1rem;
             line-height: inherit;
             cursor: pointer;
             text-decoration: underline;
+            text-decoration-thickness: 2px;
+            text-underline-offset: 3px;
             margin: 0;
             vertical-align: baseline;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
+            font-weight: 600;
         }
 
         .read-more-btn::before {
@@ -2063,10 +2112,24 @@
         }
 
         .read-more-btn:hover {
-            color: rgba(255, 255, 255, 1);
+            color: #d4af37;
+            text-decoration-color: #d4af37;
+        }
+
+        [data-theme="light"] .read-more-btn {
+            color: rgba(0, 0, 0, 0.95);
+        }
+
+        [data-theme="light"] .read-more-btn:hover {
+            color: #b8941f;
+            text-decoration-color: #b8941f;
         }
 
         .pillar-card .pillar-cta {
+            position: absolute;
+            bottom: clamp(1.8rem, 4vw, 2.4rem);
+            left: clamp(1.8rem, 4vw, 2.4rem);
+            right: clamp(1.8rem, 4vw, 2.4rem);
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -2077,13 +2140,14 @@
             text-transform: uppercase;
             color: rgba(255, 255, 255, 0.95);
             text-decoration: none;
-            margin-top: 0.5rem;
+            margin-top: 0;
             padding: 0.85rem 1.8rem;
             border-radius: 999px;
             border: 1px solid rgba(255, 255, 255, 0.4);
             background: rgba(255, 255, 255, 0.08);
             cursor: pointer;
             transition: all 0.3s ease;
+            z-index: 2;
         }
 
         .pillar-card .pillar-cta:hover {
@@ -2955,6 +3019,42 @@
             border-color: rgba(0, 0, 0, 0.35);
         }
 
+        .footer-login-btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            border-radius: 50px;
+            color: #d4af37;
+            font-size: 0.75rem;
+            font-family: var(--font-sans);
+            font-weight: 600;
+            letter-spacing: 0.15rem;
+            text-transform: uppercase;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="light"] .footer-login-btn {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: rgba(212, 175, 55, 0.5);
+            color: #b8941f;
+        }
+
+        .footer-login-btn:hover {
+            background: rgba(212, 175, 55, 0.25);
+            border-color: rgba(212, 175, 55, 0.6);
+            transform: translateY(-2px);
+            color: #e8c766;
+        }
+
+        [data-theme="light"] .footer-login-btn:hover {
+            background: rgba(212, 175, 55, 0.3);
+            border-color: rgba(212, 175, 55, 0.7);
+            color: #a07d1a;
+        }
+
         .footer-bottom {
             position: relative;
             border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -3032,6 +3132,62 @@
             .footer-legal-links {
                 justify-content: center;
             }
+        }
+
+        /* Light theme footer text color overrides */
+        [data-theme="light"] footer,
+        [data-theme="light"] footer * {
+            color: rgba(0, 0, 0, 0.7) !important;
+        }
+
+        [data-theme="light"] .footer-link {
+            color: rgba(0, 0, 0, 0.7) !important;
+        }
+
+        [data-theme="light"] .footer-link:hover {
+            color: rgba(0, 0, 0, 0.95) !important;
+        }
+
+        [data-theme="light"] .footer-column-title {
+            color: rgba(0, 0, 0, 0.95) !important;
+        }
+
+        [data-theme="light"] .footer-contact-item {
+            color: rgba(0, 0, 0, 0.7) !important;
+        }
+
+        [data-theme="light"] .footer-contact-item strong {
+            color: rgba(0, 0, 0, 0.85) !important;
+        }
+
+        [data-theme="light"] .footer-contact-item a {
+            color: rgba(0, 0, 0, 0.7) !important;
+        }
+
+        [data-theme="light"] .footer-contact-item a:hover {
+            color: rgba(0, 0, 0, 0.95) !important;
+        }
+
+        [data-theme="light"] .footer-copyright,
+        [data-theme="light"] .footer-legal-link {
+            color: rgba(0, 0, 0, 0.6) !important;
+        }
+
+        [data-theme="light"] .footer-legal-link:hover {
+            color: rgba(0, 0, 0, 0.9) !important;
+        }
+
+        [data-theme="light"] .press-strip {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.02));
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="light"] .press-strip span {
+            color: rgba(0, 0, 0, 0.65) !important;
+        }
+
+        [data-theme="light"] .press-strip span:hover {
+            color: rgba(0, 0, 0, 0.88) !important;
         }
 
         .ai-concierge-wrapper {

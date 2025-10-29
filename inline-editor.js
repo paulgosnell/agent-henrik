@@ -125,33 +125,34 @@ async function loadStaticContent() {
  * Create the editor UI buttons
  */
 function createEditorUI() {
+  // OLD LOGIN BUTTON REMOVED - Now using footer "LOGIN TO EDIT" button instead
   // Create edit mode toggle button
-  InlineEditor.editModeBtn = document.createElement('button');
-  InlineEditor.editModeBtn.id = 'editModeBtn';
-  InlineEditor.editModeBtn.className = 'edit-mode-btn';
-  InlineEditor.editModeBtn.setAttribute('aria-label', 'Toggle edit mode');
+  // InlineEditor.editModeBtn = document.createElement('button');
+  // InlineEditor.editModeBtn.id = 'editModeBtn';
+  // InlineEditor.editModeBtn.className = 'edit-mode-btn';
+  // InlineEditor.editModeBtn.setAttribute('aria-label', 'Toggle edit mode');
 
-  if (!InlineEditor.isAuthenticated) {
-    // Show login prompt
-    InlineEditor.editModeBtn.innerHTML = `
-      <span class="edit-mode-icon">🔒</span>
-      <span class="edit-mode-text">Login to Edit</span>
-    `;
-    InlineEditor.editModeBtn.onclick = () => {
-      window.location.href = '/admin/login.html';
-    };
-  } else {
-    // Show edit mode toggle
-    InlineEditor.editModeBtn.innerHTML = `
-      <span class="edit-mode-icon">✏️</span>
-      <span class="edit-mode-text">Edit Mode: OFF</span>
-    `;
-    InlineEditor.editModeBtn.onclick = toggleEditMode;
-  }
+  // if (!InlineEditor.isAuthenticated) {
+  //   // Show login prompt
+  //   InlineEditor.editModeBtn.innerHTML = `
+  //     <span class="edit-mode-icon">🔒</span>
+  //     <span class="edit-mode-text">Login to Edit</span>
+  //   `;
+  //   InlineEditor.editModeBtn.onclick = () => {
+  //     window.location.href = '/admin/login.html';
+  //   };
+  // } else {
+  //   // Show edit mode toggle
+  //   InlineEditor.editModeBtn.innerHTML = `
+  //     <span class="edit-mode-icon">✏️</span>
+  //     <span class="edit-mode-text">Edit Mode: OFF</span>
+  //   `;
+  //   InlineEditor.editModeBtn.onclick = toggleEditMode;
+  // }
 
-  // Append to footer instead of body (keep it discreet)
-  const footer = document.querySelector('footer') || document.body;
-  footer.appendChild(InlineEditor.editModeBtn);
+  // // Append to footer instead of body (keep it discreet)
+  // const footer = document.querySelector('footer') || document.body;
+  // footer.appendChild(InlineEditor.editModeBtn);
 
   // Create save changes button (initially hidden)
   InlineEditor.saveChangesBtn = document.createElement('button');

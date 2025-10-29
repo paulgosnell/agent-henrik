@@ -273,6 +273,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     mobileToggle.setAttribute('aria-expanded', 'false');
                     mobileToggle.setAttribute('aria-label', 'Open menu');
                     mobileToggle.textContent = 'MENU';
+                    mobileToggle.style.fontSize = '';
+                    mobileToggle.style.lineHeight = '';
                     navMenu.setAttribute('aria-hidden', 'true');
                     document.body.classList.remove('nav-open');
                     updateLogoAndBurger();
@@ -286,9 +288,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     mobileToggle.classList.toggle('is-open', isOpen);
                     mobileToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
                     mobileToggle.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
-                    mobileToggle.textContent = isOpen ? '×' : 'MENU';
+                    mobileToggle.textContent = isOpen ? 'CLOSE' : 'MENU';
                     navMenu.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
                     document.body.classList.toggle('nav-open', isOpen);
+
                     updateLogoAndBurger();
                     if (isOpen) {
                         navLinks[0]?.focus();
@@ -1026,6 +1029,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const seasonBtns = document.querySelectorAll('.season-btn');
             const filterBtns = document.querySelectorAll('.filter-btn');
             const categoryFilterBtns = document.querySelectorAll('.category-filter-btn');
+            const categoryToggleAll = document.getElementById('categoryToggleAll');
+            const categoryToggleNone = document.getElementById('categoryToggleNone');
 
             let currentSeason = 'spring';
             let currentFilter = 'all';
@@ -1342,9 +1347,49 @@ document.addEventListener('DOMContentLoaded', function() {
                         this.classList.add('active');
                     }
 
+                    // Update toggle buttons state
+                    updateToggleButtonsState();
                     filterMarkers();
                 });
             });
+
+            // All On/Off toggle buttons
+            if (categoryToggleAll) {
+                categoryToggleAll.addEventListener('click', function() {
+                    activeCategories = new Set(['province', 'city', 'seaside', 'beach', 'ski', 'park', 'storyteller']);
+                    categoryFilterBtns.forEach(btn => btn.classList.add('active'));
+                    categoryToggleAll.classList.add('active');
+                    categoryToggleNone.classList.remove('active');
+                    filterMarkers();
+                });
+            }
+
+            if (categoryToggleNone) {
+                categoryToggleNone.addEventListener('click', function() {
+                    activeCategories.clear();
+                    categoryFilterBtns.forEach(btn => btn.classList.remove('active'));
+                    categoryToggleNone.classList.add('active');
+                    categoryToggleAll.classList.remove('active');
+                    filterMarkers();
+                });
+            }
+
+            // Helper function to update toggle buttons state
+            function updateToggleButtonsState() {
+                const allActive = activeCategories.size === 7;
+                const noneActive = activeCategories.size === 0;
+
+                if (allActive) {
+                    categoryToggleAll.classList.add('active');
+                    categoryToggleNone.classList.remove('active');
+                } else if (noneActive) {
+                    categoryToggleAll.classList.remove('active');
+                    categoryToggleNone.classList.add('active');
+                } else {
+                    categoryToggleAll.classList.remove('active');
+                    categoryToggleNone.classList.remove('active');
+                }
+            }
             } // End of if (map) check - map successfully initialized
             } // End of initializeMap function
 
