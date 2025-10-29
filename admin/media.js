@@ -67,6 +67,9 @@ const MediaLibrary = {
         // Setup event listeners
         this.setupEventListeners();
 
+        // Run diagnostics
+        await this.runDiagnostics();
+
         // Load media files
         await this.loadMediaFiles();
 
@@ -75,6 +78,215 @@ const MediaLibrary = {
         document.getElementById('adminApp').style.display = 'flex';
 
         console.log('Media Library initialized');
+    },
+
+    /**
+     * Run diagnostics to check if storage is set up correctly
+     */
+    async runDiagnostics() {
+        const setupBanner = document.getElementById('setupBanner');
+        const uploadSection = document.getElementById('uploadSection');
+        const setupBucket = document.getElementById('setupBucket');
+        const setupTable = document.getElementById('setupTable');
+
+        let hasIssues = false;
+
+        try {
+            // Check if media bucket exists
+            const { data: buckets, error: bucketsError} = await window.Supabase.client
+                .storage
+                .listBuckets();
+
+            if (bucketsError) {
+                this.updateSetupItem(setupBucket, 'error', 'Media Storage Bucket',
+                    'Failed to check bucket status. Please check your Supabase connection.',
+                    null);
+                hasIssues = true;
+            } else {
+                const mediaBucket = buckets?.find(b => b.name === 'media');
+
+                if (!mediaBucket) {
+                    const instructions = `
+                        <div class="setup-instructions">
+                            <div class="setup-instructions-title">📋 How to Fix:</div>
+                            <ol>
+                                <li>Open your <strong>Supabase Dashboard</strong></li>
+                                <li>Go to <strong>Storage</strong> in the left sidebar</li>
+                                <li>Click <strong>"New bucket"</strong></li>
+                                <li>Name it exactly: <code>media</code></li>
+                                <li>Toggle <strong>"Public bucket"</strong> to ON</li>
+                                <li>Click <strong>"Create bucket"</strong></li>
+                                <li>After creating, click on the bucket and go to <strong>"Policies"</strong></li>
+                                <li>Add a policy to allow authenticated users to upload</li>
+                            </ol>
+                        </div>
+                    `;
+                    this.updateSetupItem(setupBucket, 'error', 'Media Storage Bucket',
+                        'The "media" storage bucket does not exist in your Supabase project.',
+                        instructions);
+                    hasIssues = true;
+                } else {
+                    this.updateSetupItem(setupBucket, 'success', 'Media Storage Bucket',
+                        `✓ Bucket exists and is ${mediaBucket.public ? 'public' : 'private'}`,
+                        null);
+                }
+            }
+
+            // Check if media table exists
+            const { error: tableError } = await window.Supabase.client
+                .from('media')
+                .select('id')
+                .limit(1);
+
+            if (tableError) {
+                if (tableError.message?.includes('relation') || tableError.message?.includes('does not exist')) {
+                    const sqlCode = `CREATE TABLE media (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  filename TEXT NOT NULL,
+  original_filename TEXT NOT NULL,
+  storage_path TEXT NOT NULL UNIQUE,
+  url TEXT NOT NULL,
+  size_bytes BIGINT NOT NULL,
+  mime_type TEXT,
+  width INTEGER,
+  height INTEGER,
+  alt_text TEXT,
+  caption TEXT,
+  uploaded_by UUID REFERENCES auth.users(id),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE media ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can view media"
+  ON media FOR SELECT USING (true);
+
+CREATE POLICY "Authenticated users can upload media"
+  ON media FOR INSERT
+  WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "Authenticated users can delete media"
+  ON media FOR DELETE
+  USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Authenticated users can update media"
+  ON media FOR UPDATE
+  USING (auth.role() = 'authenticated');`;
+
+                    const instructions = `
+                        <div class="setup-instructions">
+                            <div class="setup-instructions-title">📋 How to Fix:</div>
+                            <ol>
+                                <li>Open your <strong>Supabase Dashboard</strong></li>
+                                <li>Go to <strong>SQL Editor</strong> in the left sidebar</li>
+                                <li>Click <strong>"New query"</strong></li>
+                                <li>Copy the SQL below and paste it into the editor</li>
+                                <li>Click <strong>"Run"</strong> to create the table</li>
+                            </ol>
+                            <div class="setup-sql">${this.escapeHtml(sqlCode)}</div>
+                            <button class="btn-copy-sql" onclick="MediaLibrary.copySqlToClipboard()">
+                                📋 Copy SQL to Clipboard
+                            </button>
+                        </div>
+                    `;
+                    this.updateSetupItem(setupTable, 'error', 'Media Database Table',
+                        'The "media" table does not exist in your database.',
+                        instructions);
+                    hasIssues = true;
+                } else {
+                    this.updateSetupItem(setupTable, 'error', 'Media Database Table',
+                        `Error checking table: ${tableError.message}`,
+                        null);
+                    hasIssues = true;
+                }
+            } else {
+                this.updateSetupItem(setupTable, 'success', 'Media Database Table',
+                    '✓ Table exists and is accessible',
+                    null);
+            }
+
+        } catch (error) {
+            console.error('Diagnostic check failed:', error);
+            this.showNotification('Failed to run diagnostics. Check console for details.', 'error');
+        }
+
+        // Show/hide setup banner based on results
+        if (hasIssues) {
+            setupBanner.classList.add('show');
+            uploadSection.style.display = 'none';
+        } else {
+            setupBanner.classList.remove('show');
+            uploadSection.style.display = 'block';
+        }
+    },
+
+    /**
+     * Update setup item UI
+     */
+    updateSetupItem(element, status, title, description, instructions) {
+        const statusIcon = element.querySelector('.setup-item-status');
+        const titleEl = element.querySelector('.setup-item-title');
+        const descEl = element.querySelector('.setup-item-description');
+
+        // Update status icon
+        statusIcon.className = 'setup-item-status ' + status;
+        if (status === 'success') {
+            statusIcon.textContent = '✅';
+        } else if (status === 'error') {
+            statusIcon.textContent = '❌';
+        } else {
+            statusIcon.textContent = '⏳';
+        }
+
+        // Update text
+        titleEl.textContent = title;
+        descEl.textContent = description;
+
+        // Add/remove instructions
+        const existingInstructions = element.querySelector('.setup-instructions');
+        if (existingInstructions) {
+            existingInstructions.remove();
+        }
+
+        if (instructions) {
+            const contentDiv = element.querySelector('.setup-item-content');
+            contentDiv.insertAdjacentHTML('beforeend', instructions);
+        }
+    },
+
+    /**
+     * Re-check setup (user clicked button)
+     */
+    async recheckSetup() {
+        await this.runDiagnostics();
+        if (!document.getElementById('setupBanner').classList.contains('show')) {
+            this.showNotification('✓ Setup complete! You can now upload images.', 'success');
+            await this.loadMediaFiles();
+        }
+    },
+
+    /**
+     * Copy SQL to clipboard
+     */
+    async copySqlToClipboard() {
+        const sqlCode = document.querySelector('.setup-sql').textContent;
+        try {
+            await navigator.clipboard.writeText(sqlCode);
+            this.showNotification('SQL copied to clipboard!', 'success');
+        } catch (error) {
+            console.error('Failed to copy SQL:', error);
+            this.showNotification('Failed to copy SQL', 'error');
+        }
+    },
+
+    /**
+     * Escape HTML for safe display
+     */
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     },
 
     /**
@@ -392,8 +604,21 @@ const MediaLibrary = {
             this.updateUploadStatus(uploadId, 'Upload complete!', 100, true);
 
         } catch (error) {
-            console.error('Upload error:', error);
-            this.updateUploadStatus(uploadId, `Error: ${error.message}`, 0, false, true);
+            console.error('Upload error details:', error);
+
+            // Provide more helpful error messages
+            let errorMessage = error.message;
+
+            if (error.message?.includes('Bucket not found') || error.statusCode === '404') {
+                errorMessage = 'Media bucket not found. Please create a "media" bucket in Supabase Storage.';
+            } else if (error.message?.includes('permission') || error.message?.includes('policy') || error.statusCode === '403') {
+                errorMessage = 'Permission denied. Please check storage policies in Supabase.';
+            } else if (error.message?.includes('relation') || error.message?.includes('does not exist')) {
+                errorMessage = 'Media table not found. Please create the media table in your database.';
+            }
+
+            this.updateUploadStatus(uploadId, `Error: ${errorMessage}`, 0, false, true);
+            this.showNotification(errorMessage, 'error');
         }
     },
 

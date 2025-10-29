@@ -540,6 +540,189 @@
             margin-bottom: 1.5rem;
         }
 
+        /* Setup Required Banner */
+        .setup-banner {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.15), rgba(255, 152, 0, 0.15));
+            border: 2px solid rgba(255, 193, 7, 0.5);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .setup-banner.show {
+            display: block;
+        }
+
+        .setup-banner-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .setup-banner-icon {
+            font-size: 2.5rem;
+        }
+
+        .setup-banner-title {
+            flex: 1;
+        }
+
+        .setup-banner-title h3 {
+            font-size: 1.5rem;
+            color: var(--admin-text);
+            margin-bottom: 0.25rem;
+        }
+
+        .setup-banner-title p {
+            font-size: 0.95rem;
+            color: var(--admin-text-secondary);
+            margin: 0;
+        }
+
+        .setup-checklist {
+            background: var(--admin-surface);
+            border: 1px solid var(--admin-border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .setup-item {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--admin-border);
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .setup-item:last-child {
+            border-bottom: none;
+        }
+
+        .setup-item-status {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            margin-top: 0.25rem;
+        }
+
+        .setup-item-status.checking {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .setup-item-status.success {
+            color: var(--admin-success);
+        }
+
+        .setup-item-status.error {
+            color: var(--admin-danger);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .setup-item-content {
+            flex: 1;
+        }
+
+        .setup-item-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--admin-text);
+            margin-bottom: 0.5rem;
+        }
+
+        .setup-item-description {
+            font-size: 0.9rem;
+            color: var(--admin-text-secondary);
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+        }
+
+        .setup-instructions {
+            background: var(--admin-surface-elevated);
+            border: 1px solid var(--admin-border);
+            border-radius: 6px;
+            padding: 1rem;
+            font-size: 0.875rem;
+            color: var(--admin-text);
+            margin-top: 0.75rem;
+        }
+
+        .setup-instructions-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--admin-accent);
+        }
+
+        .setup-instructions ol {
+            margin: 0.5rem 0 0 1.25rem;
+            padding: 0;
+        }
+
+        .setup-instructions li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .setup-instructions code {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.125rem 0.375rem;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.85em;
+        }
+
+        .setup-sql {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.8rem;
+            overflow-x: auto;
+            margin-top: 0.75rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .btn-copy-sql {
+            margin-top: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: var(--admin-accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-copy-sql:hover {
+            background: var(--admin-accent-hover);
+        }
+
+        .btn-refresh-check {
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--admin-accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-refresh-check:hover {
+            background: var(--admin-accent-hover);
+            transform: translateY(-1px);
+        }
+
         /* Loading State */
         .media-loading {
             display: flex;
@@ -765,8 +948,43 @@
                 </div>
             </header>
 
+            <!-- Setup Banner (shown when configuration is needed) -->
+            <div id="setupBanner" class="setup-banner">
+                <div class="setup-banner-header">
+                    <div class="setup-banner-icon">⚙️</div>
+                    <div class="setup-banner-title">
+                        <h3>Media Storage Setup Required</h3>
+                        <p>Complete the setup steps below to enable image uploads</p>
+                    </div>
+                </div>
+
+                <div class="setup-checklist">
+                    <!-- Storage Bucket Check -->
+                    <div class="setup-item" id="setupBucket">
+                        <div class="setup-item-status checking">⏳</div>
+                        <div class="setup-item-content">
+                            <div class="setup-item-title">Media Storage Bucket</div>
+                            <div class="setup-item-description">Checking if media storage bucket exists...</div>
+                        </div>
+                    </div>
+
+                    <!-- Database Table Check -->
+                    <div class="setup-item" id="setupTable">
+                        <div class="setup-item-status checking">⏳</div>
+                        <div class="setup-item-content">
+                            <div class="setup-item-title">Media Database Table</div>
+                            <div class="setup-item-description">Checking if media table exists...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-refresh-check" onclick="MediaLibrary.recheckSetup()">
+                    🔄 Re-check Setup
+                </button>
+            </div>
+
             <!-- Upload Section -->
-            <section class="upload-section">
+            <section class="upload-section" id="uploadSection">
                 <div class="upload-zone" id="uploadZone">
                     <div class="upload-icon">📁</div>
                     <h3>Drag & drop images here</h3>

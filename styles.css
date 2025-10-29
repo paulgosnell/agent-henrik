@@ -2406,7 +2406,108 @@
             font-size: 0.92rem;
             line-height: 1.6;
             color: rgba(255, 255, 255, 0.75);
-            margin: 0;
+            margin: 0 0 1.25rem 0;
+        }
+
+        /* Story CTA Button Styles */
+        .story-cta {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-family: var(--font-sans);
+            font-size: 0.7rem;
+            letter-spacing: 0.28rem;
+            text-transform: uppercase;
+            color: rgba(0, 0, 0, 0.95);
+            text-decoration: none;
+            padding: 0.8rem 1.6rem;
+            border-radius: 999px;
+            border: 1px solid rgba(212, 175, 55, 0.6);
+            background: rgba(212, 175, 55, 0.9);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        .story-cta:hover {
+            border-color: rgba(212, 175, 55, 1);
+            background: rgba(212, 175, 55, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+            color: rgba(0, 0, 0, 1);
+        }
+
+        [data-theme="light"] .story-cta {
+            color: rgba(0, 0, 0, 0.95);
+            border-color: rgba(212, 175, 55, 0.8);
+            background: rgba(212, 175, 55, 0.85);
+        }
+
+        [data-theme="light"] .story-cta:hover {
+            background: rgba(212, 175, 55, 1);
+            border-color: rgba(212, 175, 55, 1);
+            color: rgba(0, 0, 0, 1);
+        }
+
+        .story-cta:focus-visible {
+            outline: 2px solid rgba(212, 175, 55, 0.6);
+            outline-offset: 3px;
+        }
+
+        .story-cta:active {
+            transform: translateY(0);
+        }
+
+        /* Story View All CTA */
+        .story-cta-view-all {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            letter-spacing: 0.32rem;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.95);
+            text-decoration: none;
+            padding: 1rem 2.5rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .story-cta-view-all:hover {
+            border-color: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            color: rgba(255, 255, 255, 1);
+        }
+
+        [data-theme="light"] .story-cta-view-all {
+            color: rgba(0, 0, 0, 0.85);
+            border-color: rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        [data-theme="light"] .story-cta-view-all:hover {
+            background: rgba(255, 255, 255, 1);
+            border-color: rgba(0, 0, 0, 0.5);
+            color: rgba(0, 0, 0, 1);
+        }
+
+        .story-cta-view-all:focus-visible {
+            outline: 2px solid rgba(255, 255, 255, 0.6);
+            outline-offset: 3px;
+        }
+
+        .story-cta-view-all:active {
+            transform: translateY(0);
         }
 
         .press-strip {
@@ -3893,6 +3994,27 @@
                 font-size: 0.85rem;
             }
 
+            .seasonal-toggle {
+                width: 100%;
+                justify-content: center;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+                padding: 0.5rem;
+            }
+
+            .season-btn {
+                padding: 0.8rem 1rem;
+                font-size: 0.75rem;
+                letter-spacing: 0.05rem;
+            }
+
+            .map-controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+
             .theme-filters {
                 gap: 0.5rem;
             }
@@ -3973,6 +4095,16 @@
             .seasonal-toggle {
                 width: 100%;
                 justify-content: center;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+                padding: 0.5rem;
+            }
+
+            .season-btn {
+                padding: 0.8rem 1rem;
+                font-size: 0.75rem;
+                letter-spacing: 0.05rem;
             }
 
             .theme-filters {
