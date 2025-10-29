@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal Post - Luxury Travel Sweden</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Journal Post Styles */
+        .post-hero {
+            position: relative;
+            width: 100%;
+            min-height: 60vh;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: clamp(9rem, 14vw, 11rem) 2rem 4rem;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            overflow: hidden;
+        }
+
+        [data-theme="light"] .post-hero {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+        }
+
+        .post-hero-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.4;
+        }
+
+        .post-hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%);
+        }
+
+        [data-theme="light"] .post-hero-overlay {
+            background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.9) 100%);
+        }
+
+        .post-hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            width: 100%;
+            color: white;
+        }
+
+        [data-theme="light"] .post-hero-content {
+            color: #1a1a1a;
+        }
+
+        .post-meta {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+
+        .post-author {
+            font-weight: 600;
+        }
+
+        .post-date {
+            opacity: 0.8;
+        }
+
+        .post-featured-badge {
+            display: inline-block;
+            background: #FFD700;
+            color: #1a1a1a;
+            padding: 0.35rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .post-hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 300;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        .post-excerpt {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .post-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .post-body {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        [data-theme="dark"] .post-body {
+            color: #e0e0e0;
+        }
+
+        .post-body h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin: 3rem 0 1.5rem;
+            color: #1a1a1a;
+        }
+
+        [data-theme="dark"] .post-body h2 {
+            color: #ffffff;
+        }
+
+        .post-body h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 2.5rem 0 1rem;
+            color: #1a1a1a;
+        }
+
+        [data-theme="dark"] .post-body h3 {
+            color: #ffffff;
+        }
+
+        .post-body p {
+            margin-bottom: 1.5rem;
+        }
+
+        .post-body img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+
+        .post-body blockquote {
+            border-left: 4px solid #1a1a1a;
+            padding-left: 2rem;
+            margin: 2rem 0;
+            font-style: italic;
+            color: #555;
+        }
+
+        [data-theme="dark"] .post-body blockquote {
+            border-left-color: #ffffff;
+            color: #ccc;
+        }
+
+        .post-body ul, .post-body ol {
+            margin: 1.5rem 0;
+            padding-left: 2rem;
+        }
+
+        .post-body li {
+            margin-bottom: 0.75rem;
+        }
+
+        .post-back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #1a1a1a;
+            font-weight: 600;
+            text-decoration: none;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+
+        [data-theme="dark"] .post-back-link {
+            color: #ffffff;
+        }
+
+        .post-back-link:hover {
+            transform: translateX(-4px);
+        }
+
+        .post-back-link::before {
+            content: '←';
+        }
+
+        /* Loading State */
+        .loading-state {
+            min-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #f0f0f0;
+            border-top-color: #1a1a1a;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        [data-theme="dark"] .loading-spinner {
+            border-color: #2d2d2d;
+            border-top-color: #ffffff;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Error State */
+        .error-state {
+            min-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .error-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .error-state h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        [data-theme="dark"] .error-state h2 {
+            color: #ffffff;
+        }
+
+        .error-state p {
+            font-size: 1.125rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        [data-theme="dark"] .error-state p {
+            color: #aaa;
+        }
+
+        .error-state .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: #1a1a1a;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+        }
+
+        [data-theme="dark"] .error-state .btn {
+            background: #ffffff;
+            color: #1a1a1a;
+        }
+
+        .error-state .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .post-hero {
+                min-height: 50vh;
+                padding: 6rem 1.5rem 3rem;
+            }
+
+            .post-content {
+                padding: 3rem 1.5rem;
+            }
+
+            .post-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <header class="nav-header">
+        <a href="index.html#top" class="logo">
+            <img src="lts-logo-white.png" alt="Luxury Travel Sweden" id="siteLogo" />
+        </a>
+        <nav>
+            <div class="nav-menu" id="primaryNavigation">
+                <div class="nav-main">
+                    <ul class="nav-links">
+                        <li><a href="index.html#map" class="nav-link">EXPLORE</a></li>
+                        <li><a href="index.html#journeys" class="nav-link">EXPERIENCES</a></li>
+                        <li><a href="index.html#corporate" class="nav-link">CORPORATE & INCENTIVES</a></li>
+                        <li><a href="index.html#storytellers" class="nav-link">STORYTELLERS</a></li>
+                        <li><a href="index.html#concierge" class="nav-link" data-open-liv data-liv-context-type="general" data-liv-context-name="Navigation">LIV / CONCIERGE</a></li>
+                        <li><a href="journal.html" class="nav-link">JOURNAL</a></li>
+                        <li><a href="index.html#press" class="nav-link">PRESS & MEDIA</a></li>
+                        <li><a href="index.html#contact" class="nav-link">CONTACT</a></li>
+                    </ul>
+                </div>
+            </div>
+            <button type="button" class="mobile-menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="primaryNavigation">MENU</button>
+        </nav>
+    </header>
+
+    <main class="site-main">
+    <!-- Loading State -->
+    <div class="loading-state" id="loadingState">
+        <div class="loading-spinner"></div>
+        <p>Loading post...</p>
+    </div>
+
+    <!-- Error State -->
+    <div class="error-state hidden" id="errorState">
+        <div class="error-state-icon">😕</div>
+        <h2>Post Not Found</h2>
+        <p>Sorry, we couldn't find the post you're looking for.</p>
+        <a href="/journal.html" class="btn">Back to Journal</a>
+    </div>
+
+    <!-- Post Hero -->
+    <section class="post-hero hidden" id="postHero">
+        <div class="post-hero-image" id="postHeroImage"></div>
+        <div class="post-hero-overlay"></div>
+        <div class="post-hero-content">
+            <div class="post-meta">
+                <span class="post-author" id="postAuthor"></span>
+                <span class="post-date" id="postDate"></span>
+                <span class="post-featured-badge hidden" id="postFeaturedBadge">⭐ Featured</span>
+            </div>
+            <h1 id="postTitle"></h1>
+            <p class="post-excerpt" id="postExcerpt"></p>
+        </div>
+    </section>
+
+    <!-- Post Content -->
+    <article class="post-content hidden" id="postContent">
+        <a href="journal.html" class="post-back-link">Back to Journal</a>
+        <div class="post-body" id="postBody"></div>
+    </article>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <!-- Footer Background Slideshow -->
+        <div class="footer-background" id="footerBackground"></div>
+        <div class="footer-bg-overlay"></div>
+
+        <!-- Footer Main Content -->
+        <div class="footer-content">
+            <!-- Explore Column -->
+            <div class="footer-column">
+                <h3 class="footer-column-title">Explore</h3>
+                <nav class="footer-links">
+                    <a href="index.html#map" class="footer-link">Interactive Map</a>
+                    <a href="index.html#journeys" class="footer-link">Six Pillars of Journey</a>
+                    <a href="index.html#corporate" class="footer-link">Corporate & Incentives</a>
+                    <a href="index.html#storytellers" class="footer-link">Our Storytellers</a>
+                    <a href="journal.html" class="footer-link">Journal & Stories</a>
+                    <a href="#" class="footer-link" data-open-liv data-liv-context-type="general" data-liv-context-name="Footer">Design Journey with LIV</a>
+                </nav>
+            </div>
+
+            <!-- Journeys Column -->
+            <div class="footer-column">
+                <h3 class="footer-column-title">Journeys</h3>
+                <nav class="footer-links">
+                    <a href="index.html#journeys" class="footer-link">Nature & Wellness</a>
+                    <a href="index.html#journeys" class="footer-link">Design & Innovation</a>
+                    <a href="index.html#journeys" class="footer-link">Royal, Art & Culture</a>
+                    <a href="index.html#journeys" class="footer-link">Culinary Experiences</a>
+                    <a href="index.html#journeys" class="footer-link">Nightlife & Celebration</a>
+                    <a href="index.html#journeys" class="footer-link">Legacy & Meaningful Travel</a>
+                </nav>
+            </div>
+
+            <!-- About Column -->
+            <div class="footer-column">
+                <h3 class="footer-column-title">About</h3>
+                <nav class="footer-links">
+                    <a href="our-story.html" class="footer-link">Our Story</a>
+                    <a href="our-team.html" class="footer-link">Our Team</a>
+                    <a href="our-services.html" class="footer-link">Our Services</a>
+                    <a href="booking-process.html" class="footer-link">Booking Process</a>
+                    <a href="index.html#press" class="footer-link">Press & Media</a>
+                </nav>
+            </div>
+
+            <!-- Contact Column -->
+            <div class="footer-column">
+                <h3 class="footer-column-title">Contact</h3>
+                <div class="footer-contact-info">
+                    <div class="footer-contact-item">
+                        <strong>Henrik Tidefjärd</strong>
+                        <a href="mailto:henrik@luxurytravelsweden.com">henrik@luxurytravelsweden.com</a>
+                        <a href="tel:+46123456789">+46 123 456 789</a>
+                    </div>
+                    <div class="footer-social">
+                        <a href="https://instagram.com/LuxuryTravelSweden" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Instagram">
+                            <i data-lucide="instagram"></i>
+                        </a>
+                        <a href="https://facebook.com/luxurytravelsweden" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Facebook">
+                            <i data-lucide="facebook"></i>
+                        </a>
+                        <a href="https://linkedin.com/company/luxury-travel-sweden" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="LinkedIn">
+                            <i data-lucide="linkedin"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <div class="footer-bottom-inner">
+                <div class="footer-copyright">
+                    <span>&copy; 2025 Luxury Travel Sweden</span>
+                </div>
+                <nav class="footer-legal-links">
+                    <a href="privacy-policy.html" class="footer-legal-link">Privacy Policy</a>
+                    <a href="terms.html" class="footer-legal-link">Terms of Service</a>
+                </nav>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-client.js"></script>
+    <script src="scripts.js"></script>
+    <script>
+        // Get post slug from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const slug = urlParams.get('slug');
+
+        // Elements
+        const loadingState = document.getElementById('loadingState');
+        const errorState = document.getElementById('errorState');
+        const postHero = document.getElementById('postHero');
+        const postContent = document.getElementById('postContent');
+
+        // Initialize
+        async function init() {
+            if (!slug) {
+                showError();
+                return;
+            }
+
+            try {
+                await loadPost();
+            } catch (error) {
+                console.error('Error loading post:', error);
+                showError();
+            }
+        }
+
+        // Load post from Supabase
+        async function loadPost() {
+            try {
+                // Check if Supabase is available
+                if (!window.Supabase || !window.Supabase.db) {
+                    throw new Error('Supabase not configured');
+                }
+
+                // Fetch post by slug
+                const post = await window.Supabase.db.getBlogPost(slug);
+
+                if (!post) {
+                    throw new Error('Post not found');
+                }
+
+                // Update page title
+                document.title = `${post.title} - Luxury Travel Sweden`;
+
+                // Populate hero
+                if (post.hero_image_url) {
+                    const heroImage = document.getElementById('postHeroImage');
+                    heroImage.style.backgroundImage = `url(${post.hero_image_url})`;
+                    heroImage.style.backgroundSize = 'cover';
+                    heroImage.style.backgroundPosition = 'center';
+                }
+
+                document.getElementById('postAuthor').textContent = post.author || 'LIV Team';
+                document.getElementById('postDate').textContent = formatDate(post.published_at);
+                document.getElementById('postTitle').textContent = post.title;
+                document.getElementById('postExcerpt').textContent = post.excerpt || '';
+
+                if (post.featured) {
+                    document.getElementById('postFeaturedBadge').classList.remove('hidden');
+                }
+
+                // Populate body content
+                document.getElementById('postBody').innerHTML = post.content || '';
+
+                // Show content, hide loading
+                loadingState.classList.add('hidden');
+                postHero.classList.remove('hidden');
+                postContent.classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Error loading post:', error);
+                throw error;
+            }
+        }
+
+        // Show error state
+        function showError() {
+            loadingState.classList.add('hidden');
+            errorState.classList.remove('hidden');
+            postHero.classList.add('hidden');
+            postContent.classList.add('hidden');
+        }
+
+        // Helper function
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

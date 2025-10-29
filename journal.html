@@ -8,7 +8,7 @@
     <style>
         /* Journal Page Styles */
         .journal-hero {
-            padding: 8rem 2rem 4rem;
+            padding: clamp(9rem, 14vw, 11rem) 2rem 4rem;
             background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             color: white;
             text-align: center;
@@ -287,39 +287,30 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="main-nav" id="mainNav">
-        <div class="nav-content">
-            <a href="/" class="nav-logo" id="navLogo">
-                <img src="images/logo-white.svg" alt="Luxury Travel Sweden" class="logo-white">
-                <img src="images/logo-black.svg" alt="Luxury Travel Sweden" class="logo-black">
-            </a>
-            <button class="burger-menu" id="burgerMenu" aria-label="Toggle navigation">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </div>
-    </nav>
+    <header class="nav-header">
+        <a href="index.html#top" class="logo">
+            <img src="lts-logo-white.png" alt="Luxury Travel Sweden" id="siteLogo" />
+        </a>
+        <nav>
+            <div class="nav-menu" id="primaryNavigation">
+                <div class="nav-main">
+                    <ul class="nav-links">
+                        <li><a href="index.html#map" class="nav-link">EXPLORE</a></li>
+                        <li><a href="index.html#journeys" class="nav-link">EXPERIENCES</a></li>
+                        <li><a href="index.html#corporate" class="nav-link">CORPORATE & INCENTIVES</a></li>
+                        <li><a href="index.html#storytellers" class="nav-link">STORYTELLERS</a></li>
+                        <li><a href="index.html#concierge" class="nav-link" data-open-liv data-liv-context-type="general" data-liv-context-name="Navigation">LIV / CONCIERGE</a></li>
+                        <li><a href="journal.html" class="nav-link">JOURNAL</a></li>
+                        <li><a href="index.html#press" class="nav-link">PRESS & MEDIA</a></li>
+                        <li><a href="index.html#contact" class="nav-link">CONTACT</a></li>
+                    </ul>
+                </div>
+            </div>
+            <button type="button" class="mobile-menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="primaryNavigation">MENU</button>
+        </nav>
+    </header>
 
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar-nav" id="sidebarNav">
-        <div class="sidebar-header">
-            <a href="/" class="sidebar-logo">
-                <img src="images/logo-white.svg" alt="Luxury Travel Sweden">
-            </a>
-            <button class="sidebar-close" id="sidebarClose" aria-label="Close navigation">×</button>
-        </div>
-        <ul class="sidebar-links">
-            <li><a href="/">Home</a></li>
-            <li><a href="/journal.html" class="active">Journal</a></li>
-            <li><a href="/our-services.html">Our Services</a></li>
-            <li><a href="/our-team.html">Our Team</a></li>
-        </ul>
-        <div class="sidebar-footer">
-            <button class="btn btn-primary btn-full" data-open-liv>Start Planning</button>
-        </div>
-    </aside>
-
+    <main class="site-main">
     <!-- Hero Section -->
     <section class="journal-hero">
         <h1>The Journal</h1>
@@ -352,15 +343,94 @@
             <!-- Journal cards will be inserted here by JavaScript -->
         </div>
     </div>
+    </main>
 
-    <!-- Theme Toggle -->
-    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-        <span class="theme-toggle-track">
-            <span class="theme-toggle-thumb"></span>
-        </span>
-    </button>
+    <!-- Footer -->
+    <footer>
+        <!-- Footer Background Slideshow -->
+        <div class="footer-background" id="footerBackground"></div>
+        <div class="footer-bg-overlay"></div>
+
+        <!-- Footer Main Content -->
+        <div class="footer-content">
+            <!-- Explore Column -->
+            <div class="footer-column">
+                <h3 class="footer-column-title">Explore</h3>
+                <nav class="footer-links">
+                    <a href="index.html#map" class="footer-link">Interactive Map</a>
+                    <a href="index.html#journeys" class="footer-link">Six Pillars of Journey</a>
+                    <a href="index.html#corporate" class="footer-link">Corporate & Incentives</a>
+                    <a href="index.html#storytellers" class="footer-link">Our Storytellers</a>
+                    <a href="journal.html" class="footer-link">Journal & Stories</a>
+                    <a href="#" class="footer-link" data-open-liv data-liv-context-type="general" data-liv-context-name="Footer">Design Journey with LIV</a>
+                </nav>
+            </div>
+
+            <!-- Journeys Column -->
+            <div class="footer-column">
+                <h3 class="footer-column-title">Journeys</h3>
+                <nav class="footer-links">
+                    <a href="index.html#journeys" class="footer-link">Nature & Wellness</a>
+                    <a href="index.html#journeys" class="footer-link">Design & Innovation</a>
+                    <a href="index.html#journeys" class="footer-link">Royal, Art & Culture</a>
+                    <a href="index.html#journeys" class="footer-link">Culinary Experiences</a>
+                    <a href="index.html#journeys" class="footer-link">Nightlife & Celebration</a>
+                    <a href="index.html#journeys" class="footer-link">Legacy & Meaningful Travel</a>
+                </nav>
+            </div>
+
+            <!-- About Column -->
+            <div class="footer-column">
+                <h3 class="footer-column-title">About</h3>
+                <nav class="footer-links">
+                    <a href="our-story.html" class="footer-link">Our Story</a>
+                    <a href="our-team.html" class="footer-link">Our Team</a>
+                    <a href="our-services.html" class="footer-link">Our Services</a>
+                    <a href="booking-process.html" class="footer-link">Booking Process</a>
+                    <a href="index.html#press" class="footer-link">Press & Media</a>
+                </nav>
+            </div>
+
+            <!-- Contact Column -->
+            <div class="footer-column">
+                <h3 class="footer-column-title">Contact</h3>
+                <div class="footer-contact-info">
+                    <div class="footer-contact-item">
+                        <strong>Henrik Tidefjärd</strong>
+                        <a href="mailto:henrik@luxurytravelsweden.com">henrik@luxurytravelsweden.com</a>
+                        <a href="tel:+46123456789">+46 123 456 789</a>
+                    </div>
+                    <div class="footer-social">
+                        <a href="https://instagram.com/LuxuryTravelSweden" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Instagram">
+                            <i data-lucide="instagram"></i>
+                        </a>
+                        <a href="https://facebook.com/luxurytravelsweden" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Facebook">
+                            <i data-lucide="facebook"></i>
+                        </a>
+                        <a href="https://linkedin.com/company/luxury-travel-sweden" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="LinkedIn">
+                            <i data-lucide="linkedin"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <div class="footer-bottom-inner">
+                <div class="footer-copyright">
+                    <span>&copy; 2025 Luxury Travel Sweden</span>
+                </div>
+                <nav class="footer-legal-links">
+                    <a href="privacy-policy.html" class="footer-legal-link">Privacy Policy</a>
+                    <a href="terms.html" class="footer-legal-link">Terms of Service</a>
+                </nav>
+            </div>
+        </div>
+    </footer>
 
     <!-- Scripts -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-client.js"></script>
     <script src="scripts.js"></script>
