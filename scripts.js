@@ -1596,12 +1596,62 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             };
 
+            // Storyteller data for modal
+            const storytellerData = {
+                'mogens-lena': {
+                    title: "Dine with the priests Mogens & Lena in a historical mansion",
+                    image: "https://sverigeagenten.com/wp-content/uploads/2021/04/Priest-couple-Staircase-scaled_small-uai-258x172.jpg",
+                    content: `
+                        <p>This is the story of two priests - Mogens & Lena - who found the perfect place to host intimate gatherings that blend spirituality, history, and culinary excellence in their beautifully restored mansion.</p>
+                        <p>Nestled in the Swedish countryside, their historical mansion tells centuries of stories through its walls. Mogens and Lena have transformed this sacred space into a destination where guests can experience authentic Swedish hospitality, meaningful conversations, and exquisite locally-sourced cuisine.</p>
+                        <p>Each dining experience is a carefully orchestrated journey through Swedish traditions, seasonal ingredients, and the profound connection between place, people, and purpose. Their gatherings are intimate by design, creating space for reflection, connection, and transformation.</p>
+                    `,
+                    cta: "Design with LIV",
+                    contextType: "storyteller",
+                    contextName: "Mogens & Lena"
+                },
+                'robert-mikael': {
+                    title: "THE VILLA – A bizarre dinner gathering with Robert & Mikael",
+                    image: "https://sverigeagenten.com/wp-content/uploads/2021/04/Founders-OOOW-Profile-scaled_small-uai-258x172.jpg",
+                    content: `
+                        <p>With the slogan "Louder music, Less conversations" Robert Pihl and Mikael Wennerros create unforgettable evenings where sound, atmosphere, and unexpected encounters take center stage.</p>
+                        <p>THE VILLA is not your typical dinner party. It's an immersive experience where boundaries blur between performance art, culinary excellence, and social experimentation. The duo believes in the power of sound to create connection, letting music speak where words often fail.</p>
+                        <p>Guests arrive not knowing what to expect and leave transformed by an evening that challenges convention. Each gathering is unique, carefully curated to surprise, delight, and push the boundaries of what a dinner party can be.</p>
+                    `,
+                    cta: "Design with LIV",
+                    contextType: "storyteller",
+                    contextName: "Robert & Mikael"
+                },
+                'trend-stefan': {
+                    title: "A Stockholm design tour with Trend Stefan",
+                    image: "https://sverigeagenten.com/wp-content/uploads/2021/04/Potrait-Trendstefan-scaled_small-uai-258x172.jpg",
+                    content: `
+                        <p>Trend Stefan is recognized as one of the foremost trend scouts of Sweden and he reveals the hidden design gems, emerging studios, and creative spaces that define Stockholm's innovative spirit.</p>
+                        <p>With decades of experience in Swedish design, Stefan has his finger on the pulse of Stockholm's creative scene. He knows the studios before they're famous, the designers before they break through, and the spaces where innovation happens.</p>
+                        <p>His tours are not about visiting tourist attractions—they're about understanding the DNA of Swedish design. From underground workshops to cutting-edge showrooms, Stefan opens doors that remain closed to most visitors, offering insights into the philosophy, process, and people behind Sweden's design revolution.</p>
+                    `,
+                    cta: "Design with LIV",
+                    contextType: "storyteller",
+                    contextName: "Trend Stefan"
+                }
+            };
+
             // Open modal when read-more button is clicked
             document.querySelectorAll('.read-more-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    const card = this.closest('.pillar-card');
-                    const pillarType = card.dataset.pillar;
-                    const data = pillarData[pillarType];
+                    // Check if it's a pillar card or story card
+                    const pillarCard = this.closest('.pillar-card');
+                    const storyCard = this.closest('.story-card');
+
+                    let data = null;
+
+                    if (pillarCard) {
+                        const pillarType = pillarCard.dataset.pillar;
+                        data = pillarData[pillarType];
+                    } else if (storyCard) {
+                        const storytellerType = storyCard.dataset.storyteller;
+                        data = storytellerData[storytellerType];
+                    }
 
                     if (data) {
                         modalTitle.textContent = data.title;

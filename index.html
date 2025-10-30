@@ -59,7 +59,7 @@
         <div class="hero-actions">
             <a href="#map" class="hero-cta" data-editable="hero.cta.explore">AVENTA</a>
             <button type="button" class="hero-cta" data-open-liv data-liv-context-type="general" data-liv-context-name="Hero" data-editable="hero.cta.design">DESIGN MY JOURNEY WITH LIV</button>
-            <a href="#choose-path" class="hero-cta" data-editable="hero.cta.enter">ENTER THE EXPERIENCES</a>
+            <a href="#journeys" class="hero-cta" data-editable="hero.cta.enter">ENTER THE EXPERIENCES</a>
         </div>
     </div>
 
@@ -75,30 +75,30 @@
                 <!-- Map Filters -->
                 <div class="map-controls">
                     <div class="seasonal-toggle">
-                        <button type="button" class="season-btn active" data-season="spring">Spring</button>
-                        <button type="button" class="season-btn" data-season="summer">Summer</button>
-                        <button type="button" class="season-btn" data-season="autumn">Autumn</button>
-                        <button type="button" class="season-btn" data-season="winter">Winter</button>
+                        <button type="button" class="season-btn active" data-season="spring" data-editable="map.season.spring">Spring</button>
+                        <button type="button" class="season-btn" data-season="summer" data-editable="map.season.summer">Summer</button>
+                        <button type="button" class="season-btn" data-season="autumn" data-editable="map.season.autumn">Autumn</button>
+                        <button type="button" class="season-btn" data-season="winter" data-editable="map.season.winter">Winter</button>
                     </div>
                     <div class="theme-filters">
-                        <button type="button" class="filter-btn active" data-filter="all">All</button>
-                        <button type="button" class="filter-btn" data-filter="nature">Nature & Wellness</button>
-                        <button type="button" class="filter-btn" data-filter="design">Design & Innovation</button>
-                        <button type="button" class="filter-btn" data-filter="royal-culture">Royal, Art & Culture</button>
-                        <button type="button" class="filter-btn" data-filter="culinary">Culinary</button>
-                        <button type="button" class="filter-btn" data-filter="nightlife">Nightlife & Celebrations</button>
-                        <button type="button" class="filter-btn" data-filter="legacy">Legacy & Purpose</button>
+                        <button type="button" class="filter-btn active" data-filter="all" data-editable="map.theme.all">All</button>
+                        <button type="button" class="filter-btn" data-filter="nature" data-editable="map.theme.nature">Nature & Wellness</button>
+                        <button type="button" class="filter-btn" data-filter="design" data-editable="map.theme.design">Design & Innovation</button>
+                        <button type="button" class="filter-btn" data-filter="royal-culture" data-editable="map.theme.royal">Royal, Art & Culture</button>
+                        <button type="button" class="filter-btn" data-filter="culinary" data-editable="map.theme.culinary">Culinary</button>
+                        <button type="button" class="filter-btn" data-filter="nightlife" data-editable="map.theme.nightlife">Nightlife & Celebrations</button>
+                        <button type="button" class="filter-btn" data-filter="legacy" data-editable="map.theme.legacy">Legacy & Purpose</button>
                     </div>
                     <div class="category-filters">
-                        <button type="button" class="category-toggle-all active" id="categoryToggleAll">All On</button>
-                        <button type="button" class="category-toggle-all" id="categoryToggleNone">All Off</button>
-                        <button type="button" class="category-filter-btn active" data-category="province">Provinces</button>
-                        <button type="button" class="category-filter-btn active" data-category="city">Cities & towns</button>
-                        <button type="button" class="category-filter-btn active" data-category="seaside">Seaside Towns & Summer Hotspots</button>
-                        <button type="button" class="category-filter-btn active" data-category="beach">Beaches</button>
-                        <button type="button" class="category-filter-btn active" data-category="ski">Ski areas</button>
-                        <button type="button" class="category-filter-btn active" data-category="park">National parks</button>
-                        <button type="button" class="category-filter-btn active" data-category="storyteller">Storytellers</button>
+                        <button type="button" class="category-toggle-all active" id="categoryToggleAll" data-editable="map.category.all_on">All On</button>
+                        <button type="button" class="category-toggle-all" id="categoryToggleNone" data-editable="map.category.all_off">All Off</button>
+                        <button type="button" class="category-filter-btn active" data-category="province" data-editable="map.category.province">Provinces</button>
+                        <button type="button" class="category-filter-btn active" data-category="city" data-editable="map.category.city">Cities & towns</button>
+                        <button type="button" class="category-filter-btn active" data-category="seaside" data-editable="map.category.seaside">Seaside Towns & Summer Hotspots</button>
+                        <button type="button" class="category-filter-btn active" data-category="beach" data-editable="map.category.beach">Beaches</button>
+                        <button type="button" class="category-filter-btn active" data-category="ski" data-editable="map.category.ski">Ski areas</button>
+                        <button type="button" class="category-filter-btn active" data-category="park" data-editable="map.category.park">National parks</button>
+                        <button type="button" class="category-filter-btn active" data-category="storyteller" data-editable="map.category.storyteller">Storytellers</button>
                     </div>
                 </div>
 
@@ -109,7 +109,7 @@
                     <!-- Loading Indicator -->
                     <div id="mapLoadingIndicator" class="map-loading" style="display: flex;">
                         <div class="spinner"></div>
-                        <p>Loading destinations from database...</p>
+                        <p data-editable="map.loading_text">Loading destinations from database...</p>
                     </div>
 
                     <!-- Map Overlay Card -->
@@ -123,7 +123,7 @@
                             <p class="map-card-description" id="mapCardDescription"></p>
                             <div class="map-card-themes" id="mapCardThemes"></div>
                             <div class="map-card-seasons" id="mapCardSeasons"></div>
-                            <button type="button" class="map-card-cta" data-open-liv>Design My Journey with LIV</button>
+                            <button type="button" class="map-card-cta" data-open-liv data-editable="map.card.cta">Design My Journey with LIV</button>
                         </div>
                     </div>
                 </div>
@@ -148,13 +148,13 @@
                         <div class="pillar-body">
                             <div class="pillar-icon" aria-hidden="true"><i data-lucide="leaf"></i></div>
                             <div class="pillar-copy">
-                                <h3>Nature &amp; Wellness</h3>
-                                <p>Disappear into silence and reconnect with yourself. Stay in glass igloos under the Northern
+                                <h3 data-editable="pillars.nature.title">Nature &amp; Wellness</h3>
+                                <p data-editable="pillars.nature.description">Disappear into silence and reconnect with yourself. Stay in glass igloos under the Northern
 Lights, mirrored forest cabins, or private archipelago villas. Practice sauna rituals, forest
 meditation, and guided digital detoxes. For those who seek more, Sweden's biohacking
 pioneers and longevity experts curate programs blending nature with the science of
 performance and wellbeing.</p>
-                                <button type="button" class="read-more-btn">read more</button>
+                                <button type="button" class="read-more-btn" data-editable="pillars.nature.read_more">read more</button>
                                 <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="experience" data-liv-context-name="Nature & Wellness">Design my journey</button>
                             </div>
                         </div>
@@ -166,12 +166,12 @@ performance and wellbeing.</p>
                         <div class="pillar-body">
                             <div class="pillar-icon" aria-hidden="true"><i data-lucide="cpu"></i></div>
                             <div class="pillar-copy">
-                                <h3>Design &amp; Innovation</h3>
-                                <p>Stockholm is one of the world's unicorn capitals — a cradle of startups and cutting-edge
+                                <h3 data-editable="pillars.design.title">Design &amp; Innovation</h3>
+                                <p data-editable="pillars.design.description">Stockholm is one of the world's unicorn capitals — a cradle of startups and cutting-edge
 design. We open doors to private design studios, fashion ateliers, and sustainable innovation
 labs. Meet the entrepreneurs behind global icons and enjoy one-on-one encounters with
 Sweden's creatives and thinkers.</p>
-                                <button type="button" class="read-more-btn">read more</button>
+                                <button type="button" class="read-more-btn" data-editable="pillars.design.read_more">read more</button>
                                 <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="experience" data-liv-context-name="Design & Innovation">Design my journey</button>
                             </div>
                         </div>
@@ -183,11 +183,11 @@ Sweden's creatives and thinkers.</p>
                         <div class="pillar-body">
                             <div class="pillar-icon" aria-hidden="true"><i data-lucide="crown"></i></div>
                             <div class="pillar-copy">
-                                <h3>Royal, Art &amp; Culture</h3>
-                                <p>Discover Sweden's refined blend of heritage and creativity. Explore private castles and royal
+                                <h3 data-editable="pillars.royal.title">Royal, Art &amp; Culture</h3>
+                                <p data-editable="pillars.royal.description">Discover Sweden's refined blend of heritage and creativity. Explore private castles and royal
 palaces after hours, then step into the world of contemporary art, design studios, and collector
 salons. A journey where history, culture, and innovation meet in timeless Scandinavian style.</p>
-                                <button type="button" class="read-more-btn">read more</button>
+                                <button type="button" class="read-more-btn" data-editable="pillars.royal.read_more">read more</button>
                                 <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="experience" data-liv-context-name="Royal, Art & Culture">Design my journey</button>
                             </div>
                         </div>
@@ -199,14 +199,14 @@ salons. A journey where history, culture, and innovation meet in timeless Scandi
                         <div class="pillar-body">
                             <div class="pillar-icon" aria-hidden="true"><i data-lucide="utensils-crossed"></i></div>
                             <div class="pillar-copy">
-                                <h3>Culinary Experiences</h3>
-                                <p>Discover Sweden through its flavors. Join Michelin-trained chefs in hands-on cooking
+                                <h3 data-editable="pillars.culinary.title">Culinary Experiences</h3>
+                                <p data-editable="pillars.culinary.description">Discover Sweden through its flavors. Join Michelin-trained chefs in hands-on cooking
 sessions inspired by the seasons. Forage for wild herbs and mushrooms with local experts,
 then dine in forest kitchens where nature sets the table. Enjoy gourmet food tours, private
 tasting visits, and warm home dinners that open the door to authentic Swedish life. Hear Sami
 stories and share traditional dishes around the fire — each meal a chapter of Sweden's land,
 culture, and culinary heritage.</p>
-                                <button type="button" class="read-more-btn">read more</button>
+                                <button type="button" class="read-more-btn" data-editable="pillars.culinary.read_more">read more</button>
                                 <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="experience" data-liv-context-name="Culinary Experiences">Design my journey</button>
                             </div>
                         </div>
@@ -218,13 +218,13 @@ culture, and culinary heritage.</p>
                         <div class="pillar-body">
                             <div class="pillar-icon" aria-hidden="true"><i data-lucide="party-popper"></i></div>
                             <div class="pillar-copy">
-                                <h3>Nightlife &amp; Celebration</h3>
-                                <p>Swedes know how to party — and we bring you inside their most exclusive scenes. Sip
+                                <h3 data-editable="pillars.nightlife.title">Nightlife &amp; Celebration</h3>
+                                <p data-editable="pillars.nightlife.description">Swedes know how to party — and we bring you inside their most exclusive scenes. Sip
 champagne in members-only clubs, dance under the midnight sun at a private island
 midsummer gala, or host your own soirée in a designer's loft. For the bold, rent out a mansion
 and let us curate an unforgettable night with live acts, local creatives, and a guest list to
 remember.</p>
-                                <button type="button" class="read-more-btn">read more</button>
+                                <button type="button" class="read-more-btn" data-editable="pillars.nightlife.read_more">read more</button>
                                 <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="experience" data-liv-context-name="Nightlife & Celebration">Design my journey</button>
                             </div>
                         </div>
@@ -236,12 +236,12 @@ remember.</p>
                         <div class="pillar-body">
                             <div class="pillar-icon" aria-hidden="true"><i data-lucide="globe-2"></i></div>
                             <div class="pillar-copy">
-                                <h3>Legacy &amp; Meaningful Travel</h3>
-                                <p>Travel with purpose and perspective. Support Sami heritage projects, experience rewilding
+                                <h3 data-editable="pillars.legacy.title">Legacy &amp; Meaningful Travel</h3>
+                                <p data-editable="pillars.legacy.description">Travel with purpose and perspective. Support Sami heritage projects, experience rewilding
 initiatives, or participate in sustainable design collaborations. Every journey leaves a positive
 footprint — giving back to the land, the culture, and the communities that make Sweden
 unique.</p>
-                                <button type="button" class="read-more-btn">read more</button>
+                                <button type="button" class="read-more-btn" data-editable="pillars.legacy.read_more">read more</button>
                                 <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="experience" data-liv-context-name="Legacy & Meaningful Travel">Design my journey</button>
                             </div>
                         </div>
@@ -266,9 +266,9 @@ unique.</p>
                         <div class="pillar-body">
                             <div class="pillar-icon" aria-hidden="true"><i data-lucide="mountain"></i></div>
                             <div class="pillar-copy">
-                                <h3>Leadership Retreats</h3>
-                                <p>Swap the boardroom for a castle, a mirrored forest lodge, or a private island villa. Executive retreats combine strategic focus with Swedish wellness: sauna rituals, guided silence, and outdoor adventure.</p>
-                                <button type="button" class="read-more-btn">read more</button>
+                                <h3 data-editable="corporate.leadership.title">Leadership Retreats</h3>
+                                <p data-editable="corporate.leadership.description">Swap the boardroom for a castle, a mirrored forest lodge, or a private island villa. Executive retreats combine strategic focus with Swedish wellness: sauna rituals, guided silence, and outdoor adventure.</p>
+                                <button type="button" class="read-more-btn" data-editable="corporate.leadership.read_more">read more</button>
                                 <button type="button" class="pillar-cta" data-open-liv>Design with LIV</button>
                             </div>
                         </div>
@@ -281,9 +281,9 @@ unique.</p>
                         <div class="pillar-body">
                             <div class="pillar-icon" aria-hidden="true"><i data-lucide="lightbulb"></i></div>
                             <div class="pillar-copy">
-                                <h3>Innovation & Creativity</h3>
-                                <p>Bring your team into Sweden's unicorn factory. Meet startup founders, green-tech pioneers, and design thinkers. Workshops woven into inspiring environments — from design studios to innovation labs.</p>
-                                <button type="button" class="read-more-btn">read more</button>
+                                <h3 data-editable="corporate.innovation.title">Innovation & Creativity</h3>
+                                <p data-editable="corporate.innovation.description">Bring your team into Sweden's unicorn factory. Meet startup founders, green-tech pioneers, and design thinkers. Workshops woven into inspiring environments — from design studios to innovation labs.</p>
+                                <button type="button" class="read-more-btn" data-editable="corporate.innovation.read_more">read more</button>
                                 <button type="button" class="pillar-cta" data-open-liv>Design with LIV</button>
                             </div>
                         </div>
@@ -296,9 +296,9 @@ unique.</p>
                         <div class="pillar-body">
                             <div class="pillar-icon" aria-hidden="true"><i data-lucide="sparkles"></i></div>
                             <div class="pillar-copy">
-                                <h3>Celebration & Recognition</h3>
-                                <p>Business milestones deserve more than a ballroom. Celebrate with a Scandi White Party on a private island, a royal gala in a candlelit palace, or an Innovation Party Night with startup founders and Michelin catering.</p>
-                                <button type="button" class="read-more-btn">read more</button>
+                                <h3 data-editable="corporate.celebration.title">Celebration & Recognition</h3>
+                                <p data-editable="corporate.celebration.description">Business milestones deserve more than a ballroom. Celebrate with a Scandi White Party on a private island, a royal gala in a candlelit palace, or an Innovation Party Night with startup founders and Michelin catering.</p>
+                                <button type="button" class="read-more-btn" data-editable="corporate.celebration.read_more">read more</button>
                                 <button type="button" class="pillar-cta" data-open-liv>Design with LIV</button>
                             </div>
                         </div>
@@ -311,9 +311,9 @@ unique.</p>
                         <div class="pillar-body">
                             <div class="pillar-icon" aria-hidden="true"><i data-lucide="heart"></i></div>
                             <div class="pillar-copy">
-                                <h3>Culture & Purpose</h3>
-                                <p>Sweden's cultural and social legacy inspires transformation. Backstage access to Stockholm Fashion Week, private design fairs, or CSR narratives supporting Sami communities and eco-startups.</p>
-                                <button type="button" class="read-more-btn">read more</button>
+                                <h3 data-editable="corporate.purpose.title">Culture & Purpose</h3>
+                                <p data-editable="corporate.purpose.description">Sweden's cultural and social legacy inspires transformation. Backstage access to Stockholm Fashion Week, private design fairs, or CSR narratives supporting Sami communities and eco-startups.</p>
+                                <button type="button" class="read-more-btn" data-editable="corporate.purpose.read_more">read more</button>
                                 <button type="button" class="pillar-cta" data-open-liv>Design with LIV</button>
                             </div>
                         </div>
@@ -326,9 +326,9 @@ unique.</p>
                         <div class="pillar-body">
                             <div class="pillar-icon" aria-hidden="true"><i data-lucide="activity"></i></div>
                             <div class="pillar-copy">
-                                <h3>Wellness & Biohacking</h3>
-                                <p>Executive performance meets longevity. Transform your leadership team through cutting-edge wellness protocols, Nordic cold therapy, and personalized biohacking experiences in pristine Swedish nature.</p>
-                                <button type="button" class="read-more-btn">read more</button>
+                                <h3 data-editable="corporate.wellness.title">Wellness & Biohacking</h3>
+                                <p data-editable="corporate.wellness.description">Executive performance meets longevity. Transform your leadership team through cutting-edge wellness protocols, Nordic cold therapy, and personalized biohacking experiences in pristine Swedish nature.</p>
+                                <button type="button" class="read-more-btn" data-editable="corporate.wellness.read_more">read more</button>
                                 <button type="button" class="pillar-cta" data-open-liv>Design with LIV</button>
                             </div>
                         </div>
@@ -341,9 +341,9 @@ unique.</p>
                         <div class="pillar-body">
                             <div class="pillar-icon" aria-hidden="true"><i data-lucide="trophy"></i></div>
                             <div class="pillar-copy">
-                                <h3>Creative Incentives</h3>
-                                <p>Reward your team with unforgettable experiences. Sailing races through the archipelago, gastronomy contests with Michelin chefs, design sprints in iconic studios, or adventure challenges in Lapland.</p>
-                                <button type="button" class="read-more-btn">read more</button>
+                                <h3 data-editable="corporate.incentive.title">Creative Incentives</h3>
+                                <p data-editable="corporate.incentive.description">Reward your team with unforgettable experiences. Sailing races through the archipelago, gastronomy contests with Michelin chefs, design sprints in iconic studios, or adventure challenges in Lapland.</p>
+                                <button type="button" class="read-more-btn" data-editable="corporate.incentive.read_more">read more</button>
                                 <button type="button" class="pillar-cta" data-open-liv>Design with LIV</button>
                             </div>
                         </div>
@@ -363,35 +363,38 @@ unique.</p>
                 </div>
 
                 <div class="stories-grid">
-                    <article class="story-card">
+                    <article class="story-card" data-storyteller="mogens-lena">
                         <div class="story-media">
                             <img src="https://sverigeagenten.com/wp-content/uploads/2021/04/Priest-couple-Staircase-scaled_small-uai-258x172.jpg" alt="Mogens & Lena in their historical mansion" loading="lazy">
                         </div>
                         <div class="story-content">
-                            <h3 class="story-title">Dine with the priests Mogens & Lena in a historical mansion</h3>
-                            <p class="story-excerpt">This is the story of two priests - Mogens & Lena - who found the perfect place to host intimate gatherings that blend spirituality, history, and culinary excellence in their beautifully restored mansion.</p>
+                            <h3 class="story-title" data-editable="storytellers.mogens_lena.title">Dine with the priests Mogens & Lena in a historical mansion</h3>
+                            <p class="story-excerpt" data-editable="storytellers.mogens_lena.excerpt">This is the story of two priests - Mogens & Lena - who found the perfect place to host intimate gatherings that blend spirituality, history, and culinary excellence in their beautifully restored mansion.</p>
+                            <button type="button" class="read-more-btn" data-editable="storytellers.mogens_lena.read_more">read more</button>
                             <button type="button" class="story-cta" data-open-liv data-liv-context-type="storyteller" data-liv-context-name="Mogens & Lena">Design with LIV</button>
                         </div>
                     </article>
 
-                    <article class="story-card">
+                    <article class="story-card" data-storyteller="robert-mikael">
                         <div class="story-media">
                             <img src="https://sverigeagenten.com/wp-content/uploads/2021/04/Founders-OOOW-Profile-scaled_small-uai-258x172.jpg" alt="Robert & Mikael at THE VILLA" loading="lazy">
                         </div>
                         <div class="story-content">
-                            <h3 class="story-title">THE VILLA – A bizarre dinner gathering with Robert & Mikael</h3>
-                            <p class="story-excerpt">With the slogan "Louder music, Less conversations" Robert Pihl and Mikael Wennerros create unforgettable evenings where sound, atmosphere, and unexpected encounters take center stage.</p>
+                            <h3 class="story-title" data-editable="storytellers.robert_mikael.title">THE VILLA – A bizarre dinner gathering with Robert & Mikael</h3>
+                            <p class="story-excerpt" data-editable="storytellers.robert_mikael.excerpt">With the slogan "Louder music, Less conversations" Robert Pihl and Mikael Wennerros create unforgettable evenings where sound, atmosphere, and unexpected encounters take center stage.</p>
+                            <button type="button" class="read-more-btn" data-editable="storytellers.robert_mikael.read_more">read more</button>
                             <button type="button" class="story-cta" data-open-liv data-liv-context-type="storyteller" data-liv-context-name="Robert & Mikael">Design with LIV</button>
                         </div>
                     </article>
 
-                    <article class="story-card">
+                    <article class="story-card" data-storyteller="trend-stefan">
                         <div class="story-media">
                             <img src="https://sverigeagenten.com/wp-content/uploads/2021/04/Potrait-Trendstefan-scaled_small-uai-258x172.jpg" alt="Trend Stefan on a Stockholm design tour" loading="lazy">
                         </div>
                         <div class="story-content">
-                            <h3 class="story-title">A Stockholm design tour with Trend Stefan</h3>
-                            <p class="story-excerpt">Trend Stefan is recognized as one of the foremost trend scouts of Sweden and he reveals the hidden design gems, emerging studios, and creative spaces that define Stockholm's innovative spirit.</p>
+                            <h3 class="story-title" data-editable="storytellers.trend_stefan.title">A Stockholm design tour with Trend Stefan</h3>
+                            <p class="story-excerpt" data-editable="storytellers.trend_stefan.excerpt">Trend Stefan is recognized as one of the foremost trend scouts of Sweden and he reveals the hidden design gems, emerging studios, and creative spaces that define Stockholm's innovative spirit.</p>
+                            <button type="button" class="read-more-btn" data-editable="storytellers.trend_stefan.read_more">read more</button>
                             <button type="button" class="story-cta" data-open-liv data-liv-context-type="storyteller" data-liv-context-name="Trend Stefan">Design with LIV</button>
                         </div>
                     </article>
@@ -399,7 +402,7 @@ unique.</p>
                 </div>
 
                 <div style="text-align: center; margin-top: 3rem;">
-                    <a href="#storytellers-all" class="story-cta-view-all">SEE ALL</a>
+                    <a href="#storytellers-all" class="story-cta-view-all" data-editable="storytellers.see_all">SEE ALL</a>
                 </div>
             </div>
         </section>
@@ -412,18 +415,18 @@ unique.</p>
                         <h3 data-editable="concierge.headline">Meet LIV — Luxury Itinerary Visionary.</h3>
                         <p data-editable="concierge.description">Embedded across the experience, LIV begins your dialogue, sketches the first draft of your itinerary, and invites you to pass the narrative to our human curators for refinement.</p>
                         <div class="cta-group" style="margin-top:2rem;">
-                            <a href="#" class="primary" data-open-liv data-liv-context-type="general" data-liv-context-name="LIV Concierge">Design with LIV</a>
-                            <a href="#contact">Talk to us</a>
+                            <a href="#" class="primary" data-open-liv data-liv-context-type="general" data-liv-context-name="LIV Concierge" data-editable="concierge.cta.design">Design with LIV</a>
+                            <a href="#contact" data-editable="concierge.cta.talk">Talk to us</a>
                         </div>
                     </div>
                     <div class="accent-card liv-experience-card">
-                        <h4 style="font-family: var(--font-serif); font-size: 1.4rem; margin-bottom:1rem;">Experience LIV</h4>
-                        <p style="font-style: italic; margin-bottom: 1.5rem; color: rgba(255,255,255,0.85);">"Share your vision—Nordic forests, design studios, archipelago dinners—and I'll compose your opening itinerary in moments."</p>
+                        <h4 style="font-family: var(--font-serif); font-size: 1.4rem; margin-bottom:1rem;" data-editable="concierge.card.title">Experience LIV</h4>
+                        <p style="font-style: italic; margin-bottom: 1.5rem; color: rgba(255,255,255,0.85);" data-editable="concierge.card.quote">"Share your vision—Nordic forests, design studios, archipelago dinners—and I'll compose your opening itinerary in moments."</p>
                         <ul>
-                            <li><span>Smart Curation</span>LIV weaves your preferences into narrative itineraries blending nature, culture, and innovation.</li>
-                            <li><span>Instant Drafts</span>Receive a tailored 2-3 paragraph preview within seconds, ready to refine or approve.</li>
-                            <li><span>Seamless Handoff</span>Pass your draft to our human curators who add insider access and bespoke touches.</li>
-                            <li><span>24-Hour Response</span>From first conversation to confirmed itinerary, we move at your pace.</li>
+                            <li><span data-editable="concierge.card.feature1.title">Smart Curation</span><span data-editable="concierge.card.feature1.description">LIV weaves your preferences into narrative itineraries blending nature, culture, and innovation.</span></li>
+                            <li><span data-editable="concierge.card.feature2.title">Instant Drafts</span><span data-editable="concierge.card.feature2.description">Receive a tailored 2-3 paragraph preview within seconds, ready to refine or approve.</span></li>
+                            <li><span data-editable="concierge.card.feature3.title">Seamless Handoff</span><span data-editable="concierge.card.feature3.description">Pass your draft to our human curators who add insider access and bespoke touches.</span></li>
+                            <li><span data-editable="concierge.card.feature4.title">24-Hour Response</span><span data-editable="concierge.card.feature4.description">From first conversation to confirmed itinerary, we move at your pace.</span></li>
                         </ul>
                     </div>
                 </div>
@@ -491,11 +494,11 @@ unique.</p>
                     <p data-editable="press.description">Our work has been recognized by the world's leading voices in luxury and travel.</p>
                 </div>
                 <div class="press-strip" role="list">
-                    <span role="listitem">Monocle</span>
-                    <span role="listitem">Condé Nast Traveller</span>
-                    <span role="listitem">Financial Times</span>
-                    <span role="listitem">Wallpaper*</span>
-                    <span role="listitem">Vogue Scandinavia</span>
+                    <span role="listitem" data-editable="press.outlet1">Monocle</span>
+                    <span role="listitem" data-editable="press.outlet2">Condé Nast Traveller</span>
+                    <span role="listitem" data-editable="press.outlet3">Financial Times</span>
+                    <span role="listitem" data-editable="press.outlet4">Wallpaper*</span>
+                    <span role="listitem" data-editable="press.outlet5">Vogue Scandinavia</span>
                 </div>
             </div>
         </section>
@@ -511,15 +514,15 @@ unique.</p>
                 <div class="instagram-grid">
                     <div class="instagram-card">
                         <img src="https://images.pexels.com/photos/3225528/pexels-photo-3225528.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Swedish wilderness" loading="lazy">
-                        <div class="instagram-title">Northern Lights Adventure</div>
+                        <div class="instagram-title" data-editable="instagram.card1.title">Northern Lights Adventure</div>
                     </div>
                     <div class="instagram-card">
                         <img src="https://images.pexels.com/photos/1319515/pexels-photo-1319515.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Stockholm architecture" loading="lazy">
-                        <div class="instagram-title">Stockholm Design District</div>
+                        <div class="instagram-title" data-editable="instagram.card2.title">Stockholm Design District</div>
                     </div>
                     <div class="instagram-card">
                         <img src="https://images.pexels.com/photos/1054289/pexels-photo-1054289.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Swedish cuisine" loading="lazy">
-                        <div class="instagram-title">Nordic Culinary Experience</div>
+                        <div class="instagram-title" data-editable="instagram.card3.title">Nordic Culinary Experience</div>
                     </div>
                 </div>
             </div>
@@ -599,32 +602,32 @@ unique.</p>
                 <form class="enquiry-form" id="enquiryForm" novalidate>
                     <div class="form-grid">
                         <div class="form-field">
-                            <label for="enquiryName">Name</label>
-                            <input type="text" id="enquiryName" name="name" autocomplete="name" required placeholder="Your full name">
+                            <label for="enquiryName" data-editable="contact.form.name_label">Name</label>
+                            <input type="text" id="enquiryName" name="name" autocomplete="name" required placeholder="Your full name" data-editable-placeholder="contact.form.name_placeholder">
                         </div>
                         <div class="form-field">
-                            <label for="enquiryEmail">Email</label>
-                            <input type="email" id="enquiryEmail" name="email" autocomplete="email" required placeholder="name@example.com">
+                            <label for="enquiryEmail" data-editable="contact.form.email_label">Email</label>
+                            <input type="email" id="enquiryEmail" name="email" autocomplete="email" required placeholder="name@example.com" data-editable-placeholder="contact.form.email_placeholder">
                         </div>
                         <div class="form-field">
-                            <label for="enquiryPhone">Phone / WhatsApp</label>
-                            <input type="tel" id="enquiryPhone" name="phone" autocomplete="tel" placeholder="Optional contact number">
+                            <label for="enquiryPhone" data-editable="contact.form.phone_label">Phone / WhatsApp</label>
+                            <input type="tel" id="enquiryPhone" name="phone" autocomplete="tel" placeholder="Optional contact number" data-editable-placeholder="contact.form.phone_placeholder">
                         </div>
                         <div class="form-field">
-                            <label for="enquiryTripType">Trip Type</label>
+                            <label for="enquiryTripType" data-editable="contact.form.triptype_label">Trip Type</label>
                             <select id="enquiryTripType" name="tripType">
-                                <option value="" selected>Select</option>
-                                <option value="FIT">Private Journey (FIT)</option>
-                                <option value="Corporate">Corporate &amp; Incentives</option>
+                                <option value="" selected data-editable="contact.form.triptype_select">Select</option>
+                                <option value="FIT" data-editable="contact.form.triptype_fit">Private Journey (FIT)</option>
+                                <option value="Corporate" data-editable="contact.form.triptype_corporate">Corporate &amp; Incentives</option>
                             </select>
                         </div>
                         <div class="form-field full">
-                            <label for="enquiryDates">Ideal Dates &amp; Duration</label>
-                            <input type="text" id="enquiryDates" name="dates" placeholder="e.g., 7 nights in February 2026">
+                            <label for="enquiryDates" data-editable="contact.form.dates_label">Ideal Dates &amp; Duration</label>
+                            <input type="text" id="enquiryDates" name="dates" placeholder="e.g., 7 nights in February 2026" data-editable-placeholder="contact.form.dates_placeholder">
                         </div>
                         <div class="form-field full">
-                            <label for="enquiryDetails">Tell us about your ambitions</label>
-                            <textarea id="enquiryDetails" name="details" placeholder="Themes, destinations, special access, or highlights to include."></textarea>
+                            <label for="enquiryDetails" data-editable="contact.form.details_label">Tell us about your ambitions</label>
+                            <textarea id="enquiryDetails" name="details" placeholder="Themes, destinations, special access, or highlights to include." data-editable-placeholder="contact.form.details_placeholder"></textarea>
                         </div>
                     </div>
 
@@ -632,7 +635,7 @@ unique.</p>
                     <input type="hidden" id="enquirySourceField" name="source" value="Direct">
 
                     <div class="form-actions">
-                        <button type="submit">Submit Enquiry</button>
+                        <button type="submit" data-editable="contact.form.submit">Submit Enquiry</button>
                         <p class="form-status" id="enquiryStatus" role="status"></p>
                     </div>
                 </form>
@@ -650,46 +653,46 @@ unique.</p>
         <div class="footer-content">
             <!-- Explore Column -->
             <div class="footer-column">
-                <h3 class="footer-column-title">Explore</h3>
+                <h3 class="footer-column-title" data-editable="footer.explore.title">Explore</h3>
                 <nav class="footer-links">
-                    <a href="#destinations" class="footer-link">Interactive Map</a>
-                    <a href="#journeys" class="footer-link">Experiences</a>
-                    <a href="#corporate" class="footer-link">Corporate & Incentives</a>
-                    <a href="#storytellers" class="footer-link">Featured Storytellers</a>
-                    <a href="#stories" class="footer-link">Journal</a>
-                    <a href="#" class="footer-link" data-open-liv data-liv-context-type="general" data-liv-context-name="Footer">Design my Journey with LIV</a>
+                    <a href="#destinations" class="footer-link" data-editable="footer.explore.link1">Interactive Map</a>
+                    <a href="#journeys" class="footer-link" data-editable="footer.explore.link2">Experiences</a>
+                    <a href="#corporate" class="footer-link" data-editable="footer.explore.link3">Corporate & Incentives</a>
+                    <a href="#storytellers" class="footer-link" data-editable="footer.explore.link4">Featured Storytellers</a>
+                    <a href="#stories" class="footer-link" data-editable="footer.explore.link5">Journal</a>
+                    <a href="#" class="footer-link" data-open-liv data-liv-context-type="general" data-liv-context-name="Footer" data-editable="footer.explore.link6">Design my Journey with LIV</a>
                 </nav>
             </div>
 
             <!-- About Column -->
             <div class="footer-column">
-                <h3 class="footer-column-title">About</h3>
+                <h3 class="footer-column-title" data-editable="footer.about.title">About</h3>
                 <nav class="footer-links">
-                    <a href="#about" class="footer-link">Our Story</a>
-                    <a href="our-team.html" class="footer-link">Our Team</a>
-                    <a href="our-services.html" class="footer-link">Our Services</a>
-                    <a href="#booking-process" class="footer-link">Booking Process</a>
-                    <a href="#" class="footer-link">Pricing & FAQ</a>
-                    <a href="#press" class="footer-link">Press & Media</a>
+                    <a href="#about" class="footer-link" data-editable="footer.about.link1">Our Story</a>
+                    <a href="our-team.html" class="footer-link" data-editable="footer.about.link2">Our Team</a>
+                    <a href="our-services.html" class="footer-link" data-editable="footer.about.link3">Our Services</a>
+                    <a href="#booking-process" class="footer-link" data-editable="footer.about.link4">Booking Process</a>
+                    <a href="#" class="footer-link" data-editable="footer.about.link5">Pricing & FAQ</a>
+                    <a href="#press" class="footer-link" data-editable="footer.about.link6">Press & Media</a>
                 </nav>
             </div>
 
             <!-- Contact Column -->
             <div class="footer-column">
-                <h3 class="footer-column-title">Contact</h3>
+                <h3 class="footer-column-title" data-editable="footer.contact.title">Contact</h3>
                 <div class="footer-contact-info">
                     <div class="footer-contact-item">
-                        <strong>Henrik Tidefjärd</strong>
-                        Founder & Creative Director
+                        <strong data-editable="footer.contact.name">Henrik Tidefjärd</strong>
+                        <span data-editable="footer.contact.title">Founder & Creative Director</span>
                     </div>
                     <div class="footer-contact-item">
-                        <a href="tel:+46703872264">+46 (0)70 38 722 64</a>
+                        <a href="tel:+46703872264" data-editable="footer.contact.phone">+46 (0)70 38 722 64</a>
                     </div>
                     <div class="footer-contact-item">
-                        <a href="mailto:henrik@luxurytravelsweden.com">henrik@luxurytravelsweden.com</a>
+                        <a href="mailto:henrik@luxurytravelsweden.com" data-editable="footer.contact.email">henrik@luxurytravelsweden.com</a>
                     </div>
                     <div class="footer-contact-item">
-                        <a href="#contact" data-open-enquiry>Start Your Journey</a>
+                        <a href="#contact" data-open-enquiry data-editable="footer.contact.cta">Start Your Journey</a>
                     </div>
                 </div>
                 <div class="footer-social">
@@ -710,8 +713,8 @@ unique.</p>
                 </p>
                 <form class="footer-newsletter" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
                     <div class="footer-newsletter-input">
-                        <input type="email" placeholder="Your email address" required aria-label="Email address">
-                        <button type="submit" class="footer-newsletter-btn">Subscribe</button>
+                        <input type="email" placeholder="Your email address" required aria-label="Email address" data-editable-placeholder="footer.newsletter.placeholder">
+                        <button type="submit" class="footer-newsletter-btn" data-editable="footer.newsletter.button">Subscribe</button>
                     </div>
                 </form>
 
@@ -736,15 +739,15 @@ unique.</p>
                             </svg>
                         </div>
                         <span class="theme-toggle-label">
-                            <span class="theme-label-dark">Dark Mode</span>
-                            <span class="theme-label-light">Light Mode</span>
+                            <span class="theme-label-dark" data-editable="footer.theme.dark">Dark Mode</span>
+                            <span class="theme-label-light" data-editable="footer.theme.light">Light Mode</span>
                         </span>
                     </button>
                 </div>
 
                 <!-- Login to Edit Button -->
                 <div style="margin-top: 1.5rem;">
-                    <a href="admin/login.html" class="footer-login-btn">LOGIN TO EDIT</a>
+                    <a href="admin/login.html" class="footer-login-btn" data-editable="footer.login_button">LOGIN TO EDIT</a>
                 </div>
             </div>
         </div>
@@ -758,9 +761,9 @@ unique.</p>
                     <span data-editable="footer.tagline">Crafted with passion in Sweden</span>
                 </div>
                 <nav class="footer-legal-links">
-                    <a href="https://luxurytravelsweden.com/terms-conditions/" class="footer-legal-link" target="_blank" rel="noopener noreferrer">Terms & Conditions</a>
-                    <a href="https://luxurytravelsweden.com/data-protection/" class="footer-legal-link" target="_blank" rel="noopener noreferrer">Data Protection</a>
-                    <a href="https://luxurytravelsweden.com/imprint" class="footer-legal-link" target="_blank" rel="noopener noreferrer">Imprint</a>
+                    <a href="https://luxurytravelsweden.com/terms-conditions/" class="footer-legal-link" target="_blank" rel="noopener noreferrer" data-editable="footer.legal.terms">Terms & Conditions</a>
+                    <a href="https://luxurytravelsweden.com/data-protection/" class="footer-legal-link" target="_blank" rel="noopener noreferrer" data-editable="footer.legal.data_protection">Data Protection</a>
+                    <a href="https://luxurytravelsweden.com/imprint" class="footer-legal-link" target="_blank" rel="noopener noreferrer" data-editable="footer.legal.imprint">Imprint</a>
                 </nav>
             </div>
         </div>
