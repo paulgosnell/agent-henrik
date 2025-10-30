@@ -10,11 +10,12 @@
         .post-hero {
             position: relative;
             width: 100%;
-            min-height: 60vh;
+            min-height: 70vh;
             display: flex;
             align-items: flex-end;
             justify-content: center;
-            padding: clamp(9rem, 14vw, 11rem) 2rem 4rem;
+            padding: 2rem 2rem 6rem;
+            padding-top: 136px;
             background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             overflow: hidden;
         }
@@ -30,7 +31,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.4;
+            opacity: 1;
         }
 
         .post-hero-overlay {
@@ -39,7 +40,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%);
+            background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.85) 100%);
         }
 
         [data-theme="light"] .post-hero-overlay {
@@ -284,7 +285,7 @@
         @media (max-width: 768px) {
             .post-hero {
                 min-height: 50vh;
-                padding: 6rem 1.5rem 3rem;
+                padding: 136px 1.5rem 4rem;
             }
 
             .post-content {
@@ -347,7 +348,7 @@
             <div class="post-meta">
                 <span class="post-author" id="postAuthor"></span>
                 <span class="post-date" id="postDate"></span>
-                <span class="post-featured-badge hidden" id="postFeaturedBadge">⭐ Featured</span>
+                <span class="post-featured-badge hidden" id="postFeaturedBadge">Featured</span>
             </div>
             <h1 id="postTitle"></h1>
             <p class="post-excerpt" id="postExcerpt"></p>
