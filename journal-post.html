@@ -15,8 +15,8 @@
             max-height: 600px;
             padding-top: 136px;
             background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            overflow: visible;
-            margin-bottom: 6rem;
+            overflow: hidden;
+            margin-bottom: 50px;
         }
 
         [data-theme="light"] .post-hero {
@@ -47,24 +47,13 @@
         }
 
         .post-hero-content {
-            position: absolute;
-            bottom: -50px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
-            max-width: 900px;
-            width: calc(100% - 4rem);
-            background: white;
-            padding: 3rem;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-            color: #1a1a1a;
+            padding-bottom: 3rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            margin-bottom: 2.5rem;
         }
 
         [data-theme="dark"] .post-hero-content {
-            background: #1a1a1a;
-            color: white;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            border-bottom-color: rgba(255, 255, 255, 0.1);
         }
 
         .post-meta {
@@ -108,18 +97,36 @@
 
         .post-content {
             max-width: 900px;
+            width: calc(100% - 4rem);
             margin: 0 auto;
-            padding: 2rem 2rem 4rem;
+            padding: 3rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            margin-bottom: 4rem;
+        }
+
+        [data-theme="dark"] .post-content {
+            background: #1a1a1a;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
         }
 
         .post-body {
             font-size: 1.125rem;
             line-height: 1.8;
-            color: #333;
+            color: #1a1a1a;
         }
 
         [data-theme="dark"] .post-body {
             color: #e0e0e0;
+        }
+
+        .post-content .post-hero-content {
+            color: #1a1a1a;
+        }
+
+        [data-theme="dark"] .post-content .post-hero-content {
+            color: white;
         }
 
         .post-body h2 {
@@ -295,17 +302,17 @@
                 height: 50vh;
                 min-height: 350px;
                 max-height: 500px;
-                margin-bottom: 4rem;
-            }
-
-            .post-hero-content {
-                width: calc(100% - 2rem);
-                padding: 2rem 1.5rem;
-                bottom: -40px;
+                margin-bottom: 30px;
             }
 
             .post-content {
-                padding: 1.5rem 1.5rem 3rem;
+                width: calc(100% - 2rem);
+                padding: 2rem 1.5rem;
+            }
+
+            .post-hero-content {
+                padding-bottom: 2rem;
+                margin-bottom: 2rem;
             }
 
             .post-meta {
@@ -360,6 +367,10 @@
     <section class="post-hero hidden" id="postHero">
         <div class="post-hero-image" id="postHeroImage"></div>
         <div class="post-hero-overlay"></div>
+    </section>
+
+    <!-- Post Content Card -->
+    <article class="post-content hidden" id="postContent">
         <div class="post-hero-content">
             <div class="post-meta">
                 <span class="post-author" id="postAuthor"></span>
@@ -369,10 +380,7 @@
             <h1 id="postTitle"></h1>
             <p class="post-excerpt" id="postExcerpt"></p>
         </div>
-    </section>
 
-    <!-- Post Content -->
-    <article class="post-content hidden" id="postContent">
         <a href="journal.html" class="post-back-link">Back to Journal</a>
         <div class="post-body" id="postBody"></div>
     </article>
