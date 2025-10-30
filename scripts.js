@@ -1745,6 +1745,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Load storytellers from CMS
             loadStorytellers();
+
+            // Load pillars from CMS
+            loadPillars();
         });
 
 // ==========================================
@@ -1945,6 +1948,141 @@ function initializeReadMoreButtons() {
                     pillarModal.style.display = 'flex';
                     document.body.style.overflow = 'hidden';
                 }
+            }
+        });
+    });
+}
+
+// ==========================================
+// PILLARS FUNCTIONALITY
+// ==========================================
+async function loadPillars() {
+    try {
+        // Check if Supabase is available
+        if (!window.Supabase || !window.Supabase.db) {
+            console.warn('Supabase not available, keeping static pillars');
+            return;
+        }
+
+        // Load both experiences and corporate pillars
+        const [experiencesPillars, corporatePillars] = await Promise.all([
+            window.Supabase.db.getPillars('experiences', true),
+            window.Supabase.db.getPillars('corporate', true)
+        ]);
+
+        // Update Experiences section
+        if (experiencesPillars && experiencesPillars.length > 0) {
+            updatePillarsSection('journeys', experiencesPillars, 'experiences');
+        }
+
+        // Update Corporate & Incentives section
+        if (corporatePillars && corporatePillars.length > 0) {
+            updatePillarsSection('corporate', corporatePillars, 'corporate');
+        }
+
+        // Re-initialize read-more buttons and modal system
+        initializePillarModals();
+
+    } catch (error) {
+        console.error('Error loading pillars:', error);
+        // Keep static content if there's an error
+    }
+}
+
+function updatePillarsSection(sectionId, pillars, section) {
+    const pillarsGrid = document.querySelector(`#${sectionId} .pillars-grid`);
+    if (!pillarsGrid) return;
+
+    // Generate pillar cards HTML
+    pillarsGrid.innerHTML = pillars.map(pillar => {
+        const imageUrl = pillar.hero_image_url || 'https://via.placeholder.com/1920x1280';
+        const iconName = pillar.icon_name || 'star';
+
+        return `
+            <article class="pillar-card" data-pillar="${pillar.slug}">
+                <div class="pillar-media" aria-hidden="true">
+                    <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(pillar.title)}" loading="lazy">
+                </div>
+                <div class="pillar-body">
+                    <div class="pillar-icon" aria-hidden="true"><i data-lucide="${escapeHtml(iconName)}"></i></div>
+                    <div class="pillar-copy">
+                        <h3>${escapeHtml(pillar.title)}</h3>
+                        <p>${escapeHtml(pillar.excerpt)}</p>
+                        <button type="button" class="read-more-btn">read more</button>
+                        <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="${escapeHtml(pillar.liv_context_type)}" data-liv-context-name="${escapeHtml(pillar.liv_context_name)}">${escapeHtml(pillar.cta_text)}</button>
+                    </div>
+                </div>
+            </article>
+        `;
+    }).join('');
+
+    // Reinitialize Lucide icons for the new content
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+    }
+
+    // Store pillar data globally for modal access
+    if (!window.pillarDataCMS) {
+        window.pillarDataCMS = {};
+    }
+
+    pillars.forEach(pillar => {
+        window.pillarDataCMS[pillar.slug] = {
+            title: pillar.title,
+            image: pillar.hero_image_url,
+            content: pillar.content,
+            cta: pillar.cta_text,
+            contextType: pillar.liv_context_type,
+            contextName: pillar.liv_context_name
+        };
+    });
+}
+
+function initializePillarModals() {
+    const pillarModal = document.getElementById('pillarModal');
+    const modalTitle = document.querySelector('#pillarModal .pillar-modal-title');
+    const modalImage = document.querySelector('#pillarModal .pillar-modal-image');
+    const modalDescription = document.querySelector('#pillarModal .pillar-modal-description');
+    const modalCta = document.querySelector('#pillarModal .pillar-modal-cta');
+
+    if (!pillarModal) return;
+
+    // Remove old event listeners by cloning and replacing
+    document.querySelectorAll('.read-more-btn').forEach(btn => {
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+
+        newBtn.addEventListener('click', function() {
+            const pillarCard = this.closest('.pillar-card');
+            const storyCard = this.closest('.story-card');
+
+            let data = null;
+            let slug = null;
+
+            if (pillarCard) {
+                slug = pillarCard.dataset.pillar;
+                // First check CMS data, then fall back to hardcoded data
+                data = window.pillarDataCMS?.[slug] || window.pillarData?.[slug];
+            } else if (storyCard) {
+                slug = storyCard.dataset.storyteller;
+                data = window.storytellerData?.[slug];
+            }
+
+            if (data) {
+                modalTitle.textContent = data.title;
+                modalImage.src = data.image;
+                modalImage.alt = data.title;
+                modalDescription.innerHTML = data.content;
+                modalCta.textContent = data.cta;
+
+                // Set context attributes for LIV personalization
+                if (data.contextType && data.contextName) {
+                    modalCta.setAttribute('data-liv-context-type', data.contextType);
+                    modalCta.setAttribute('data-liv-context-name', data.contextName);
+                }
+
+                pillarModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
             }
         });
     });

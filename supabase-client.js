@@ -332,6 +332,69 @@ const DB = {
   },
 
   /**
+   * Get all pillars (optionally filter by section)
+   */
+  async getPillars(section = null, publishedOnly = true) {
+    let query = supabaseClient
+      .from('pillars')
+      .select('*')
+      .order('display_order');
+
+    if (section) {
+      query = query.eq('section', section);
+    }
+
+    if (publishedOnly) {
+      query = query.eq('published', true);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
+  },
+
+  /**
+   * Create pillar
+   */
+  async createPillar(pillar) {
+    const { data, error } = await supabaseClient
+      .from('pillars')
+      .insert(pillar)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  /**
+   * Update pillar
+   */
+  async updatePillar(id, updates) {
+    const { data, error } = await supabaseClient
+      .from('pillars')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  /**
+   * Delete pillar
+   */
+  async deletePillar(id) {
+    const { error } = await supabaseClient
+      .from('pillars')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+  },
+
+  /**
    * Get all static content
    */
   async getStaticContent(section = null) {
