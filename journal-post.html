@@ -64,22 +64,23 @@
             font-size: 1rem;
         }
 
-        .post-author {
-            font-weight: 600;
-        }
-
         .post-date {
             opacity: 0.8;
+            font-weight: 600;
         }
 
         .post-featured-badge {
-            display: inline-block;
+            position: absolute;
+            top: -12px;
+            right: -12px;
             background: #FFD700;
             color: #1a1a1a;
-            padding: 0.35rem 1rem;
-            border-radius: 6px;
+            padding: 0.5rem 1.25rem;
+            border-radius: 8px;
             font-size: 0.875rem;
             font-weight: 600;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+            z-index: 20;
         }
 
         .post-hero h1 {
@@ -480,11 +481,11 @@
 
     <!-- Post Content Card -->
     <article class="post-content hidden" id="postContent">
+        <span class="post-featured-badge hidden" id="postFeaturedBadge">Featured</span>
+
         <div class="post-hero-content">
             <div class="post-meta">
-                <span class="post-author" id="postAuthor"></span>
                 <span class="post-date" id="postDate"></span>
-                <span class="post-featured-badge hidden" id="postFeaturedBadge">Featured</span>
             </div>
             <h1 id="postTitle"></h1>
             <p class="post-excerpt" id="postExcerpt"></p>
@@ -678,7 +679,6 @@
                     heroImage.style.backgroundPosition = 'center';
                 }
 
-                document.getElementById('postAuthor').textContent = post.author || 'LIV Team';
                 document.getElementById('postDate').textContent = formatDate(post.published_at);
                 document.getElementById('postTitle').textContent = post.title;
                 document.getElementById('postExcerpt').textContent = post.excerpt || '';
