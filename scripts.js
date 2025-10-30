@@ -1980,8 +1980,10 @@ async function loadPillars() {
             updatePillarsSection('corporate', corporatePillars, 'corporate');
         }
 
-        // Re-initialize read-more buttons and modal system
-        initializePillarModals();
+        // Re-initialize read-more buttons and modal system after DOM updates
+        setTimeout(() => {
+            initializePillarModals();
+        }, 100);
 
     } catch (error) {
         console.error('Error loading pillars:', error);
@@ -1991,7 +1993,12 @@ async function loadPillars() {
 
 function updatePillarsSection(sectionId, pillars, section) {
     const pillarsGrid = document.querySelector(`#${sectionId} .pillars-grid`);
-    if (!pillarsGrid) return;
+    if (!pillarsGrid) {
+        console.warn(`Pillars grid not found for section: ${sectionId}`);
+        return;
+    }
+
+    console.log(`Updating ${sectionId} with ${pillars.length} pillars from CMS`);
 
     // Generate pillar cards HTML
     pillarsGrid.innerHTML = pillars.map(pillar => {
@@ -2036,23 +2043,38 @@ function updatePillarsSection(sectionId, pillars, section) {
             contextName: pillar.liv_context_name
         };
     });
+
+    console.log(`Stored CMS data for ${Object.keys(window.pillarDataCMS).length} pillars:`, Object.keys(window.pillarDataCMS));
 }
 
 function initializePillarModals() {
-    const pillarModal = document.getElementById('pillarModal');
-    const modalTitle = document.querySelector('#pillarModal .pillar-modal-title');
-    const modalImage = document.querySelector('#pillarModal .pillar-modal-image');
-    const modalDescription = document.querySelector('#pillarModal .pillar-modal-description');
-    const modalCta = document.querySelector('#pillarModal .pillar-modal-cta');
+    console.log('Initializing pillar modals...');
 
-    if (!pillarModal) return;
+    const pillarModal = document.getElementById('pillarModal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalImage = document.getElementById('modal-image');
+    const modalDescription = document.getElementById('modal-description');
+    const modalCta = document.getElementById('modal-cta');
+
+    if (!pillarModal) {
+        console.error('Pillar modal not found in DOM');
+        return;
+    }
+
+    const readMoreButtons = document.querySelectorAll('.read-more-btn');
+    console.log(`Found ${readMoreButtons.length} read-more buttons`);
+    console.log('Available CMS pillar data:', window.pillarDataCMS ? Object.keys(window.pillarDataCMS) : 'none');
+    console.log('Available hardcoded pillar data:', window.pillarData ? Object.keys(window.pillarData) : 'none');
+    console.log('Available storyteller data:', window.storytellerData ? Object.keys(window.storytellerData) : 'none');
 
     // Remove old event listeners by cloning and replacing
-    document.querySelectorAll('.read-more-btn').forEach(btn => {
+    readMoreButtons.forEach((btn, index) => {
         const newBtn = btn.cloneNode(true);
         btn.parentNode.replaceChild(newBtn, btn);
 
         newBtn.addEventListener('click', function() {
+            console.log(`Read more button ${index} clicked`);
+
             const pillarCard = this.closest('.pillar-card');
             const storyCard = this.closest('.story-card');
 
@@ -2061,14 +2083,19 @@ function initializePillarModals() {
 
             if (pillarCard) {
                 slug = pillarCard.dataset.pillar;
+                console.log(`Pillar card clicked with slug: ${slug}`);
                 // First check CMS data, then fall back to hardcoded data
                 data = window.pillarDataCMS?.[slug] || window.pillarData?.[slug];
+                console.log(`Found pillar data:`, data ? 'YES' : 'NO');
             } else if (storyCard) {
                 slug = storyCard.dataset.storyteller;
+                console.log(`Story card clicked with slug: ${slug}`);
                 data = window.storytellerData?.[slug];
+                console.log(`Found storyteller data:`, data ? 'YES' : 'NO');
             }
 
             if (data) {
+                console.log('Opening modal with data:', data.title);
                 modalTitle.textContent = data.title;
                 modalImage.src = data.image;
                 modalImage.alt = data.title;
@@ -2083,7 +2110,11 @@ function initializePillarModals() {
 
                 pillarModal.style.display = 'flex';
                 document.body.style.overflow = 'hidden';
+            } else {
+                console.error(`No data found for slug: ${slug}`);
             }
         });
     });
+
+    console.log('Pillar modal initialization complete');
 }
