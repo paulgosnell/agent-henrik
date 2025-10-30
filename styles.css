@@ -1288,6 +1288,11 @@
             outline-offset: 3px;
         }
 
+        [data-theme="light"] .path-card a {
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+        }
+
         .path-card[data-theme="journeys"] {
             --card-image: url('https://images.pexels.com/photos/62600/pexels-photo-62600.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1');
         }
