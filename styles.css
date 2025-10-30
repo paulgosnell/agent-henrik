@@ -559,10 +559,12 @@
             position: relative;
             border-bottom: 1px solid transparent;
             white-space: nowrap;
+            background: none;
         }
 
         [data-theme="light"] .nav-link {
             color: rgba(0, 0, 0, 0.85);
+            background: none;
         }
 
         .nav-link:hover,
@@ -571,12 +573,14 @@
             border-bottom-color: rgba(255, 255, 255, 0.95);
             transform: translateX(8px);
             letter-spacing: 0.08em;
+            background: none;
         }
 
         [data-theme="light"] .nav-link:hover,
         [data-theme="light"] .nav-link:focus-visible {
             color: rgba(0, 0, 0, 1);
             border-bottom-color: rgba(0, 0, 0, 0.8);
+            background: none;
         }
 
         .nav-menu.open {
