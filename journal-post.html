@@ -284,39 +284,6 @@
             color: #aaa;
         }
 
-        .post-back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #1a1a1a;
-            font-weight: 600;
-            text-decoration: none;
-            padding: 1rem 2rem;
-            background: #f5f5f5;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        [data-theme="dark"] .post-back-link {
-            color: #ffffff;
-            background: #2d2d2d;
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .post-back-link:hover {
-            transform: translateX(-4px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        [data-theme="dark"] .post-back-link:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        .post-back-link::before {
-            content: '←';
-        }
-
         /* Loading State */
         .loading-state {
             min-height: 60vh;
@@ -533,7 +500,7 @@
             </div>
 
             <!-- Back to Journal -->
-            <a href="journal.html" class="post-back-link">Back to Journal</a>
+            <a href="journal.html" class="back-link">Back to Journal</a>
         </div>
     </article>
     </main>
