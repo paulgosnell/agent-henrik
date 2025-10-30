@@ -1719,23 +1719,18 @@ async function loadJournalPosts() {
 
             // Replace static content with dynamic blog posts
             journalGrid.innerHTML = recentPosts.map(post => {
-                // Use placeholder if no image
-                const imageHtml = post.hero_image_url
-                    ? `<img src="${escapeHtml(post.hero_image_url)}" alt="${escapeHtml(post.title)}" loading="lazy">`
-                    : `<div class="journal-placeholder" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 3rem; min-height: 300px;">📰</div>`;
-
-                const featuredBadge = post.featured ? ' ⭐' : '';
+                // Set background image style or use placeholder gradient
+                const bgStyle = post.hero_image_url
+                    ? `background-image: url('${escapeHtml(post.hero_image_url)}'); background-size: cover; background-position: center;`
+                    : `background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);`;
 
                 return `
-                    <article class="story-card" data-story="${post.slug}" aria-label="${escapeHtml(post.title)}">
-                        <div class="story-media">
-                            ${imageHtml}
-                        </div>
+                    <article class="story-card" data-story="${post.slug}" aria-label="${escapeHtml(post.title)}" style="${bgStyle}">
                         <div class="story-meta">
-                            <span class="eyebrow" style="margin-bottom:0.5rem;">${escapeHtml(post.author || 'LIV Team')}${featuredBadge}</span>
+                            <span class="eyebrow" style="margin-bottom:0.5rem;">${escapeHtml(post.author || 'LIV Team')}</span>
                             <h3>${escapeHtml(post.title)}</h3>
                             <p>${escapeHtml(post.excerpt || '')}</p>
-                            <a href="/journal.html?slug=${encodeURIComponent(post.slug)}" class="story-cta" style="display: inline-block; margin-top: 1rem; color: inherit; text-decoration: none; font-weight: 600;">Read More →</a>
+                            <a href="/journal-post.html?slug=${encodeURIComponent(post.slug)}" class="story-cta" style="display: inline-block; margin-top: 1rem; color: inherit; text-decoration: none; font-weight: 600;">Read More →</a>
                         </div>
                     </article>
                 `;
