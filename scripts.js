@@ -1742,6 +1742,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Load blog posts for journal section
             loadJournalPosts();
+
+            // Load storytellers from CMS
+            loadStorytellers();
         });
 
 // ==========================================
@@ -1812,4 +1815,137 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// ==========================================
+// STORYTELLERS FUNCTIONALITY
+// ==========================================
+async function loadStorytellers() {
+    const storiesGrid = document.querySelector('#storytellers .stories-grid');
+    if (!storiesGrid) return; // Only run on pages with storytellers section
+
+    try {
+        // Check if Supabase is available
+        if (!window.Supabase || !window.Supabase.db) {
+            console.warn('Supabase not available, keeping static storytellers');
+            return;
+        }
+
+        // Fetch published stories
+        const stories = await window.Supabase.db.getStories(true);
+
+        if (stories && stories.length > 0) {
+            // Sort by display_order and published date, take top 3 for homepage
+            const featuredStories = stories
+                .sort((a, b) => {
+                    // First sort by display_order if both have it
+                    if (a.display_order !== null && b.display_order !== null) {
+                        return a.display_order - b.display_order;
+                    }
+                    // If only one has display_order, prioritize it
+                    if (a.display_order !== null) return -1;
+                    if (b.display_order !== null) return 1;
+                    // Otherwise sort by date (newest first)
+                    return new Date(b.published_at) - new Date(a.published_at);
+                })
+                .slice(0, 3);
+
+            // Generate slug from title for data attribute
+            function generateSlug(title) {
+                return title.toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/(^-|-$)/g, '');
+            }
+
+            // Replace static content with CMS stories
+            storiesGrid.innerHTML = featuredStories.map(story => {
+                const slug = generateSlug(story.title);
+                const imageUrl = story.hero_image_url || 'https://via.placeholder.com/258x172';
+
+                return `
+                    <article class="story-card" data-storyteller="${slug}">
+                        <div class="story-media">
+                            <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(story.title)}" loading="lazy">
+                        </div>
+                        <div class="story-content">
+                            <h3 class="story-title">${escapeHtml(story.title)}</h3>
+                            <p class="story-excerpt">${escapeHtml(story.excerpt || '')}</p>
+                            <button type="button" class="read-more-btn">read more</button>
+                            <button type="button" class="story-cta" data-open-liv data-liv-context-type="storyteller" data-liv-context-name="${escapeHtml(story.title)}">Design with LIV</button>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+
+            // Update storytellerData object with CMS data
+            const storytellerData = {};
+            featuredStories.forEach(story => {
+                const slug = generateSlug(story.title);
+                storytellerData[slug] = {
+                    title: story.title,
+                    image: story.hero_image_url || 'https://via.placeholder.com/258x172',
+                    content: story.content || `<p>${story.excerpt}</p>`,
+                    cta: "Design with LIV",
+                    contextType: "storyteller",
+                    contextName: story.title
+                };
+            });
+
+            // Update the global storytellerData if it exists
+            if (window.storytellerData) {
+                Object.assign(window.storytellerData, storytellerData);
+            } else {
+                window.storytellerData = storytellerData;
+            }
+
+            // Re-initialize read-more button handlers for new content
+            initializeReadMoreButtons();
+        }
+    } catch (error) {
+        console.error('Error loading storytellers:', error);
+        // Keep static content if there's an error
+    }
+}
+
+// Initialize read-more buttons (called after loading storytellers)
+function initializeReadMoreButtons() {
+    const pillarModal = document.getElementById('pillarModal');
+    const modalTitle = document.querySelector('#pillarModal .pillar-modal-title');
+    const modalImage = document.querySelector('#pillarModal .pillar-modal-image');
+    const modalDescription = document.querySelector('#pillarModal .pillar-modal-description');
+    const modalCta = document.querySelector('#pillarModal .pillar-modal-cta');
+
+    if (!pillarModal) return;
+
+    // Remove old event listeners by cloning and replacing
+    document.querySelectorAll('.read-more-btn').forEach(btn => {
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+
+        newBtn.addEventListener('click', function() {
+            const storyCard = this.closest('.story-card');
+
+            if (storyCard) {
+                const storytellerType = storyCard.dataset.storyteller;
+                const data = window.storytellerData?.[storytellerType];
+
+                if (data) {
+                    modalTitle.textContent = data.title;
+                    modalImage.src = data.image;
+                    modalImage.alt = data.title;
+                    modalDescription.innerHTML = data.content;
+                    modalCta.textContent = data.cta;
+
+                    // Set context attributes for LIV personalization
+                    if (data.contextType && data.contextName) {
+                        modalCta.setAttribute('data-liv-context-type', data.contextType);
+                        modalCta.setAttribute('data-liv-context-name', data.contextName);
+                    }
+
+                    pillarModal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+        });
+    });
 }
