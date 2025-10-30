@@ -2124,12 +2124,13 @@
         }
 
         [data-theme="light"] .read-more-btn {
-            color: rgba(0, 0, 0, 0.95);
+            color: rgba(255, 255, 255, 1);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
         }
 
         [data-theme="light"] .read-more-btn:hover {
-            color: #b8941f;
-            text-decoration-color: #b8941f;
+            color: #d4af37;
+            text-decoration-color: #d4af37;
         }
 
         .pillar-card .pillar-cta {
