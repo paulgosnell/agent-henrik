@@ -2364,6 +2364,30 @@
             line-height: 1.6;
         }
 
+        /* Journal section Read More links */
+        .story-card .story-meta .story-cta {
+            color: rgba(255, 255, 255, 0.95) !important;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .story-card .story-meta .story-cta:hover {
+            color: #d4af37 !important;
+            transform: translateX(5px);
+        }
+
+        [data-theme="light"] .story-card .story-meta .story-cta {
+            color: rgba(255, 255, 255, 0.95) !important;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+        }
+
+        [data-theme="light"] .story-card .story-meta .story-cta:hover {
+            color: #d4af37 !important;
+        }
+
         .story-card[data-story="lapland"] {
             --story-bg: url('https://images.pexels.com/photos/1525041/pexels-photo-1525041.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1');
         }
@@ -2451,7 +2475,7 @@
             width: 100%;
         }
 
-        .story-cta:hover {
+        .story-card .story-content .story-cta:hover {
             border-color: rgba(255, 255, 255, 0.7);
             background: rgba(255, 255, 255, 0.15);
             transform: translateY(-2px);
@@ -2459,24 +2483,24 @@
             color: rgba(255, 255, 255, 1);
         }
 
-        [data-theme="light"] .story-cta {
+        [data-theme="light"] .story-card .story-content .story-cta {
             color: rgba(0, 0, 0, 0.85);
             border-color: rgba(0, 0, 0, 0.3);
             background: rgba(255, 255, 255, 0.8);
         }
 
-        [data-theme="light"] .story-cta:hover {
+        [data-theme="light"] .story-card .story-content .story-cta:hover {
             background: rgba(255, 255, 255, 1);
             border-color: rgba(0, 0, 0, 0.5);
             color: rgba(0, 0, 0, 1);
         }
 
-        .story-cta:focus-visible {
+        .story-card .story-content .story-cta:focus-visible {
             outline: 2px solid rgba(255, 255, 255, 0.6);
             outline-offset: 3px;
         }
 
-        .story-cta:active {
+        .story-card .story-content .story-cta:active {
             transform: translateY(0);
         }
 
