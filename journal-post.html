@@ -15,8 +15,8 @@
             max-height: 600px;
             padding-top: 136px;
             background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            overflow: hidden;
-            margin-bottom: 50px;
+            overflow: visible;
+            margin-bottom: 0;
         }
 
         [data-theme="light"] .post-hero {
@@ -96,14 +96,15 @@
         }
 
         .post-content {
+            position: relative;
             max-width: 900px;
             width: calc(100% - 4rem);
-            margin: 0 auto;
+            margin: -100px auto 4rem;
             padding: 3rem;
             background: white;
             border-radius: 12px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-            margin-bottom: 4rem;
+            z-index: 10;
         }
 
         [data-theme="dark"] .post-content {
@@ -302,12 +303,12 @@
                 height: 50vh;
                 min-height: 350px;
                 max-height: 500px;
-                margin-bottom: 30px;
             }
 
             .post-content {
                 width: calc(100% - 2rem);
                 padding: 2rem 1.5rem;
+                margin-top: -80px;
             }
 
             .post-hero-content {
