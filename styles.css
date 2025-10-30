@@ -581,6 +581,7 @@
         [data-theme="light"] .nav-link:hover,
         [data-theme="light"] .nav-link:focus-visible {
             color: rgba(0, 0, 0, 1);
+            background: none;
         }
 
         .nav-menu.open {
