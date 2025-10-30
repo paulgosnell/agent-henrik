@@ -557,25 +557,18 @@
             display: block;
             padding: 0.6rem 0;
             position: relative;
-            background: linear-gradient(90deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.95) 100%);
-            background-size: 0% 1px;
-            background-repeat: no-repeat;
-            background-position: left bottom;
+            border-bottom: 1px solid transparent;
             white-space: nowrap;
         }
 
         [data-theme="light"] .nav-link {
             color: rgba(0, 0, 0, 0.85);
-            background: linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.8) 100%);
-            background-size: 0% 1px;
-            background-repeat: no-repeat;
-            background-position: left bottom;
         }
 
         .nav-link:hover,
         .nav-link:focus-visible {
             color: rgba(255, 255, 255, 1);
-            background-size: 100% 1px;
+            border-bottom-color: rgba(255, 255, 255, 0.95);
             transform: translateX(8px);
             letter-spacing: 0.08em;
         }
@@ -583,8 +576,7 @@
         [data-theme="light"] .nav-link:hover,
         [data-theme="light"] .nav-link:focus-visible {
             color: rgba(0, 0, 0, 1);
-            background-image: linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.8) 100%);
-            background-size: 100% 1px;
+            border-bottom-color: rgba(0, 0, 0, 0.8);
         }
 
         .nav-menu.open {
