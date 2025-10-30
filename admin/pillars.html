@@ -3,13 +3,51 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blog Posts Management - Luxury Travel Sweden CMS</title>
+  <title>Pillars Management - Luxury Travel Sweden CMS</title>
 
   <!-- Quill.js CSS -->
   <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
   <!-- Admin CSS -->
   <link rel="stylesheet" href="admin.css">
+
+  <style>
+    .icon-preview {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+      padding: 0.75rem;
+      background: var(--admin-surface-raised);
+      border: 1px solid var(--admin-border);
+      border-radius: var(--admin-radius);
+    }
+    .icon-preview svg {
+      width: 24px;
+      height: 24px;
+      stroke: var(--admin-text-primary);
+    }
+    .icon-preview-text {
+      color: var(--admin-text-secondary);
+      font-size: 0.875rem;
+    }
+    .pillar-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--admin-surface-raised);
+      border-radius: var(--admin-radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 0.75rem;
+      flex-shrink: 0;
+    }
+    .pillar-icon svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+    }
+  </style>
 </head>
 <body>
   <div class="admin-container">
@@ -63,7 +101,7 @@
           <span>LIV AI Settings</span>
         </a>
 
-        <a href="posts.html" class="nav-item active">
+        <a href="posts.html" class="nav-item">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
             <path d="M3 4H17M3 8H17M3 12H17M3 16H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
@@ -78,10 +116,10 @@
           <span>Stories</span>
         </a>
 
-        <a href="pillars.html" class="nav-item">
+        <a href="pillars.html" class="nav-item active">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <rect x="3" y="3" width="6" height="14" rx="1" stroke="currentColor" stroke-width="1.5"/>
-            <rect x="11" y="3" width="6" height="14" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="3" y="3" width="5" height="14" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="10" y="3" width="7" height="14" rx="1" stroke="currentColor" stroke-width="1.5"/>
           </svg>
           <span>Pillars</span>
         </a>
@@ -122,8 +160,8 @@
       <!-- Header -->
       <header class="content-header">
         <div class="header-left">
-          <h1>Blog Posts</h1>
-          <p class="subtitle">Manage your blog posts and articles</p>
+          <h1>Pillars</h1>
+          <p class="subtitle">Manage Experiences and Corporate & Incentives content</p>
         </div>
         <div class="header-right">
           <a href="/" class="btn-secondary" target="_blank">
@@ -145,9 +183,17 @@
             <input
               type="text"
               id="searchInput"
-              placeholder="Search blog posts..."
-              aria-label="Search blog posts"
+              placeholder="Search pillars..."
+              aria-label="Search pillars"
             >
+          </div>
+          <div class="filter-group">
+            <label class="filter-label" for="sectionFilter">Section:</label>
+            <select id="sectionFilter">
+              <option value="">All</option>
+              <option value="experiences">Experiences</option>
+              <option value="corporate">Corporate</option>
+            </select>
           </div>
           <div class="filter-group">
             <label class="filter-label" for="statusFilter">Status:</label>
@@ -157,41 +203,33 @@
               <option value="draft">Draft</option>
             </select>
           </div>
-          <div class="filter-group">
-            <label class="filter-label" for="featuredFilter">Featured:</label>
-            <select id="featuredFilter">
-              <option value="all">All</option>
-              <option value="featured">Featured Only</option>
-              <option value="not-featured">Not Featured</option>
-            </select>
-          </div>
         </div>
         <div class="admin-toolbar-right">
-          <button class="btn btn-primary" onclick="openAddPostModal()">
+          <button class="btn btn-primary" onclick="openAddPillarModal()">
             <span>+</span>
-            Add New Post
+            Add New Pillar
           </button>
         </div>
       </div>
 
-      <!-- Posts Container -->
-      <div id="postsContainer">
+      <!-- Pillars Container -->
+      <div id="pillarsContainer">
         <!-- Loading state -->
         <div id="loadingState" class="empty-state">
           <div class="empty-state-icon">
             <div class="loading" style="width: 60px; height: 60px; border-width: 6px;"></div>
           </div>
-          <h3>Loading blog posts...</h3>
+          <h3>Loading pillars...</h3>
         </div>
 
         <!-- Empty state -->
         <div id="emptyState" class="empty-state hidden">
-          <div class="empty-state-icon">📝</div>
-          <h3>No blog posts found</h3>
-          <p>Get started by creating your first blog post</p>
-          <button class="btn btn-primary" onclick="openAddPostModal()">
+          <div class="empty-state-icon">📋</div>
+          <h3>No pillars found</h3>
+          <p>Get started by creating your first pillar</p>
+          <button class="btn btn-primary" onclick="openAddPillarModal()">
             <span>+</span>
-            Add Blog Post
+            Add Pillar
           </button>
         </div>
 
@@ -200,14 +238,14 @@
           <table>
             <thead>
               <tr>
-                <th>Post</th>
-                <th>Author</th>
+                <th>Pillar</th>
+                <th>Section</th>
+                <th>Display Order</th>
                 <th>Published</th>
-                <th>Featured</th>
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody id="postsTableBody">
+            <tbody id="pillarsTableBody">
               <!-- Populated by JavaScript -->
             </tbody>
           </table>
@@ -216,16 +254,16 @@
     </main>
   </div>
 
-  <!-- Add/Edit Post Modal -->
-  <div id="postModal" class="modal">
+  <!-- Add/Edit Pillar Modal -->
+  <div id="pillarModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 id="modalTitle">Add New Blog Post</h2>
-        <button class="modal-close" onclick="closePostModal()">&times;</button>
+        <h2 id="modalTitle">Add New Pillar</h2>
+        <button class="modal-close" onclick="closePillarModal()">&times;</button>
       </div>
       <div class="modal-body">
-        <form id="postForm">
-          <input type="hidden" id="postId">
+        <form id="pillarForm">
+          <input type="hidden" id="pillarId">
 
           <div class="form-grid">
             <!-- Title -->
@@ -235,7 +273,7 @@
                 type="text"
                 id="title"
                 class="form-input"
-                placeholder="e.g., Exploring the Northern Lights of Swedish Lapland"
+                placeholder="e.g., Arctic Adventures"
                 required
               >
             </div>
@@ -247,7 +285,7 @@
                 type="text"
                 id="slug"
                 class="form-input"
-                placeholder="e.g., exploring-northern-lights-swedish-lapland"
+                placeholder="e.g., arctic-adventures"
                 required
               >
               <span class="form-hint">Auto-generated from title, can be customized</span>
@@ -259,12 +297,12 @@
               <textarea
                 id="excerpt"
                 class="form-textarea"
-                placeholder="Brief summary of the post (max 200 characters)"
-                maxlength="200"
+                placeholder="Brief summary of the pillar (max 300 characters)"
+                maxlength="300"
                 required
                 style="min-height: 80px;"
               ></textarea>
-              <span class="form-hint"><span id="excerptCount">0</span>/200 characters</span>
+              <span class="form-hint"><span id="excerptCount">0</span>/300 characters</span>
             </div>
 
             <!-- Content (Rich Text Editor) -->
@@ -274,103 +312,117 @@
               <input type="hidden" id="content">
             </div>
 
-            <!-- Hero Image Upload -->
+            <!-- Hero Image URL -->
             <div class="form-group full-width">
-              <label class="form-label" for="imageUpload">Hero Image</label>
-              <div class="image-upload-area" id="imageUploadArea">
-                <input
-                  type="file"
-                  id="imageUpload"
-                  accept="image/*"
-                  style="display: none;"
-                  onchange="handleImageSelect(event)"
-                >
-                <div id="uploadPlaceholder" class="upload-placeholder">
-                  <div class="upload-icon">📷</div>
-                  <div class="upload-text">Click to upload or drag and drop</div>
-                  <div class="upload-hint">PNG, JPG, WebP up to 10MB</div>
-                </div>
-                <div id="imagePreviewContainer" class="image-preview-container hidden">
-                  <img id="imagePreview" class="image-preview" src="" alt="Preview">
-                  <button type="button" class="image-remove" onclick="removeImage()">Remove Image</button>
-                </div>
-              </div>
-              <div id="uploadProgress" class="upload-progress">
-                <div class="progress-bar">
-                  <div id="progressFill" class="progress-fill" style="width: 0%"></div>
-                </div>
-                <div id="progressText" class="progress-text">Uploading...</div>
-              </div>
-              <input type="hidden" id="heroImageUrl">
-            </div>
-
-            <!-- Author -->
-            <div class="form-group">
-              <label class="form-label required" for="author">Author</label>
+              <label class="form-label required" for="heroImageUrl">Hero Image URL</label>
               <input
                 type="text"
-                id="author"
+                id="heroImageUrl"
                 class="form-input"
-                placeholder="e.g., LIV Team"
-                value="LIV Team"
+                placeholder="https://example.com/image.jpg"
                 required
               >
+              <span class="form-hint">Enter the full URL to the hero image</span>
+              <div id="heroImagePreview" class="image-preview-container" style="margin-top: 0.75rem; display: none;">
+                <img id="heroImagePreviewImg" class="image-preview" src="" alt="Hero Image Preview" style="max-width: 300px; border-radius: var(--admin-radius);">
+              </div>
             </div>
 
-            <!-- Published Date/Time -->
-            <div class="form-group">
-              <label class="form-label" for="publishedAt">Published Date/Time</label>
-              <input
-                type="datetime-local"
-                id="publishedAt"
-                class="form-input"
-              >
-              <span class="form-hint">Leave empty to save as draft</span>
-            </div>
-
-            <!-- Featured Toggle -->
-            <div class="form-group">
-              <label class="form-label" for="featured">Featured Post</label>
-              <label class="toggle-switch">
-                <input type="checkbox" id="featured">
-                <span class="toggle-slider"></span>
-              </label>
-              <span class="form-hint">Show on homepage</span>
-            </div>
-
-            <!-- Related Destinations -->
-            <div class="form-group">
-              <label class="form-label" for="relatedDestinations">Related Destinations</label>
-              <select id="relatedDestinations" class="form-input" multiple size="5">
-                <!-- Populated by JavaScript -->
-              </select>
-              <span class="form-hint">Hold Cmd/Ctrl to select multiple</span>
-            </div>
-
-            <!-- Meta Description -->
+            <!-- Icon Name -->
             <div class="form-group full-width">
-              <label class="form-label" for="metaDescription">Meta Description (SEO)</label>
-              <textarea
-                id="metaDescription"
-                class="form-textarea"
-                placeholder="Brief description for search engines (max 160 characters)"
-                maxlength="160"
-                style="min-height: 80px;"
-              ></textarea>
-              <span class="form-hint"><span id="metaCount">0</span>/160 characters</span>
+              <label class="form-label required" for="iconName">Icon Name</label>
+              <input
+                type="text"
+                id="iconName"
+                class="form-input"
+                placeholder="e.g., leaf, mountain, compass"
+                required
+              >
+              <span class="form-hint">Lucide icon name (see <a href="https://lucide.dev/icons/" target="_blank">lucide.dev</a>)</span>
+              <div id="iconPreview" class="icon-preview hidden">
+                <div id="iconPreviewSvg"></div>
+                <span class="icon-preview-text">Icon preview</span>
+              </div>
+            </div>
+
+            <!-- Section -->
+            <div class="form-group">
+              <label class="form-label required" for="section">Section</label>
+              <select id="section" class="form-input" required>
+                <option value="">Select section...</option>
+                <option value="experiences">Experiences</option>
+                <option value="corporate">Corporate</option>
+              </select>
+            </div>
+
+            <!-- Display Order -->
+            <div class="form-group">
+              <label class="form-label required" for="displayOrder">Display Order</label>
+              <input
+                type="number"
+                id="displayOrder"
+                class="form-input"
+                placeholder="1"
+                min="0"
+                value="0"
+                required
+              >
+              <span class="form-hint">Lower numbers appear first</span>
+            </div>
+
+            <!-- CTA Text -->
+            <div class="form-group">
+              <label class="form-label" for="ctaText">CTA Text</label>
+              <input
+                type="text"
+                id="ctaText"
+                class="form-input"
+                placeholder="Design with LIV"
+                value="Design with LIV"
+              >
+            </div>
+
+            <!-- LIV Context Type -->
+            <div class="form-group">
+              <label class="form-label" for="livContextType">LIV Context Type</label>
+              <input
+                type="text"
+                id="livContextType"
+                class="form-input"
+                placeholder="experience"
+              >
+              <span class="form-hint">Default: "experience" or "corporate"</span>
+            </div>
+
+            <!-- LIV Context Name -->
+            <div class="form-group full-width">
+              <label class="form-label" for="livContextName">LIV Context Name</label>
+              <input
+                type="text"
+                id="livContextName"
+                class="form-input"
+                placeholder="e.g., Arctic Adventures in Swedish Lapland"
+              >
+              <span class="form-hint">Context for LIV AI assistant</span>
+            </div>
+
+            <!-- Published Checkbox -->
+            <div class="form-group full-width">
+              <label class="form-label">
+                <input type="checkbox" id="published" style="margin-right: 0.5rem;">
+                Published
+              </label>
+              <span class="form-hint">Check to make this pillar visible on the site</span>
             </div>
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" onclick="closePostModal()">
+        <button type="button" class="btn btn-secondary" onclick="closePillarModal()">
           Cancel
         </button>
-        <button type="button" class="btn btn-secondary" onclick="savePost(event, true)" id="saveDraftBtn">
-          Save as Draft
-        </button>
-        <button type="submit" class="btn btn-success" onclick="savePost(event, false)" id="saveBtn">
-          <span id="saveBtnText">Publish Post</span>
+        <button type="submit" class="btn btn-success" onclick="savePillar(event)" id="saveBtn">
+          <span id="saveBtnText">Save Pillar</span>
         </button>
       </div>
     </div>
@@ -381,9 +433,9 @@
     <div class="modal-content confirm-dialog">
       <div class="modal-body">
         <div class="confirm-icon danger">⚠️</div>
-        <h3 class="confirm-title">Delete Blog Post?</h3>
+        <h3 class="confirm-title">Delete Pillar?</h3>
         <p class="confirm-message">
-          Are you sure you want to delete "<span id="deletePostName"></span>"?
+          Are you sure you want to delete "<span id="deletePillarName"></span>"?
           This action cannot be undone.
         </p>
         <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
@@ -400,6 +452,9 @@
   <!-- Quill.js -->
   <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
   <!-- Supabase Client -->
   <script src="../supabase-client.js"></script>
 
@@ -408,14 +463,11 @@
     // ==========================================
     // STATE
     // ==========================================
-    let posts = [];
-    let destinations = [];
-    let filteredPosts = [];
+    let pillars = [];
+    let filteredPillars = [];
     let quillEditor = null;
-    let currentPost = null;
-    let deletePostId = null;
-    let currentImageFile = null;
-    let existingImageUrl = null;
+    let currentPillar = null;
+    let deletePillarId = null;
 
     // ==========================================
     // INITIALIZATION
@@ -442,15 +494,12 @@
         }
 
         // Load data
-        await Promise.all([
-          loadPosts(),
-          loadDestinations()
-        ]);
+        await loadPillars();
 
         // Setup event listeners
         setupEventListeners();
 
-        console.log('Blog posts admin panel initialized successfully');
+        console.log('Pillars admin panel initialized successfully');
       } catch (error) {
         console.error('Initialization error:', error);
         showAlert('error', 'Failed to initialize admin panel: ' + error.message);
@@ -460,40 +509,32 @@
     // ==========================================
     // DATA LOADING
     // ==========================================
-    async function loadPosts() {
+    async function loadPillars() {
       try {
         showLoading();
-        posts = await window.Supabase.db.getBlogPosts(false); // Include drafts
-        filteredPosts = [...posts];
-        renderPosts();
-      } catch (error) {
-        console.error('Error loading posts:', error);
-        showAlert('error', 'Failed to load blog posts: ' + error.message);
-        showEmpty();
-      }
-    }
+        pillars = await window.Supabase.db.getPillars(null, false); // Include drafts
 
-    async function loadDestinations() {
-      try {
-        destinations = await window.Supabase.db.getDestinations(false); // Only published
-        renderDestinationsSelect();
+        filteredPillars = [...pillars];
+        renderPillars();
       } catch (error) {
-        console.error('Error loading destinations:', error);
+        console.error('Error loading pillars:', error);
+        showAlert('error', 'Failed to load pillars: ' + error.message);
+        showEmpty();
       }
     }
 
     // ==========================================
     // RENDERING
     // ==========================================
-    function renderPosts() {
-      const tbody = document.getElementById('postsTableBody');
+    function renderPillars() {
+      const tbody = document.getElementById('pillarsTableBody');
       const tableContainer = document.getElementById('tableContainer');
       const emptyState = document.getElementById('emptyState');
       const loadingState = document.getElementById('loadingState');
 
       loadingState.classList.add('hidden');
 
-      if (filteredPosts.length === 0) {
+      if (filteredPillars.length === 0) {
         tableContainer.classList.add('hidden');
         emptyState.classList.remove('hidden');
         return;
@@ -502,59 +543,48 @@
       emptyState.classList.add('hidden');
       tableContainer.classList.remove('hidden');
 
-      tbody.innerHTML = filteredPosts.map(post => `
-        <tr onclick="editPost('${post.id}')">
+      tbody.innerHTML = filteredPillars.map(pillar => {
+        const iconHtml = pillar.icon_name ? `<div class="pillar-icon">${getIconSvg(pillar.icon_name)}</div>` : '';
+        return `
+        <tr onclick="editPillar('${pillar.id}')">
           <td>
             <div class="destination-preview">
-              <img
-                src="${post.hero_image_url || 'https://via.placeholder.com/60'}"
-                alt="${post.title}"
-                class="destination-image"
-              >
+              ${iconHtml}
               <div class="destination-info">
-                <h3>${escapeHtml(post.title)}</h3>
-                <p>${escapeHtml(post.excerpt.substring(0, 50))}${post.excerpt.length > 50 ? '...' : ''}</p>
+                <h3>${escapeHtml(pillar.title)}</h3>
+                <p>${escapeHtml(pillar.excerpt.substring(0, 50))}${pillar.excerpt.length > 50 ? '...' : ''}</p>
               </div>
             </div>
           </td>
-          <td>${escapeHtml(post.author || 'LIV Team')}</td>
           <td>
-            <span class="badge ${post.published_at ? 'badge-published' : 'badge-draft'}">
-              ${post.published_at ? formatDate(post.published_at) : 'Draft'}
+            <span class="badge ${pillar.section === 'experiences' ? 'badge-category' : 'badge-published'}">
+              ${pillar.section === 'experiences' ? 'Experiences' : 'Corporate'}
             </span>
           </td>
           <td>
-            ${post.featured ? '<span class="badge badge-category">⭐ Featured</span>' : '<span class="text-muted">—</span>'}
+            <span class="badge badge-category">${pillar.display_order}</span>
+          </td>
+          <td>
+            <span class="badge ${pillar.published ? 'badge-published' : 'badge-draft'}">
+              ${pillar.published ? 'Published' : 'Draft'}
+            </span>
           </td>
           <td>
             <div class="action-buttons" onclick="event.stopPropagation()">
               <button
                 class="action-btn action-btn-edit"
-                onclick="editPost('${post.id}')"
+                onclick="editPillar('${pillar.id}')"
                 title="Edit"
               >✏️</button>
               <button
                 class="action-btn action-btn-delete"
-                onclick="deletePost('${post.id}', '${escapeHtml(post.title)}')"
+                onclick="deletePillar('${pillar.id}', '${escapeHtml(pillar.title)}')"
                 title="Delete"
               >🗑️</button>
             </div>
           </td>
         </tr>
-      `).join('');
-    }
-
-    function renderDestinationsSelect() {
-      const select = document.getElementById('relatedDestinations');
-
-      if (destinations.length === 0) {
-        select.innerHTML = '<option disabled>No destinations available</option>';
-        return;
-      }
-
-      select.innerHTML = destinations.map(dest => `
-        <option value="${dest.id}">${escapeHtml(dest.title)}</option>
-      `).join('');
+      `}).join('');
     }
 
     // ==========================================
@@ -562,61 +592,56 @@
     // ==========================================
     function applyFilters() {
       const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const sectionFilter = document.getElementById('sectionFilter').value;
       const statusFilter = document.getElementById('statusFilter').value;
-      const featuredFilter = document.getElementById('featuredFilter').value;
 
-      filteredPosts = posts.filter(post => {
+      filteredPillars = pillars.filter(pillar => {
         // Search filter
         const matchesSearch = !searchTerm ||
-          post.title.toLowerCase().includes(searchTerm) ||
-          post.excerpt.toLowerCase().includes(searchTerm) ||
-          (post.content && post.content.toLowerCase().includes(searchTerm));
+          pillar.title.toLowerCase().includes(searchTerm) ||
+          pillar.excerpt.toLowerCase().includes(searchTerm) ||
+          (pillar.content && pillar.content.toLowerCase().includes(searchTerm));
+
+        // Section filter
+        const matchesSection = !sectionFilter || pillar.section === sectionFilter;
 
         // Status filter
         const matchesStatus = statusFilter === 'all' ||
-          (statusFilter === 'published' && post.published_at) ||
-          (statusFilter === 'draft' && !post.published_at);
+          (statusFilter === 'published' && pillar.published) ||
+          (statusFilter === 'draft' && !pillar.published);
 
-        // Featured filter
-        const matchesFeatured = featuredFilter === 'all' ||
-          (featuredFilter === 'featured' && post.featured) ||
-          (featuredFilter === 'not-featured' && !post.featured);
-
-        return matchesSearch && matchesStatus && matchesFeatured;
+        return matchesSearch && matchesSection && matchesStatus;
       });
 
-      renderPosts();
+      renderPillars();
     }
 
     // ==========================================
     // MODAL MANAGEMENT
     // ==========================================
-    function openAddPostModal() {
-      currentPost = null;
-      document.getElementById('modalTitle').textContent = 'Add New Blog Post';
-      document.getElementById('postForm').reset();
-      document.getElementById('postId').value = '';
-      document.getElementById('author').value = 'LIV Team';
+    function openAddPillarModal() {
+      currentPillar = null;
+      document.getElementById('modalTitle').textContent = 'Add New Pillar';
+      document.getElementById('pillarForm').reset();
+      document.getElementById('pillarId').value = '';
+      document.getElementById('displayOrder').value = '0';
+      document.getElementById('ctaText').value = 'Design with LIV';
+      document.getElementById('published').checked = false;
 
-      // Reset image
-      currentImageFile = null;
-      existingImageUrl = null;
-      document.getElementById('heroImageUrl').value = '';
-      document.getElementById('uploadPlaceholder').classList.remove('hidden');
-      document.getElementById('imagePreviewContainer').classList.add('hidden');
-      document.getElementById('imageUploadArea').classList.remove('has-image');
+      // Hide previews
+      document.getElementById('heroImagePreview').style.display = 'none';
+      document.getElementById('iconPreview').classList.add('hidden');
 
       // Clear editor
       if (quillEditor) {
         quillEditor.root.innerHTML = '';
       }
 
-      // Reset character counts
+      // Reset character count
       updateCharacterCount('excerpt', 'excerptCount');
-      updateCharacterCount('metaDescription', 'metaCount');
 
       // Open modal
-      document.getElementById('postModal').classList.add('active');
+      document.getElementById('pillarModal').classList.add('active');
 
       // Initialize Quill editor
       setTimeout(() => {
@@ -624,8 +649,8 @@
       }, 100);
     }
 
-    function closePostModal() {
-      document.getElementById('postModal').classList.remove('active');
+    function closePillarModal() {
+      document.getElementById('pillarModal').classList.remove('active');
 
       // Destroy Quill editor
       if (quillEditor) {
@@ -633,83 +658,68 @@
       }
     }
 
-    function editPost(id) {
-      currentPost = posts.find(p => p.id === id);
-      if (!currentPost) return;
+    function editPillar(id) {
+      currentPillar = pillars.find(p => p.id === id);
+      if (!currentPillar) return;
 
-      document.getElementById('modalTitle').textContent = 'Edit Blog Post';
-      document.getElementById('postId').value = currentPost.id;
-      document.getElementById('title').value = currentPost.title;
-      document.getElementById('slug').value = currentPost.slug;
-      document.getElementById('excerpt').value = currentPost.excerpt || '';
-      document.getElementById('author').value = currentPost.author || 'LIV Team';
-      document.getElementById('featured').checked = currentPost.featured || false;
-      document.getElementById('metaDescription').value = currentPost.meta_description || '';
+      document.getElementById('modalTitle').textContent = 'Edit Pillar';
+      document.getElementById('pillarId').value = currentPillar.id;
+      document.getElementById('title').value = currentPillar.title;
+      document.getElementById('slug').value = currentPillar.slug;
+      document.getElementById('excerpt').value = currentPillar.excerpt || '';
+      document.getElementById('heroImageUrl').value = currentPillar.hero_image_url || '';
+      document.getElementById('iconName').value = currentPillar.icon_name || '';
+      document.getElementById('section').value = currentPillar.section;
+      document.getElementById('displayOrder').value = currentPillar.display_order || 0;
+      document.getElementById('ctaText').value = currentPillar.cta_text || 'Design with LIV';
+      document.getElementById('livContextType').value = currentPillar.liv_context_type || '';
+      document.getElementById('livContextName').value = currentPillar.liv_context_name || '';
+      document.getElementById('published').checked = currentPillar.published || false;
 
-      // Set published date if exists
-      if (currentPost.published_at) {
-        const date = new Date(currentPost.published_at);
-        // Format for datetime-local input
-        const localDateTime = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
-          .toISOString()
-          .slice(0, 16);
-        document.getElementById('publishedAt').value = localDateTime;
-      } else {
-        document.getElementById('publishedAt').value = '';
+      // Show hero image preview
+      if (currentPillar.hero_image_url) {
+        updateHeroImagePreview(currentPillar.hero_image_url);
       }
 
-      // Set image
-      if (currentPost.hero_image_url) {
-        existingImageUrl = currentPost.hero_image_url;
-        document.getElementById('heroImageUrl').value = currentPost.hero_image_url;
-        document.getElementById('imagePreview').src = currentPost.hero_image_url;
-        document.getElementById('uploadPlaceholder').classList.add('hidden');
-        document.getElementById('imagePreviewContainer').classList.remove('hidden');
-        document.getElementById('imageUploadArea').classList.add('has-image');
+      // Show icon preview
+      if (currentPillar.icon_name) {
+        updateIconPreview(currentPillar.icon_name);
       }
 
-      // Set related destinations
-      const relatedSelect = document.getElementById('relatedDestinations');
-      Array.from(relatedSelect.options).forEach(option => {
-        option.selected = currentPost.related_destination_ids &&
-                         currentPost.related_destination_ids.includes(option.value);
-      });
-
-      // Update character counts
+      // Update character count
       updateCharacterCount('excerpt', 'excerptCount');
-      updateCharacterCount('metaDescription', 'metaCount');
 
       // Open modal
-      document.getElementById('postModal').classList.add('active');
+      document.getElementById('pillarModal').classList.add('active');
 
       // Initialize Quill editor with content
       setTimeout(() => {
-        initQuillEditor(currentPost.content);
+        initQuillEditor(currentPillar.content);
       }, 100);
     }
 
-    function deletePost(id, title) {
-      deletePostId = id;
-      document.getElementById('deletePostName').textContent = title;
+    function deletePillar(id, title) {
+      deletePillarId = id;
+      document.getElementById('deletePillarName').textContent = title;
       document.getElementById('deleteModal').classList.add('active');
     }
 
     function closeDeleteModal() {
       document.getElementById('deleteModal').classList.remove('active');
-      deletePostId = null;
+      deletePillarId = null;
     }
 
     async function confirmDelete() {
-      if (!deletePostId) return;
+      if (!deletePillarId) return;
 
       try {
-        await window.Supabase.db.deleteBlogPost(deletePostId);
-        showAlert('success', 'Blog post deleted successfully');
+        await window.Supabase.db.deletePillar(deletePillarId);
+        showAlert('success', 'Pillar deleted successfully');
         closeDeleteModal();
-        await loadPosts();
+        await loadPillars();
       } catch (error) {
-        console.error('Error deleting post:', error);
-        showAlert('error', 'Failed to delete blog post: ' + error.message);
+        console.error('Error deleting pillar:', error);
+        showAlert('error', 'Failed to delete pillar: ' + error.message);
       }
     }
 
@@ -731,7 +741,7 @@
             ['clean']
           ]
         },
-        placeholder: 'Write your blog post content here...'
+        placeholder: 'Write your pillar content here...'
       });
 
       // Set initial content
@@ -741,229 +751,133 @@
     }
 
     // ==========================================
-    // IMAGE UPLOAD
+    // SAVE PILLAR
     // ==========================================
-    function setupImageUpload() {
-      const uploadArea = document.getElementById('imageUploadArea');
-      const fileInput = document.getElementById('imageUpload');
-
-      // Click to upload
-      uploadArea.addEventListener('click', (e) => {
-        if (e.target.classList.contains('image-remove')) return;
-        fileInput.click();
-      });
-
-      // Drag and drop
-      uploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadArea.classList.add('drag-over');
-      });
-
-      uploadArea.addEventListener('dragleave', () => {
-        uploadArea.classList.remove('drag-over');
-      });
-
-      uploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadArea.classList.remove('drag-over');
-
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-          handleImageFile(files[0]);
-        }
-      });
-    }
-
-    function handleImageSelect(event) {
-      const file = event.target.files[0];
-      if (file) {
-        handleImageFile(file);
-      }
-    }
-
-    function handleImageFile(file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        showAlert('error', 'Please select an image file');
-        return;
-      }
-
-      // Validate file size (10MB)
-      if (file.size > 10 * 1024 * 1024) {
-        showAlert('error', 'Image size must be less than 10MB');
-        return;
-      }
-
-      currentImageFile = file;
-
-      // Show preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        document.getElementById('imagePreview').src = e.target.result;
-        document.getElementById('uploadPlaceholder').classList.add('hidden');
-        document.getElementById('imagePreviewContainer').classList.remove('hidden');
-        document.getElementById('imageUploadArea').classList.add('has-image');
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function removeImage() {
-      currentImageFile = null;
-      existingImageUrl = null;
-      document.getElementById('heroImageUrl').value = '';
-      document.getElementById('imageUpload').value = '';
-      document.getElementById('uploadPlaceholder').classList.remove('hidden');
-      document.getElementById('imagePreviewContainer').classList.add('hidden');
-      document.getElementById('imageUploadArea').classList.remove('has-image');
-    }
-
-    async function uploadImage() {
-      if (!currentImageFile) {
-        return existingImageUrl || null;
-      }
-
-      const progressDiv = document.getElementById('uploadProgress');
-      const progressFill = document.getElementById('progressFill');
-      const progressText = document.getElementById('progressText');
-
-      try {
-        progressDiv.classList.add('active');
-        progressFill.style.width = '0%';
-        progressText.textContent = 'Uploading...';
-
-        // Simulate progress
-        const progressInterval = setInterval(() => {
-          const currentWidth = parseInt(progressFill.style.width) || 0;
-          if (currentWidth < 90) {
-            progressFill.style.width = (currentWidth + 10) + '%';
-          }
-        }, 200);
-
-        const result = await window.Supabase.storage.uploadFile(currentImageFile);
-
-        clearInterval(progressInterval);
-        progressFill.style.width = '100%';
-        progressText.textContent = 'Upload complete!';
-
-        setTimeout(() => {
-          progressDiv.classList.remove('active');
-        }, 1000);
-
-        return result.url;
-      } catch (error) {
-        progressDiv.classList.remove('active');
-        throw error;
-      }
-    }
-
-    // ==========================================
-    // SAVE POST
-    // ==========================================
-    async function savePost(event, asDraft = false) {
+    async function savePillar(event) {
       event.preventDefault();
 
       const saveBtn = document.getElementById('saveBtn');
-      const saveDraftBtn = document.getElementById('saveDraftBtn');
       const saveBtnText = document.getElementById('saveBtnText');
       const originalText = saveBtnText.textContent;
 
       try {
-        // Disable buttons
+        // Disable button
         saveBtn.disabled = true;
-        saveDraftBtn.disabled = true;
         saveBtnText.innerHTML = '<div class="loading"></div> Saving...';
 
         // Get form data
-        const id = document.getElementById('postId').value;
+        const id = document.getElementById('pillarId').value;
         const title = document.getElementById('title').value.trim();
         const slug = document.getElementById('slug').value.trim();
         const excerpt = document.getElementById('excerpt').value.trim();
-        const author = document.getElementById('author').value.trim();
-        const featured = document.getElementById('featured').checked;
-        const metaDescription = document.getElementById('metaDescription').value.trim();
-        const publishedAtInput = document.getElementById('publishedAt').value;
+        const heroImageUrl = document.getElementById('heroImageUrl').value.trim();
+        const iconName = document.getElementById('iconName').value.trim();
+        const section = document.getElementById('section').value;
+        const displayOrder = parseInt(document.getElementById('displayOrder').value) || 0;
+        const ctaText = document.getElementById('ctaText').value.trim() || 'Design with LIV';
+        const livContextType = document.getElementById('livContextType').value.trim() || (section === 'corporate' ? 'corporate' : 'experience');
+        const livContextName = document.getElementById('livContextName').value.trim();
+        const published = document.getElementById('published').checked;
 
         // Get content from Quill
         const content = quillEditor ? quillEditor.root.innerHTML : '';
 
-        // Get related destinations
-        const relatedSelect = document.getElementById('relatedDestinations');
-        const relatedDestinationIds = Array.from(relatedSelect.selectedOptions).map(opt => opt.value);
-
         // Validate
-        if (!title || !slug || !excerpt) {
+        if (!title || !slug || !excerpt || !heroImageUrl || !iconName || !section) {
           showAlert('error', 'Please fill in all required fields');
           return;
         }
 
         if (!content || content === '<p><br></p>') {
-          showAlert('error', 'Please add content to your blog post');
+          showAlert('error', 'Please add content to your pillar');
           return;
         }
 
-        // Upload image if new one selected
-        let heroImageUrl = existingImageUrl;
-        if (currentImageFile) {
-          heroImageUrl = await uploadImage();
-        }
-
-        // Warning for missing image when publishing
-        if (!asDraft && !heroImageUrl && !currentImageFile) {
-          const confirmPublish = confirm(
-            '⚠️ No hero image selected!\n\n' +
-            'Publishing without an image will show a placeholder on the website.\n\n' +
-            'Do you want to continue publishing without an image?'
-          );
-          if (!confirmPublish) {
-            return;
-          }
-        }
-
-        // Prepare published_at
-        let publishedAt = null;
-        if (!asDraft) {
-          if (publishedAtInput) {
-            publishedAt = new Date(publishedAtInput).toISOString();
-          } else {
-            publishedAt = new Date().toISOString();
-          }
-        }
-
         // Prepare data
-        const postData = {
+        const pillarData = {
           title,
           slug,
           excerpt,
           content,
-          author,
-          featured,
-          meta_description: metaDescription,
           hero_image_url: heroImageUrl,
-          related_destination_ids: relatedDestinationIds,
-          published_at: publishedAt
+          icon_name: iconName,
+          section,
+          display_order: displayOrder,
+          cta_text: ctaText,
+          liv_context_type: livContextType,
+          liv_context_name: livContextName,
+          published
         };
 
         // Save to database
         if (id) {
-          await window.Supabase.db.updateBlogPost(id, postData);
-          showAlert('success', asDraft ? 'Post saved as draft' : 'Post updated successfully');
+          await window.Supabase.db.updatePillar(id, pillarData);
+          showAlert('success', 'Pillar updated successfully');
         } else {
-          await window.Supabase.db.createBlogPost(postData);
-          showAlert('success', asDraft ? 'Post saved as draft' : 'Post published successfully');
+          await window.Supabase.db.createPillar(pillarData);
+          showAlert('success', 'Pillar created successfully');
         }
 
         // Close modal and refresh
-        closePostModal();
-        await loadPosts();
+        closePillarModal();
+        await loadPillars();
 
       } catch (error) {
-        console.error('Error saving post:', error);
-        showAlert('error', 'Failed to save post: ' + error.message);
+        console.error('Error saving pillar:', error);
+        showAlert('error', 'Failed to save pillar: ' + error.message);
       } finally {
         saveBtn.disabled = false;
-        saveDraftBtn.disabled = false;
         saveBtnText.textContent = originalText;
       }
+    }
+
+    // ==========================================
+    // ICON & IMAGE PREVIEW
+    // ==========================================
+    function updateHeroImagePreview(url) {
+      const preview = document.getElementById('heroImagePreview');
+      const img = document.getElementById('heroImagePreviewImg');
+
+      if (url) {
+        img.src = url;
+        img.onerror = () => {
+          preview.style.display = 'none';
+        };
+        img.onload = () => {
+          preview.style.display = 'block';
+        };
+      } else {
+        preview.style.display = 'none';
+      }
+    }
+
+    function updateIconPreview(iconName) {
+      const preview = document.getElementById('iconPreview');
+      const previewSvg = document.getElementById('iconPreviewSvg');
+
+      if (iconName) {
+        const svg = getIconSvg(iconName);
+        if (svg) {
+          previewSvg.innerHTML = svg;
+          preview.classList.remove('hidden');
+        } else {
+          preview.classList.add('hidden');
+        }
+      } else {
+        preview.classList.add('hidden');
+      }
+    }
+
+    function getIconSvg(iconName) {
+      try {
+        const icon = lucide.icons[iconName.charAt(0).toUpperCase() + iconName.slice(1).replace(/-([a-z])/g, (g) => g[1].toUpperCase())];
+        if (icon) {
+          return icon.toSvg();
+        }
+      } catch (error) {
+        console.error('Icon not found:', iconName);
+      }
+      return '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
     }
 
     // ==========================================
@@ -982,16 +896,6 @@
       if (input && counter) {
         counter.textContent = input.value.length;
       }
-    }
-
-    function formatDate(dateString) {
-      if (!dateString) return 'N/A';
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
     }
 
     function escapeHtml(text) {
@@ -1043,31 +947,43 @@
 
       // Search and filters
       document.getElementById('searchInput').addEventListener('input', applyFilters);
+      document.getElementById('sectionFilter').addEventListener('change', applyFilters);
       document.getElementById('statusFilter').addEventListener('change', applyFilters);
-      document.getElementById('featuredFilter').addEventListener('change', applyFilters);
 
       // Auto-generate slug from title
       document.getElementById('title').addEventListener('input', (e) => {
-        if (!document.getElementById('postId').value) {
+        if (!document.getElementById('pillarId').value) {
           document.getElementById('slug').value = generateSlug(e.target.value);
         }
       });
 
-      // Character counters
+      // Character counter
       document.getElementById('excerpt').addEventListener('input', () => {
         updateCharacterCount('excerpt', 'excerptCount');
       });
-      document.getElementById('metaDescription').addEventListener('input', () => {
-        updateCharacterCount('metaDescription', 'metaCount');
+
+      // Hero image preview
+      document.getElementById('heroImageUrl').addEventListener('input', (e) => {
+        updateHeroImagePreview(e.target.value);
       });
 
-      // Image upload
-      setupImageUpload();
+      // Icon preview
+      document.getElementById('iconName').addEventListener('input', (e) => {
+        updateIconPreview(e.target.value);
+      });
+
+      // Auto-set LIV context type based on section
+      document.getElementById('section').addEventListener('change', (e) => {
+        const contextTypeInput = document.getElementById('livContextType');
+        if (!contextTypeInput.value) {
+          contextTypeInput.value = e.target.value === 'corporate' ? 'corporate' : 'experience';
+        }
+      });
 
       // Close modal on outside click
-      document.getElementById('postModal').addEventListener('click', (e) => {
-        if (e.target.id === 'postModal') {
-          closePostModal();
+      document.getElementById('pillarModal').addEventListener('click', (e) => {
+        if (e.target.id === 'pillarModal') {
+          closePillarModal();
         }
       });
 
@@ -1080,7 +996,7 @@
       // Keyboard shortcuts
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-          closePostModal();
+          closePillarModal();
           closeDeleteModal();
         }
       });
