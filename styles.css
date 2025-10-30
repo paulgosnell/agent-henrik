@@ -568,6 +568,8 @@
             color: rgba(0, 0, 0, 0.85);
             background: linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.8) 100%);
             background-size: 0% 1px;
+            background-repeat: no-repeat;
+            background-position: left bottom;
         }
 
         .nav-link:hover,
@@ -581,8 +583,8 @@
         [data-theme="light"] .nav-link:hover,
         [data-theme="light"] .nav-link:focus-visible {
             color: rgba(0, 0, 0, 1);
-            background: transparent;
-            background-size: 0% 1px;
+            background-image: linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.8) 100%);
+            background-size: 100% 1px;
         }
 
         .nav-menu.open {
