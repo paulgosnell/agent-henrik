@@ -934,16 +934,24 @@ document.addEventListener('DOMContentLoaded', function() {
             document.addEventListener('openLivChat', (event) => {
                 const { contextType, contextName } = event.detail;
 
+                console.log('🎬 openLivChat Event Fired:');
+                console.log('  - hasLivAI:', !!window.LivAI);
+                console.log('  - contextType:', contextType);
+                console.log('  - contextName:', contextName);
+
                 // Use new LivAI class
                 if (window.LivAI && contextType && contextName) {
+                    console.log('✅ Using LivAI with context');
                     const context = {
                         type: contextType,
                         name: contextName
                     };
                     window.LivAI.openChatWithContext(context);
                 } else if (window.LivAI) {
+                    console.log('⚠️ Using LivAI without context');
                     window.LivAI.openChat();
                 } else {
+                    console.log('❌ Fallback to old implementation');
                     // Fallback to old implementation
                     resetConversation();
                     if (contextType && contextName) {
