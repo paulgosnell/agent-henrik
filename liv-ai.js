@@ -90,6 +90,16 @@ class LivAI {
           this.handleSendMessage();
         }
       });
+
+      // Mobile keyboard handling - scroll to input when focused
+      this.chatInput.addEventListener('focus', () => {
+        // Small delay to allow keyboard to appear
+        setTimeout(() => {
+          if (this.chatInput) {
+            this.chatInput.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        }, 300);
+      });
     }
 
     // Close button
@@ -514,7 +524,12 @@ class LivAI {
    */
   scrollToBottom() {
     if (this.chatMessages) {
-      this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+      // Use requestAnimationFrame for smoother scrolling
+      requestAnimationFrame(() => {
+        if (this.chatMessages) {
+          this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+        }
+      });
     }
   }
 
