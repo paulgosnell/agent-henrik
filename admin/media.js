@@ -1,6 +1,7 @@
 /**
  * Media Library Management
  * Luxury Travel Sweden CMS
+ * Version: 2.0 - Diagnostics Disabled
  *
  * SETUP INSTRUCTIONS:
  * 1. Create a 'media' bucket in Supabase Storage
