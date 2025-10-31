@@ -52,9 +52,15 @@ async function initInlineEditor() {
   }
 
   try {
-    // Check authentication
-    InlineEditor.currentUser = await window.Supabase.auth.getUser();
-    InlineEditor.isAuthenticated = !!InlineEditor.currentUser;
+    // Check authentication (getUser returns the user object directly)
+    const user = await window.Supabase.auth.getUser();
+    InlineEditor.currentUser = user;
+    InlineEditor.isAuthenticated = !!user;
+
+    console.log('🔐 Authentication status:', InlineEditor.isAuthenticated ? 'Logged in' : 'Not logged in');
+    if (InlineEditor.currentUser) {
+      console.log('👤 User:', InlineEditor.currentUser.email);
+    }
 
     // Load static content from database
     await loadStaticContent();
