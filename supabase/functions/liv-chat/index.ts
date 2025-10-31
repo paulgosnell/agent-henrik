@@ -73,7 +73,7 @@ Deno.serve(async (req) => {
         supabase.from('stories')
           .select('*')
           .eq('category', 'Storyteller')
-          .eq('published_at', true)
+          .not('published_at', 'is', null)
           .order('display_order', { ascending: true })
       ]);
       storytellers = storytellersResult.data || [];
