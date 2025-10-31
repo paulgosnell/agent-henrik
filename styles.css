@@ -1731,24 +1731,29 @@
 
         .map-card-cta {
             width: 100%;
-            padding: 0.9rem 1.5rem;
-            background: rgba(212, 175, 55, 0.9);
-            border: none;
-            border-radius: 8px;
-            color: #000;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
             font-family: var(--font-sans);
-            font-size: 0.9rem;
-            font-weight: 500;
-            letter-spacing: 0.08em;
+            font-size: 0.75rem;
+            letter-spacing: 0.32rem;
             text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.95);
+            text-decoration: none;
+            padding: 0.85rem 1.8rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.08);
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
         .map-card-cta:hover {
-            background: rgba(212, 175, 55, 1);
+            border-color: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.15);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+            color: rgba(255, 255, 255, 1);
         }
 
         @media (max-width: 768px) {
@@ -2053,10 +2058,9 @@
             z-index: 1;
             display: flex;
             flex-direction: column;
-            gap: 1.1rem;
             padding: clamp(1.8rem, 4vw, 2.4rem);
-            padding-bottom: clamp(5rem, 8vw, 6rem);
             flex: 1;
+            min-height: 100%;
         }
 
         .pillar-icon {
@@ -2078,8 +2082,10 @@
         }
 
         .pillar-copy {
-            display: grid;
+            display: flex;
+            flex-direction: column;
             gap: 0.65rem;
+            flex: 1;
         }
 
         .pillar-card h3 {
@@ -2138,10 +2144,6 @@
         }
 
         .pillar-card .pillar-cta {
-            position: absolute;
-            bottom: clamp(1.8rem, 4vw, 2.4rem);
-            left: clamp(1.8rem, 4vw, 2.4rem);
-            right: clamp(1.8rem, 4vw, 2.4rem);
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -2152,14 +2154,15 @@
             text-transform: uppercase;
             color: rgba(255, 255, 255, 0.95);
             text-decoration: none;
-            margin-top: 0;
+            margin-top: auto;
             padding: 0.85rem 1.8rem;
             border-radius: 999px;
             border: 1px solid rgba(255, 255, 255, 0.4);
             background: rgba(255, 255, 255, 0.08);
             cursor: pointer;
             transition: all 0.3s ease;
-            z-index: 2;
+            width: 100%;
+            text-align: center;
         }
 
         .pillar-card .pillar-cta:hover {
@@ -2673,23 +2676,28 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 1rem 2.5rem;
+            gap: 0.5rem;
+            padding: 0.85rem 1.8rem;
             border-radius: 999px;
             text-transform: uppercase;
-            letter-spacing: 0.35rem;
-            font-size: 0.78rem;
+            letter-spacing: 0.32rem;
+            font-size: 0.75rem;
             border: 1px solid rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.95);
             text-decoration: none;
-            transition: var(--transition);
+            transition: all 0.3s ease;
         }
 
         .cta-group a.primary {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
         }
 
         .cta-group a:hover {
-            border-color: rgba(255, 255, 255, 0.8);
+            border-color: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.15);
             transform: translateY(-2px);
+            color: rgba(255, 255, 255, 1);
         }
 
         .cta-group a:focus-visible {
