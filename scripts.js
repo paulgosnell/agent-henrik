@@ -725,7 +725,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            function handleFormSubmit(event) {
+            async function handleFormSubmit(event) {
                 event.preventDefault();
                 if (!enquiryName || !enquiryEmail) return;
 
@@ -739,8 +739,90 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
 
+                // Show loading state
                 if (enquiryStatus) {
-                    enquiryStatus.textContent = 'Tack! Our curators will respond within 24 hours.';
+                    enquiryStatus.textContent = 'Submitting...';
+                }
+
+                try {
+                    // Get form data
+                    const phone = document.getElementById('enquiryPhone')?.value.trim();
+                    const tripType = enquiryTripType?.value;
+                    const dates = enquiryDates?.value.trim();
+                    const details = enquiryDetails?.value.trim();
+                    const source = enquirySourceField?.value || 'contact_form';
+
+                    // Create or update lead
+                    const { data: existingLead } = await window.Supabase.client
+                        .from('leads')
+                        .select('id')
+                        .eq('email', emailValid)
+                        .single();
+
+                    let leadId;
+
+                    if (existingLead) {
+                        // Update existing lead
+                        leadId = existingLead.id;
+                        await window.Supabase.client
+                            .from('leads')
+                            .update({
+                                name: nameValid,
+                                phone: phone || null,
+                                source: source,
+                                status: 'new',
+                                updated_at: new Date().toISOString()
+                            })
+                            .eq('id', leadId);
+                    } else {
+                        // Create new lead
+                        const { data: newLead, error: leadError } = await window.Supabase.client
+                            .from('leads')
+                            .insert({
+                                email: emailValid,
+                                name: nameValid,
+                                phone: phone || null,
+                                source: source,
+                                status: 'new'
+                            })
+                            .select()
+                            .single();
+
+                        if (leadError) throw leadError;
+                        leadId = newLead.id;
+                    }
+
+                    // Create booking inquiry
+                    const { error: inquiryError } = await window.Supabase.client
+                        .from('booking_inquiries')
+                        .insert({
+                            lead_id: leadId,
+                            email: emailValid,
+                            name: nameValid,
+                            phone: phone || null,
+                            special_requests: `${tripType ? 'Trip Type: ' + tripType + '\n' : ''}${dates ? 'Dates: ' + dates + '\n' : ''}${details || ''}`.trim(),
+                            itinerary_summary: itineraryDraftField?.value || null,
+                            status: 'pending'
+                        });
+
+                    if (inquiryError) throw inquiryError;
+
+                    // Show success message
+                    if (enquiryStatus) {
+                        enquiryStatus.textContent = 'Tack! Our curators will respond within 24 hours.';
+                        enquiryStatus.style.color = 'var(--color-accent-forest, green)';
+                    }
+
+                    // Reset form
+                    enquiryForm.reset();
+                    if (itineraryDraftField) itineraryDraftField.value = '';
+
+                } catch (error) {
+                    console.error('Error submitting form:', error);
+                    if (enquiryStatus) {
+                        enquiryStatus.textContent = 'Sorry, there was an error. Please try again or email us directly.';
+                        enquiryStatus.style.color = 'red';
+                    }
                 }
             }
 
@@ -834,6 +916,70 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (enquiryForm) {
                 enquiryForm.addEventListener('submit', handleFormSubmit);
+            }
+
+            // Newsletter form handler
+            const newsletterForm = document.getElementById('newsletterForm');
+            const newsletterEmail = document.getElementById('newsletterEmail');
+            const newsletterStatus = document.getElementById('newsletterStatus');
+
+            if (newsletterForm) {
+                newsletterForm.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+
+                    const email = newsletterEmail?.value.trim();
+                    if (!email) return;
+
+                    // Show loading state
+                    if (newsletterStatus) {
+                        newsletterStatus.textContent = 'Subscribing...';
+                        newsletterStatus.style.color = '';
+                    }
+
+                    try {
+                        // Check if email already exists
+                        const { data: existingLead } = await window.Supabase.client
+                            .from('leads')
+                            .select('id')
+                            .eq('email', email)
+                            .single();
+
+                        if (existingLead) {
+                            // Email already subscribed
+                            if (newsletterStatus) {
+                                newsletterStatus.textContent = 'You\'re already subscribed!';
+                                newsletterStatus.style.color = 'var(--color-accent-forest, green)';
+                            }
+                        } else {
+                            // Create new lead for newsletter
+                            const { error } = await window.Supabase.client
+                                .from('leads')
+                                .insert({
+                                    email: email,
+                                    source: 'newsletter',
+                                    status: 'new'
+                                });
+
+                            if (error) throw error;
+
+                            // Show success message
+                            if (newsletterStatus) {
+                                newsletterStatus.textContent = 'Thank you for subscribing!';
+                                newsletterStatus.style.color = 'var(--color-accent-forest, green)';
+                            }
+                        }
+
+                        // Reset form
+                        newsletterForm.reset();
+
+                    } catch (error) {
+                        console.error('Error subscribing to newsletter:', error);
+                        if (newsletterStatus) {
+                            newsletterStatus.textContent = 'Sorry, there was an error. Please try again.';
+                            newsletterStatus.style.color = 'red';
+                        }
+                    }
+                });
             }
 
             // Escape key to close chat

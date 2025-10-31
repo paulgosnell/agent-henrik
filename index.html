@@ -711,11 +711,12 @@ unique.</p>
                 <p class="footer-newsletter-description" style="font-size: 0.9rem; margin-bottom: 0.5rem; line-height: 1.6;" data-editable="footer.newsletter.description">
                     Join our community and receive exclusive stories, insider tips, and curated experiences from Sweden.
                 </p>
-                <form class="footer-newsletter" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
+                <form class="footer-newsletter" id="newsletterForm">
                     <div class="footer-newsletter-input">
-                        <input type="email" placeholder="Your email address" required aria-label="Email address" data-editable-placeholder="footer.newsletter.placeholder">
+                        <input type="email" id="newsletterEmail" placeholder="Your email address" required aria-label="Email address" data-editable-placeholder="footer.newsletter.placeholder">
                         <button type="submit" class="footer-newsletter-btn" data-editable="footer.newsletter.button">Subscribe</button>
                     </div>
+                    <p class="newsletter-status" id="newsletterStatus" role="status" style="font-size: 0.85rem; margin-top: 0.5rem; min-height: 1.2rem;"></p>
                 </form>
 
                 <!-- Theme Toggle -->
