@@ -171,8 +171,7 @@ function createEditorUI() {
   `;
   InlineEditor.saveChangesBtn.onclick = saveChanges;
 
-  // Append save button to footer
-  const footer = document.querySelector('footer') || document.body;
+  // Append save button to footer (reuse footer reference)
   footer.appendChild(InlineEditor.saveChangesBtn);
 }
 
