@@ -2327,7 +2327,7 @@
             content: "";
             position: absolute;
             inset: 0;
-            background: linear-gradient(0deg, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.85) 30%, rgba(0,0,0,0.4) 50%, transparent 100%);
+            background: linear-gradient(0deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.5) 30%, rgba(0,0,0,0.2) 50%, transparent 100%);
             z-index: 0;
             transition: opacity 0.4s ease;
             pointer-events: none;
@@ -2437,7 +2437,7 @@
 
         .story-card .story-content {
             padding: 1.75rem;
-            background: linear-gradient(180deg, rgba(11, 15, 17, 0.95) 0%, rgba(8, 10, 12, 0.98) 100%);
+            background: linear-gradient(180deg, rgba(11, 15, 17, 0.85) 0%, rgba(8, 10, 12, 0.92) 100%);
             position: relative;
             z-index: 2;
             margin-top: auto;
