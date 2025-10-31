@@ -1998,10 +1998,16 @@ function updatePillarsSection(sectionId, pillars, section) {
         return;
     }
 
+    // Check if already loaded to prevent re-rendering and flashing
+    if (pillarsGrid.dataset.cmsLoaded === 'true') {
+        console.log(`${sectionId} already loaded from CMS, skipping update`);
+        return;
+    }
+
     console.log(`Updating ${sectionId} with ${pillars.length} pillars from CMS`);
 
     // Generate pillar cards HTML
-    pillarsGrid.innerHTML = pillars.map(pillar => {
+    const newHTML = pillars.map(pillar => {
         const imageUrl = pillar.hero_image_url || 'https://via.placeholder.com/1920x1280';
         const iconName = pillar.icon_name || 'star';
 
@@ -2022,6 +2028,12 @@ function updatePillarsSection(sectionId, pillars, section) {
             </article>
         `;
     }).join('');
+
+    // Update the DOM
+    pillarsGrid.innerHTML = newHTML;
+
+    // Mark as loaded to prevent future re-renders causing flashing
+    pillarsGrid.dataset.cmsLoaded = 'true';
 
     // Reinitialize Lucide icons for the new content
     if (window.lucide && typeof window.lucide.createIcons === 'function') {
