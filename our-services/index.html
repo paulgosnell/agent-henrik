@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Services — Luxury Travel Sweden</title>
+    <link rel="stylesheet" href="/styles.css">
+
+    <!-- Component Loader - Load shared header/footer -->
+    <script src="/component-loader.js"></script>
+</head>
+<body>
+    <!-- Header loaded from /components/header.html -->
+    <div id="header-placeholder"></div>
+
+    <main class="site-main">
+        <section class="section" style="padding-top: 180px;">
+            <div class="section-inner">
+                <div class="section-heading">
+                    <span class="eyebrow">Our Services</span>
+                    <h2>From private journeys to brand experiences — we design stories that move people.</h2>
+                </div>
+
+                <div class="pillars-grid">
+                    <article class="pillar-card" data-pillar="private-journeys">
+                        <div class="pillar-media" aria-hidden="true">
+                            <img src="https://images.pexels.com/photos/2024881/pexels-photo-2024881.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1" alt="Private luxury journey across Sweden" loading="lazy">
+                        </div>
+                        <div class="pillar-body">
+                            <div class="pillar-icon" aria-hidden="true"><i data-lucide="compass"></i></div>
+                            <div class="pillar-copy">
+                                <h3>Private Journeys</h3>
+                                <p>Tailor-made luxury travel across Sweden and Scandinavia — nature retreats, design immersions, culinary adventures, cultural encounters, and meaningful sustainability-focused experiences.</p>
+                                <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="service" data-liv-context-name="Private Journeys">Design With LIV</button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="pillar-card" data-pillar="corporate">
+                        <div class="pillar-media" aria-hidden="true">
+                            <img src="https://images.pexels.com/photos/3184308/pexels-photo-3184308.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1" alt="Corporate and incentive travel" loading="lazy">
+                        </div>
+                        <div class="pillar-body">
+                            <div class="pillar-icon" aria-hidden="true"><i data-lucide="briefcase"></i></div>
+                            <div class="pillar-copy">
+                                <h3>Corporate & Incentive Travel</h3>
+                                <p>Creative incentive programs, leadership retreats, and lifestyle tours that blend innovation, wellness, and Scandinavian culture. Meet startups, explore trends, and discover inspiration through design and purpose.</p>
+                                <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="service" data-liv-context-name="Corporate Travel">Design With LIV</button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="pillar-card" data-pillar="events">
+                        <div class="pillar-media" aria-hidden="true">
+                            <img src="https://images.pexels.com/photos/3171837/pexels-photo-3171837.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1" alt="Luxury events and brand experiences" loading="lazy">
+                        </div>
+                        <div class="pillar-body">
+                            <div class="pillar-icon" aria-hidden="true"><i data-lucide="sparkles"></i></div>
+                            <div class="pillar-copy">
+                                <h3>Events & Brand Experiences</h3>
+                                <p>From gala dinners and product launches to contemporary food concepts and milestone celebrations — we craft brand and private events with seamless execution and Nordic elegance.</p>
+                                <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="service" data-liv-context-name="Events">Design With LIV</button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="pillar-card" data-pillar="production">
+                        <div class="pillar-media" aria-hidden="true">
+                            <img src="https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1" alt="Creative and production services" loading="lazy">
+                        </div>
+                        <div class="pillar-body">
+                            <div class="pillar-icon" aria-hidden="true"><i data-lucide="camera"></i></div>
+                            <div class="pillar-copy">
+                                <h3>Creative & Production Services</h3>
+                                <p>Comprehensive location scouting, on-site concierge, and creative support for media, fashion, and brand productions seeking authentic Scandinavian settings and insider access.</p>
+                                <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="service" data-liv-context-name="Production">Design With LIV</button>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Back to Home Link -->
+        <div class="back-link-container">
+            <a href="/" class="back-link">Back to Home</a>
+        </div>
+
+        <!-- Footer loaded from /components/footer.html -->
+        <div id="footer-placeholder"></div>
+    </main>
+
+    <!-- LIV Chat Overlay -->
+    <div class="chat-overlay" id="chatOverlay">
+        <div class="chat-container">
+            <button class="close-chat" id="closeChat">×</button>
+            <div class="chat-header">
+                <h2 class="chat-title">LIV</h2>
+                <p class="chat-subtitle">Your Luxury Itinerary Visionary</p>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message ai">
+                    <p>Welcome. I'm LIV — Luxury Itinerary Visionary. Are you dreaming of silent forests, royal castles, wild parties, or encounters with innovators?</p>
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Share your travel desires...">
+                <button class="send-button" id="sendButton">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LIV Concierge Button -->
+    <div class="ai-concierge-wrapper">
+        <button class="ai-concierge-btn" id="aiConciergeBtn" aria-label="Launch LIV concierge - AI travel curator" data-open-liv data-liv-context-type="general" data-liv-context-name="AI Concierge Button">
+            ✦
+        </button>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="/scripts.js"></script>
+
+    <!-- Menu Initialization - Simple, reliable menu system -->
+    <script defer src="/menu-init.js"></script>
+</body>
+</html>

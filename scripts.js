@@ -125,24 +125,37 @@ document.addEventListener('DOMContentLoaded', function() {
             // Load press panels on page load
             loadPressPanels();
 
-            const hero = document.querySelector('.hero');
-            const heroContent = document.getElementById('heroContent');
-            const heroCompass = document.querySelector('.hero-scroll-compass');
-            const navHeader = document.querySelector('.nav-header');
-            const heroMediaVideos = document.querySelectorAll('.hero-video');
-            const primaryHeroVideo = document.getElementById('heroPrimaryVideo');
-            const prefersReducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+            // Declare aiBtn at top level so it's accessible to both nav and LIV code
             const aiBtn = document.getElementById('aiConciergeBtn');
 
-            const allowMotion = !prefersReducedMotionQuery.matches;
-            let heroHasRevealed = false;
-            let revealTimeoutId = null;
+            // Initialize navigation scroll behavior
+            function initializeNavScrollBehavior() {
+                const hero = document.querySelector('.hero');
+                const heroContent = document.getElementById('heroContent');
+                const heroCompass = document.querySelector('.hero-scroll-compass');
+                const navHeader = document.querySelector('.nav-header');
+                const heroMediaVideos = document.querySelectorAll('.hero-video');
+                const primaryHeroVideo = document.getElementById('heroPrimaryVideo');
+                const prefersReducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-            let lastScrollY = window.scrollY;
-            let scrollDirection = 'up';
+                // If nav header not found, retry after a delay
+                if (!navHeader) {
+                    console.warn('Nav header not found, retrying...');
+                    setTimeout(initializeNavScrollBehavior, 100);
+                    return;
+                }
 
-            const updateNavPinnedState = () => {
-                if (!navHeader) return;
+                console.log('✅ Nav header found, initializing scroll behavior');
+
+                const allowMotion = !prefersReducedMotionQuery.matches;
+                let heroHasRevealed = false;
+                let revealTimeoutId = null;
+
+                let lastScrollY = window.scrollY;
+                let scrollDirection = 'up';
+
+                const updateNavPinnedState = () => {
+                    if (!navHeader) return;
 
                 // If no hero element exists (inner pages), always show the header
                 if (!hero) {
@@ -289,78 +302,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 aiBtn?.classList.add('show');
             }
 
-            const primaryCta = document.querySelector('.hero-cta.primary');
-            if (primaryCta) {
-                primaryCta.addEventListener('click', (event) => {
-                    const href = primaryCta.getAttribute('href');
-                    if (!href || !href.startsWith('#')) {
-                        return;
-                    }
+                const primaryCta = document.querySelector('.hero-cta.primary');
+                if (primaryCta) {
+                    primaryCta.addEventListener('click', (event) => {
+                        const href = primaryCta.getAttribute('href');
+                        if (!href || !href.startsWith('#')) {
+                            return;
+                        }
 
-                    const target = document.getElementById(href.substring(1));
-                    if (target) {
-                        event.preventDefault();
-                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                });
-            }
-
-            const mobileToggle = document.querySelector('.mobile-menu-toggle');
-            const navMenu = document.querySelector('.nav-menu');
-            const navLinks = document.querySelectorAll('.nav-menu a');
-
-            if (mobileToggle && navMenu) {
-                navMenu.setAttribute('aria-hidden', 'true');
-
-                const closeMenu = (returnFocus = false) => {
-                    navMenu.classList.remove('open');
-                    mobileToggle.classList.remove('is-open');
-                    mobileToggle.setAttribute('aria-expanded', 'false');
-                    mobileToggle.setAttribute('aria-label', 'Open menu');
-                    mobileToggle.textContent = 'MENU';
-                    mobileToggle.style.fontSize = '';
-                    mobileToggle.style.lineHeight = '';
-                    navMenu.setAttribute('aria-hidden', 'true');
-                    document.body.classList.remove('nav-open');
-                    updateLogoAndBurger();
-                    if (returnFocus) {
-                        mobileToggle.focus();
-                    }
-                };
-
-                const toggleMenu = () => {
-                    const isOpen = navMenu.classList.toggle('open');
-                    mobileToggle.classList.toggle('is-open', isOpen);
-                    mobileToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-                    mobileToggle.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
-                    mobileToggle.textContent = isOpen ? 'CLOSE' : 'MENU';
-                    navMenu.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
-                    document.body.classList.toggle('nav-open', isOpen);
-
-                    updateLogoAndBurger();
-                    if (isOpen) {
-                        navLinks[0]?.focus();
-                    } else {
-                        mobileToggle.focus();
-                    }
-                };
-
-                mobileToggle.addEventListener('click', () => {
-                    toggleMenu();
-                });
-
-                navLinks.forEach(link => {
-                    link.addEventListener('click', (e) => {
-                        closeMenu();
+                        const target = document.getElementById(href.substring(1));
+                        if (target) {
+                            event.preventDefault();
+                            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
                     });
-                });
+                }
+            } // End of initializeNavScrollBehavior
 
-                document.addEventListener('keydown', (event) => {
-                    if (event.key === 'Escape' && navMenu.classList.contains('open')) {
-                        closeMenu(true);
-                    }
-                });
-            }
+            // Call nav scroll behavior initialization
+            // This will retry if nav header not loaded yet
+            initializeNavScrollBehavior();
+
+            // NOTE: Menu initialization moved to menu-init.js
+            // This prevents conflicts with component loading timing
 
             // AI Concierge functionality
             const chatOverlay = document.getElementById('chatOverlay');
@@ -958,25 +922,33 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             // Close chat overlay
-            closeChat.addEventListener('click', function() {
-                chatOverlay.classList.remove('show');
-            });
+            if (closeChat) {
+                closeChat.addEventListener('click', function() {
+                    chatOverlay.classList.remove('show');
+                });
+            }
 
             // Close on overlay click
-            chatOverlay.addEventListener('click', function(e) {
-                if (e.target === chatOverlay) {
-                    chatOverlay.classList.remove('show');
-                }
-            });
+            if (chatOverlay) {
+                chatOverlay.addEventListener('click', function(e) {
+                    if (e.target === chatOverlay) {
+                        chatOverlay.classList.remove('show');
+                    }
+                });
+            }
 
-            sendButton.addEventListener('click', handleTypedInput);
+            if (sendButton) {
+                sendButton.addEventListener('click', handleTypedInput);
+            }
 
-            chatInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleTypedInput();
-                }
-            });
+            if (chatInput) {
+                chatInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleTypedInput();
+                    }
+                });
+            }
 
             if (enquiryForm) {
                 enquiryForm.addEventListener('submit', handleFormSubmit);
@@ -1863,7 +1835,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         data = storytellerData[storytellerType];
                     }
 
-                    if (data) {
+                    if (data && pillarModal && modalTitle && modalImage && modalDescription && modalCta) {
                         modalTitle.textContent = data.title;
                         modalImage.src = data.image;
                         modalImage.alt = data.title;
@@ -1884,19 +1856,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Close modal
             function closePillarModal() {
-                pillarModal.style.display = 'none';
-                document.body.style.overflow = '';
+                if (pillarModal) {
+                    pillarModal.style.display = 'none';
+                    document.body.style.overflow = '';
+                }
             }
 
             modalClose?.addEventListener('click', closePillarModal);
             modalOverlay?.addEventListener('click', closePillarModal);
 
             // Close on Escape key
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && pillarModal.style.display === 'flex') {
-                    closePillarModal();
-                }
-            });
+            if (pillarModal) {
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && pillarModal.style.display === 'flex') {
+                        closePillarModal();
+                    }
+                });
+            }
 
             // Footer background slideshow
             const footerBackgroundImages = [
@@ -2354,3 +2330,6 @@ function initializePillarModals() {
 
     console.log('Pillar modal initialization complete');
 }
+
+// NOTE: Menu initialization moved to menu-init.js
+// Smooth scroll is also handled there

@@ -52,6 +52,9 @@
 
     <!-- External Stylesheet -->
     <link rel="stylesheet" href="styles.css?v=1730419200">
+
+    <!-- Component Loader - Load shared header/footer -->
+    <script src="component-loader.js"></script>
     <style>
         /* FIX: Prevent image layout shift and flickering */
         .pillar-media,
@@ -172,28 +175,8 @@
     </script>
 </head>
 <body>
-    <header class="nav-header">
-        <a href="#top" class="logo">
-            <img src="lts-logo-white.png" alt="Luxury Travel Sweden" id="siteLogo" />
-        </a>
-        <nav>
-            <div class="nav-menu" id="primaryNavigation">
-                <div class="nav-main">
-                    <ul class="nav-links">
-                        <li><a href="#map" class="nav-link">EXPLORE</a></li>
-                        <li><a href="#journeys" class="nav-link">EXPERIENCES</a></li>
-                        <li><a href="#corporate" class="nav-link">CORPORATE & INCENTIVES</a></li>
-                        <li><a href="#storytellers" class="nav-link">STORYTELLERS</a></li>
-                        <li><a href="#concierge" class="nav-link" data-open-liv data-liv-context-type="general" data-liv-context-name="Navigation">LIV / CONCIERGE</a></li>
-                        <li><a href="#stories" class="nav-link">JOURNAL</a></li>
-                        <li><a href="#press" class="nav-link">PRESS & MEDIA</a></li>
-                        <li><a href="#contact" class="nav-link">CONTACT</a></li>
-                    </ul>
-                </div>
-            </div>
-            <button type="button" class="mobile-menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="primaryNavigation">MENU</button>
-        </nav>
-    </header>
+    <!-- Header loaded from /components/header.html -->
+    <div id="header-placeholder"></div>
 
     <div class="hero" id="top">
         <!-- Hero Video Background -->
@@ -561,7 +544,7 @@ unique.</p>
                 </div>
 
                 <div style="text-align: center; margin-top: 3rem;">
-                    <a href="#storytellers-all" class="story-cta-view-all" data-editable="storytellers.see_all">SEE ALL</a>
+                    <a href="/storytellers/" class="story-cta-view-all" data-editable="storytellers.see_all">SEE ALL STORYTELLERS</a>
                 </div>
             </div>
         </section>
@@ -641,6 +624,10 @@ unique.</p>
                             <p>Floating labs, solar sea farms, and ateliers crafting the next wave of sustainable design.</p>
                         </div>
                     </article>
+                </div>
+
+                <div style="text-align: center; margin-top: 3rem;">
+                    <a href="/journal/" class="story-cta-view-all" data-editable="journal.see_all">SEE ALL JOURNAL POSTS</a>
                 </div>
             </div>
         </section>
@@ -798,132 +785,8 @@ unique.</p>
         </section>
     </main>
 
-    <footer>
-        <!-- Footer Background Slideshow -->
-        <div class="footer-background" id="footerBackground"></div>
-        <div class="footer-bg-overlay"></div>
-
-
-        <!-- Footer Main Content -->
-        <div class="footer-content">
-            <!-- Explore Column -->
-            <div class="footer-column">
-                <h3 class="footer-column-title" data-editable="footer.explore.title">Explore</h3>
-                <nav class="footer-links">
-                    <a href="#destinations" class="footer-link" data-editable="footer.explore.link1">Interactive Map</a>
-                    <a href="#journeys" class="footer-link" data-editable="footer.explore.link2">Experiences</a>
-                    <a href="#corporate" class="footer-link" data-editable="footer.explore.link3">Incentives & Activities</a>
-                    <a href="#storytellers" class="footer-link" data-editable="footer.explore.link4">Featured Storytellers</a>
-                    <a href="#stories" class="footer-link" data-editable="footer.explore.link5">Journal</a>
-                    <a href="#" class="footer-link" data-open-liv data-liv-context-type="general" data-liv-context-name="Footer" data-editable="footer.explore.link6">Design my Journey with LIV</a>
-                </nav>
-            </div>
-
-            <!-- About Column -->
-            <div class="footer-column">
-                <h3 class="footer-column-title" data-editable="footer.about.title">About</h3>
-                <nav class="footer-links">
-                    <a href="#about" class="footer-link" data-editable="footer.about.link1">Our Story</a>
-                    <a href="our-team.html" class="footer-link" data-editable="footer.about.link2">Our Team</a>
-                    <a href="our-services.html" class="footer-link" data-editable="footer.about.link3">Our Services</a>
-                    <a href="#booking-process" class="footer-link" data-editable="footer.about.link4">Booking Process</a>
-                    <a href="#" class="footer-link" data-editable="footer.about.link5">Pricing & FAQ</a>
-                    <a href="#press" class="footer-link" data-editable="footer.about.link6">Press & Media</a>
-                </nav>
-            </div>
-
-            <!-- Contact Column -->
-            <div class="footer-column">
-                <h3 class="footer-column-title" data-editable="footer.contact.title">Contact</h3>
-                <div class="footer-contact-info">
-                    <div class="footer-contact-item">
-                        <strong data-editable="footer.contact.name">Henrik Tidefjärd</strong>
-                        <span data-editable="footer.contact.title">Founder & Creative Director</span>
-                    </div>
-                    <div class="footer-contact-item">
-                        <a href="tel:+46703872264" data-editable="footer.contact.phone">+46 (0)70 38 722 64</a>
-                    </div>
-                    <div class="footer-contact-item">
-                        <a href="mailto:henrik@luxurytravelsweden.com" data-editable="footer.contact.email">henrik@luxurytravelsweden.com</a>
-                    </div>
-                    <div class="footer-contact-item">
-                        <a href="#contact" data-open-enquiry data-editable="footer.contact.cta">Start Your Journey</a>
-                    </div>
-                </div>
-                <div class="footer-social">
-                    <a href="https://instagram.com/LuxuryTravelSweden" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Instagram">
-                        <i data-lucide="instagram"></i>
-                    </a>
-                    <a href="https://facebook.com/luxurytravelsweden" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Facebook">
-                        <i data-lucide="facebook"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Newsletter Column -->
-            <div class="footer-column">
-                <h3 class="footer-column-title" data-editable="footer.newsletter.title">Stay Inspired</h3>
-                <p class="footer-newsletter-description" style="font-size: 0.9rem; margin-bottom: 0.5rem; line-height: 1.6;" data-editable="footer.newsletter.description">
-                    Join our community and receive exclusive stories, insider tips, and curated experiences from Sweden.
-                </p>
-                <form class="footer-newsletter" id="newsletterForm">
-                    <div class="footer-newsletter-input">
-                        <input type="email" id="newsletterEmail" placeholder="Your email address" required aria-label="Email address" data-editable-placeholder="footer.newsletter.placeholder">
-                        <button type="submit" class="footer-newsletter-btn" data-editable="footer.newsletter.button">Subscribe</button>
-                    </div>
-                    <p class="newsletter-status" id="newsletterStatus" role="status" style="font-size: 0.85rem; margin-top: 0.5rem; min-height: 1.2rem;"></p>
-                </form>
-
-                <!-- Theme Toggle -->
-                <div class="theme-toggle-container">
-                    <button class="theme-toggle-nav" id="themeToggle" aria-label="Toggle light/dark theme">
-                        <div class="theme-toggle-track">
-                            <div class="theme-toggle-thumb"></div>
-                            <svg class="theme-icon icon-sun" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="5"></circle>
-                                <line x1="12" y1="1" x2="12" y2="3"></line>
-                                <line x1="12" y1="21" x2="12" y2="23"></line>
-                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                                <line x1="1" y1="12" x2="3" y2="12"></line>
-                                <line x1="21" y1="12" x2="23" y2="12"></line>
-                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                            </svg>
-                            <svg class="theme-icon icon-moon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                            </svg>
-                        </div>
-                        <span class="theme-toggle-label">
-                            <span class="theme-label-dark" data-editable="footer.theme.dark">Dark Mode</span>
-                            <span class="theme-label-light" data-editable="footer.theme.light">Light Mode</span>
-                        </span>
-                    </button>
-                </div>
-
-                <!-- Login to Edit Button -->
-                <div style="margin-top: 1.5rem;">
-                    <a href="admin/login.html" class="footer-login-btn" data-editable="footer.login_button">LOGIN TO EDIT</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer Bottom -->
-        <div class="footer-bottom">
-            <div class="footer-bottom-inner">
-                <div class="footer-copyright">
-                    <span data-editable="footer.copyright">© 2025 Luxury Travel Sweden</span>
-                    <span style="opacity: 0.5;">·</span>
-                    <span data-editable="footer.tagline">Crafted with passion in Sweden</span>
-                </div>
-                <nav class="footer-legal-links">
-                    <a href="https://luxurytravelsweden.com/terms-conditions/" class="footer-legal-link" target="_blank" rel="noopener noreferrer" data-editable="footer.legal.terms">Terms & Conditions</a>
-                    <a href="https://luxurytravelsweden.com/data-protection/" class="footer-legal-link" target="_blank" rel="noopener noreferrer" data-editable="footer.legal.data_protection">Data Protection</a>
-                    <a href="https://luxurytravelsweden.com/imprint" class="footer-legal-link" target="_blank" rel="noopener noreferrer" data-editable="footer.legal.imprint">Imprint</a>
-                </nav>
-            </div>
-        </div>
-    </footer>
+    <!-- Footer loaded from /components/footer.html -->
+    <div id="footer-placeholder"></div>
 
     <!-- Chat Overlay -->
     <div class="chat-overlay" id="chatOverlay">
@@ -958,7 +821,10 @@ unique.</p>
     <script defer src="liv-ai.js?v=8"></script>
 
     <!-- Main application scripts (uses data loaded by supabase-client.js) -->
-    <script defer src="scripts.js?v=1730926101"></script>
+    <script defer src="scripts.js?v=1761950330"></script>
+
+    <!-- Menu Initialization - Simple, reliable menu system -->
+    <script defer src="menu-init.js"></script>
 
     <!-- Inline Editor (allows authenticated clients to edit static content) -->
     <script defer src="inline-editor.js?v=3"></script>

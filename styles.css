@@ -287,7 +287,7 @@
             border-bottom: none;
             backdrop-filter: none;
             box-shadow: none;
-            pointer-events: none;
+            pointer-events: auto; /* Changed from none - nav should always be clickable */
         }
 
         .nav-header.show {
@@ -4685,7 +4685,8 @@
 .edit-mode-btn {
     position: fixed;
     bottom: 20px;
-    right: 20px;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 9999;
     padding: 10px 20px;
     background: rgba(26, 26, 26, 0.7);
@@ -4709,7 +4710,7 @@
     opacity: 1;
     background: #1a1a1a;
     color: white;
-    transform: translateY(-2px);
+    transform: translateX(-50%) translateY(-2px);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
@@ -4742,7 +4743,8 @@
 .save-changes-btn {
     position: fixed;
     bottom: 80px;
-    right: 20px;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 9999;
     padding: 12px 24px;
     background: #10b981;
@@ -4761,7 +4763,7 @@
 }
 
 .save-changes-btn:hover {
-    transform: translateY(-2px);
+    transform: translateX(-50%) translateY(-2px);
     box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
     background: #059669;
 }
@@ -4769,7 +4771,7 @@
 .save-changes-btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-    transform: none;
+    transform: translateX(-50%);
 }
 
 .save-changes-btn.has-changes {
@@ -4855,13 +4857,19 @@
     .edit-mode-btn,
     .save-changes-btn {
         bottom: 80px;
-        right: 10px;
+        left: 50%;
+        transform: translateX(-50%);
         padding: 10px 18px;
         font-size: 13px;
     }
 
     .save-changes-btn {
         bottom: 140px;
+    }
+
+    .edit-mode-btn:hover,
+    .save-changes-btn:hover {
+        transform: translateX(-50%) translateY(-2px);
     }
 
     .editor-notification {
@@ -4886,6 +4894,13 @@
         padding: 0;
         justify-content: center;
         border-radius: 50%;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .edit-mode-btn:hover,
+    .save-changes-btn:hover {
+        transform: translateX(-50%) translateY(-2px);
     }
 
     .edit-mode-btn .edit-mode-icon,

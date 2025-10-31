@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Story — Luxury Travel Sweden</title>
+    <link rel="stylesheet" href="/styles.css">
+
+    <!-- Component Loader - Load shared header/footer -->
+    <script src="/component-loader.js"></script>
+</head>
+<body>
+    <!-- Header loaded from /components/header.html -->
+    <div id="header-placeholder"></div>
+
+    <main class="site-main">
+        <section class="section" style="padding-top: 180px;">
+            <div class="section-inner">
+                <div class="section-heading">
+                    <span class="eyebrow">Our Story</span>
+                    <h2>Who are we?</h2>
+                    <p>Luxury Travel Sweden was founded with one vision in 2021: to show the world a side of Sweden that blends stunning nature, hidden gems, ultra-luxury service, and the people who make this country extraordinary. We are not just a DMC; we are storytellers, curators, and lifestyle creators.</p>
+                </div>
+
+                <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); margin-top: 4rem;">
+                    <div class="path-card" style="--card-image: url('https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1');">
+                        <h3>Our Philosophy</h3>
+                        <p>Every journey is a narrative. We weave together nature, heritage, innovation, and lifestyle into immersive stories that touch emotions and awaken curiosity. Luxury, for us, is not only comfort — it's access, intimacy, and meaning.</p>
+                    </div>
+
+                    <div class="path-card" style="--card-image: url('https://images.pexels.com/photos/3184308/pexels-photo-3184308.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1');">
+                        <h3>Why Us</h3>
+                        <ul style="list-style: none; padding: 0; margin-top: 1rem; color: rgba(255, 255, 255, 0.82);">
+                            <li style="margin-bottom: 0.75rem; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; top: 0; color: rgba(212, 175, 55, 0.9);">•</span>
+                                Over 20 years in the luxury travel industry.
+                            </li>
+                            <li style="margin-bottom: 0.75rem; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; top: 0; color: rgba(212, 175, 55, 0.9);">•</span>
+                                Local insiders with exclusive access and network
+                            </li>
+                            <li style="margin-bottom: 0.75rem; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; top: 0; color: rgba(212, 175, 55, 0.9);">•</span>
+                                A creative approach in creating experiences
+                            </li>
+                            <li style="margin-bottom: 0.75rem; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; top: 0; color: rgba(212, 175, 55, 0.9);">•</span>
+                                Ultra-luxury, white-glove service for seamless travel.
+                            </li>
+                            <li style="margin-bottom: 0.75rem; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; top: 0; color: rgba(212, 175, 55, 0.9);">•</span>
+                                Sustainability and authenticity at the heart of every journey.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="path-card" style="--card-image: url('https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1');">
+                        <h3>Our Target Group</h3>
+                        <p>Luxury Travel Sweden creates bespoke travel experiences tailored for discerning, open-minded travelers who value authenticity and originality. We specialize in serving curious cosmopolitans, decision-makers, innovators, and luxury seekers who want more than standard tours, crowded attractions, or predictable itineraries.</p>
+                    </div>
+                </div>
+
+                <div class="section-heading" style="margin-top: 6rem;">
+                    <h2>Our Sustainability Goal</h2>
+                    <p>Sweden leads the world in design, green technology, and social innovation — and so do we. At Luxury Travel Sweden, we are committed to minimizing our environmental footprint wherever possible, ensuring that our journeys are not only unique and memorable but also respectful of the world we explore.</p>
+                </div>
+
+                <div style="text-align: center; margin-top: 4rem;">
+                    <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="general" data-liv-context-name="Our Story CTA" style="font-size: 0.85rem; padding: 1rem 2.5rem;">
+                        Start Your Journey With LIV
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Back to Home Link -->
+        <div class="back-link-container">
+            <a href="/" class="back-link">Back to Home</a>
+        </div>
+
+        <!-- Footer loaded from /components/footer.html -->
+        <div id="footer-placeholder"></div>
+    </main>
+
+    <!-- LIV Chat Overlay -->
+    <div class="chat-overlay" id="chatOverlay">
+        <div class="chat-container">
+            <button class="close-chat" id="closeChat">×</button>
+            <div class="chat-header">
+                <h2 class="chat-title">LIV</h2>
+                <p class="chat-subtitle">Your Luxury Itinerary Visionary</p>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message ai">
+                    <p>Welcome. I'm LIV — Luxury Itinerary Visionary. Are you dreaming of silent forests, royal castles, wild parties, or encounters with innovators?</p>
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Share your travel desires...">
+                <button class="send-button" id="sendButton">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LIV Concierge Button -->
+    <div class="ai-concierge-wrapper">
+        <button class="ai-concierge-btn" id="aiConciergeBtn" aria-label="Launch LIV concierge - AI travel curator" data-open-liv data-liv-context-type="general" data-liv-context-name="AI Concierge Button">
+            ✦
+        </button>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="/scripts.js"></script>
+
+    <!-- Menu Initialization - Simple, reliable menu system -->
+    <script defer src="/menu-init.js"></script>
+</body>
+</html>

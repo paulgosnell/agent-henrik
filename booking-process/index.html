@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Process — Luxury Travel Sweden</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .process-step {
+            background: rgba(5, 7, 9, 0.32);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 18px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .process-step:hover {
+            transform: translateY(-4px);
+            border-color: rgba(212, 175, 55, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .process-step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            background: rgba(212, 175, 55, 0.15);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: rgba(212, 175, 55, 0.95);
+            margin-bottom: 1.5rem;
+        }
+
+        .process-step h3 {
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .process-step p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 0.75rem;
+        }
+
+        .process-step ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 1rem;
+        }
+
+        .process-step ul li {
+            padding-left: 1.5rem;
+            position: relative;
+            margin-bottom: 0.75rem;
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .process-step ul li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: rgba(212, 175, 55, 0.9);
+            font-size: 1.2rem;
+        }
+
+        [data-theme="light"] .process-step {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(0, 0, 0, 0.12);
+        }
+
+        [data-theme="light"] .process-step:hover {
+            border-color: rgba(212, 175, 55, 0.5);
+        }
+
+        [data-theme="light"] .process-step h3 {
+            color: rgba(15, 20, 25, 0.92);
+        }
+
+        [data-theme="light"] .process-step p,
+        [data-theme="light"] .process-step ul li {
+            color: rgba(15, 20, 25, 0.75);
+        }
+    </style>
+
+    <!-- Component Loader - Load shared header/footer -->
+    <script src="/component-loader.js"></script>
+</head>
+<body>
+    <!-- Header loaded from /components/header.html -->
+    <div id="header-placeholder"></div>
+
+    <main class="site-main">
+        <section class="section" style="padding-top: 180px;">
+            <div class="section-inner">
+                <div class="section-heading">
+                    <span class="eyebrow">Booking Process</span>
+                    <h2>How we transform your vision into an unforgettable journey.</h2>
+                    <p>From first conversation to final farewell, we guide you through a seamless five-step process designed for discerning travelers who expect nothing less than perfection.</p>
+                </div>
+
+                <div style="max-width: 900px; margin: 4rem auto 0;">
+                    <div class="process-step">
+                        <div class="process-step-number">01</div>
+                        <h3>Your Input</h3>
+                        <p>We start with you—your preferences, personality, and travel history. From the cinematic homepage, choose <strong>Explore</strong> (map), <strong>Design with LIV</strong> (our AI Luxury Itinerary Visionary), or <strong>Enter the Experience</strong>.</p>
+                        <p>LIV drafts your trip around dates, group size, and interests (six themes: Nature & Wellness, Design & Innovation, Culinary experiences, Nightlife & Celebration, Royal, Art & Culture, Legacy & Meaningful Travel).</p>
+                        <p>Send your AI-drafted enquiry, and a human curator takes over. Not sure where to begin? Let's brainstorm together.</p>
+                    </div>
+
+                    <div class="process-step">
+                        <div class="process-step-number">02</div>
+                        <h3>Research & Story Development</h3>
+                        <p>Your human curator refines the draft with insider access, seasonal/logistical alignment, and storyteller insights. They then present a first Story Proposal with activities, indicative pricing, and sustainability elements.</p>
+                    </div>
+
+                    <div class="process-step">
+                        <div class="process-step-number">03</div>
+                        <h3>Confirmation & Details</h3>
+                        <p>Once the story and costs are agreed, a deposit confirms your experience ("No money, no honey" is our policy). We then:</p>
+                        <ul>
+                            <li>Implement the itinerary as soon as possible to secure your experiences</li>
+                            <li>Coordinate dietary needs, rooming, occasions, or corporate/legacy goals.</li>
+                            <li>Adjust the fine details as needed (with price updates before changes).</li>
+                        </ul>
+                    </div>
+
+                    <div class="process-step">
+                        <div class="process-step-number">04</div>
+                        <h3>Final Review & Departure</h3>
+                        <p>We reconfirm every detail—contacts, packing notes, seasonal tips, and support. Your curator don´t leave anything to your destiny.</p>
+                    </div>
+
+                    <div class="process-step">
+                        <div class="process-step-number">05</div>
+                        <h3>Travel & Follow Up</h3>
+                        <p>On trip, you're in safe hands. For self-guided journeys, we check in and provide 24/7 support. Afterward, we collect feedback, may share social media highlights (with permission), and refine your profile and references so your next draft is even better.</p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 5rem;">
+                    <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="general" data-liv-context-name="Booking Process CTA" style="font-size: 0.85rem; padding: 1rem 2.5rem;">
+                        Begin Your Journey With LIV
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Back to Home Link -->
+        <div class="back-link-container">
+            <a href="/" class="back-link">Back to Home</a>
+        </div>
+
+        <!-- Footer loaded from /components/footer.html -->
+        <div id="footer-placeholder"></div>
+    </main>
+
+    <!-- LIV Chat Overlay -->
+    <div class="chat-overlay" id="chatOverlay">
+        <div class="chat-container">
+            <button class="close-chat" id="closeChat">×</button>
+            <div class="chat-header">
+                <h2 class="chat-title">LIV</h2>
+                <p class="chat-subtitle">Your Luxury Itinerary Visionary</p>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message ai">
+                    <p>Welcome. I'm LIV — Luxury Itinerary Visionary. Are you dreaming of silent forests, royal castles, wild parties, or encounters with innovators?</p>
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Share your travel desires...">
+                <button class="send-button" id="sendButton">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LIV Concierge Button -->
+    <div class="ai-concierge-wrapper">
+        <button class="ai-concierge-btn" id="aiConciergeBtn" aria-label="Launch LIV concierge - AI travel curator" data-open-liv data-liv-context-type="general" data-liv-context-name="AI Concierge Button">
+            ✦
+        </button>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="/scripts.js"></script>
+
+    <!-- Menu Initialization - Simple, reliable menu system -->
+    <script defer src="/menu-init.js"></script>
+</body>
+</html>
