@@ -373,6 +373,14 @@ class LivAI {
     if (this.sendButton) this.sendButton.disabled = true;
 
     try {
+      // Debug logging
+      console.log('🔍 LIV Context Debug:', {
+        contextType: this.context?.type,
+        contextName: this.context?.name,
+        isStorytellerMode: this.context?.type === 'storyteller',
+        storytellerInquiry: this.storytellerInquiry
+      });
+
       const response = await fetch(this.edgeFunctionUrl, {
         method: 'POST',
         headers: {
