@@ -876,29 +876,48 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Open chat overlay
             if (aiBtn) {
-                aiBtn.addEventListener('click', openChat);
+                aiBtn.addEventListener('click', () => {
+                    // Use new LivAI class if available
+                    if (window.LivAI) {
+                        window.LivAI.openChat();
+                    } else {
+                        // Fallback to old implementation
+                        openChat();
+                    }
+                });
             }
             livTriggers.forEach(trigger => {
                 trigger.addEventListener('click', (event) => {
                     event.preventDefault();
-
-                    // Reset conversation when opening with new context
-                    resetConversation();
 
                     // Capture context from data attributes
                     const contextType = trigger.getAttribute('data-liv-context-type');
                     const contextName = trigger.getAttribute('data-liv-context-name');
                     const contextGreeting = trigger.getAttribute('data-liv-greeting');
 
-                    if (contextType && contextName) {
-                        livConversation.context = {
+                    // Use new LivAI class
+                    if (window.LivAI && contextType && contextName) {
+                        const context = {
                             type: contextType,
                             name: contextName,
-                            greeting: contextGreeting || generateGreeting(contextType, contextName)
+                            greeting: contextGreeting
                         };
+                        window.LivAI.openChatWithContext(context);
+                    } else if (window.LivAI) {
+                        // Open without context for general AI button
+                        window.LivAI.openChat();
+                    } else {
+                        // Fallback to old implementation if LivAI not loaded
+                        resetConversation();
+                        if (contextType && contextName) {
+                            livConversation.context = {
+                                type: contextType,
+                                name: contextName,
+                                greeting: contextGreeting || generateGreeting(contextType, contextName)
+                            };
+                        }
+                        openChat();
                     }
-
-                    openChat();
                 });
             });
 
@@ -906,18 +925,27 @@ document.addEventListener('DOMContentLoaded', function() {
             document.addEventListener('openLivChat', (event) => {
                 const { contextType, contextName } = event.detail;
 
-                // Reset conversation when opening with new context
-                resetConversation();
-
-                if (contextType && contextName) {
-                    livConversation.context = {
+                // Use new LivAI class
+                if (window.LivAI && contextType && contextName) {
+                    const context = {
                         type: contextType,
-                        name: contextName,
-                        greeting: generateGreeting(contextType, contextName)
+                        name: contextName
                     };
+                    window.LivAI.openChatWithContext(context);
+                } else if (window.LivAI) {
+                    window.LivAI.openChat();
+                } else {
+                    // Fallback to old implementation
+                    resetConversation();
+                    if (contextType && contextName) {
+                        livConversation.context = {
+                            type: contextType,
+                            name: contextName,
+                            greeting: generateGreeting(contextType, contextName)
+                        };
+                    }
+                    openChat();
                 }
-
-                openChat();
             });
 
             // Generate personalized greeting based on context
