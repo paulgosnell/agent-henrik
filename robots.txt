@@ -1,0 +1,12 @@
+# robots.txt for Luxury Travel Sweden
+# https://luxurytravelsweden.com
+
+User-agent: *
+Allow: /
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /supabase/
+
+# Sitemap location
+Sitemap: https://luxurytravelsweden.com/sitemap.xml

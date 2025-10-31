@@ -3,14 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
+
+    <!-- Primary Meta Tags -->
     <title>Luxury Travel Sweden — Bespoke Swedish Experiences</title>
-    <!-- Cache buster: 1730419200 -->
+    <meta name="title" content="Luxury Travel Sweden — Bespoke Swedish Experiences">
+    <meta name="description" content="Discover extraordinary Swedish journeys curated by local storytellers. From Northern Lights in Lapland to Stockholm's design scene, we craft ultra-luxury itineraries with exclusive access and authentic experiences.">
+    <meta name="keywords" content="luxury travel Sweden, Swedish experiences, Stockholm tours, Lapland Northern Lights, Swedish design, culinary Sweden, corporate retreats Sweden, incentive travel, Swedish storytellers">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://luxurytravelsweden.com/">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://luxurytravelsweden.com/">
+    <meta property="og:title" content="Luxury Travel Sweden — Bespoke Swedish Experiences">
+    <meta property="og:description" content="Discover extraordinary Swedish journeys curated by local storytellers. From Northern Lights in Lapland to Stockholm's design scene, we craft ultra-luxury itineraries with exclusive access.">
+    <meta property="og:image" content="https://luxurytravelsweden.com/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="Luxury Travel Sweden">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://luxurytravelsweden.com/">
+    <meta name="twitter:title" content="Luxury Travel Sweden — Bespoke Swedish Experiences">
+    <meta name="twitter:description" content="Discover extraordinary Swedish journeys curated by local storytellers. From Northern Lights in Lapland to Stockholm's design scene.">
+    <meta name="twitter:image" content="https://luxurytravelsweden.com/twitter-image.jpg">
+
+    <!-- Preconnect to external domains for performance -->
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fjnfsabvuiyzuzfhxzcc.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://unpkg.com">
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 
     <!-- Lucide Icons - loaded in head so it's available when scripts.js runs -->
-    <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
+    <script defer src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
 
     <!-- Leaflet (Free OpenStreetMap) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -69,6 +104,72 @@
             -webkit-backface-visibility: hidden;
         }
     </style>
+
+    <!-- Structured Data (Schema.org) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TravelAgency",
+      "name": "Luxury Travel Sweden",
+      "description": "Bespoke Swedish experiences curated by local storytellers. We craft ultra-luxury itineraries with exclusive access to Sweden's Northern Lights, design scene, culinary experiences, and cultural heritage.",
+      "url": "https://luxurytravelsweden.com",
+      "logo": "https://luxurytravelsweden.com/lts-logo-white.png",
+      "image": "https://luxurytravelsweden.com/og-image.jpg",
+      "telephone": "+46-XXX-XXX-XXX",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "SE",
+        "addressLocality": "Stockholm"
+      },
+      "sameAs": [
+        "https://www.instagram.com/LuxuryTravelSweden/",
+        "https://facebook.com/luxurytravelsweden"
+      ],
+      "priceRange": "$$$$",
+      "areaServed": {
+        "@type": "Country",
+        "name": "Sweden"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Swedish Travel Experiences",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Nature & Wellness Experiences",
+              "description": "Northern Lights viewing, glass igloos in Lapland, forest bathing, and Swedish wellness retreats"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Design & Innovation Tours",
+              "description": "Exclusive access to Stockholm's design studios, startup founders, and innovation labs"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Corporate Retreats & Incentives",
+              "description": "Leadership retreats, innovation workshops, and team incentive experiences in Sweden"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Culinary Experiences",
+              "description": "Michelin dining, foraging expeditions, and authentic Swedish food culture"
+            }
+          }
+        ]
+      }
+    }
+    </script>
 </head>
 <body>
     <header class="nav-header">
@@ -845,22 +946,22 @@ unique.</p>
     </div>
 
     <!-- External JavaScript -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <!-- Supabase JS Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- Our Supabase Client Wrapper (loads data automatically) -->
-    <script src="supabase-client.js?v=2"></script>
+    <script defer src="supabase-client.js?v=2"></script>
 
     <!-- LIV AI - AI-Powered Chat Concierge -->
-    <script src="liv-ai.js?v=6"></script>
+    <script defer src="liv-ai.js?v=7"></script>
 
     <!-- Main application scripts (uses data loaded by supabase-client.js) -->
-    <script src="scripts.js?v=1730926100"></script>
+    <script defer src="scripts.js?v=1730926101"></script>
 
     <!-- Inline Editor (allows authenticated clients to edit static content) -->
-    <script src="inline-editor.js"></script>
+    <script async src="inline-editor.js"></script>
 
     <!-- LIV Concierge Button - Positioned at top of DOM hierarchy -->
     <div class="ai-concierge-wrapper">
