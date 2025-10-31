@@ -274,33 +274,77 @@
               <input type="hidden" id="content">
             </div>
 
-            <!-- Hero Image Upload -->
+            <!-- Hero Image Selector -->
             <div class="form-group full-width">
-              <label class="form-label" for="imageUpload">Hero Image</label>
-              <div class="image-upload-area" id="imageUploadArea">
+              <label class="form-label">Hero Image</label>
+
+              <!-- Image Selection Tabs -->
+              <div class="image-selector-tabs">
+                <button type="button" class="image-tab active" data-tab="upload" onclick="switchImageTab('upload')">
+                  📤 Upload
+                </button>
+                <button type="button" class="image-tab" data-tab="url" onclick="switchImageTab('url')">
+                  🔗 URL
+                </button>
+                <button type="button" class="image-tab" data-tab="library" onclick="switchImageTab('library')">
+                  🖼️ Media Library
+                </button>
+              </div>
+
+              <!-- Upload Tab -->
+              <div id="uploadTab" class="image-tab-content active">
+                <div class="image-upload-area" id="imageUploadArea">
+                  <input
+                    type="file"
+                    id="imageUpload"
+                    accept="image/*"
+                    style="display: none;"
+                    onchange="handleImageSelect(event)"
+                  >
+                  <div id="uploadPlaceholder" class="upload-placeholder">
+                    <div class="upload-icon">📷</div>
+                    <div class="upload-text">Click to upload or drag and drop</div>
+                    <div class="upload-hint">PNG, JPG, WebP up to 10MB</div>
+                  </div>
+                  <div id="imagePreviewContainer" class="image-preview-container hidden">
+                    <img id="imagePreview" class="image-preview" src="" alt="Preview">
+                    <button type="button" class="image-remove" onclick="removeImage()">Remove Image</button>
+                  </div>
+                </div>
+                <div id="uploadProgress" class="upload-progress">
+                  <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+                  </div>
+                  <div id="progressText" class="progress-text">Uploading...</div>
+                </div>
+              </div>
+
+              <!-- URL Tab -->
+              <div id="urlTab" class="image-tab-content">
                 <input
-                  type="file"
-                  id="imageUpload"
-                  accept="image/*"
-                  style="display: none;"
-                  onchange="handleImageSelect(event)"
+                  type="text"
+                  id="heroImageUrlInput"
+                  class="form-input"
+                  placeholder="https://example.com/image.jpg"
+                  oninput="handleUrlInput(event)"
                 >
-                <div id="uploadPlaceholder" class="upload-placeholder">
-                  <div class="upload-icon">📷</div>
-                  <div class="upload-text">Click to upload or drag and drop</div>
-                  <div class="upload-hint">PNG, JPG, WebP up to 10MB</div>
-                </div>
-                <div id="imagePreviewContainer" class="image-preview-container hidden">
-                  <img id="imagePreview" class="image-preview" src="" alt="Preview">
-                  <button type="button" class="image-remove" onclick="removeImage()">Remove Image</button>
+                <span class="form-hint">Enter the full URL to the image</span>
+                <div id="urlImagePreview" class="image-preview-container hidden" style="margin-top: 1rem;">
+                  <img id="urlPreviewImg" class="image-preview" src="" alt="URL Preview">
+                  <button type="button" class="image-remove" onclick="removeUrlImage()">Remove Image</button>
                 </div>
               </div>
-              <div id="uploadProgress" class="upload-progress">
-                <div class="progress-bar">
-                  <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+
+              <!-- Media Library Tab -->
+              <div id="libraryTab" class="image-tab-content">
+                <div id="mediaLibraryGrid" class="media-library-grid">
+                  <div class="loading-media">
+                    <div class="loading"></div>
+                    <p>Loading media library...</p>
+                  </div>
                 </div>
-                <div id="progressText" class="progress-text">Uploading...</div>
               </div>
+
               <input type="hidden" id="heroImageUrl">
             </div>
 
@@ -416,6 +460,9 @@
     let deletePostId = null;
     let currentImageFile = null;
     let existingImageUrl = null;
+    let mediaLibraryImages = [];
+    let selectedLibraryImage = null;
+    let currentImageSource = 'upload'; // 'upload', 'url', or 'library'
 
     // ==========================================
     // INITIALIZATION
@@ -598,13 +645,8 @@
       document.getElementById('postId').value = '';
       document.getElementById('author').value = 'LIV Team';
 
-      // Reset image
-      currentImageFile = null;
-      existingImageUrl = null;
-      document.getElementById('heroImageUrl').value = '';
-      document.getElementById('uploadPlaceholder').classList.remove('hidden');
-      document.getElementById('imagePreviewContainer').classList.add('hidden');
-      document.getElementById('imageUploadArea').classList.remove('has-image');
+      // Reset all image tabs
+      resetImageSelector();
 
       // Clear editor
       if (quillEditor) {
@@ -857,6 +899,165 @@
     }
 
     // ==========================================
+    // TAB SWITCHING
+    // ==========================================
+    function switchImageTab(tabName) {
+      // Update tab buttons
+      document.querySelectorAll('.image-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelector(`.image-tab[data-tab="${tabName}"]`).classList.add('active');
+
+      // Update tab content
+      document.querySelectorAll('.image-tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(`${tabName}Tab`).classList.add('active');
+
+      // Load media library if switching to that tab
+      if (tabName === 'library' && mediaLibraryImages.length === 0) {
+        loadMediaLibrary();
+      }
+    }
+
+    // ==========================================
+    // URL IMAGE HANDLING
+    // ==========================================
+    function handleUrlInput(event) {
+      const url = event.target.value.trim();
+      const preview = document.getElementById('urlImagePreview');
+      const img = document.getElementById('urlPreviewImg');
+
+      if (url) {
+        img.src = url;
+        img.onerror = () => {
+          preview.classList.add('hidden');
+          showAlert('error', 'Failed to load image from URL');
+        };
+        img.onload = () => {
+          preview.classList.remove('hidden');
+          currentImageSource = 'url';
+          existingImageUrl = url;
+          document.getElementById('heroImageUrl').value = url;
+        };
+      } else {
+        preview.classList.add('hidden');
+      }
+    }
+
+    function removeUrlImage() {
+      document.getElementById('heroImageUrlInput').value = '';
+      document.getElementById('urlImagePreview').classList.add('hidden');
+      document.getElementById('heroImageUrl').value = '';
+      existingImageUrl = null;
+    }
+
+    // ==========================================
+    // MEDIA LIBRARY
+    // ==========================================
+    async function loadMediaLibrary() {
+      const grid = document.getElementById('mediaLibraryGrid');
+
+      try {
+        grid.innerHTML = `
+          <div class="loading-media">
+            <div class="loading"></div>
+            <p>Loading media library...</p>
+          </div>
+        `;
+
+        // Load media files from Supabase
+        mediaLibraryImages = await window.Supabase.storage.getMediaFiles();
+
+        if (mediaLibraryImages.length === 0) {
+          grid.innerHTML = `
+            <div class="empty-media">
+              <p>No images in media library</p>
+              <p style="font-size: 0.875rem; margin-top: 0.5rem;">
+                Upload images from the <a href="media.html" target="_blank" style="color: var(--admin-primary);">Media Library page</a>
+              </p>
+            </div>
+          `;
+          return;
+        }
+
+        // Render media grid
+        grid.innerHTML = mediaLibraryImages.map(media => `
+          <div
+            class="media-library-item ${selectedLibraryImage === media.id ? 'selected' : ''}"
+            onclick="selectLibraryImage('${media.id}', '${media.url}')"
+            title="${media.filename}"
+          >
+            <img src="${media.url}" alt="${media.alt_text || media.filename}" loading="lazy">
+            ${selectedLibraryImage === media.id ? '<div class="media-library-item-selected-badge">✓</div>' : ''}
+          </div>
+        `).join('');
+
+      } catch (error) {
+        console.error('Error loading media library:', error);
+        grid.innerHTML = `
+          <div class="empty-media">
+            <p>Failed to load media library</p>
+            <p style="font-size: 0.875rem; margin-top: 0.5rem; color: var(--admin-danger);">
+              ${error.message}
+            </p>
+          </div>
+        `;
+      }
+    }
+
+    function selectLibraryImage(mediaId, mediaUrl) {
+      selectedLibraryImage = mediaId;
+      currentImageSource = 'library';
+      existingImageUrl = mediaUrl;
+      document.getElementById('heroImageUrl').value = mediaUrl;
+
+      // Update selection UI
+      document.querySelectorAll('.media-library-item').forEach(item => {
+        item.classList.remove('selected');
+        const badge = item.querySelector('.media-library-item-selected-badge');
+        if (badge) badge.remove();
+      });
+
+      const selectedItem = document.querySelector(`.media-library-item[onclick*="${mediaId}"]`);
+      if (selectedItem) {
+        selectedItem.classList.add('selected');
+        selectedItem.insertAdjacentHTML('beforeend', '<div class="media-library-item-selected-badge">✓</div>');
+      }
+
+      showAlert('success', 'Image selected from library');
+    }
+
+    function resetImageSelector() {
+      // Reset state
+      currentImageFile = null;
+      existingImageUrl = null;
+      selectedLibraryImage = null;
+      currentImageSource = 'upload';
+      document.getElementById('heroImageUrl').value = '';
+
+      // Reset upload tab
+      document.getElementById('imageUpload').value = '';
+      document.getElementById('uploadPlaceholder').classList.remove('hidden');
+      document.getElementById('imagePreviewContainer').classList.add('hidden');
+      document.getElementById('imageUploadArea').classList.remove('has-image');
+
+      // Reset URL tab
+      document.getElementById('heroImageUrlInput').value = '';
+      document.getElementById('urlImagePreview').classList.add('hidden');
+
+      // Reset library tab selection
+      document.querySelectorAll('.media-library-item').forEach(item => {
+        item.classList.remove('selected');
+        const badge = item.querySelector('.media-library-item-selected-badge');
+        if (badge) badge.remove();
+      });
+
+      // Switch to upload tab
+      switchImageTab('upload');
+    }
+
+    // ==========================================
     // SAVE POST
     // ==========================================
     async function savePost(event, asDraft = false) {
@@ -901,14 +1102,19 @@
           return;
         }
 
-        // Upload image if new one selected
-        let heroImageUrl = existingImageUrl;
+        // Determine hero image URL based on source
+        let heroImageUrl = null;
+
         if (currentImageFile) {
+          // Upload new file
           heroImageUrl = await uploadImage();
+        } else if (existingImageUrl) {
+          // Use existing URL (from URL tab, library, or existing post)
+          heroImageUrl = existingImageUrl;
         }
 
         // Warning for missing image when publishing
-        if (!asDraft && !heroImageUrl && !currentImageFile) {
+        if (!asDraft && !heroImageUrl) {
           const confirmPublish = confirm(
             '⚠️ No hero image selected!\n\n' +
             'Publishing without an image will show a placeholder on the website.\n\n' +
