@@ -80,6 +80,51 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
+            // Load Press Panels from Database
+            async function loadPressPanels() {
+                const container = document.getElementById('pressPanelsContainer');
+                if (!container) return;
+
+                try {
+                    const { data: pressItems, error } = await window.Supabase.client
+                        .from('press_items')
+                        .select('*')
+                        .not('published_at', 'is', null)
+                        .order('display_order', { ascending: true });
+
+                    if (error) throw error;
+
+                    if (!pressItems || pressItems.length === 0) {
+                        container.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.6);">No press coverage available at this time.</p>';
+                        return;
+                    }
+
+                    container.innerHTML = pressItems.map(item => {
+                        const target = item.link_type === 'pdf' ? '_blank' : '_blank';
+                        const rel = 'noopener noreferrer';
+
+                        return `
+                            <a href="${item.link_url}" target="${target}" rel="${rel}" class="press-panel">
+                                <div class="press-panel-image">
+                                    <img src="${item.image_url}" alt="${item.title}">
+                                </div>
+                                <div class="press-panel-content">
+                                    <h3 class="press-panel-title">${item.title}</h3>
+                                    ${item.description ? `<p class="press-panel-description">${item.description}</p>` : ''}
+                                </div>
+                            </a>
+                        `;
+                    }).join('');
+
+                } catch (error) {
+                    console.error('Error loading press panels:', error);
+                    container.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.6);">Unable to load press coverage.</p>';
+                }
+            }
+
+            // Load press panels on page load
+            loadPressPanels();
+
             const hero = document.querySelector('.hero');
             const heroContent = document.getElementById('heroContent');
             const heroCompass = document.querySelector('.hero-scroll-compass');
@@ -389,6 +434,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 summary: '',
                 context: null  // Will store context from entry point
             };
+
+            function resetConversation() {
+                // Reset all conversation state
+                livConversation.started = false;
+                livConversation.stepIndex = 0;
+                livConversation.awaitingConfirmation = false;
+                livConversation.expectingRefinement = false;
+                livConversation.answers = {};
+                livConversation.itineraryDraft = '';
+                livConversation.summary = '';
+                livConversation.context = null;
+
+                // Clear all chat messages
+                if (chatMessages) {
+                    chatMessages.innerHTML = '';
+                }
+            }
 
             function appendMessage(role, text, config = {}) {
                 if (!chatMessages) return;
@@ -820,6 +882,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 trigger.addEventListener('click', (event) => {
                     event.preventDefault();
 
+                    // Reset conversation when opening with new context
+                    resetConversation();
+
                     // Capture context from data attributes
                     const contextType = trigger.getAttribute('data-liv-context-type');
                     const contextName = trigger.getAttribute('data-liv-context-name');
@@ -835,6 +900,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     openChat();
                 });
+            });
+
+            // Listen for custom event from dynamically loaded content
+            document.addEventListener('openLivChat', (event) => {
+                const { contextType, contextName } = event.detail;
+
+                // Reset conversation when opening with new context
+                resetConversation();
+
+                if (contextType && contextName) {
+                    livConversation.context = {
+                        type: contextType,
+                        name: contextName,
+                        greeting: generateGreeting(contextType, contextName)
+                    };
+                }
+
+                openChat();
             });
 
             // Generate personalized greeting based on context
@@ -1346,6 +1429,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 destinationCardsGrid.classList.add('show');
+
+                // Re-attach event listeners to destination CTA buttons
+                const destinationCTAs = destinationCardsGrid.querySelectorAll('[data-open-liv]');
+                destinationCTAs.forEach(trigger => {
+                    trigger.addEventListener('click', (event) => {
+                        event.preventDefault();
+                        const contextType = trigger.getAttribute('data-liv-context-type');
+                        const contextName = trigger.getAttribute('data-liv-context-name');
+
+                        const livEvent = new CustomEvent('openLivChat', {
+                            detail: { contextType, contextName }
+                        });
+                        document.dispatchEvent(livEvent);
+                    });
+                });
 
                 setTimeout(() => {
                     destinationCardsGrid.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -2024,6 +2122,21 @@ async function loadStorytellers() {
 
             // Re-initialize read-more button handlers for new content
             initializeReadMoreButtons();
+
+            // Re-attach event listeners to storyteller CTA buttons
+            const storytellerCTAs = storiesGrid.querySelectorAll('[data-open-liv]');
+            storytellerCTAs.forEach(trigger => {
+                trigger.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const contextType = trigger.getAttribute('data-liv-context-type');
+                    const contextName = trigger.getAttribute('data-liv-context-name');
+
+                    const livEvent = new CustomEvent('openLivChat', {
+                        detail: { contextType, contextName }
+                    });
+                    document.dispatchEvent(livEvent);
+                });
+            });
         }
     } catch (error) {
         console.error('Error loading storytellers:', error);
@@ -2160,6 +2273,25 @@ function updatePillarsSection(sectionId, pillars, section) {
     if (window.lucide && typeof window.lucide.createIcons === 'function') {
         window.lucide.createIcons();
     }
+
+    // Re-attach event listeners to new pillar CTA buttons
+    const newPillarCTAs = pillarsGrid.querySelectorAll('[data-open-liv]');
+    newPillarCTAs.forEach(trigger => {
+        trigger.addEventListener('click', (event) => {
+            event.preventDefault();
+            const contextType = trigger.getAttribute('data-liv-context-type');
+            const contextName = trigger.getAttribute('data-liv-context-name');
+
+            // Trigger a custom event that the main chat handler can listen for
+            const livEvent = new CustomEvent('openLivChat', {
+                detail: {
+                    contextType: contextType,
+                    contextName: contextName
+                }
+            });
+            document.dispatchEvent(livEvent);
+        });
+    });
 
     // Store pillar data globally for modal access
     if (!window.pillarDataCMS) {

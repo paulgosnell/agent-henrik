@@ -551,39 +551,8 @@ unique.</p>
                     <h2 data-editable="press.headline" style="white-space: nowrap;">What Media Says About Us</h2>
                     <p data-editable="press.description">Our work has been recognized by the world's leading voices in luxury and travel.</p>
                 </div>
-                <div class="press-panels">
-                    <!-- Press Panel 1: Panorama Stockholm -->
-                    <a href="https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object/public/media/press-pdfs/press1.pdf" target="_blank" rel="noopener noreferrer" class="press-panel" data-editable="press.panel1.link">
-                        <div class="press-panel-image">
-                            <img src="https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object/public/media/press-images/press1.jpg" alt="Panorama Stockholm Feature" data-editable="press.panel1.image">
-                        </div>
-                        <div class="press-panel-content">
-                            <h3 class="press-panel-title" data-editable="press.panel1.title">Featured in Panorama Stockholm</h3>
-                            <p class="press-panel-description" data-editable="press.panel1.description">Discover Stockholm through our curated luxury experiences</p>
-                        </div>
-                    </a>
-
-                    <!-- Press Panel 2: SALT Magazine -->
-                    <a href="https://railtripping.com/en/railtripping-to-the-arctic-circle-sweden/" target="_blank" rel="noopener noreferrer" class="press-panel" data-editable="press.panel2.link">
-                        <div class="press-panel-image">
-                            <img src="https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object/public/media/press-images/press2.png" alt="SALT Magazine Feature" data-editable="press.panel2.image">
-                        </div>
-                        <div class="press-panel-content">
-                            <h3 class="press-panel-title" data-editable="press.panel2.title">Featured in SALT Magazine</h3>
-                            <p class="press-panel-description" data-editable="press.panel2.description">Railtripping to the Arctic Circle through Sweden</p>
-                        </div>
-                    </a>
-
-                    <!-- Press Panel 3: Railtripping -->
-                    <a href="https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object/public/media/press-pdfs/press3.pdf" target="_blank" rel="noopener noreferrer" class="press-panel" data-editable="press.panel3.link">
-                        <div class="press-panel-image">
-                            <img src="https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object/public/media/press-images/press3.png" alt="Railtripping Feature" data-editable="press.panel3.image">
-                        </div>
-                        <div class="press-panel-content">
-                            <h3 class="press-panel-title" data-editable="press.panel3.title">Featured by Railtripping</h3>
-                            <p class="press-panel-description" data-editable="press.panel3.description">The journey matters - exploring Sweden by rail</p>
-                        </div>
-                    </a>
+                <div class="press-panels" id="pressPanelsContainer">
+                    <!-- Press panels loaded dynamically from database -->
                 </div>
             </div>
         </section>
@@ -676,15 +645,14 @@ unique.</p>
 
         <section class="section" id="contact">
             <div class="section-inner">
-                <div class="contact-cta">
-                    <div>
+                <div class="dual-columns">
+                    <div class="headline-block">
                         <span class="eyebrow" data-editable="contact.eyebrow">CONTACT</span>
                         <h3 data-editable="contact.headline">Ready to create your Swedish adventure?</h3>
                         <p data-editable="contact.description">Share your ambitions and we will reply within 24 hours with the next steps, schedule a call, or deliver a curated dossier. Every enquiry is handled by a personal curator, who will design a bespoke narrative just for you.</p>
                     </div>
-                </div>
 
-                <form class="enquiry-form" id="enquiryForm" novalidate>
+                    <form class="enquiry-form" id="enquiryForm" novalidate>
                     <div class="form-grid">
                         <div class="form-field">
                             <label for="enquiryName" data-editable="contact.form.name_label">Name</label>
@@ -719,11 +687,12 @@ unique.</p>
                     <input type="hidden" id="itineraryDraftField" name="itineraryDraft">
                     <input type="hidden" id="enquirySourceField" name="source" value="Direct">
 
-                    <div class="form-actions">
-                        <button type="submit" data-editable="contact.form.submit">Submit Enquiry</button>
-                        <p class="form-status" id="enquiryStatus" role="status"></p>
-                    </div>
-                </form>
+                        <div class="form-actions">
+                            <button type="submit" data-editable="contact.form.submit">Submit Enquiry</button>
+                            <p class="form-status" id="enquiryStatus" role="status"></p>
+                        </div>
+                    </form>
+                </div>
             </div>
         </section>
     </main>
