@@ -1294,19 +1294,19 @@
         }
 
         .path-card[data-theme="journeys"] {
-            --card-image: url('https://images.pexels.com/photos/62600/pexels-photo-62600.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=1');
+            --card-image: url('https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object/public/pillar-images/path-design.jpg');
         }
 
         .path-card[data-theme="corporate"] {
-            --card-image: url('https://images.pexels.com/photos/3184308/pexels-photo-3184308.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=1');
+            --card-image: url('https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object/public/pillar-images/path-nature.jpg');
         }
 
         .path-card[data-theme="concierge"] {
-            --card-image: url('https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=1');
+            --card-image: url('https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object/public/pillar-images/path-nightlife.jpg');
         }
 
         .path-card[data-theme="stories"] {
-            --card-image: url('https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=1');
+            --card-image: url('https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object/public/pillar-images/path-heritage.jpg');
         }
 
         /* Map Section Styles */
@@ -2395,15 +2395,15 @@
         }
 
         .story-card[data-story="lapland"] {
-            --story-bg: url('https://images.pexels.com/photos/1525041/pexels-photo-1525041.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=1');
+            --story-bg: url('https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object/public/pillar-images/story-lapland.jpg');
         }
 
         .story-card[data-story="stockholm"] {
-            --story-bg: url('https://images.pexels.com/photos/1031659/pexels-photo-1031659.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=1');
+            --story-bg: url('https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object/public/pillar-images/story-stockholm.jpg');
         }
 
         .story-card[data-story="archipelago"] {
-            --story-bg: url('https://images.pexels.com/photos/2901209/pexels-photo-2901209.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=1');
+            --story-bg: url('https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object/public/pillar-images/story-archipelago.jpg');
         }
 
         /* Storyteller card specific styles */
