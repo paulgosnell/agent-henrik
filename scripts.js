@@ -895,12 +895,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     const contextName = trigger.getAttribute('data-liv-context-name');
                     const contextGreeting = trigger.getAttribute('data-liv-greeting');
 
-                    console.log('🎯 Button Click Debug:', {
-                        hasLivAI: !!window.LivAI,
-                        contextType,
-                        contextName,
-                        contextGreeting
-                    });
+                    console.log('🎯 Button Click Debug:');
+                    console.log('  - hasLivAI:', !!window.LivAI);
+                    console.log('  - contextType:', contextType);
+                    console.log('  - contextName:', contextName);
+                    console.log('  - contextGreeting:', contextGreeting);
+                    console.log('  - Will use context?', !!(window.LivAI && contextType && contextName));
 
                     // Use new LivAI class
                     if (window.LivAI && contextType && contextName) {

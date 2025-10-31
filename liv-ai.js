@@ -530,14 +530,15 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     livAIInstance = new LivAI();
     livAIInstance.init();
+    // Export for manual initialization if needed
+    window.LivAI = livAIInstance;
   });
 } else {
   livAIInstance = new LivAI();
   livAIInstance.init();
+  // Export for manual initialization if needed
+  window.LivAI = livAIInstance;
 }
-
-// Export for manual initialization if needed
-window.LivAI = livAIInstance;
 
 // Expose showContactForm globally for manual triggering
 window.showLivContactForm = function() {

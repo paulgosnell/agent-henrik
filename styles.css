@@ -2809,6 +2809,11 @@
             padding: clamp(2rem, 5vw, 3rem);
         }
 
+        /* Remove top margin when form is in dual-columns layout */
+        .dual-columns .enquiry-form {
+            margin-top: 0;
+        }
+
         .form-grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
