@@ -752,51 +752,29 @@ document.addEventListener('DOMContentLoaded', function() {
                     const details = enquiryDetails?.value.trim();
                     const source = enquirySourceField?.value || 'contact_form';
 
-                    // Create or update lead
-                    const { data: existingLead } = await window.Supabase.client
+                    // Upsert lead (insert or update if email exists)
+                    const { data: lead, error: leadError } = await window.Supabase.client
                         .from('leads')
-                        .select('id')
-                        .eq('email', emailValid)
+                        .upsert({
+                            email: emailValid,
+                            name: nameValid,
+                            phone: phone || null,
+                            source: source,
+                            status: 'new'
+                        }, {
+                            onConflict: 'email',
+                            ignoreDuplicates: false
+                        })
+                        .select()
                         .single();
 
-                    let leadId;
-
-                    if (existingLead) {
-                        // Update existing lead
-                        leadId = existingLead.id;
-                        await window.Supabase.client
-                            .from('leads')
-                            .update({
-                                name: nameValid,
-                                phone: phone || null,
-                                source: source,
-                                status: 'new',
-                                updated_at: new Date().toISOString()
-                            })
-                            .eq('id', leadId);
-                    } else {
-                        // Create new lead
-                        const { data: newLead, error: leadError } = await window.Supabase.client
-                            .from('leads')
-                            .insert({
-                                email: emailValid,
-                                name: nameValid,
-                                phone: phone || null,
-                                source: source,
-                                status: 'new'
-                            })
-                            .select()
-                            .single();
-
-                        if (leadError) throw leadError;
-                        leadId = newLead.id;
-                    }
+                    if (leadError) throw leadError;
 
                     // Create booking inquiry
                     const { error: inquiryError } = await window.Supabase.client
                         .from('booking_inquiries')
                         .insert({
-                            lead_id: leadId,
+                            lead_id: lead?.id || null,
                             email: emailValid,
                             name: nameValid,
                             phone: phone || null,
@@ -937,36 +915,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
 
                     try {
-                        // Check if email already exists
-                        const { data: existingLead } = await window.Supabase.client
+                        // Upsert lead (insert or update if email exists)
+                        const { error } = await window.Supabase.client
                             .from('leads')
-                            .select('id')
-                            .eq('email', email)
-                            .single();
+                            .upsert({
+                                email: email,
+                                source: 'newsletter',
+                                status: 'new'
+                            }, {
+                                onConflict: 'email',
+                                ignoreDuplicates: false
+                            });
 
-                        if (existingLead) {
-                            // Email already subscribed
-                            if (newsletterStatus) {
-                                newsletterStatus.textContent = 'You\'re already subscribed!';
-                                newsletterStatus.style.color = 'var(--color-accent-forest, green)';
-                            }
-                        } else {
-                            // Create new lead for newsletter
-                            const { error } = await window.Supabase.client
-                                .from('leads')
-                                .insert({
-                                    email: email,
-                                    source: 'newsletter',
-                                    status: 'new'
-                                });
+                        if (error) throw error;
 
-                            if (error) throw error;
-
-                            // Show success message
-                            if (newsletterStatus) {
-                                newsletterStatus.textContent = 'Thank you for subscribing!';
-                                newsletterStatus.style.color = 'var(--color-accent-forest, green)';
-                            }
+                        // Show success message
+                        if (newsletterStatus) {
+                            newsletterStatus.textContent = 'Thank you for subscribing!';
+                            newsletterStatus.style.color = 'var(--color-accent-forest, green)';
                         }
 
                         // Reset form
