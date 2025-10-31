@@ -181,11 +181,22 @@ class LivAI {
    * Open chat without context (general inquiry)
    */
   openChat() {
+    console.log('🔓 openChat called');
+    console.log('  - this.chatOverlay:', this.chatOverlay);
+    console.log('  - has active class:', this.chatOverlay?.classList.contains('active'));
+
     if (this.chatOverlay) {
       this.chatOverlay.classList.add('active');
+      console.log('  - ✅ Added active class');
+      console.log('  - computed display:', window.getComputedStyle(this.chatOverlay).display);
+      console.log('  - computed visibility:', window.getComputedStyle(this.chatOverlay).visibility);
+      console.log('  - computed opacity:', window.getComputedStyle(this.chatOverlay).opacity);
+
       if (this.chatInput) {
         this.chatInput.focus();
       }
+    } else {
+      console.error('❌ chatOverlay element not found!');
     }
   }
 
