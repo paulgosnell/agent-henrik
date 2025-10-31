@@ -368,7 +368,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const chatInput = document.getElementById('chatInput');
             const sendButton = document.getElementById('sendButton');
             const chatMessages = document.getElementById('chatMessages');
-            const livTriggers = document.querySelectorAll('[data-open-liv]');
             const enquiryTriggers = document.querySelectorAll('[data-open-enquiry]');
             const enquiryForm = document.getElementById('enquiryForm');
             const enquiryTripType = document.getElementById('enquiryTripType');
@@ -886,39 +885,42 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
             }
-            livTriggers.forEach(trigger => {
-                trigger.addEventListener('click', (event) => {
-                    event.preventDefault();
+            // Use event delegation to handle both static and dynamically generated buttons
+            document.addEventListener('click', (event) => {
+                // Check if clicked element or any parent has [data-open-liv]
+                const trigger = event.target.closest('[data-open-liv]');
+                if (!trigger) return;
 
-                    // Capture context from data attributes
-                    const contextType = trigger.getAttribute('data-liv-context-type');
-                    const contextName = trigger.getAttribute('data-liv-context-name');
-                    const contextGreeting = trigger.getAttribute('data-liv-greeting');
+                event.preventDefault();
 
-                    // Use new LivAI class
-                    if (window.LivAI && contextType && contextName) {
-                        const context = {
+                // Capture context from data attributes
+                const contextType = trigger.getAttribute('data-liv-context-type');
+                const contextName = trigger.getAttribute('data-liv-context-name');
+                const contextGreeting = trigger.getAttribute('data-liv-greeting');
+
+                // Use new LivAI class
+                if (window.LivAI && contextType && contextName) {
+                    const context = {
+                        type: contextType,
+                        name: contextName,
+                        greeting: contextGreeting
+                    };
+                    window.LivAI.openChatWithContext(context);
+                } else if (window.LivAI) {
+                    // Open without context for general AI button
+                    window.LivAI.openChat();
+                } else {
+                    // Fallback to old implementation if LivAI not loaded
+                    resetConversation();
+                    if (contextType && contextName) {
+                        livConversation.context = {
                             type: contextType,
                             name: contextName,
-                            greeting: contextGreeting
+                            greeting: contextGreeting || generateGreeting(contextType, contextName)
                         };
-                        window.LivAI.openChatWithContext(context);
-                    } else if (window.LivAI) {
-                        // Open without context for general AI button
-                        window.LivAI.openChat();
-                    } else {
-                        // Fallback to old implementation if LivAI not loaded
-                        resetConversation();
-                        if (contextType && contextName) {
-                            livConversation.context = {
-                                type: contextType,
-                                name: contextName,
-                                greeting: contextGreeting || generateGreeting(contextType, contextName)
-                            };
-                        }
-                        openChat();
                     }
-                });
+                    openChat();
+                }
             });
 
             // Generate personalized greeting based on context

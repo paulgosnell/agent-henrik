@@ -145,30 +145,22 @@ class LivAI {
       });
     });
 
-    // General LIV triggers (existing buttons)
-    const livTriggers = document.querySelectorAll('[data-open-liv]');
-    livTriggers.forEach(trigger => {
-      trigger.addEventListener('click', (e) => {
-        e.preventDefault();
-        const contextData = trigger.dataset.livContext;
-        if (contextData) {
-          try {
-            this.openChatWithContext(JSON.parse(contextData));
-          } catch {
-            this.openChat();
-          }
-        } else {
-          this.openChat();
-        }
-      });
-    });
+    // NOTE: [data-open-liv] buttons are handled by scripts.js
+    // which correctly reads data-liv-context-type and data-liv-context-name
+    // and calls window.LivAI.openChatWithContext() or window.LivAI.openChat()
   }
 
   /**
    * Open chat with specific context
    */
   openChatWithContext(context) {
+    // Reset conversation to start fresh with new context
+    this.resetConversation();
+
+    // Set the new context
     this.context = context;
+
+    // Open the chat modal
     this.openChat();
 
     // Send initial AI greeting with context
@@ -330,11 +322,47 @@ class LivAI {
   async sendContextualGreeting() {
     if (!this.context) return;
 
-    // The AI will use the context to generate an intelligent greeting
-    // We'll let the AI handle the greeting naturally in the first response
+    // Use custom greeting if provided, otherwise generate one
+    const greeting = this.context.greeting || this.generateContextualGreeting(this.context);
 
     // Add a small delay to feel natural
-    await new Promise(resolve => setTimeout(resolve, 800));
+    await new Promise(resolve => setTimeout(resolve, 600));
+
+    // Show the contextual greeting
+    this.appendMessage('ai', greeting);
+  }
+
+  /**
+   * Generate personalized greeting based on context
+   * Matches the original greetings from scripts.js
+   */
+  generateContextualGreeting(context) {
+    const { type, name } = context;
+
+    const greetings = {
+      'destination': [
+        `Ah, ${name}! Magnificent choice. This is one of Sweden's most captivating destinations. Let me help you craft an unforgettable experience there.`,
+        `${name} — excellent taste. I'd be delighted to design a bespoke journey for you around this remarkable location.`,
+        `I see you're drawn to ${name}. Wonderful! Let's weave together the perfect itinerary for this extraordinary place.`
+      ],
+      'experience': [
+        `${name} — a superb choice. Let me help you design an experience that truly captures this essence.`,
+        `I love that you're interested in ${name}. This is one of my favorite themes to curate. Shall we begin crafting your journey?`,
+        `${name} speaks to those who seek depth and meaning. I'm excited to help you explore this dimension of Sweden.`
+      ],
+      'corporate': [
+        `${name} for your team — brilliant! Let me help design an experience that will inspire and transform your group.`,
+        `Corporate experiences in ${name} create lasting impact. I'd love to help you plan something truly memorable for your team.`
+      ],
+      'storyteller': [
+        `${name} — a superb choice. Let me help you design an experience that truly captures this essence.`,
+        `I love that you're interested in ${name}. This is one of my favorite themes to curate. Shall we begin crafting your journey?`,
+        `${name} speaks to those who seek depth and meaning. I'm excited to help you explore this dimension of Sweden.`
+      ]
+    };
+
+    const messages = greetings[type] || greetings['experience'];
+    return messages[Math.floor(Math.random() * messages.length)];
   }
 
   /**
