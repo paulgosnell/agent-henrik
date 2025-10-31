@@ -312,20 +312,34 @@
               <input type="hidden" id="content">
             </div>
 
-            <!-- Hero Image URL -->
+            <!-- Hero Image Upload -->
             <div class="form-group full-width">
-              <label class="form-label required" for="heroImageUrl">Hero Image URL</label>
-              <input
-                type="text"
-                id="heroImageUrl"
-                class="form-input"
-                placeholder="https://example.com/image.jpg"
-                required
-              >
-              <span class="form-hint">Enter the full URL to the hero image</span>
-              <div id="heroImagePreview" class="image-preview-container" style="margin-top: 0.75rem; display: none;">
-                <img id="heroImagePreviewImg" class="image-preview" src="" alt="Hero Image Preview" style="max-width: 300px; border-radius: var(--admin-radius);">
+              <label class="form-label required">Hero Image</label>
+              <div class="image-upload-area" id="imageUploadArea">
+                <input
+                  type="file"
+                  id="heroImageUpload"
+                  accept="image/*"
+                  style="display: none;"
+                  onchange="handleImageSelect(event)"
+                >
+                <div id="uploadPlaceholder" class="upload-placeholder">
+                  <div class="upload-icon">📷</div>
+                  <div class="upload-text">Click to upload or drag and drop</div>
+                  <div class="upload-hint">PNG, JPG, WebP up to 10MB</div>
+                </div>
+                <div id="imagePreviewContainer" class="image-preview-container hidden">
+                  <img id="heroImagePreview" class="image-preview" src="" alt="Preview">
+                  <button type="button" class="image-remove" onclick="removeImage()">Remove Image</button>
+                </div>
               </div>
+              <div id="uploadProgress" class="upload-progress">
+                <div class="progress-bar">
+                  <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+                </div>
+                <div id="progressText" class="progress-text">Uploading...</div>
+              </div>
+              <input type="hidden" id="heroImageUrl">
             </div>
 
             <!-- Icon Name -->
@@ -468,6 +482,8 @@
     let quillEditor = null;
     let currentPillar = null;
     let deletePillarId = null;
+    let currentImageFile = null;
+    let existingImageUrl = null;
 
     // ==========================================
     // INITIALIZATION
@@ -633,8 +649,15 @@
       document.getElementById('ctaText').value = 'Design with LIV';
       document.getElementById('published').checked = false;
 
-      // Hide previews
-      document.getElementById('heroImagePreview').style.display = 'none';
+      // Reset image
+      currentImageFile = null;
+      existingImageUrl = null;
+      document.getElementById('heroImageUrl').value = '';
+      document.getElementById('uploadPlaceholder').classList.remove('hidden');
+      document.getElementById('imagePreviewContainer').classList.add('hidden');
+      document.getElementById('imageUploadArea').classList.remove('has-image');
+
+      // Hide icon preview
       document.getElementById('iconPreview').classList.add('hidden');
 
       // Clear editor
@@ -672,7 +695,6 @@
       document.getElementById('title').value = currentPillar.title;
       document.getElementById('slug').value = currentPillar.slug;
       document.getElementById('excerpt').value = currentPillar.excerpt || '';
-      document.getElementById('heroImageUrl').value = currentPillar.hero_image_url || '';
       document.getElementById('iconName').value = currentPillar.icon_name || '';
       document.getElementById('section').value = currentPillar.section;
       document.getElementById('displayOrder').value = currentPillar.display_order || 0;
@@ -681,9 +703,14 @@
       document.getElementById('livContextName').value = currentPillar.liv_context_name || '';
       document.getElementById('published').checked = currentPillar.published || false;
 
-      // Show hero image preview
+      // Set image
       if (currentPillar.hero_image_url) {
-        updateHeroImagePreview(currentPillar.hero_image_url);
+        existingImageUrl = currentPillar.hero_image_url;
+        document.getElementById('heroImageUrl').value = currentPillar.hero_image_url;
+        document.getElementById('heroImagePreview').src = currentPillar.hero_image_url;
+        document.getElementById('uploadPlaceholder').classList.add('hidden');
+        document.getElementById('imagePreviewContainer').classList.remove('hidden');
+        document.getElementById('imageUploadArea').classList.add('has-image');
       }
 
       // Show icon preview
@@ -756,6 +783,122 @@
     }
 
     // ==========================================
+    // IMAGE UPLOAD
+    // ==========================================
+    function setupImageUpload() {
+      const uploadArea = document.getElementById('imageUploadArea');
+      const fileInput = document.getElementById('heroImageUpload');
+
+      // Click to upload
+      uploadArea.addEventListener('click', (e) => {
+        if (e.target.classList.contains('image-remove')) return;
+        fileInput.click();
+      });
+
+      // Drag and drop
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('drag-over');
+      });
+
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('drag-over');
+      });
+
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('drag-over');
+
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          handleImageFile(files[0]);
+        }
+      });
+    }
+
+    function handleImageSelect(event) {
+      const file = event.target.files[0];
+      if (file) {
+        handleImageFile(file);
+      }
+    }
+
+    function handleImageFile(file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        showAlert('error', 'Please select an image file');
+        return;
+      }
+
+      // Validate file size (10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        showAlert('error', 'Image size must be less than 10MB');
+        return;
+      }
+
+      currentImageFile = file;
+
+      // Show preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById('heroImagePreview').src = e.target.result;
+        document.getElementById('uploadPlaceholder').classList.add('hidden');
+        document.getElementById('imagePreviewContainer').classList.remove('hidden');
+        document.getElementById('imageUploadArea').classList.add('has-image');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeImage() {
+      currentImageFile = null;
+      existingImageUrl = null;
+      document.getElementById('heroImageUrl').value = '';
+      document.getElementById('heroImageUpload').value = '';
+      document.getElementById('uploadPlaceholder').classList.remove('hidden');
+      document.getElementById('imagePreviewContainer').classList.add('hidden');
+      document.getElementById('imageUploadArea').classList.remove('has-image');
+    }
+
+    async function uploadImage() {
+      if (!currentImageFile) {
+        return existingImageUrl || null;
+      }
+
+      const progressDiv = document.getElementById('uploadProgress');
+      const progressFill = document.getElementById('progressFill');
+      const progressText = document.getElementById('progressText');
+
+      try {
+        progressDiv.classList.add('active');
+        progressFill.style.width = '0%';
+        progressText.textContent = 'Uploading...';
+
+        // Simulate progress
+        const progressInterval = setInterval(() => {
+          const currentWidth = parseInt(progressFill.style.width) || 0;
+          if (currentWidth < 90) {
+            progressFill.style.width = (currentWidth + 10) + '%';
+          }
+        }, 200);
+
+        const result = await window.Supabase.storage.uploadFile(currentImageFile);
+
+        clearInterval(progressInterval);
+        progressFill.style.width = '100%';
+        progressText.textContent = 'Upload complete!';
+
+        setTimeout(() => {
+          progressDiv.classList.remove('active');
+        }, 1000);
+
+        return result.url;
+      } catch (error) {
+        progressDiv.classList.remove('active');
+        throw error;
+      }
+    }
+
+    // ==========================================
     // SAVE PILLAR
     // ==========================================
     async function savePillar(event) {
@@ -775,7 +918,6 @@
         const title = document.getElementById('title').value.trim();
         const slug = document.getElementById('slug').value.trim();
         const excerpt = document.getElementById('excerpt').value.trim();
-        const heroImageUrl = document.getElementById('heroImageUrl').value.trim();
         const iconName = document.getElementById('iconName').value.trim();
         const section = document.getElementById('section').value;
         const displayOrder = parseInt(document.getElementById('displayOrder').value) || 0;
@@ -788,13 +930,25 @@
         const content = quillEditor ? quillEditor.root.innerHTML : '';
 
         // Validate
-        if (!title || !slug || !excerpt || !heroImageUrl || !iconName || !section) {
+        if (!title || !slug || !excerpt || !iconName || !section) {
           showAlert('error', 'Please fill in all required fields');
           return;
         }
 
         if (!content || content === '<p><br></p>') {
           showAlert('error', 'Please add content to your pillar');
+          return;
+        }
+
+        // Upload image if new one selected
+        let heroImageUrl = existingImageUrl;
+        if (currentImageFile) {
+          heroImageUrl = await uploadImage();
+        }
+
+        // Validate hero image
+        if (!heroImageUrl) {
+          showAlert('error', 'Please select a hero image');
           return;
         }
 
@@ -837,25 +991,8 @@
     }
 
     // ==========================================
-    // ICON & IMAGE PREVIEW
+    // ICON PREVIEW
     // ==========================================
-    function updateHeroImagePreview(url) {
-      const preview = document.getElementById('heroImagePreview');
-      const img = document.getElementById('heroImagePreviewImg');
-
-      if (url) {
-        img.src = url;
-        img.onerror = () => {
-          preview.style.display = 'none';
-        };
-        img.onload = () => {
-          preview.style.display = 'block';
-        };
-      } else {
-        preview.style.display = 'none';
-      }
-    }
-
     function updateIconPreview(iconName) {
       const preview = document.getElementById('iconPreview');
       const previewSvg = document.getElementById('iconPreviewSvg');
@@ -969,11 +1106,6 @@
         updateCharacterCount('excerpt', 'excerptCount');
       });
 
-      // Hero image preview
-      document.getElementById('heroImageUrl').addEventListener('input', (e) => {
-        updateHeroImagePreview(e.target.value);
-      });
-
       // Icon preview
       document.getElementById('iconName').addEventListener('input', (e) => {
         updateIconPreview(e.target.value);
@@ -986,6 +1118,9 @@
           contextTypeInput.value = e.target.value === 'corporate' ? 'corporate' : 'experience';
         }
       });
+
+      // Image upload
+      setupImageUpload();
 
       // Close modal on outside click
       document.getElementById('pillarModal').addEventListener('click', (e) => {
