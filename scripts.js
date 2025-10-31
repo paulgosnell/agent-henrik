@@ -895,13 +895,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     const contextName = trigger.getAttribute('data-liv-context-name');
                     const contextGreeting = trigger.getAttribute('data-liv-greeting');
 
-                    console.log('🎯 Button Click Debug:');
-                    console.log('  - hasLivAI:', !!window.LivAI);
-                    console.log('  - contextType:', contextType);
-                    console.log('  - contextName:', contextName);
-                    console.log('  - contextGreeting:', contextGreeting);
-                    console.log('  - Will use context?', !!(window.LivAI && contextType && contextName));
-
                     // Use new LivAI class
                     if (window.LivAI && contextType && contextName) {
                         const context = {
@@ -909,11 +902,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             name: contextName,
                             greeting: contextGreeting
                         };
-                        console.log('✅ Calling openChatWithContext with:', context);
                         window.LivAI.openChatWithContext(context);
                     } else if (window.LivAI) {
                         // Open without context for general AI button
-                        console.log('⚠️ Opening chat without context');
                         window.LivAI.openChat();
                     } else {
                         // Fallback to old implementation if LivAI not loaded
@@ -928,41 +919,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         openChat();
                     }
                 });
-            });
-
-            // Listen for custom event from dynamically loaded content
-            document.addEventListener('openLivChat', (event) => {
-                const { contextType, contextName } = event.detail;
-
-                console.log('🎬 openLivChat Event Fired:');
-                console.log('  - hasLivAI:', !!window.LivAI);
-                console.log('  - contextType:', contextType);
-                console.log('  - contextName:', contextName);
-
-                // Use new LivAI class
-                if (window.LivAI && contextType && contextName) {
-                    console.log('✅ Using LivAI with context');
-                    const context = {
-                        type: contextType,
-                        name: contextName
-                    };
-                    window.LivAI.openChatWithContext(context);
-                } else if (window.LivAI) {
-                    console.log('⚠️ Using LivAI without context');
-                    window.LivAI.openChat();
-                } else {
-                    console.log('❌ Fallback to old implementation');
-                    // Fallback to old implementation
-                    resetConversation();
-                    if (contextType && contextName) {
-                        livConversation.context = {
-                            type: contextType,
-                            name: contextName,
-                            greeting: generateGreeting(contextType, contextName)
-                        };
-                    }
-                    openChat();
-                }
             });
 
             // Generate personalized greeting based on context
@@ -1475,20 +1431,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 destinationCardsGrid.classList.add('show');
 
-                // Re-attach event listeners to destination CTA buttons
-                const destinationCTAs = destinationCardsGrid.querySelectorAll('[data-open-liv]');
-                destinationCTAs.forEach(trigger => {
-                    trigger.addEventListener('click', (event) => {
-                        event.preventDefault();
-                        const contextType = trigger.getAttribute('data-liv-context-type');
-                        const contextName = trigger.getAttribute('data-liv-context-name');
-
-                        const livEvent = new CustomEvent('openLivChat', {
-                            detail: { contextType, contextName }
-                        });
-                        document.dispatchEvent(livEvent);
-                    });
-                });
+                // NOTE: No need to attach event listeners here - the global [data-open-liv] handler
+                // in the main DOMContentLoaded listener already handles all LIV buttons
 
                 setTimeout(() => {
                     destinationCardsGrid.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -2168,20 +2112,8 @@ async function loadStorytellers() {
             // Re-initialize read-more button handlers for new content
             initializeReadMoreButtons();
 
-            // Re-attach event listeners to storyteller CTA buttons
-            const storytellerCTAs = storiesGrid.querySelectorAll('[data-open-liv]');
-            storytellerCTAs.forEach(trigger => {
-                trigger.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    const contextType = trigger.getAttribute('data-liv-context-type');
-                    const contextName = trigger.getAttribute('data-liv-context-name');
-
-                    const livEvent = new CustomEvent('openLivChat', {
-                        detail: { contextType, contextName }
-                    });
-                    document.dispatchEvent(livEvent);
-                });
-            });
+            // NOTE: No need to attach event listeners here - the global [data-open-liv] handler
+            // in the main DOMContentLoaded listener already handles all LIV buttons
         }
     } catch (error) {
         console.error('Error loading storytellers:', error);
@@ -2319,24 +2251,8 @@ function updatePillarsSection(sectionId, pillars, section) {
         window.lucide.createIcons();
     }
 
-    // Re-attach event listeners to new pillar CTA buttons
-    const newPillarCTAs = pillarsGrid.querySelectorAll('[data-open-liv]');
-    newPillarCTAs.forEach(trigger => {
-        trigger.addEventListener('click', (event) => {
-            event.preventDefault();
-            const contextType = trigger.getAttribute('data-liv-context-type');
-            const contextName = trigger.getAttribute('data-liv-context-name');
-
-            // Trigger a custom event that the main chat handler can listen for
-            const livEvent = new CustomEvent('openLivChat', {
-                detail: {
-                    contextType: contextType,
-                    contextName: contextName
-                }
-            });
-            document.dispatchEvent(livEvent);
-        });
-    });
+    // NOTE: No need to attach event listeners here - the global [data-open-liv] handler
+    // in the main DOMContentLoaded listener already handles all LIV buttons
 
     // Store pillar data globally for modal access
     if (!window.pillarDataCMS) {

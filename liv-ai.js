@@ -168,9 +168,7 @@ class LivAI {
    * Open chat with specific context
    */
   openChatWithContext(context) {
-    console.log('📥 openChatWithContext called with:', context);
     this.context = context;
-    console.log('📌 this.context set to:', this.context);
     this.openChat();
 
     // Send initial AI greeting with context
@@ -181,22 +179,11 @@ class LivAI {
    * Open chat without context (general inquiry)
    */
   openChat() {
-    console.log('🔓 openChat called');
-    console.log('  - this.chatOverlay:', this.chatOverlay);
-    console.log('  - has active class:', this.chatOverlay?.classList.contains('active'));
-
     if (this.chatOverlay) {
-      this.chatOverlay.classList.add('active');
-      console.log('  - ✅ Added active class');
-      console.log('  - computed display:', window.getComputedStyle(this.chatOverlay).display);
-      console.log('  - computed visibility:', window.getComputedStyle(this.chatOverlay).visibility);
-      console.log('  - computed opacity:', window.getComputedStyle(this.chatOverlay).opacity);
-
+      this.chatOverlay.classList.add('show');
       if (this.chatInput) {
         this.chatInput.focus();
       }
-    } else {
-      console.error('❌ chatOverlay element not found!');
     }
   }
 
@@ -205,7 +192,7 @@ class LivAI {
    */
   closeChat() {
     if (this.chatOverlay) {
-      this.chatOverlay.classList.remove('active');
+      this.chatOverlay.classList.remove('show');
     }
   }
 
@@ -386,14 +373,6 @@ class LivAI {
     if (this.sendButton) this.sendButton.disabled = true;
 
     try {
-      // Debug logging
-      console.log('🔍 LIV Context Debug:', {
-        contextType: this.context?.type,
-        contextName: this.context?.name,
-        isStorytellerMode: this.context?.type === 'storyteller',
-        storytellerInquiry: this.storytellerInquiry
-      });
-
       const response = await fetch(this.edgeFunctionUrl, {
         method: 'POST',
         headers: {
