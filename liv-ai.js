@@ -168,7 +168,9 @@ class LivAI {
    * Open chat with specific context
    */
   openChatWithContext(context) {
+    console.log('📥 openChatWithContext called with:', context);
     this.context = context;
+    console.log('📌 this.context set to:', this.context);
     this.openChat();
 
     // Send initial AI greeting with context

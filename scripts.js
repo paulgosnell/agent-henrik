@@ -895,6 +895,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     const contextName = trigger.getAttribute('data-liv-context-name');
                     const contextGreeting = trigger.getAttribute('data-liv-greeting');
 
+                    console.log('🎯 Button Click Debug:', {
+                        hasLivAI: !!window.LivAI,
+                        contextType,
+                        contextName,
+                        contextGreeting
+                    });
+
                     // Use new LivAI class
                     if (window.LivAI && contextType && contextName) {
                         const context = {
@@ -902,9 +909,11 @@ document.addEventListener('DOMContentLoaded', function() {
                             name: contextName,
                             greeting: contextGreeting
                         };
+                        console.log('✅ Calling openChatWithContext with:', context);
                         window.LivAI.openChatWithContext(context);
                     } else if (window.LivAI) {
                         // Open without context for general AI button
+                        console.log('⚠️ Opening chat without context');
                         window.LivAI.openChat();
                     } else {
                         // Fallback to old implementation if LivAI not loaded
