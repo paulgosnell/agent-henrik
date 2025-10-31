@@ -17,6 +17,26 @@
 
     <!-- External Stylesheet -->
     <link rel="stylesheet" href="styles.css?v=1761767256">
+    <style>
+        /* EMERGENCY FIX - Disable broken transforms causing scroll jank */
+        .path-card::before,
+        .pillar-media img,
+        .story-media img {
+            transform: none !important;
+            filter: none !important;
+        }
+        .path-card:hover::before,
+        .pillar-card:hover .pillar-media img,
+        .story-card:hover .story-media img {
+            transform: none !important;
+            filter: none !important;
+        }
+        /* Keep simple hover elevations only */
+        .pillar-card:hover,
+        .story-card:hover {
+            transform: translateY(-4px);
+        }
+    </style>
 </head>
 <body>
     <header class="nav-header">
