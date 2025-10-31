@@ -2311,8 +2311,8 @@
             background: var(--story-bg, #0b0f11);
             background-size: cover;
             background-position: center;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+            border: none;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
             display: flex;
             flex-direction: column;
         }
@@ -2329,7 +2329,6 @@
 
         .story-card:hover {
             transform: translateY(-5px);
-            border-color: rgba(255, 255, 255, 0.24);
             box-shadow: 0 28px 52px rgba(0, 0, 0, 0.42);
         }
 
