@@ -1,0 +1,11 @@
+{
+  "name": "Luxury Travel Sweden",
+  "short_name": "LTS",
+  "description": "Discover the art of Swedish luxury travel - from Arctic wilderness to Stockholm sophistication",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "orientation": "portrait-primary",
+  "icons": []
+}
