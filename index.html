@@ -18,23 +18,40 @@
     <!-- External Stylesheet -->
     <link rel="stylesheet" href="styles.css?v=1761767256">
     <style>
-        /* EMERGENCY FIX - Disable broken transforms causing scroll jank */
-        .path-card::before,
+        /* FIX: Prevent image layout shift and flickering */
+        .pillar-media,
+        .story-media {
+            background: #0a0c0e; /* Dark placeholder while loading */
+        }
+
         .pillar-media img,
         .story-media img {
             transform: none !important;
             filter: none !important;
+            transition: none !important;
+            opacity: 1;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
         }
-        .path-card:hover::before,
-        .pillar-card:hover .pillar-media img,
-        .story-card:hover .story-media img {
+
+        .path-card::before {
             transform: none !important;
             filter: none !important;
+            transition: none !important;
         }
-        /* Keep simple hover elevations only */
+
+        /* Disable ALL hover animations */
         .pillar-card:hover,
-        .story-card:hover {
-            transform: translateY(-4px);
+        .story-card:hover,
+        .path-card:hover {
+            transform: none !important;
+        }
+
+        .pillar-card:hover .pillar-media img,
+        .story-card:hover .story-media img,
+        .path-card:hover::before {
+            transform: none !important;
+            filter: none !important;
         }
     </style>
 </head>
