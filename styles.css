@@ -1,8 +1,9 @@
-@font-face {
+/* Font file not available - using system fonts instead */
+        /* @font-face {
             font-family: 'Aventa';
             src: url('Aventa-Variable.ttf') format('truetype');
             font-weight: 100 900;
-        }
+        } */
 
         :root {
             --color-bg: #050607;

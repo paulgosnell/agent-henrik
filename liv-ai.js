@@ -254,10 +254,10 @@ class LivAI {
    * Handle contact form submission
    */
   async handleContactSubmit() {
-    const name = (document.getElementById('leadName') as HTMLInputElement)?.value.trim();
-    const email = (document.getElementById('leadEmail') as HTMLInputElement)?.value.trim();
-    const phone = (document.getElementById('leadPhone') as HTMLInputElement)?.value.trim();
-    const country = (document.getElementById('leadCountry') as HTMLInputElement)?.value.trim();
+    const name = document.getElementById('leadName')?.value.trim();
+    const email = document.getElementById('leadEmail')?.value.trim();
+    const phone = document.getElementById('leadPhone')?.value.trim();
+    const country = document.getElementById('leadCountry')?.value.trim();
 
     if (!email) {
       alert('Please enter your email address');
