@@ -259,8 +259,16 @@ async function viewLead(leadId) {
 
         if (inqError) throw inqError;
 
+        // Get storyteller inquiries
+        const { data: storytellerInquiries, error: stError } = await window.Supabase.client
+            .from('storyteller_inquiries')
+            .select('*, stories:selected_storyteller_id(title, slug)')
+            .eq('lead_id', leadId);
+
+        if (stError) throw stError;
+
         // Render detail modal
-        renderLeadDetail(lead, conversations || [], inquiries || []);
+        renderLeadDetail(lead, conversations || [], inquiries || [], storytellerInquiries || []);
 
         // Show modal
         document.getElementById('leadModal').style.display = 'flex';
@@ -274,7 +282,7 @@ async function viewLead(leadId) {
 /**
  * Render lead detail modal
  */
-function renderLeadDetail(lead, conversations, inquiries) {
+function renderLeadDetail(lead, conversations, inquiries, storytellerInquiries = []) {
     const content = document.getElementById('leadDetailContent');
 
     const detailHTML = `
@@ -329,6 +337,28 @@ function renderLeadDetail(lead, conversations, inquiries) {
                         ${inq.special_requests ? `<div><strong>Requests:</strong> ${inq.special_requests}</div>` : ''}
                     </div>
                 `).join('') : '<p>No booking inquiries yet.</p>'}
+            </div>
+
+            <div class="info-section">
+                <h3>Storyteller Inquiries (${storytellerInquiries.length})</h3>
+                ${storytellerInquiries.length > 0 ? storytellerInquiries.map(inq => `
+                    <div class="inquiry-card" style="border-left: 3px solid #eab308;">
+                        <div class="inquiry-header">
+                            <strong>${inq.stories ? inq.stories.title : inq.storyteller_name || 'Storyteller'}</strong>
+                            <span class="status-badge status-${inq.status}">${formatStatus(inq.status)}</span>
+                        </div>
+                        <div><strong>Topic:</strong> ${formatTopic(inq.topic_of_interest)}</div>
+                        <div><strong>Activity:</strong> ${formatActivity(inq.activity_type)}</div>
+                        <div><strong>Type:</strong> ${inq.inquiry_type === 'corporate' ? 'Corporate/Group' : 'Private'}</div>
+                        ${inq.group_size ? `<div><strong>Group Size:</strong> ${inq.group_size}</div>` : ''}
+                        ${inq.preferred_dates ? `<div><strong>Preferred Dates:</strong> ${inq.preferred_dates}</div>` : ''}
+                        ${inq.budget_range ? `<div><strong>Budget:</strong> ${inq.budget_range}</div>` : ''}
+                        ${inq.special_requests ? `<div><strong>Special Requests:</strong> ${inq.special_requests}</div>` : ''}
+                        <div style="margin-top: 0.5rem; font-size: 0.85rem; color: #888;">
+                            Created: ${formatDateTime(inq.created_at)}
+                        </div>
+                    </div>
+                `).join('') : '<p>No storyteller inquiries yet.</p>'}
             </div>
         </div>
     `;
@@ -463,6 +493,35 @@ function formatDateTime(dateString) {
         hour: '2-digit',
         minute: '2-digit'
     });
+}
+
+function formatTopic(topic) {
+    const topics = {
+        'film': 'Film',
+        'music': 'Music',
+        'performance': 'Performance',
+        'fashion': 'Fashion',
+        'design': 'Design',
+        'art': 'Visual Art',
+        'writing': 'Writing',
+        'photography': 'Photography',
+        'digital_media': 'Digital Media',
+        'technology': 'Technology',
+        'wellness': 'Wellness'
+    };
+    return topics[topic] || topic?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Unknown';
+}
+
+function formatActivity(activity) {
+    const activities = {
+        'meet_and_greet': 'Meet & Greet',
+        'workshop': 'Workshop',
+        'creative_activity': 'Creative Activity',
+        'consultation': 'Consultation',
+        'performance': 'Performance',
+        'tour': 'Tour'
+    };
+    return activities[activity] || activity?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Unknown';
 }
 
 // Expose functions globally

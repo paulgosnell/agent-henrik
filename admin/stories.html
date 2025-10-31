@@ -305,13 +305,107 @@
             <!-- Category -->
             <div class="form-group">
               <label class="form-label" for="category">Category</label>
-              <input
-                type="text"
+              <select
                 id="category"
                 class="form-input"
-                placeholder="e.g., Adventure, Luxury, Family"
+                onchange="toggleStorytellerFields()"
               >
-              <span class="form-hint">Optional categorization</span>
+                <option value="">Select category...</option>
+                <option value="Storyteller">Storyteller</option>
+                <option value="Experience">Experience</option>
+                <option value="Culture">Culture</option>
+                <option value="Travel Tips">Travel Tips</option>
+              </select>
+              <span class="form-hint">Select "Storyteller" for creative professionals</span>
+            </div>
+
+            <!-- Storyteller-specific fields (hidden by default) -->
+            <div id="storytellerFields" class="form-group full-width" style="display: none;">
+              <div style="border: 2px solid #eab308; border-radius: 8px; padding: 1.5rem; background: rgba(234, 179, 8, 0.05);">
+                <h3 style="margin: 0 0 1rem 0; color: #eab308; font-size: 1.1rem;">✨ Storyteller Information</h3>
+
+                <!-- Bio -->
+                <div class="form-group full-width" style="margin-bottom: 1.5rem;">
+                  <label class="form-label" for="bio">Bio/Background</label>
+                  <textarea
+                    id="bio"
+                    class="form-textarea"
+                    placeholder="Brief professional background (will default to excerpt if not provided)"
+                    style="min-height: 100px;"
+                  ></textarea>
+                  <span class="form-hint">Optional - defaults to excerpt</span>
+                </div>
+
+                <!-- Specialty Topics -->
+                <div class="form-group full-width" style="margin-bottom: 1.5rem;">
+                  <label class="form-label">Specialty Topics</label>
+                  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                      <input type="checkbox" name="specialtyTopic" value="film"> Film
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                      <input type="checkbox" name="specialtyTopic" value="music"> Music
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                      <input type="checkbox" name="specialtyTopic" value="performance"> Performance
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                      <input type="checkbox" name="specialtyTopic" value="fashion"> Fashion
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                      <input type="checkbox" name="specialtyTopic" value="design"> Design
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                      <input type="checkbox" name="specialtyTopic" value="art"> Visual Art
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                      <input type="checkbox" name="specialtyTopic" value="writing"> Writing
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                      <input type="checkbox" name="specialtyTopic" value="photography"> Photography
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                      <input type="checkbox" name="specialtyTopic" value="digital_media"> Digital Media
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                      <input type="checkbox" name="specialtyTopic" value="technology"> Technology
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                      <input type="checkbox" name="specialtyTopic" value="wellness"> Wellness
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                      <input type="checkbox" name="specialtyTopic" value="culinary"> Culinary
+                    </label>
+                  </div>
+                  <span class="form-hint">Select all that apply</span>
+                </div>
+
+                <!-- Activity Types -->
+                <div class="form-group full-width">
+                  <label class="form-label">Available Activities</label>
+                  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                      <input type="checkbox" name="activityType" value="meet_and_greet"> Meet & Greet
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                      <input type="checkbox" name="activityType" value="workshop"> Workshop
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                      <input type="checkbox" name="activityType" value="creative_activity"> Creative Activity
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                      <input type="checkbox" name="activityType" value="consultation"> Consultation
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                      <input type="checkbox" name="activityType" value="performance"> Performance
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                      <input type="checkbox" name="activityType" value="tour"> Tour
+                    </label>
+                  </div>
+                  <span class="form-hint">Select activities this storyteller can offer</span>
+                </div>
+              </div>
             </div>
 
             <!-- Display Order -->
@@ -518,7 +612,7 @@
             </div>
           </td>
           <td>
-            ${story.category ? `<span class="badge badge-category">${escapeHtml(story.category)}</span>` : '<span class="text-muted">—</span>'}
+            ${story.category ? `<span class="badge ${story.category === 'Storyteller' ? 'badge-published' : 'badge-category'}" style="${story.category === 'Storyteller' ? 'background: #eab308; color: #000;' : ''}">${escapeHtml(story.category)}</span>` : '<span class="text-muted">—</span>'}
           </td>
           <td>
             <span class="badge badge-category">${story.display_order}</span>
@@ -594,6 +688,16 @@
       document.getElementById('imagePreviewContainer').classList.add('hidden');
       document.getElementById('imageUploadArea').classList.remove('has-image');
 
+      // Reset storyteller fields
+      document.getElementById('bio').value = '';
+      document.querySelectorAll('input[name="specialtyTopic"]').forEach(checkbox => {
+        checkbox.checked = false;
+      });
+      document.querySelectorAll('input[name="activityType"]').forEach(checkbox => {
+        checkbox.checked = false;
+      });
+      toggleStorytellerFields();
+
       // Clear editor
       if (quillEditor) {
         quillEditor.root.innerHTML = '';
@@ -620,6 +724,17 @@
       }
     }
 
+    function toggleStorytellerFields() {
+      const category = document.getElementById('category').value;
+      const storytellerFields = document.getElementById('storytellerFields');
+
+      if (category === 'Storyteller') {
+        storytellerFields.style.display = 'block';
+      } else {
+        storytellerFields.style.display = 'none';
+      }
+    }
+
     function editStory(id) {
       currentStory = stories.find(s => s.id === id);
       if (!currentStory) return;
@@ -632,6 +747,24 @@
       document.getElementById('author').value = currentStory.author || 'LIV Team';
       document.getElementById('category').value = currentStory.category || '';
       document.getElementById('displayOrder').value = currentStory.display_order || 0;
+
+      // Toggle storyteller fields
+      toggleStorytellerFields();
+
+      // Populate storyteller fields if this is a storyteller
+      if (currentStory.category === 'Storyteller') {
+        document.getElementById('bio').value = currentStory.bio || '';
+
+        // Set specialty topics checkboxes
+        document.querySelectorAll('input[name="specialtyTopic"]').forEach(checkbox => {
+          checkbox.checked = currentStory.specialty_topics?.includes(checkbox.value) || false;
+        });
+
+        // Set activity types checkboxes
+        document.querySelectorAll('input[name="activityType"]').forEach(checkbox => {
+          checkbox.checked = currentStory.activity_types?.includes(checkbox.value) || false;
+        });
+      }
 
       // Set published date if exists
       if (currentStory.published_at) {
@@ -891,6 +1024,25 @@
           }
         }
 
+        // Collect storyteller-specific fields if category is Storyteller
+        let specialtyTopics = [];
+        let activityTypes = [];
+        let bio = null;
+
+        if (category === 'Storyteller') {
+          // Get checked specialty topics
+          document.querySelectorAll('input[name="specialtyTopic"]:checked').forEach(checkbox => {
+            specialtyTopics.push(checkbox.value);
+          });
+
+          // Get checked activity types
+          document.querySelectorAll('input[name="activityType"]:checked').forEach(checkbox => {
+            activityTypes.push(checkbox.value);
+          });
+
+          bio = document.getElementById('bio').value.trim() || null;
+        }
+
         // Prepare data
         const storyData = {
           title,
@@ -901,7 +1053,10 @@
           category: category || null,
           display_order: displayOrder,
           hero_image_url: heroImageUrl,
-          published_at: publishedAt
+          published_at: publishedAt,
+          specialty_topics: specialtyTopics.length > 0 ? specialtyTopics : null,
+          activity_types: activityTypes.length > 0 ? activityTypes : null,
+          bio: bio
         };
 
         // Save to database

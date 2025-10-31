@@ -21,6 +21,17 @@ class LivAI {
     this.isInitialized = false;
     this.sessionId = null;
     this.leadInfo = null;
+
+    // Storyteller-specific state
+    this.storytellerInquiry = {
+      topic: null,
+      activityType: null,
+      selectedStorytellerId: null,
+      inquiryType: null,
+      groupSize: null,
+      preferredDates: null,
+      budgetRange: null
+    };
   }
 
   /**
@@ -193,13 +204,29 @@ class LivAI {
     this.sessionId = this.generateSessionId();
     this.leadInfo = null;
 
+    // Reset storyteller inquiry state
+    this.storytellerInquiry = {
+      topic: null,
+      activityType: null,
+      selectedStorytellerId: null,
+      inquiryType: null,
+      groupSize: null,
+      preferredDates: null,
+      budgetRange: null
+    };
+
     // Clear chat messages except the initial welcome
     if (this.chatMessages) {
-      this.chatMessages.innerHTML = `
-        <div class="chat-message ai">
-          <p>Welcome. I'm LIV — Luxury Itinerary Visionary. I'm here to craft extraordinary Swedish journeys tailored to your desires.</p>
-        </div>
-      `;
+      const isStorytellerMode = this.context?.type === 'storyteller';
+      const welcomeMessage = isStorytellerMode
+        ? `<div class="chat-message ai">
+            <p>Welcome. I help you discover and meet extraordinary storytellers — creative minds who shape the Swedish creative industry and culture scene.</p>
+          </div>`
+        : `<div class="chat-message ai">
+            <p>Welcome. I'm LIV — Luxury Itinerary Visionary. I'm here to craft extraordinary Swedish journeys tailored to your desires.</p>
+          </div>`;
+
+      this.chatMessages.innerHTML = welcomeMessage;
     }
   }
 
@@ -358,7 +385,8 @@ class LivAI {
           sessionId: this.sessionId,
           context: this.context,
           stream: true,
-          leadInfo: this.leadInfo
+          leadInfo: this.leadInfo,
+          storytellerInquiry: this.context?.type === 'storyteller' ? this.storytellerInquiry : undefined
         })
       });
 

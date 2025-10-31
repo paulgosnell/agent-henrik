@@ -15,7 +15,7 @@ interface ChatRequest {
   messages: ChatMessage[];
   sessionId?: string;
   context?: {
-    type?: 'map' | 'story' | 'experience' | 'theme' | 'destination' | 'general';
+    type?: 'map' | 'story' | 'experience' | 'theme' | 'destination' | 'general' | 'storyteller';
     name?: string;
     category?: string;
     themes?: string[];
@@ -28,6 +28,15 @@ interface ChatRequest {
     name?: string;
     phone?: string;
     country?: string;
+  };
+  storytellerInquiry?: {
+    topic?: string;
+    activityType?: string;
+    selectedStorytellerId?: string;
+    inquiryType?: 'private' | 'corporate';
+    groupSize?: number;
+    preferredDates?: string;
+    budgetRange?: string;
   };
 }
 
@@ -44,21 +53,41 @@ Deno.serve(async (req) => {
 
   try {
     const supabase = createClient(supabaseUrl, supabaseKey);
-    const { messages, sessionId, context, stream = true, leadInfo }: ChatRequest = await req.json();
+    const { messages, sessionId, context, stream = true, leadInfo, storytellerInquiry }: ChatRequest = await req.json();
 
     // Generate session ID if not provided
     const actualSessionId = sessionId || crypto.randomUUID();
 
-    // Load destinations, themes, and LIV instructions from Supabase to build knowledge base
-    const [destinationsResult, themesResult, instructionsResult] = await Promise.all([
-      supabase.from('destinations').select('*').eq('published', true),
-      supabase.from('themes').select('*'),
-      supabase.from('liv_instructions').select('*').eq('is_active', true).order('priority', { ascending: false })
-    ]);
+    // Detect if this is a storyteller conversation
+    const isStorytellerMode = context?.type === 'storyteller';
 
-    const destinations = destinationsResult.data || [];
-    const themes = themesResult.data || [];
-    const instructions = instructionsResult.data || [];
+    // Load data based on conversation type
+    let destinations: any[] = [];
+    let themes: any[] = [];
+    let instructions: any[] = [];
+    let storytellers: any[] = [];
+
+    if (isStorytellerMode) {
+      // Load storytellers for storyteller mode
+      const [storytellersResult] = await Promise.all([
+        supabase.from('stories')
+          .select('*')
+          .eq('category', 'Storyteller')
+          .eq('published_at', true)
+          .order('display_order', { ascending: true })
+      ]);
+      storytellers = storytellersResult.data || [];
+    } else {
+      // Load destinations, themes, and instructions for regular itinerary mode
+      const [destinationsResult, themesResult, instructionsResult] = await Promise.all([
+        supabase.from('destinations').select('*').eq('published', true),
+        supabase.from('themes').select('*'),
+        supabase.from('liv_instructions').select('*').eq('is_active', true).order('priority', { ascending: false })
+      ]);
+      destinations = destinationsResult.data || [];
+      themes = themesResult.data || [];
+      instructions = instructionsResult.data || [];
+    }
 
     // Save or update conversation
     let conversationId: string | null = null;
@@ -153,8 +182,43 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Build LIV's system prompt with full knowledge base and admin instructions
-    const systemPrompt = buildSystemPrompt(destinations, themes, instructions, context, !!leadInfo?.email);
+    // Handle storyteller inquiry capture
+    if (isStorytellerMode && storytellerInquiry && leadInfo?.email) {
+      // Check if we have enough information to create an inquiry
+      if (storytellerInquiry.topic && storytellerInquiry.activityType) {
+        // Get storyteller details if selected
+        let storytellerName = null;
+        if (storytellerInquiry.selectedStorytellerId) {
+          const selected = storytellers.find(s => s.id === storytellerInquiry.selectedStorytellerId);
+          storytellerName = selected?.title || null;
+        }
+
+        // Create storyteller inquiry record
+        await supabase
+          .from('storyteller_inquiries')
+          .insert({
+            conversation_id: conversationId,
+            lead_id: leadId,
+            email: leadInfo.email,
+            name: leadInfo.name || null,
+            phone: leadInfo.phone || null,
+            selected_storyteller_id: storytellerInquiry.selectedStorytellerId || null,
+            storyteller_name: storytellerName,
+            topic_of_interest: storytellerInquiry.topic,
+            activity_type: storytellerInquiry.activityType,
+            inquiry_type: storytellerInquiry.inquiryType || 'private',
+            group_size: storytellerInquiry.groupSize || null,
+            preferred_dates: storytellerInquiry.preferredDates || null,
+            budget_range: storytellerInquiry.budgetRange || null,
+            status: 'pending'
+          });
+      }
+    }
+
+    // Build LIV's system prompt based on conversation mode
+    const systemPrompt = isStorytellerMode
+      ? buildStorytellerPrompt(storytellers, context, storytellerInquiry, !!leadInfo?.email)
+      : buildSystemPrompt(destinations, themes, instructions, context, !!leadInfo?.email);
 
     // Prepare messages for OpenAI
     const openaiMessages: ChatMessage[] = [
@@ -411,4 +475,152 @@ When creating itineraries:
 "I see Stockholm's nightlife has caught your eye. Let me paint you an evening that goes beyond the usual — we'll begin in the Grand Hôtel's Cadier Bar at dusk, then slip into an underground jazz speakeasy that locals guard jealously, followed by a private rooftop cocktail experience where a mixologist has reserved the bar just for you. Should we build this into a 3-day Stockholm cultural immersion, or are you dreaming of something that spans the entire country?"
 
 Remember: You're not just answering questions - you're the architect of unforgettable Swedish journeys.`;
+}
+
+function buildStorytellerPrompt(
+  storytellers: any[],
+  context?: ChatRequest['context'],
+  storytellerInquiry?: ChatRequest['storytellerInquiry'],
+  hasContactInfo: boolean = false
+): string {
+  // Build storytellers knowledge base
+  const storytellersKnowledge = storytellers.map(s => {
+    const topics = s.specialty_topics?.join(', ') || 'Various';
+    const activities = s.activity_types?.join(', ') || 'Various';
+    return `- **${s.title}**
+  Topics: ${topics}
+  Activities: ${activities}
+  Bio: ${s.excerpt || s.bio || 'No description available'}
+  ID: ${s.id}`;
+  }).join('\n\n');
+
+  // Determine conversation stage
+  let stageGuidance = '';
+  if (!storytellerInquiry?.topic) {
+    // Stage 1: Welcome & Topic Selection
+    stageGuidance = `
+## Current Stage: Topic Selection
+
+The guest is just starting. Your opening message should:
+1. Welcome them warmly to storyteller discovery
+2. Explain you help connect with extraordinary Swedish creatives
+3. Ask what kind of storytellers they want to meet
+4. List the available topics: **film, music, performance, fashion, design, visual art, writing, photography, digital media, technology, or wellness**
+
+Keep it conversational and inspiring, not transactional.`;
+  } else if (!storytellerInquiry?.activityType) {
+    // Stage 2: Activity Type Selection
+    stageGuidance = `
+## Current Stage: Activity Type Selection
+
+The guest has selected topic: **${storytellerInquiry.topic}**
+
+Now ask them what type of encounter they prefer:
+- **Meet & Greet**: Intimate conversation, Q&A session, coffee/drinks meeting
+- **Workshop**: Hands-on learning, skill development, collaborative creation
+- **Creative Activity**: Collaborative project, unique experience, immersive session
+
+Be enthusiastic about their choice and set expectations for what each type offers.`;
+  } else if (!storytellerInquiry?.selectedStorytellerId) {
+    // Stage 3: Storyteller Suggestions
+    const filteredStorytellers = storytellers.filter(s =>
+      s.specialty_topics?.some((t: string) =>
+        t.toLowerCase().includes(storytellerInquiry.topic?.toLowerCase() || '')
+      )
+    );
+
+    stageGuidance = `
+## Current Stage: Storyteller Suggestions
+
+The guest wants: **${storytellerInquiry.topic}** through **${storytellerInquiry.activityType}**
+
+Present 3-5 storytellers who match their interests. Here are the best matches:
+${filteredStorytellers.length > 0 ? filteredStorytellers.map(s => `
+- **${s.title}**
+  ${s.excerpt || s.bio || ''}
+  Perfect for: ${s.specialty_topics?.join(', ')}
+  Can offer: ${s.activity_types?.join(', ')}
+`).join('\n') : 'All storytellers from the knowledge base'}
+
+Present them as compelling, unique individuals - not a list. Make each sound intriguing.
+Ask: "Which one feels right, or shall I keep exploring?"`;
+  } else {
+    // Stage 4: Booking Details
+    stageGuidance = `
+## Current Stage: Booking Details Collection
+
+The guest has selected a storyteller! Now collect practical information:
+
+1. **Inquiry type**: Is this a private encounter or corporate/group event?
+2. **Group size**: How many people will attend?
+3. **Preferred dates**: When are they hoping to meet? (month, season, specific dates)
+4. **Budget range**: What's their investment level? (budget-friendly, mid-range, premium, luxury)
+5. **Special requests**: Any specific goals, themes, or requirements?
+
+Be conversational, not like a form. Gather information naturally through dialogue.
+
+When you have enough information, confirm you'll reach out to the storyteller and get back to them within 24-48 hours.`;
+  }
+
+  const contactInfoGuidance = hasContactInfo
+    ? '\n\n**The guest has provided contact information. Focus on finalizing the booking details and confirming next steps.**'
+    : '\n\n**When you have the booking details, ask for their email and phone so you can formalize the inquiry and connect them with the storyteller.**';
+
+  return `You are LIV (Luxury Itinerary Visionary), an AI concierge for Luxury Travel Sweden. In this conversation, you're in **Storyteller Discovery Mode** - helping guests discover and connect with extraordinary Swedish creative minds.
+
+## Your Role
+You're a cultural connector who introduces discerning guests to Sweden's most compelling storytellers - the artists, designers, chefs, innovators, and cultural leaders who shape Swedish creativity.
+
+## Your Personality
+- Warm, enthusiastic cultural insider
+- Knowledgeable about Swedish creative scene
+- Respectful of both guests and storytellers
+- Professional yet approachable
+- Focused on meaningful connections, not transactions
+
+## Available Storytellers
+${storytellersKnowledge}
+
+## Topic Categories
+- **Film**: Directors, cinematographers, producers, film critics
+- **Music**: Musicians, composers, producers, sound artists
+- **Performance**: Actors, dancers, performers, theater makers
+- **Fashion**: Designers, stylists, fashion innovators
+- **Design**: Product designers, architects, spatial designers
+- **Visual Art**: Painters, sculptors, installation artists, galleries
+- **Writing**: Authors, poets, journalists, storytellers
+- **Photography**: Photographers, visual storytellers
+- **Digital Media**: Digital artists, new media creators
+- **Technology**: Tech innovators, startup founders, digital pioneers
+- **Wellness**: Wellness experts, biohackers, longevity specialists
+
+## Activity Types
+- **Meet & Greet**: 1-2 hour intimate conversation, Q&A, coffee/drinks meeting
+- **Workshop**: Half-day or full-day hands-on learning experience
+- **Creative Activity**: Collaborative project, studio visit, immersive experience
+${stageGuidance}${contactInfoGuidance}
+
+## Conversation Guidelines
+1. **Be conversational**: This is a dialogue, not a form. Ask questions naturally.
+2. **Show enthusiasm**: These storytellers are extraordinary - let that show!
+3. **Respect privacy**: Don't share storytellers' personal contact info directly
+4. **Set expectations**: Be clear that you'll coordinate the connection
+5. **Build excitement**: Make them excited about the potential encounter
+6. **Close with clarity**: Confirm next steps (we'll reach out within 24-48 hours)
+
+## Example Flow
+
+**First message:**
+"Welcome! I help you discover and meet extraordinary storytellers — creative minds who shape Sweden's cultural scene. What kind of storytellers have you always wanted to meet? Those in film, music, fashion, design, art, wellness, or another creative field?"
+
+**After topic selection:**
+"Beautiful choice! I can suggest storytellers who truly bring that world to life. Would you like to connect through a meet & greet, a hands-on workshop, or a collaborative creative activity?"
+
+**When suggesting storytellers:**
+"I think you'll love these three — storytellers whose work carries the spirit you're looking for. [Brief, compelling descriptions]. Which one feels right, or shall I keep exploring?"
+
+**When collecting details:**
+"Wonderful! We'll do our best to make this encounter happen. To coordinate with [Storyteller Name], I need a few details: Is this a private meeting or a group/corporate event? How many people? When were you hoping to connect?"
+
+Remember: You're creating meaningful human connections, not just bookings. Make every interaction feel special and personal.`;
 }
