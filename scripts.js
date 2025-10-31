@@ -1748,6 +1748,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             };
 
+            // Make storytellerData available globally
+            window.storytellerData = storytellerData;
+
             // Open modal when read-more button is clicked
             document.querySelectorAll('.read-more-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -1758,8 +1761,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     let data = null;
 
                     if (pillarCard) {
-                        const pillarType = pillarCard.dataset.pillar;
-                        data = pillarData[pillarType];
+                        // Check if it's a storyteller card first
+                        if (pillarCard.dataset.storyteller) {
+                            const storytellerType = pillarCard.dataset.storyteller;
+                            data = storytellerData[storytellerType];
+                        } else {
+                            const pillarType = pillarCard.dataset.pillar;
+                            data = pillarData[pillarType];
+                        }
                     } else if (storyCard) {
                         const storytellerType = storyCard.dataset.storyteller;
                         data = storytellerData[storytellerType];
@@ -2206,11 +2215,19 @@ function initializePillarModals() {
             let slug = null;
 
             if (pillarCard) {
-                slug = pillarCard.dataset.pillar;
-                console.log(`Pillar card clicked with slug: ${slug}`);
-                // First check CMS data, then fall back to hardcoded data
-                data = window.pillarDataCMS?.[slug] || window.pillarData?.[slug];
-                console.log(`Found pillar data:`, data ? 'YES' : 'NO');
+                // Check if it's a storyteller card first
+                if (pillarCard.dataset.storyteller) {
+                    slug = pillarCard.dataset.storyteller;
+                    console.log(`Storyteller pillar card clicked with slug: ${slug}`);
+                    data = window.storytellerData?.[slug];
+                    console.log(`Found storyteller data:`, data ? 'YES' : 'NO');
+                } else {
+                    slug = pillarCard.dataset.pillar;
+                    console.log(`Pillar card clicked with slug: ${slug}`);
+                    // First check CMS data, then fall back to hardcoded data
+                    data = window.pillarDataCMS?.[slug] || window.pillarData?.[slug];
+                    console.log(`Found pillar data:`, data ? 'YES' : 'NO');
+                }
             } else if (storyCard) {
                 slug = storyCard.dataset.storyteller;
                 console.log(`Story card clicked with slug: ${slug}`);

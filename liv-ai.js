@@ -401,7 +401,7 @@ class LivAI {
 
                 if (content) {
                   aiResponse += content;
-                  paragraph.textContent = aiResponse;
+                  paragraph.innerHTML = this.markdownToHtml(aiResponse);
                   this.scrollToBottom();
                 }
               } catch (e) {
@@ -446,7 +446,7 @@ class LivAI {
     messageEl.classList.add('chat-message', role);
 
     const paragraph = document.createElement('p');
-    paragraph.textContent = text;
+    paragraph.innerHTML = this.markdownToHtml(text);
     messageEl.appendChild(paragraph);
 
     this.chatMessages.appendChild(messageEl);
@@ -460,6 +460,28 @@ class LivAI {
     if (this.chatMessages) {
       this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
     }
+  }
+
+  /**
+   * Convert basic markdown to HTML
+   * Supports: **bold**, *italic*, and line breaks
+   */
+  markdownToHtml(text) {
+    // Escape HTML first to prevent XSS
+    const div = document.createElement('div');
+    div.textContent = text;
+    let html = div.innerHTML;
+
+    // Convert **bold** to <strong>
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+    // Convert *italic* to <em>
+    html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+    // Convert line breaks
+    html = html.replace(/\n/g, '<br>');
+
+    return html;
   }
 }
 

@@ -4116,6 +4116,7 @@
 
             .section-heading h2 {
                 font-size: clamp(1.9rem, 7vw, 2.4rem);
+                white-space: normal !important;
             }
 
             .section-heading p {
