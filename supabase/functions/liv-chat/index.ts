@@ -143,18 +143,27 @@ Deno.serve(async (req) => {
     let leadId: string | null = existingConversation?.lead_id || null;
 
     if (leadInfo && leadInfo.email && !leadId) {
+      console.log('📧 Lead capture triggered:', leadInfo.email);
+
       // Check if lead already exists
-      const { data: existingLead } = await supabase
+      const { data: existingLead, error: leadCheckError } = await supabase
         .from('leads')
         .select('id')
         .eq('email', leadInfo.email)
         .single();
 
+      if (leadCheckError && leadCheckError.code !== 'PGRST116') {
+        // PGRST116 = no rows returned (not an error, just means lead doesn't exist)
+        console.error('Error checking for existing lead:', leadCheckError);
+      }
+
       if (existingLead) {
         leadId = existingLead.id;
+        console.log('✅ Found existing lead:', leadId);
       } else {
         // Create new lead
-        const { data: newLead } = await supabase
+        console.log('➕ Creating new lead for:', leadInfo.email);
+        const { data: newLead, error: insertError } = await supabase
           .from('leads')
           .insert({
             email: leadInfo.email,
@@ -167,18 +176,31 @@ Deno.serve(async (req) => {
           .select()
           .single();
 
+        if (insertError) {
+          console.error('❌ Error creating lead:', insertError);
+          throw new Error(`Failed to create lead: ${insertError.message}`);
+        }
+
         leadId = newLead?.id || null;
+        console.log('✅ Created new lead:', leadId);
       }
 
       // Link conversation to lead
       if (conversationId && leadId) {
-        await supabase
+        console.log('🔗 Linking conversation to lead');
+        const { error: updateError } = await supabase
           .from('conversations')
           .update({
             lead_id: leadId,
             status: 'converted'
           })
           .eq('id', conversationId);
+
+        if (updateError) {
+          console.error('❌ Error linking conversation to lead:', updateError);
+        } else {
+          console.log('✅ Conversation linked to lead successfully');
+        }
       }
     }
 
@@ -227,6 +249,7 @@ Deno.serve(async (req) => {
     ];
 
     // Call OpenAI API
+    console.log('Calling OpenAI API with model: gpt-4o');
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -242,9 +265,12 @@ Deno.serve(async (req) => {
       }),
     });
 
+    console.log('OpenAI API response status:', openaiResponse.status);
+
     if (!openaiResponse.ok) {
-      const error = await openaiResponse.text();
-      throw new Error(`OpenAI API error: ${error}`);
+      const errorText = await openaiResponse.text();
+      console.error('OpenAI API error response:', errorText);
+      throw new Error(`OpenAI API error (${openaiResponse.status}): ${errorText}`);
     }
 
     // If streaming, we need to capture the response for saving
@@ -338,9 +364,13 @@ Deno.serve(async (req) => {
 
   } catch (error) {
     console.error('Error in liv-chat function:', error);
+
+    // Return detailed error information
     return new Response(
       JSON.stringify({
-        error: error.message || 'Internal server error'
+        error: error.message || 'Internal server error',
+        details: error.stack || '',
+        timestamp: new Date().toISOString()
       }),
       {
         status: 500,
