@@ -1202,7 +1202,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const categoryToggleAll = document.getElementById('categoryToggleAll');
 
             let currentSeason = 'spring';
-            let currentFilter = 'all';
+            let activeThemes = new Set(['nature', 'design', 'royal-culture', 'culinary', 'nightlife', 'legacy']); // All active by default
             let activeCategories = new Set(['province', 'city', 'seaside', 'beach', 'ski', 'park', 'storyteller']); // All active by default
             let selectedCities = new Set();
             let markers = {};
@@ -1422,15 +1422,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (!marker) return;
 
                     const seasonMatch = data.seasons.map(s => s.toLowerCase()).includes(currentSeason);
-                    const themeMatch = currentFilter === 'all' || (currentFilter !== 'none' && data.themeKeys.includes(currentFilter));
+                    // Check if any active theme matches any of the destination's themes
+                    const themeMatch = activeThemes.size === 0 ? false : data.themeKeys.some(theme => activeThemes.has(theme));
                     const categoryMatch = activeCategories.has(data.category);
 
                     const markerEl = marker.getElement();
-                    // If theme filter is set to 'none', hide all markers
-                    if (currentFilter === 'none' || !seasonMatch || !themeMatch || !categoryMatch) {
-                        markerEl.classList.add('marker-hidden');
-                    } else {
+                    if (seasonMatch && themeMatch && categoryMatch) {
                         markerEl.classList.remove('marker-hidden');
+                    } else {
+                        markerEl.classList.add('marker-hidden');
                     }
                 });
             }
@@ -1508,25 +1508,59 @@ document.addEventListener('DOMContentLoaded', function() {
                         const isActive = this.classList.contains('active');
                         if (isActive) {
                             // Turn all off
+                            activeThemes.clear();
+                            filterBtns.forEach(b => {
+                                if (b.dataset.filter !== 'all') {
+                                    b.classList.remove('active');
+                                }
+                            });
                             this.classList.remove('active');
                             this.textContent = 'All Off';
-                            currentFilter = 'none';
                         } else {
                             // Turn all on
+                            activeThemes = new Set(['nature', 'design', 'royal-culture', 'culinary', 'nightlife', 'legacy']);
+                            filterBtns.forEach(b => {
+                                if (b.dataset.filter !== 'all') {
+                                    b.classList.add('active');
+                                }
+                            });
                             this.classList.add('active');
                             this.textContent = 'All On';
-                            currentFilter = 'all';
                         }
                     } else {
-                        // Handle individual theme filters - only one can be active at a time
-                        filterBtns.forEach(b => b.classList.remove('active'));
-                        this.classList.add('active');
-                        currentFilter = filter;
+                        // Handle individual theme filters - toggle on/off
+                        if (activeThemes.has(filter)) {
+                            activeThemes.delete(filter);
+                            this.classList.remove('active');
+                        } else {
+                            activeThemes.add(filter);
+                            this.classList.add('active');
+                        }
+
+                        // Update "All On/Off" button state
+                        updateThemeToggleButtonState();
                     }
 
                     filterMarkers();
                 });
             });
+
+            // Helper function to update theme toggle button state
+            function updateThemeToggleButtonState() {
+                const allActive = activeThemes.size === 6;
+                const noneActive = activeThemes.size === 0;
+
+                if (allActive) {
+                    themeToggleAll.classList.add('active');
+                    themeToggleAll.textContent = 'All On';
+                } else if (noneActive) {
+                    themeToggleAll.classList.remove('active');
+                    themeToggleAll.textContent = 'All Off';
+                } else {
+                    themeToggleAll.classList.remove('active');
+                    themeToggleAll.textContent = 'All Off';
+                }
+            }
 
             // Category filters
             categoryFilterBtns.forEach(btn => {
