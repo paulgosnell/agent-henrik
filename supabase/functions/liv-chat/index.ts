@@ -524,9 +524,30 @@ function buildStorytellerPrompt(
   ID: ${s.id}`;
   }).join('\n\n');
 
+  // Check if a specific storyteller was clicked (context.name matches a storyteller title)
+  const selectedStoryteller = context?.name ?
+    storytellers.find(s => s.title === context.name) :
+    null;
+
   // Determine conversation stage
   let stageGuidance = '';
-  if (!storytellerInquiry?.topic) {
+
+  // If they clicked on a specific storyteller, skip to booking stage
+  if (selectedStoryteller && !storytellerInquiry?.selectedStorytellerId) {
+    stageGuidance = `
+## Current Stage: Specific Storyteller Selected
+
+The guest clicked on **${selectedStoryteller.title}** directly from the website. They are already interested in this specific storyteller!
+
+**DO NOT** ask them generic questions about what kind of storytellers they want to meet.
+**DO NOT** ask them to choose from a list of storytellers.
+**DO** confirm you understand they want to meet ${selectedStoryteller.title.split(' – ')[0]} (the first part before the dash).
+**DO** ask about their preferred encounter type: meet & greet, workshop, or creative activity.
+**DO** collect booking details: inquiry type (private/corporate), group size, preferred dates, budget range.
+
+Example opening:
+"Perfect! ${selectedStoryteller.title.split(' – ')[0]} create truly unique experiences. Would you prefer a meet & greet, a hands-on workshop, or a collaborative creative activity with them?"`;
+  } else if (!storytellerInquiry?.topic) {
     // Stage 1: Welcome & Topic Selection
     stageGuidance = `
 ## Current Stage: Topic Selection
