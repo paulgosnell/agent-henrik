@@ -275,11 +275,16 @@ class LivAI {
 
   /**
    * Show contact form to capture lead information
+   * @param {string} prefilledEmail - Optional email to pre-fill
    */
-  showContactForm() {
+  showContactForm(prefilledEmail = null) {
+    const message = prefilledEmail
+      ? `Thank you! I have your email. May I also have your name and phone number to complete your profile?`
+      : `I'd love to send you a detailed itinerary and connect you with our team. May I have your contact information?`;
+
     const formHtml = `
       <div class="chat-message ai">
-        <p>I'd love to send you a detailed itinerary and connect you with our team. May I have your contact information?</p>
+        <p>${message}</p>
       </div>
       <div class="chat-contact-form" id="contactForm">
         <div class="form-group">
@@ -288,7 +293,7 @@ class LivAI {
         </div>
         <div class="form-group">
           <label for="leadEmail">Email *</label>
-          <input type="email" id="leadEmail" placeholder="your@email.com" required />
+          <input type="email" id="leadEmail" placeholder="your@email.com" value="${prefilledEmail || ''}" ${prefilledEmail ? 'readonly' : ''} required />
         </div>
         <div class="form-group">
           <label for="leadPhone">Phone (optional)</label>
@@ -469,6 +474,35 @@ class LivAI {
       role: 'user',
       content: message
     });
+
+    // Auto-detect email addresses in user message
+    if (!this.leadInfo) {
+      const emailRegex = /\b[^\s@]+@[^\s@]+\.[^\s@]+\b/;
+      const emailMatch = message.match(emailRegex);
+
+      if (emailMatch) {
+        const detectedEmail = emailMatch[0];
+        console.log('📧 Email auto-detected:', detectedEmail);
+
+        // Auto-capture the email
+        this.leadInfo = {
+          email: detectedEmail,
+          name: null,
+          phone: null,
+          country: null
+        };
+
+        // Save lead immediately
+        await this.saveLead();
+
+        // Show contact form to collect additional details after AI responds
+        setTimeout(() => {
+          if (!document.getElementById('contactForm')) {
+            this.showContactForm(detectedEmail);
+          }
+        }, 3000);
+      }
+    }
 
     // Detect high-intent keywords and trigger contact form
     if (!this.leadInfo) {
