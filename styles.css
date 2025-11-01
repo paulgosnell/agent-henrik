@@ -1373,44 +1373,86 @@
         }
 
         .filter-btn {
-            padding: 0.6rem 1.4rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: rgba(255, 255, 255, 0.8);
+            padding: 0.6rem 1.4rem 0.6rem 2.4rem;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
             font-size: 0.85rem;
-            font-weight: 400;
+            font-weight: 500;
             letter-spacing: 0.08rem;
             cursor: pointer;
             border-radius: 25px;
             transition: all 0.3s ease;
+            position: relative;
         }
 
         [data-theme="light"] .filter-btn {
-            background: rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(0, 0, 0, 0.15);
-            color: rgba(0, 0, 0, 0.8);
+            color: rgba(0, 0, 0, 0.7);
         }
 
         .filter-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.9);
         }
 
         [data-theme="light"] .filter-btn:hover {
-            background: rgba(0, 0, 0, 0.1);
-            border-color: rgba(0, 0, 0, 0.3);
+            color: rgba(0, 0, 0, 0.9);
         }
 
         .filter-btn.active {
-            background: rgba(120, 120, 120, 0.2);
-            border-color: rgba(120, 120, 120, 0.6);
-            color: rgb(120, 120, 120);
+            background: rgba(120, 120, 120, 0.9);
+            color: #fff;
         }
 
         [data-theme="light"] .filter-btn.active {
-            background: rgba(100, 100, 100, 0.25);
-            border-color: rgba(120, 120, 120, 0.7);
-            color: rgb(100, 100, 100);
+            background: rgba(100, 100, 100, 0.85);
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        /* Add colored circle before each theme filter */
+        .filter-btn::before {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--theme-color);
+        }
+
+        /* Theme-specific colors */
+        .filter-btn[data-filter="nature"] {
+            --theme-color: #4ade80;
+        }
+
+        .filter-btn[data-filter="design"] {
+            --theme-color: #818cf8;
+        }
+
+        .filter-btn[data-filter="royal-culture"] {
+            --theme-color: #fbbf24;
+        }
+
+        .filter-btn[data-filter="culinary"] {
+            --theme-color: #fb923c;
+        }
+
+        .filter-btn[data-filter="nightlife"] {
+            --theme-color: #f472b6;
+        }
+
+        .filter-btn[data-filter="legacy"] {
+            --theme-color: #22d3ee;
+        }
+
+        /* 'All' filter doesn't need a circle */
+        .filter-btn[data-filter="all"]::before {
+            display: none;
+        }
+
+        .filter-btn[data-filter="all"] {
+            padding: 0.6rem 1.4rem;
         }
 
         /* Category filters */
@@ -1427,11 +1469,11 @@
 
         .category-filter-btn {
             padding: 0.6rem 1.4rem 0.6rem 2.4rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: rgba(255, 255, 255, 0.8);
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
             font-size: 0.85rem;
-            font-weight: 400;
+            font-weight: 500;
             letter-spacing: 0.08rem;
             cursor: pointer;
             border-radius: 25px;
@@ -1440,9 +1482,7 @@
         }
 
         [data-theme="light"] .category-filter-btn {
-            background: rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(0, 0, 0, 0.15);
-            color: rgba(0, 0, 0, 0.8);
+            color: rgba(0, 0, 0, 0.7);
         }
 
         .category-filter-btn::before {
@@ -1454,85 +1494,64 @@
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background: var(--filter-color);
+            background: var(--category-color);
         }
 
-        .category-filter-btn[data-category="region"],
-        .category-filter-btn[data-category="city"],
-        .category-filter-btn[data-category="storyteller"],
-        .category-filter-btn[data-category="province"],
-        .category-filter-btn[data-category="seaside"],
-        .category-filter-btn[data-category="beach"],
-        .category-filter-btn[data-category="ski"],
+        /* Category-specific colors matching map markers */
+        .category-filter-btn[data-category="province"] {
+            --category-color: #ef4444;
+        }
+
+        .category-filter-btn[data-category="city"] {
+            --category-color: #10b981;
+        }
+
+        .category-filter-btn[data-category="storyteller"] {
+            --category-color: #f59e0b;
+        }
+
+        .category-filter-btn[data-category="seaside"] {
+            --category-color: #06b6d4;
+        }
+
+        .category-filter-btn[data-category="beach"] {
+            --category-color: #fbbf24;
+        }
+
+        .category-filter-btn[data-category="ski"] {
+            --category-color: #8b5cf6;
+        }
+
         .category-filter-btn[data-category="park"] {
-            --filter-color: rgba(255, 255, 255, 0.6);
-        }
-
-        [data-theme="light"] .category-filter-btn[data-category="region"],
-        [data-theme="light"] .category-filter-btn[data-category="city"],
-        [data-theme="light"] .category-filter-btn[data-category="storyteller"],
-        [data-theme="light"] .category-filter-btn[data-category="province"],
-        [data-theme="light"] .category-filter-btn[data-category="seaside"],
-        [data-theme="light"] .category-filter-btn[data-category="beach"],
-        [data-theme="light"] .category-filter-btn[data-category="ski"],
-        [data-theme="light"] .category-filter-btn[data-category="park"] {
-            --filter-color: rgba(0, 0, 0, 0.4);
+            --category-color: #22c55e;
         }
 
         .category-filter-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.9);
         }
 
         [data-theme="light"] .category-filter-btn:hover {
-            background: rgba(0, 0, 0, 0.1);
-            border-color: rgba(0, 0, 0, 0.3);
-        }
-
-        .category-filter-btn.active {
-            background: rgba(var(--filter-color-rgb), 0.15);
-            border-color: var(--filter-color);
-            color: rgba(255, 255, 255, 0.95);
-        }
-
-        [data-theme="light"] .category-filter-btn.active {
-            background: rgba(var(--filter-color-rgb), 0.2);
-            border-color: var(--filter-color);
             color: rgba(0, 0, 0, 0.9);
         }
 
-        .category-filter-btn[data-category="region"].active,
-        .category-filter-btn[data-category="city"].active,
-        .category-filter-btn[data-category="storyteller"].active,
-        .category-filter-btn[data-category="province"].active,
-        .category-filter-btn[data-category="seaside"].active,
-        .category-filter-btn[data-category="beach"].active,
-        .category-filter-btn[data-category="ski"].active,
-        .category-filter-btn[data-category="park"].active {
-            --filter-color-rgb: 120, 120, 120;
-            --filter-color: rgb(120, 120, 120);
+        .category-filter-btn.active {
+            background: rgba(120, 120, 120, 0.9);
+            color: #fff;
         }
 
-        [data-theme="light"] .category-filter-btn[data-category="region"].active,
-        [data-theme="light"] .category-filter-btn[data-category="city"].active,
-        [data-theme="light"] .category-filter-btn[data-category="storyteller"].active,
-        [data-theme="light"] .category-filter-btn[data-category="province"].active,
-        [data-theme="light"] .category-filter-btn[data-category="seaside"].active,
-        [data-theme="light"] .category-filter-btn[data-category="beach"].active,
-        [data-theme="light"] .category-filter-btn[data-category="ski"].active,
-        [data-theme="light"] .category-filter-btn[data-category="park"].active {
-            --filter-color-rgb: 100, 100, 100;
-            --filter-color: rgb(100, 100, 100);
+        [data-theme="light"] .category-filter-btn.active {
+            background: rgba(100, 100, 100, 0.85);
+            color: rgba(255, 255, 255, 0.95);
         }
 
         /* Category toggle all/none buttons */
         .category-toggle-all {
             padding: 0.6rem 1.4rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: rgba(255, 255, 255, 0.8);
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
             font-size: 0.85rem;
-            font-weight: 400;
+            font-weight: 500;
             letter-spacing: 0.08rem;
             cursor: pointer;
             border-radius: 25px;
@@ -1540,31 +1559,25 @@
         }
 
         [data-theme="light"] .category-toggle-all {
-            background: rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(0, 0, 0, 0.15);
-            color: rgba(0, 0, 0, 0.8);
+            color: rgba(0, 0, 0, 0.7);
         }
 
         .category-toggle-all:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.9);
         }
 
         [data-theme="light"] .category-toggle-all:hover {
-            background: rgba(0, 0, 0, 0.1);
-            border-color: rgba(0, 0, 0, 0.3);
+            color: rgba(0, 0, 0, 0.9);
         }
 
         .category-toggle-all.active {
-            background: rgba(120, 120, 120, 0.2);
-            border-color: rgba(120, 120, 120, 0.6);
-            color: rgb(120, 120, 120);
+            background: rgba(120, 120, 120, 0.9);
+            color: #fff;
         }
 
         [data-theme="light"] .category-toggle-all.active {
-            background: rgba(100, 100, 100, 0.25);
-            border-color: rgba(120, 120, 120, 0.7);
-            color: rgb(100, 100, 100);
+            background: rgba(100, 100, 100, 0.85);
+            color: rgba(255, 255, 255, 0.95);
         }
 
         .map-wrapper {
@@ -1874,49 +1887,61 @@
             display: none !important;
         }
 
-        /* Category-specific marker colors */
-        .custom-marker[data-category="region"]::before,
-        .custom-marker[data-category="city"]::before,
-        .custom-marker[data-category="storyteller"]::before,
-        .custom-marker[data-category="province"]::before,
-        .custom-marker[data-category="seaside"]::before,
-        .custom-marker[data-category="beach"]::before,
-        .custom-marker[data-category="ski"]::before,
+        /* Category-specific marker colors matching filter buttons */
+        .custom-marker[data-category="province"]::before {
+            background: #ef4444;
+        }
+
+        .custom-marker[data-category="city"]::before {
+            background: #10b981;
+        }
+
+        .custom-marker[data-category="storyteller"]::before {
+            background: #f59e0b;
+        }
+
+        .custom-marker[data-category="seaside"]::before {
+            background: #06b6d4;
+        }
+
+        .custom-marker[data-category="beach"]::before {
+            background: #fbbf24;
+        }
+
+        .custom-marker[data-category="ski"]::before {
+            background: #8b5cf6;
+        }
+
         .custom-marker[data-category="park"]::before {
-            background: rgba(255, 255, 255, 0.9);
+            background: #22c55e;
         }
 
-        .custom-marker[data-category="region"]::after,
-        .custom-marker[data-category="city"]::after,
-        .custom-marker[data-category="storyteller"]::after,
-        .custom-marker[data-category="province"]::after,
-        .custom-marker[data-category="seaside"]::after,
-        .custom-marker[data-category="beach"]::after,
-        .custom-marker[data-category="ski"]::after,
+        .custom-marker[data-category="province"]::after {
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+
+        .custom-marker[data-category="city"]::after {
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
+        .custom-marker[data-category="storyteller"]::after {
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+        }
+
+        .custom-marker[data-category="seaside"]::after {
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+        }
+
+        .custom-marker[data-category="beach"]::after {
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+        }
+
+        .custom-marker[data-category="ski"]::after {
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+        }
+
         .custom-marker[data-category="park"]::after {
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        }
-
-        [data-theme="light"] .custom-marker[data-category="region"]::before,
-        [data-theme="light"] .custom-marker[data-category="city"]::before,
-        [data-theme="light"] .custom-marker[data-category="storyteller"]::before,
-        [data-theme="light"] .custom-marker[data-category="province"]::before,
-        [data-theme="light"] .custom-marker[data-category="seaside"]::before,
-        [data-theme="light"] .custom-marker[data-category="beach"]::before,
-        [data-theme="light"] .custom-marker[data-category="ski"]::before,
-        [data-theme="light"] .custom-marker[data-category="park"]::before {
-            background: rgba(100, 100, 100, 0.9);
-        }
-
-        [data-theme="light"] .custom-marker[data-category="region"]::after,
-        [data-theme="light"] .custom-marker[data-category="city"]::after,
-        [data-theme="light"] .custom-marker[data-category="storyteller"]::after,
-        [data-theme="light"] .custom-marker[data-category="province"]::after,
-        [data-theme="light"] .custom-marker[data-category="seaside"]::after,
-        [data-theme="light"] .custom-marker[data-category="beach"]::after,
-        [data-theme="light"] .custom-marker[data-category="ski"]::after,
-        [data-theme="light"] .custom-marker[data-category="park"]::after {
-            box-shadow: 0 0 10px rgba(100, 100, 100, 0.5);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
         }
 
         .destination-cards-grid {

@@ -1200,7 +1200,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const filterBtns = document.querySelectorAll('.filter-btn');
             const categoryFilterBtns = document.querySelectorAll('.category-filter-btn');
             const categoryToggleAll = document.getElementById('categoryToggleAll');
-            const categoryToggleNone = document.getElementById('categoryToggleNone');
 
             let currentSeason = 'spring';
             let currentFilter = 'all';
@@ -1329,6 +1328,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Store full context for LIV AI
                     mapCardCta.onclick = (e) => {
                         e.preventDefault();
+                        e.stopPropagation(); // Prevent [data-open-liv] handler from also firing
                         // Dispatch event with full destination context
                         document.dispatchEvent(new CustomEvent('mapMarkerClicked', {
                             detail: {
@@ -1422,14 +1422,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (!marker) return;
 
                     const seasonMatch = data.seasons.map(s => s.toLowerCase()).includes(currentSeason);
-                    const themeMatch = currentFilter === 'all' || data.themeKeys.includes(currentFilter);
+                    const themeMatch = currentFilter === 'all' || (currentFilter !== 'none' && data.themeKeys.includes(currentFilter));
                     const categoryMatch = activeCategories.has(data.category);
 
                     const markerEl = marker.getElement();
-                    if (seasonMatch && themeMatch && categoryMatch) {
-                        markerEl.classList.remove('marker-hidden');
-                    } else {
+                    // If theme filter is set to 'none', hide all markers
+                    if (currentFilter === 'none' || !seasonMatch || !themeMatch || !categoryMatch) {
                         markerEl.classList.add('marker-hidden');
+                    } else {
+                        markerEl.classList.remove('marker-hidden');
                     }
                 });
             }
@@ -1497,11 +1498,32 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             // Theme filters
+            const themeToggleAll = document.getElementById('themeToggleAll');
             filterBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
-                    filterBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    currentFilter = this.dataset.filter;
+                    const filter = this.dataset.filter;
+
+                    // Handle 'All' toggle button
+                    if (filter === 'all') {
+                        const isActive = this.classList.contains('active');
+                        if (isActive) {
+                            // Turn all off
+                            this.classList.remove('active');
+                            this.textContent = 'All Off';
+                            currentFilter = 'none';
+                        } else {
+                            // Turn all on
+                            this.classList.add('active');
+                            this.textContent = 'All On';
+                            currentFilter = 'all';
+                        }
+                    } else {
+                        // Handle individual theme filters - only one can be active at a time
+                        filterBtns.forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+                        currentFilter = filter;
+                    }
+
                     filterMarkers();
                 });
             });
@@ -1526,23 +1548,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
 
-            // All On/Off toggle buttons
+            // Category toggle all button
             if (categoryToggleAll) {
                 categoryToggleAll.addEventListener('click', function() {
-                    activeCategories = new Set(['province', 'city', 'seaside', 'beach', 'ski', 'park', 'storyteller']);
-                    categoryFilterBtns.forEach(btn => btn.classList.add('active'));
-                    categoryToggleAll.classList.add('active');
-                    categoryToggleNone.classList.remove('active');
-                    filterMarkers();
-                });
-            }
-
-            if (categoryToggleNone) {
-                categoryToggleNone.addEventListener('click', function() {
-                    activeCategories.clear();
-                    categoryFilterBtns.forEach(btn => btn.classList.remove('active'));
-                    categoryToggleNone.classList.add('active');
-                    categoryToggleAll.classList.remove('active');
+                    const isActive = this.classList.contains('active');
+                    if (isActive) {
+                        // Turn all off
+                        activeCategories.clear();
+                        categoryFilterBtns.forEach(btn => btn.classList.remove('active'));
+                        this.classList.remove('active');
+                        this.textContent = 'All Off';
+                    } else {
+                        // Turn all on
+                        activeCategories = new Set(['province', 'city', 'seaside', 'beach', 'ski', 'park', 'storyteller']);
+                        categoryFilterBtns.forEach(btn => btn.classList.add('active'));
+                        this.classList.add('active');
+                        this.textContent = 'All On';
+                    }
                     filterMarkers();
                 });
             }
@@ -1554,13 +1576,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (allActive) {
                     categoryToggleAll.classList.add('active');
-                    categoryToggleNone.classList.remove('active');
+                    categoryToggleAll.textContent = 'All On';
                 } else if (noneActive) {
                     categoryToggleAll.classList.remove('active');
-                    categoryToggleNone.classList.add('active');
+                    categoryToggleAll.textContent = 'All Off';
                 } else {
                     categoryToggleAll.classList.remove('active');
-                    categoryToggleNone.classList.remove('active');
+                    categoryToggleAll.textContent = 'All Off';
                 }
             }
             } // End of if (map) check - map successfully initialized
