@@ -147,6 +147,26 @@
     <!-- Footer loaded from /components/footer.html -->
     <div id="footer-placeholder"></div>
 
+    <!-- Chat Overlay -->
+    <div class="chat-overlay" id="chatOverlay">
+        <div class="chat-container">
+            <button class="close-chat" id="closeChat">×</button>
+            <div class="chat-header">
+                <h2 class="chat-title">LIV</h2>
+                <p class="chat-subtitle">Your Luxury Itinerary Visionary</p>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message ai">
+                    <p>Welcome. I'm LIV — Luxury Itinerary Visionary. I'm here to craft extraordinary Swedish journeys tailored to your desires.</p>
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Share your travel desires...">
+                <button class="send-button" id="sendButton">Send</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Pillar Modal for Storyteller Details -->
     <div class="pillar-modal-overlay" id="pillarModal">
         <div class="pillar-modal-content">
@@ -168,6 +188,7 @@
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/supabase-client.js"></script>
+    <script defer src="/liv-ai.js?v=8"></script>
     <script src="/scripts.js?v=1761950330"></script>
     <script>
         // Storytellers Page State
