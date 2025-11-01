@@ -163,6 +163,48 @@ Deno.serve(async (req) => {
       } else {
         // Create new lead
         console.log('➕ Creating new lead for:', leadInfo.email);
+
+        // Build preferences object with context information
+        const preferences: any = {};
+
+        if (context) {
+          preferences.chat_context = {
+            type: context.type || 'general',
+            name: context.name || null,
+            category: context.category || null,
+            themes: context.themes || null,
+            season: context.season || null,
+            location: context.location || null
+          };
+
+          // Add human-readable summary
+          if (context.type === 'storyteller') {
+            preferences.interest_summary = `Storyteller: ${context.name || 'General inquiry'}`;
+          } else if (context.type === 'experience') {
+            preferences.interest_summary = `Experience: ${context.name || 'General inquiry'}`;
+          } else if (context.type === 'theme') {
+            preferences.interest_summary = `Theme: ${context.name || 'General inquiry'}`;
+          } else if (context.type === 'map' || context.type === 'destination') {
+            preferences.interest_summary = `Destination: ${context.name || context.location || 'General inquiry'}`;
+          } else if (context.type === 'story') {
+            preferences.interest_summary = `Story: ${context.name || 'General inquiry'}`;
+          } else {
+            preferences.interest_summary = 'General inquiry';
+          }
+        }
+
+        // Add storyteller inquiry details if available
+        if (storytellerInquiry) {
+          preferences.storyteller_inquiry = {
+            topic: storytellerInquiry.topic || null,
+            activity_type: storytellerInquiry.activityType || null,
+            inquiry_type: storytellerInquiry.inquiryType || null,
+            group_size: storytellerInquiry.groupSize || null,
+            preferred_dates: storytellerInquiry.preferredDates || null,
+            budget_range: storytellerInquiry.budgetRange || null
+          };
+        }
+
         const { data: newLead, error: insertError } = await supabase
           .from('leads')
           .insert({
@@ -172,6 +214,7 @@ Deno.serve(async (req) => {
             country: leadInfo.country || null,
             source: 'liv_chat',
             first_conversation_id: conversationId,
+            preferences: preferences
           })
           .select()
           .single();
@@ -182,7 +225,7 @@ Deno.serve(async (req) => {
         }
 
         leadId = newLead?.id || null;
-        console.log('✅ Created new lead:', leadId);
+        console.log('✅ Created new lead:', leadId, 'with preferences:', preferences);
       }
 
       // Link conversation to lead
