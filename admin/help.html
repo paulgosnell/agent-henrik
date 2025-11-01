@@ -1085,52 +1085,17 @@
   <script src="auth.js"></script>
   <script src="admin.js"></script>
 
+  <!-- Auth Protection -->
   <script>
-    // Update UI with user info if authenticated (but don't require auth for help pages)
+    // Require authentication before loading help page
     (async function() {
-      try {
-        const user = await window.AuthManager.checkAuth();
-        if (user) {
-          await window.AuthManager.updateUserInfoUI();
-          // Hide loading screen
-          const loadingScreen = document.getElementById('loadingScreen');
-          const adminApp = document.getElementById('adminApp');
-          if (loadingScreen) loadingScreen.style.display = 'none';
-          if (adminApp) adminApp.style.display = 'flex';
-        } else {
-          // Not authenticated, but still show the help page
-          const loadingScreen = document.getElementById('loadingScreen');
-          const adminApp = document.getElementById('adminApp');
-          if (loadingScreen) loadingScreen.style.display = 'none';
-          if (adminApp) adminApp.style.display = 'flex';
+      const user = await window.AuthManager.requireAuth();
 
-          // Update user display to show "Not logged in"
-          const userEmailEl = document.getElementById('userEmail');
-          if (userEmailEl) userEmailEl.textContent = 'Not logged in';
-        }
-      } catch (error) {
-        console.error('Auth check error:', error);
-        // Still show help page even if auth fails
-        const loadingScreen = document.getElementById('loadingScreen');
-        const adminApp = document.getElementById('adminApp');
-        if (loadingScreen) loadingScreen.style.display = 'none';
-        if (adminApp) adminApp.style.display = 'flex';
+      if (user) {
+        // User is authenticated, update UI with user info
+        await window.AuthManager.updateUserInfoUI();
       }
     })();
-
-    // Smooth scroll to anchors
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }
-      });
-    });
   </script>
 </body>
 </html>
