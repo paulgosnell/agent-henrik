@@ -186,6 +186,40 @@ class LivAI {
       if (this.chatInput) {
         this.chatInput.focus();
       }
+
+      // Add floating contact button after a few messages
+      this.maybeShowContactButton();
+    }
+  }
+
+  /**
+   * Show floating "Get Custom Itinerary" button after engagement
+   */
+  maybeShowContactButton() {
+    // Only show if no lead info captured and has some conversation
+    if (this.leadInfo || this.conversationHistory.length < 2) return;
+
+    // Check if button already exists
+    if (document.getElementById('floatingContactBtn')) return;
+
+    const button = document.createElement('button');
+    button.id = 'floatingContactBtn';
+    button.className = 'floating-contact-btn';
+    button.innerHTML = `
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M3 8L10 3L17 8V17C17 17.5523 16.5523 18 16 18H4C3.44772 18 3 17.5523 3 17V8Z" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M7 18V10H13V18" stroke="currentColor" stroke-width="1.5"/>
+      </svg>
+      Get Custom Itinerary
+    `;
+    button.onclick = () => {
+      this.showContactForm();
+      button.remove();
+    };
+
+    // Add to chat overlay
+    if (this.chatOverlay) {
+      this.chatOverlay.appendChild(button);
     }
   }
 
@@ -396,6 +430,29 @@ class LivAI {
       content: message
     });
 
+    // Detect high-intent keywords and trigger contact form
+    if (!this.leadInfo) {
+      const highIntentKeywords = [
+        'send me', 'email me', 'book', 'pricing', 'price',
+        'available', 'availability', 'cost', 'dates', 'reserve',
+        'reservation', 'interested in', 'quote', 'itinerary',
+        'details', 'more information', 'get in touch', 'contact',
+        'ready to', 'how much', 'budget'
+      ];
+
+      const messageLower = message.toLowerCase();
+      const hasHighIntent = highIntentKeywords.some(keyword => messageLower.includes(keyword));
+
+      if (hasHighIntent) {
+        // Show contact form after AI responds (3 seconds delay)
+        setTimeout(() => {
+          if (!this.leadInfo && !document.getElementById('contactForm')) {
+            this.showContactForm();
+          }
+        }, 3000);
+      }
+    }
+
     // Get AI response
     await this.getAIResponse();
   }
@@ -490,6 +547,9 @@ class LivAI {
       if (this.context) {
         this.context = null;
       }
+
+      // Show contact button after engagement
+      this.maybeShowContactButton();
 
     } catch (error) {
       console.error('Error getting AI response:', error);
