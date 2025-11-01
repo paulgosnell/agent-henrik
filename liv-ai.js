@@ -164,11 +164,11 @@ class LivAI {
    * Open chat with specific context
    */
   openChatWithContext(context) {
+    // Set the new context BEFORE resetting (so resetConversation knows about it)
+    this.context = context;
+
     // Reset conversation to start fresh with new context
     this.resetConversation();
-
-    // Set the new context
-    this.context = context;
 
     // Open the chat modal
     this.openChat();
@@ -251,18 +251,18 @@ class LivAI {
       budgetRange: null
     };
 
-    // Clear chat messages except the initial welcome
+    // Clear chat messages
     if (this.chatMessages) {
-      const isStorytellerMode = this.context?.type === 'storyteller';
-      const welcomeMessage = isStorytellerMode
-        ? `<div class="chat-message ai">
-            <p>Welcome. I help you discover and meet extraordinary storytellers — creative minds who shape the Swedish creative industry and culture scene.</p>
-          </div>`
-        : `<div class="chat-message ai">
+      // If there's context, we'll skip the generic welcome - the contextual greeting will be sent separately
+      if (!this.context) {
+        const welcomeMessage = `<div class="chat-message ai">
             <p>Welcome. I'm LIV — Luxury Itinerary Visionary. I'm here to craft extraordinary Swedish journeys tailored to your desires.</p>
           </div>`;
-
-      this.chatMessages.innerHTML = welcomeMessage;
+        this.chatMessages.innerHTML = welcomeMessage;
+      } else {
+        // Just clear the messages - contextual greeting will be added
+        this.chatMessages.innerHTML = '';
+      }
     }
   }
 
@@ -378,35 +378,35 @@ class LivAI {
 
   /**
    * Generate personalized greeting based on context
-   * Matches the original greetings from scripts.js
+   * Each greeting now includes an engaging question to prompt conversation
    */
   generateContextualGreeting(context) {
     const { type, name } = context;
 
     const greetings = {
       'destination': [
-        `Ah, ${name}! Magnificent choice. This is one of Sweden's most captivating destinations. Let me help you craft an unforgettable experience there.`,
-        `${name} — excellent taste. I'd be delighted to design a bespoke journey for you around this remarkable location.`,
-        `I see you're drawn to ${name}. Wonderful! Let's weave together the perfect itinerary for this extraordinary place.`
+        `Ah, ${name}! Magnificent choice. This is one of Sweden's most captivating destinations. What draws you here — the landscape, the culture, or perhaps a specific experience you've imagined?`,
+        `${name} — excellent taste. I'd be delighted to design a bespoke journey for you around this remarkable location. How many days were you thinking of spending there?`,
+        `I see you're drawn to ${name}. Wonderful! Are you envisioning this as part of a larger Swedish journey, or would you like to explore just this destination in depth?`
       ],
       'map': [
-        `Ah, ${name}! Magnificent choice. This is one of Sweden's most captivating destinations. Let me help you craft an unforgettable experience there.`,
-        `${name} — excellent taste. I'd be delighted to design a bespoke journey for you around this remarkable location.`,
-        `I see you're drawn to ${name}. Wonderful! Let's weave together the perfect itinerary for this extraordinary place.`
+        `Ah, ${name}! Magnificent choice. This is one of Sweden's most captivating destinations. What draws you here — the landscape, the culture, or perhaps a specific experience you've imagined?`,
+        `${name} — excellent taste. I'd be delighted to design a bespoke journey for you around this remarkable location. How many days were you thinking of spending there?`,
+        `I see you're drawn to ${name}. Wonderful! Are you envisioning this as part of a larger Swedish journey, or would you like to explore just this destination in depth?`
       ],
       'experience': [
-        `${name} — a superb choice. Let me help you design an experience that truly captures this essence.`,
+        `${name} — a superb choice. Let me help you design an experience that truly captures this essence. What aspect of ${name} resonates most with you?`,
         `I love that you're interested in ${name}. This is one of my favorite themes to curate. Shall we begin crafting your journey?`,
-        `${name} speaks to those who seek depth and meaning. I'm excited to help you explore this dimension of Sweden.`
+        `${name} speaks to those who seek depth and meaning. I'm excited to help you explore this dimension of Sweden. When are you hoping to visit?`
       ],
       'corporate': [
-        `${name} for your team — brilliant! Let me help design an experience that will inspire and transform your group.`,
-        `Corporate experiences in ${name} create lasting impact. I'd love to help you plan something truly memorable for your team.`
+        `${name} for your team — brilliant! Let me help design an experience that will inspire and transform your group. How large is your team, and what are you hoping they'll take away from this?`,
+        `Corporate experiences in ${name} create lasting impact. I'd love to help you plan something truly memorable for your team. What's the occasion or objective?`
       ],
       'storyteller': [
-        `${name} — a superb choice. Let me help you design an experience that truly captures this essence.`,
-        `I love that you're interested in ${name}. This is one of my favorite themes to curate. Shall we begin crafting your journey?`,
-        `${name} speaks to those who seek depth and meaning. I'm excited to help you explore this dimension of Sweden.`
+        `Welcome! I help you discover and meet extraordinary storytellers — creative minds who shape Sweden's cultural scene. What kind of storytellers have you always wanted to meet?`,
+        `${name} — wonderful! I can connect you with remarkable Swedish creatives in this field. Are you interested in a meet & greet, a hands-on workshop, or a collaborative creative activity?`,
+        `${name} speaks to those who seek authentic creative connections. I'm excited to help you meet the right storyteller. Would you like to hear about some of our most compelling creatives in this space?`
       ]
     };
 
