@@ -1081,21 +1081,28 @@
     </main>
   </div>
 
-  <script src="../supabase-client.js?v=2"></script>
-  <script src="auth.js"></script>
-  <script src="admin.js"></script>
-
-  <!-- Auth Protection -->
   <script>
-    // Require authentication before loading help page
-    (async function() {
-      const user = await window.AuthManager.requireAuth();
+    // Simple initialization without auth redirect
+    window.addEventListener('DOMContentLoaded', function() {
+      // Hide loading screen
+      const loadingScreen = document.getElementById('loadingScreen');
+      const adminApp = document.getElementById('adminApp');
 
-      if (user) {
-        // User is authenticated, update UI with user info
-        await window.AuthManager.updateUserInfoUI();
+      if (loadingScreen) loadingScreen.style.display = 'none';
+      if (adminApp) adminApp.style.display = 'flex';
+
+      // Set generic user info
+      const userEmail = document.getElementById('userEmail');
+      if (userEmail) userEmail.textContent = 'Help & Documentation';
+
+      // Setup logout button to go to login
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          window.location.href = 'login.html';
+        });
       }
-    })();
+    });
   </script>
 </body>
 </html>
