@@ -389,6 +389,11 @@ class LivAI {
         `${name} — excellent taste. I'd be delighted to design a bespoke journey for you around this remarkable location.`,
         `I see you're drawn to ${name}. Wonderful! Let's weave together the perfect itinerary for this extraordinary place.`
       ],
+      'map': [
+        `Ah, ${name}! Magnificent choice. This is one of Sweden's most captivating destinations. Let me help you craft an unforgettable experience there.`,
+        `${name} — excellent taste. I'd be delighted to design a bespoke journey for you around this remarkable location.`,
+        `I see you're drawn to ${name}. Wonderful! Let's weave together the perfect itinerary for this extraordinary place.`
+      ],
       'experience': [
         `${name} — a superb choice. Let me help you design an experience that truly captures this essence.`,
         `I love that you're interested in ${name}. This is one of my favorite themes to curate. Shall we begin crafting your journey?`,
