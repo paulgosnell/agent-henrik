@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Help & Documentation - Luxury Travel Sweden CMS</title>
   <link rel="stylesheet" href="admin.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .help-section {
       margin-bottom: 3rem;
@@ -1082,23 +1081,20 @@
     </main>
   </div>
 
+  <script src="../supabase-client.js?v=2"></script>
   <script src="auth.js"></script>
+  <script src="admin.js"></script>
+
   <script>
-    // Display user email
-    async function displayUserInfo() {
-      const user = await window.Supabase.getUser();
+    // Require authentication before loading help page
+    (async function() {
+      const user = await window.AuthManager.requireAuth();
+
       if (user) {
-        document.getElementById('userEmail').textContent = user.email;
+        // User is authenticated, update UI with user info
+        await window.AuthManager.updateUserInfoUI();
       }
-    }
-
-    // Logout functionality
-    document.getElementById('logoutBtn')?.addEventListener('click', async () => {
-      await window.Supabase.logout();
-    });
-
-    // Initialize
-    displayUserInfo();
+    })();
 
     // Smooth scroll to anchors
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
