@@ -5,6 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Team — Luxury Travel Sweden</title>
     <link rel="stylesheet" href="/styles.css">
+    <style>
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
 
     <!-- Component Loader - Load shared header/footer -->
     <script src="/component-loader.js"></script>
@@ -21,66 +46,15 @@
                     <h2>The people behind every extraordinary journey.</h2>
                 </div>
 
-                <div class="pillars-grid" style="margin-bottom: 4rem;">
-                    <article class="pillar-card" data-pillar="henrik">
-                        <div class="pillar-media" aria-hidden="true">
-                            <img src="https://images.pexels.com/photos/3184398/pexels-photo-3184398.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1" alt="Henrik Tidefjärd - Founder" loading="lazy">
-                        </div>
-                        <div class="pillar-body">
-                            <div class="pillar-icon" aria-hidden="true"><i data-lucide="user"></i></div>
-                            <div class="pillar-copy">
-                                <h3>Henrik Tidefjärd</h3>
-                                <p style="font-style: italic; opacity: 0.9; margin-bottom: 1rem;">Founder & Travel Designer</p>
-                                <p>With more than 20 years of know-how in the luxury travel industry and guiding A-listers, the founder Henrik is an authority on clientele satisfaction. He is an expert at opening doors thanks to a widespread network of intriguing contacts and a talented "cool hunter" to find the latest scoops.</p>
-                                <a href="#" class="pillar-cta" style="pointer-events: none; opacity: 0.5;">Read More About Henrik</a>
-                            </div>
-                        </div>
-                    </article>
+                <!-- Loading State -->
+                <div class="loading-state" id="loadingState">
+                    <div class="loading-spinner"></div>
+                    <p>Loading team members...</p>
+                </div>
 
-                    <article class="pillar-card" data-pillar="liv">
-                        <div class="pillar-media" aria-hidden="true">
-                            <img src="https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1" alt="LIV - AI Concierge" loading="lazy">
-                        </div>
-                        <div class="pillar-body">
-                            <div class="pillar-icon" aria-hidden="true"><i data-lucide="sparkles"></i></div>
-                            <div class="pillar-copy">
-                                <h3>LIV</h3>
-                                <p style="font-style: italic; opacity: 0.9; margin-bottom: 1rem;">AI Concierge & Travel Designer</p>
-                                <p>LIV stands for Luxury Itinerary Visionary, a next-generation AI concierge developed to merge Scandinavian creativity with global hospitality standards. She represents the spirit of Swedish innovation and every interaction with LIV feels like speaking with a curator who understands your rhythm, your taste, and your desire for something extraordinary. At your service 24/7!</p>
-                                <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="team" data-liv-context-name="Meet LIV">Chat With LIV</button>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="pillar-card" data-pillar="booksy">
-                        <div class="pillar-media" aria-hidden="true">
-                            <img src="https://images.pexels.com/photos/3184308/pexels-photo-3184308.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1" alt="Booksy - AI Logistics" loading="lazy">
-                        </div>
-                        <div class="pillar-body">
-                            <div class="pillar-icon" aria-hidden="true"><i data-lucide="calendar"></i></div>
-                            <div class="pillar-copy">
-                                <h3>Booksy</h3>
-                                <p style="font-style: italic; opacity: 0.9; margin-bottom: 1rem;">AI Logistic Maestro</p>
-                                <p>Tired of juggling flight times, car rentals, and train/bus tickets? Let Booksy handle it! Booksy is your friendly AI logistics assistant who loves nothing more than getting you from Point A to Point B smoothly. All you need to do is say where and when… and Booksy takes care of the rest.</p>
-                                <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="team" data-liv-context-name="Meet Booksy">Connect With Booksy</button>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="pillar-card" data-pillar="swift">
-                        <div class="pillar-media" aria-hidden="true">
-                            <img src="https://images.pexels.com/photos/3171837/pexels-photo-3171837.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1" alt="Swift - AI Admin" loading="lazy">
-                        </div>
-                        <div class="pillar-body">
-                            <div class="pillar-icon" aria-hidden="true"><i data-lucide="shield-check"></i></div>
-                            <div class="pillar-copy">
-                                <h3>Swift</h3>
-                                <p style="font-style: italic; opacity: 0.9; margin-bottom: 1rem;">AI Admin Pro</p>
-                                <p>Swift is the go-to problem solver when things get urgent. She smooths out complaints, untangles booking and cancellation terms, and keeps all the admin details in order. She makes sure every tricky situation turns into a simple solution.</p>
-                                <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="team" data-liv-context-name="Meet Swift">Connect With Swift</button>
-                            </div>
-                        </div>
-                    </article>
+                <!-- Team Grid -->
+                <div class="pillars-grid hidden" id="teamGrid" style="margin-bottom: 4rem;">
+                    <!-- Team members will be loaded dynamically -->
                 </div>
             </div>
         </section>
@@ -122,7 +96,86 @@
     </div>
 
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-    <script src="/scripts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/supabase-client.js"></script>
+    <script src="/scripts.js?v=1761950330"></script>
+    <script>
+        // Load team members from Supabase
+        async function loadTeamMembers() {
+            const loadingState = document.getElementById('loadingState');
+            const teamGrid = document.getElementById('teamGrid');
+
+            try {
+                // Check if Supabase is available
+                if (!window.Supabase || !window.Supabase.client) {
+                    throw new Error('Supabase not configured');
+                }
+
+                // Fetch published team members
+                const { data: teamMembers, error } = await window.Supabase.client
+                    .from('team_members')
+                    .select('*')
+                    .eq('is_published', true)
+                    .order('display_order', { ascending: true });
+
+                if (error) throw error;
+
+                loadingState.classList.add('hidden');
+                teamGrid.classList.remove('hidden');
+
+                // Render team members
+                if (teamMembers && teamMembers.length > 0) {
+                    teamGrid.innerHTML = teamMembers.map(member => {
+                        const imageUrl = member.image_url || 'https://images.pexels.com/photos/3184398/pexels-photo-3184398.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1';
+                        const iconName = member.linkedin_url ? 'linkedin' : 'user';
+
+                        return `
+                            <article class="pillar-card" data-member="${escapeHtml(member.id)}">
+                                <div class="pillar-media" aria-hidden="true">
+                                    <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(member.name)}" loading="lazy">
+                                </div>
+                                <div class="pillar-body">
+                                    <div class="pillar-icon" aria-hidden="true"><i data-lucide="${iconName}"></i></div>
+                                    <div class="pillar-copy">
+                                        <h3>${escapeHtml(member.name)}</h3>
+                                        <p style="font-style: italic; opacity: 0.9; margin-bottom: 1rem;">${escapeHtml(member.role)}</p>
+                                        ${member.bio ? `<p>${escapeHtml(member.bio)}</p>` : ''}
+                                        ${member.linkedin_url ? `<a href="${escapeHtml(member.linkedin_url)}" target="_blank" rel="noopener noreferrer" class="pillar-cta">View LinkedIn Profile</a>` : ''}
+                                        ${member.email && !member.linkedin_url ? `<a href="mailto:${escapeHtml(member.email)}" class="pillar-cta">Contact ${escapeHtml(member.name)}</a>` : ''}
+                                    </div>
+                                </div>
+                            </article>
+                        `;
+                    }).join('');
+
+                    // Reinitialize Lucide icons
+                    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                        window.lucide.createIcons();
+                    }
+                } else {
+                    teamGrid.innerHTML = '<p style="text-align: center; padding: 2rem;">No team members found.</p>';
+                }
+            } catch (error) {
+                console.error('Error loading team members:', error);
+                loadingState.classList.add('hidden');
+                teamGrid.classList.remove('hidden');
+                teamGrid.innerHTML = '<p style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.6);">Unable to load team members. Please try again later.</p>';
+            }
+        }
+
+        // Helper function to escape HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize on DOM ready
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTeamMembers();
+        });
+    </script>
 
     <!-- Menu Initialization - Simple, reliable menu system -->
     <script defer src="/menu-init.js"></script>

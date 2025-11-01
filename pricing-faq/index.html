@@ -7,6 +7,31 @@
     <meta name="description" content="Investment details and frequently asked questions about our bespoke Swedish travel experiences. Transparent pricing for luxury journeys crafted with care.">
 
     <link rel="stylesheet" href="/styles.css">
+    <style>
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
 
     <!-- Component Loader - Load shared header/footer -->
     <script src="/component-loader.js"></script>
@@ -30,42 +55,15 @@
                 <div style="max-width: 900px; margin: 4rem auto;">
                     <h2 style="font-size: 2rem; margin-bottom: 2rem; font-weight: 600;" data-editable="pricing.section1.title">How We Price Our Services</h2>
 
-                    <div class="pillars-grid" style="grid-template-columns: 1fr;">
-                        <article class="pillar-card">
-                            <div class="pillar-body">
-                                <div class="pillar-icon" aria-hidden="true"><i data-lucide="sparkles"></i></div>
-                                <div class="pillar-copy">
-                                    <h3 data-editable="pricing.model1.title">Planning & Curation Fee</h3>
-                                    <p data-editable="pricing.model1.description">
-                                        Our base planning fee starts at €2,500 per journey. This covers in-depth consultation, bespoke itinerary design, coordination with local storytellers, and 24/7 concierge support throughout your trip.
-                                    </p>
-                                </div>
-                            </div>
-                        </article>
+                    <!-- Loading State for Pricing -->
+                    <div class="loading-state" id="pricingLoadingState">
+                        <div class="loading-spinner"></div>
+                        <p>Loading pricing information...</p>
+                    </div>
 
-                        <article class="pillar-card">
-                            <div class="pillar-body">
-                                <div class="pillar-icon" aria-hidden="true"><i data-lucide="map"></i></div>
-                                <div class="pillar-copy">
-                                    <h3 data-editable="pricing.model2.title">Experience Investment</h3>
-                                    <p data-editable="pricing.model2.description">
-                                        Total journey costs typically range from €5,000 to €25,000+ per person, depending on duration, accommodation level, exclusive access, and seasonal factors. Private guides, luxury transportation, and unique experiences are included.
-                                    </p>
-                                </div>
-                            </div>
-                        </article>
-
-                        <article class="pillar-card">
-                            <div class="pillar-body">
-                                <div class="pillar-icon" aria-hidden="true"><i data-lucide="briefcase"></i></div>
-                                <div class="pillar-copy">
-                                    <h3 data-editable="pricing.model3.title">Corporate & Incentive Pricing</h3>
-                                    <p data-editable="pricing.model3.description">
-                                        Group experiences and corporate programs are priced per participant. Contact us for detailed proposals tailored to group size, program objectives, and desired impact. Minimum group size: 6 participants.
-                                    </p>
-                                </div>
-                            </div>
-                        </article>
+                    <!-- Pricing Grid -->
+                    <div class="pillars-grid hidden" id="pricingGrid" style="grid-template-columns: 1fr;">
+                        <!-- Pricing tiers will be loaded dynamically -->
                     </div>
 
                     <div style="margin-top: 3rem; padding: 2rem; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
@@ -79,86 +77,15 @@
                 <div style="max-width: 900px; margin: 6rem auto;">
                     <h2 style="font-size: 2rem; margin-bottom: 3rem; font-weight: 600;" data-editable="faq.section.title">Frequently Asked Questions</h2>
 
-                    <div style="display: flex; flex-direction: column; gap: 2rem;">
-                        <!-- FAQ Item 1 -->
-                        <div class="faq-item">
-                            <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem; font-weight: 600; color: #fff;" data-editable="faq.item1.question">
-                                How far in advance should I book?
-                            </h3>
-                            <p style="line-height: 1.8; opacity: 0.85;" data-editable="faq.item1.answer">
-                                We recommend booking 3-6 months in advance for optimal availability, especially during peak seasons (June-August, December-January for Northern Lights). Last-minute journeys can sometimes be arranged depending on availability.
-                            </p>
-                        </div>
+                    <!-- Loading State for FAQs -->
+                    <div class="loading-state" id="faqLoadingState">
+                        <div class="loading-spinner"></div>
+                        <p>Loading FAQs...</p>
+                    </div>
 
-                        <!-- FAQ Item 2 -->
-                        <div class="faq-item">
-                            <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem; font-weight: 600; color: #fff;" data-editable="faq.item2.question">
-                                What's included in the journey cost?
-                            </h3>
-                            <p style="line-height: 1.8; opacity: 0.85;" data-editable="faq.item2.answer">
-                                Most journeys include luxury accommodation, private transportation, experiences and activities, private guides, select meals, and 24/7 concierge support. International flights and personal expenses are typically not included unless specifically arranged.
-                            </p>
-                        </div>
-
-                        <!-- FAQ Item 3 -->
-                        <div class="faq-item">
-                            <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem; font-weight: 600; color: #fff;" data-editable="faq.item3.question">
-                                Can I customize my itinerary?
-                            </h3>
-                            <p style="line-height: 1.8; opacity: 0.85;" data-editable="faq.item3.answer">
-                                Absolutely. Every journey is fully customized to your interests, pace, and preferences. We start with a detailed consultation to understand your travel style, then craft a bespoke itinerary just for you.
-                            </p>
-                        </div>
-
-                        <!-- FAQ Item 4 -->
-                        <div class="faq-item">
-                            <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem; font-weight: 600; color: #fff;" data-editable="faq.item4.question">
-                                What is your cancellation policy?
-                            </h3>
-                            <p style="line-height: 1.8; opacity: 0.85;" data-editable="faq.item4.answer">
-                                Cancellations made 90+ days before departure receive a full refund minus the planning fee. 60-89 days: 50% refund. Within 60 days: non-refundable. We strongly recommend comprehensive travel insurance, which we can help arrange.
-                            </p>
-                        </div>
-
-                        <!-- FAQ Item 5 -->
-                        <div class="faq-item">
-                            <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem; font-weight: 600; color: #fff;" data-editable="faq.item5.question">
-                                Do you arrange group trips?
-                            </h3>
-                            <p style="line-height: 1.8; opacity: 0.85;" data-editable="faq.item5.answer">
-                                Yes, we specialize in private group experiences for families, friends, and corporate teams. Group sizes range from intimate gatherings (4-8) to larger incentive programs (up to 50 participants).
-                            </p>
-                        </div>
-
-                        <!-- FAQ Item 6 -->
-                        <div class="faq-item">
-                            <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem; font-weight: 600; color: #fff;" data-editable="faq.item6.question">
-                                What makes Luxury Travel Sweden different?
-                            </h3>
-                            <p style="line-height: 1.8; opacity: 0.85;" data-editable="faq.item6.answer">
-                                We're locals who live and breathe Swedish culture. Our network of storytellers—chefs, artists, designers, wilderness guides—provides authentic insider access you won't find elsewhere. Plus, our AI concierge LIV is available 24/7 to enhance your journey.
-                            </p>
-                        </div>
-
-                        <!-- FAQ Item 7 -->
-                        <div class="faq-item">
-                            <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem; font-weight: 600; color: #fff;" data-editable="faq.item7.question">
-                                What if I have dietary restrictions or accessibility needs?
-                            </h3>
-                            <p style="line-height: 1.8; opacity: 0.85;" data-editable="faq.item7.answer">
-                                We accommodate all dietary requirements and accessibility needs. Please share these details during your initial consultation so we can design your journey accordingly and brief all partners in advance.
-                            </p>
-                        </div>
-
-                        <!-- FAQ Item 8 -->
-                        <div class="faq-item">
-                            <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem; font-weight: 600; color: #fff;" data-editable="faq.item8.question">
-                                Can I extend my trip to other Nordic countries?
-                            </h3>
-                            <p style="line-height: 1.8; opacity: 0.85;" data-editable="faq.item8.answer">
-                                Yes! We can design multi-country Nordic journeys incorporating Norway, Denmark, Finland, and Iceland. Our network extends throughout Scandinavia, ensuring the same level of curated excellence everywhere you go.
-                            </p>
-                        </div>
+                    <!-- FAQ Container -->
+                    <div style="display: flex; flex-direction: column; gap: 2rem;" class="hidden" id="faqContainer">
+                        <!-- FAQ items will be loaded dynamically -->
                     </div>
                 </div>
 
@@ -220,8 +147,120 @@
     </div>
 
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-    <script src="/scripts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/supabase-client.js"></script>
+    <script src="/scripts.js?v=1761950330"></script>
     <script src="/inline-editor.js"></script>
+    <script>
+        // Load pricing tiers from Supabase
+        async function loadPricingTiers() {
+            const loadingState = document.getElementById('pricingLoadingState');
+            const pricingGrid = document.getElementById('pricingGrid');
+
+            try {
+                if (!window.Supabase || !window.Supabase.client) {
+                    throw new Error('Supabase not configured');
+                }
+
+                const { data: pricingTiers, error } = await window.Supabase.client
+                    .from('pricing_tiers')
+                    .select('*')
+                    .eq('is_published', true)
+                    .order('display_order', { ascending: true });
+
+                if (error) throw error;
+
+                loadingState.classList.add('hidden');
+                pricingGrid.classList.remove('hidden');
+
+                if (pricingTiers && pricingTiers.length > 0) {
+                    pricingGrid.innerHTML = pricingTiers.map(tier => {
+                        const iconName = tier.icon_name || 'sparkles';
+                        return `
+                            <article class="pillar-card">
+                                <div class="pillar-body">
+                                    <div class="pillar-icon" aria-hidden="true"><i data-lucide="${escapeHtml(iconName)}"></i></div>
+                                    <div class="pillar-copy">
+                                        <h3>${escapeHtml(tier.title)}</h3>
+                                        <p>${escapeHtml(tier.description)}</p>
+                                        ${tier.price_info ? `<p style="margin-top: 1rem; font-weight: 600; opacity: 0.9;">${escapeHtml(tier.price_info)}</p>` : ''}
+                                    </div>
+                                </div>
+                            </article>
+                        `;
+                    }).join('');
+
+                    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                        window.lucide.createIcons();
+                    }
+                } else {
+                    pricingGrid.innerHTML = '<p style="text-align: center; padding: 2rem;">No pricing information available.</p>';
+                }
+            } catch (error) {
+                console.error('Error loading pricing tiers:', error);
+                loadingState.classList.add('hidden');
+                pricingGrid.classList.remove('hidden');
+                pricingGrid.innerHTML = '<p style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.6);">Unable to load pricing information.</p>';
+            }
+        }
+
+        // Load FAQs from Supabase
+        async function loadFAQs() {
+            const loadingState = document.getElementById('faqLoadingState');
+            const faqContainer = document.getElementById('faqContainer');
+
+            try {
+                if (!window.Supabase || !window.Supabase.client) {
+                    throw new Error('Supabase not configured');
+                }
+
+                const { data: faqs, error } = await window.Supabase.client
+                    .from('faqs')
+                    .select('*')
+                    .eq('is_published', true)
+                    .order('display_order', { ascending: true });
+
+                if (error) throw error;
+
+                loadingState.classList.add('hidden');
+                faqContainer.classList.remove('hidden');
+
+                if (faqs && faqs.length > 0) {
+                    faqContainer.innerHTML = faqs.map(faq => `
+                        <div class="faq-item">
+                            <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem; font-weight: 600; color: #fff;">
+                                ${escapeHtml(faq.question)}
+                            </h3>
+                            <p style="line-height: 1.8; opacity: 0.85;">
+                                ${escapeHtml(faq.answer)}
+                            </p>
+                        </div>
+                    `).join('');
+                } else {
+                    faqContainer.innerHTML = '<p style="text-align: center; padding: 2rem;">No FAQs available.</p>';
+                }
+            } catch (error) {
+                console.error('Error loading FAQs:', error);
+                loadingState.classList.add('hidden');
+                faqContainer.classList.remove('hidden');
+                faqContainer.innerHTML = '<p style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.6);">Unable to load FAQs.</p>';
+            }
+        }
+
+        // Helper function to escape HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize on DOM ready
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPricingTiers();
+            loadFAQs();
+        });
+    </script>
 
     <!-- Menu Initialization - Simple, reliable menu system -->
     <script defer src="/menu-init.js"></script>

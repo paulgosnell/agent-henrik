@@ -5,6 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Story — Luxury Travel Sweden</title>
     <link rel="stylesheet" href="/styles.css">
+    <style>
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
 
     <!-- Component Loader - Load shared header/footer -->
     <script src="/component-loader.js"></script>
@@ -16,59 +41,15 @@
     <main class="site-main">
         <section class="section" style="padding-top: 180px;">
             <div class="section-inner">
-                <div class="section-heading">
-                    <span class="eyebrow">Our Story</span>
-                    <h2>Who are we?</h2>
-                    <p>Luxury Travel Sweden was founded with one vision in 2021: to show the world a side of Sweden that blends stunning nature, hidden gems, ultra-luxury service, and the people who make this country extraordinary. We are not just a DMC; we are storytellers, curators, and lifestyle creators.</p>
+                <!-- Loading State -->
+                <div class="loading-state" id="loadingState">
+                    <div class="loading-spinner"></div>
+                    <p>Loading our story...</p>
                 </div>
 
-                <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); margin-top: 4rem;">
-                    <div class="path-card" style="--card-image: url('https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1');">
-                        <h3>Our Philosophy</h3>
-                        <p>Every journey is a narrative. We weave together nature, heritage, innovation, and lifestyle into immersive stories that touch emotions and awaken curiosity. Luxury, for us, is not only comfort — it's access, intimacy, and meaning.</p>
-                    </div>
-
-                    <div class="path-card" style="--card-image: url('https://images.pexels.com/photos/3184308/pexels-photo-3184308.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1');">
-                        <h3>Why Us</h3>
-                        <ul style="list-style: none; padding: 0; margin-top: 1rem; color: rgba(255, 255, 255, 0.82);">
-                            <li style="margin-bottom: 0.75rem; padding-left: 1.5rem; position: relative;">
-                                <span style="position: absolute; left: 0; top: 0; color: rgba(212, 175, 55, 0.9);">•</span>
-                                Over 20 years in the luxury travel industry.
-                            </li>
-                            <li style="margin-bottom: 0.75rem; padding-left: 1.5rem; position: relative;">
-                                <span style="position: absolute; left: 0; top: 0; color: rgba(212, 175, 55, 0.9);">•</span>
-                                Local insiders with exclusive access and network
-                            </li>
-                            <li style="margin-bottom: 0.75rem; padding-left: 1.5rem; position: relative;">
-                                <span style="position: absolute; left: 0; top: 0; color: rgba(212, 175, 55, 0.9);">•</span>
-                                A creative approach in creating experiences
-                            </li>
-                            <li style="margin-bottom: 0.75rem; padding-left: 1.5rem; position: relative;">
-                                <span style="position: absolute; left: 0; top: 0; color: rgba(212, 175, 55, 0.9);">•</span>
-                                Ultra-luxury, white-glove service for seamless travel.
-                            </li>
-                            <li style="margin-bottom: 0.75rem; padding-left: 1.5rem; position: relative;">
-                                <span style="position: absolute; left: 0; top: 0; color: rgba(212, 175, 55, 0.9);">•</span>
-                                Sustainability and authenticity at the heart of every journey.
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="path-card" style="--card-image: url('https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1');">
-                        <h3>Our Target Group</h3>
-                        <p>Luxury Travel Sweden creates bespoke travel experiences tailored for discerning, open-minded travelers who value authenticity and originality. We specialize in serving curious cosmopolitans, decision-makers, innovators, and luxury seekers who want more than standard tours, crowded attractions, or predictable itineraries.</p>
-                    </div>
-                </div>
-
-                <div class="section-heading" style="margin-top: 6rem;">
-                    <h2>Our Sustainability Goal</h2>
-                    <p>Sweden leads the world in design, green technology, and social innovation — and so do we. At Luxury Travel Sweden, we are committed to minimizing our environmental footprint wherever possible, ensuring that our journeys are not only unique and memorable but also respectful of the world we explore.</p>
-                </div>
-
-                <div style="text-align: center; margin-top: 4rem;">
-                    <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="general" data-liv-context-name="Our Story CTA" style="font-size: 0.85rem; padding: 1rem 2.5rem;">
-                        Start Your Journey With LIV
-                    </button>
+                <!-- Story Content Container -->
+                <div id="storyContent" class="hidden">
+                    <!-- Content will be loaded dynamically from Supabase -->
                 </div>
             </div>
         </section>
@@ -110,7 +91,168 @@
     </div>
 
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-    <script src="/scripts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/supabase-client.js"></script>
+    <script src="/scripts.js?v=1761950330"></script>
+    <script>
+        // Load story sections from Supabase
+        async function loadStory() {
+            const loadingState = document.getElementById('loadingState');
+            const storyContent = document.getElementById('storyContent');
+
+            try {
+                // Check if Supabase is available
+                if (!window.Supabase || !window.Supabase.client) {
+                    throw new Error('Supabase not configured');
+                }
+
+                // Fetch published story sections
+                const { data: sections, error } = await window.Supabase.client
+                    .from('our_story_sections')
+                    .select('*')
+                    .eq('is_published', true)
+                    .order('display_order', { ascending: true });
+
+                if (error) throw error;
+
+                loadingState.classList.add('hidden');
+                storyContent.classList.remove('hidden');
+
+                // Render sections
+                if (sections && sections.length > 0) {
+                    storyContent.innerHTML = renderSections(sections);
+                } else {
+                    storyContent.innerHTML = '<p style="text-align: center; padding: 2rem;">No story content available.</p>';
+                }
+            } catch (error) {
+                console.error('Error loading story:', error);
+                loadingState.classList.add('hidden');
+                storyContent.classList.remove('hidden');
+                storyContent.innerHTML = '<p style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.6);">Unable to load story content. Please try again later.</p>';
+            }
+        }
+
+        // Render sections based on their type
+        function renderSections(sections) {
+            return sections.map(section => {
+                switch (section.section_type) {
+                    case 'hero':
+                        return renderHeroSection(section);
+                    case 'text':
+                        return renderTextSection(section);
+                    case 'image':
+                        return renderImageSection(section);
+                    case 'quote':
+                        return renderQuoteSection(section);
+                    case 'timeline':
+                        return renderTimelineSection(section);
+                    default:
+                        return '';
+                }
+            }).join('');
+        }
+
+        // Render hero section (main heading with eyebrow)
+        function renderHeroSection(section) {
+            return `
+                <div class="section-heading">
+                    ${section.metadata?.eyebrow ? `<span class="eyebrow">${escapeHtml(section.metadata.eyebrow)}</span>` : ''}
+                    <h2>${escapeHtml(section.title || '')}</h2>
+                    ${section.content ? `<p>${escapeHtml(section.content)}</p>` : ''}
+                </div>
+            `;
+        }
+
+        // Render text section
+        function renderTextSection(section) {
+            const marginTop = section.metadata?.marginTop || '4rem';
+            return `
+                <div class="section-heading" style="margin-top: ${escapeHtml(marginTop)};">
+                    ${section.title ? `<h2>${escapeHtml(section.title)}</h2>` : ''}
+                    ${section.content ? `<p>${escapeHtml(section.content)}</p>` : ''}
+                </div>
+            `;
+        }
+
+        // Render image section (path cards)
+        function renderImageSection(section) {
+            const cards = section.metadata?.cards || [];
+            const marginTop = section.metadata?.marginTop || '4rem';
+
+            if (cards.length === 0) return '';
+
+            const cardsHtml = cards.map(card => {
+                const imageUrl = card.image_url || 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1';
+
+                // Check if content is a list (starts with bullets or has list items)
+                let contentHtml = '';
+                if (card.content_type === 'list' && card.items) {
+                    contentHtml = `
+                        <ul style="list-style: none; padding: 0; margin-top: 1rem; color: rgba(255, 255, 255, 0.82);">
+                            ${card.items.map(item => `
+                                <li style="margin-bottom: 0.75rem; padding-left: 1.5rem; position: relative;">
+                                    <span style="position: absolute; left: 0; top: 0; color: rgba(212, 175, 55, 0.9);">•</span>
+                                    ${escapeHtml(item)}
+                                </li>
+                            `).join('')}
+                        </ul>
+                    `;
+                } else {
+                    contentHtml = `<p>${escapeHtml(card.content || '')}</p>`;
+                }
+
+                return `
+                    <div class="path-card" style="--card-image: url('${escapeHtml(imageUrl)}');">
+                        <h3>${escapeHtml(card.title || '')}</h3>
+                        ${contentHtml}
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); margin-top: ${escapeHtml(marginTop)};">
+                    ${cardsHtml}
+                </div>
+            `;
+        }
+
+        // Render quote section
+        function renderQuoteSection(section) {
+            const marginTop = section.metadata?.marginTop || '4rem';
+            return `
+                <div style="margin-top: ${escapeHtml(marginTop)}; padding: 3rem 2rem; text-align: center; border-left: 4px solid rgba(212, 175, 55, 0.5);">
+                    <blockquote style="font-size: 1.5rem; font-style: italic; margin: 0;">
+                        "${escapeHtml(section.content || '')}"
+                    </blockquote>
+                    ${section.title ? `<p style="margin-top: 1.5rem; opacity: 0.8;">— ${escapeHtml(section.title)}</p>` : ''}
+                </div>
+            `;
+        }
+
+        // Render timeline section (can be expanded later)
+        function renderTimelineSection(section) {
+            const marginTop = section.metadata?.marginTop || '4rem';
+            return `
+                <div style="margin-top: ${escapeHtml(marginTop)};">
+                    ${section.title ? `<h3 style="font-size: 1.5rem; margin-bottom: 1rem;">${escapeHtml(section.title)}</h3>` : ''}
+                    ${section.content ? `<p>${escapeHtml(section.content)}</p>` : ''}
+                </div>
+            `;
+        }
+
+        // Helper function to escape HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize on DOM ready
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStory();
+        });
+    </script>
 
     <!-- Menu Initialization - Simple, reliable menu system -->
     <script defer src="/menu-init.js"></script>

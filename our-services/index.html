@@ -5,6 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Services — Luxury Travel Sweden</title>
     <link rel="stylesheet" href="/styles.css">
+    <style>
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
 
     <!-- Component Loader - Load shared header/footer -->
     <script src="/component-loader.js"></script>
@@ -21,62 +46,15 @@
                     <h2>From private journeys to brand experiences — we design stories that move people.</h2>
                 </div>
 
-                <div class="pillars-grid">
-                    <article class="pillar-card" data-pillar="private-journeys">
-                        <div class="pillar-media" aria-hidden="true">
-                            <img src="https://images.pexels.com/photos/2024881/pexels-photo-2024881.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1" alt="Private luxury journey across Sweden" loading="lazy">
-                        </div>
-                        <div class="pillar-body">
-                            <div class="pillar-icon" aria-hidden="true"><i data-lucide="compass"></i></div>
-                            <div class="pillar-copy">
-                                <h3>Private Journeys</h3>
-                                <p>Tailor-made luxury travel across Sweden and Scandinavia — nature retreats, design immersions, culinary adventures, cultural encounters, and meaningful sustainability-focused experiences.</p>
-                                <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="service" data-liv-context-name="Private Journeys">Design With LIV</button>
-                            </div>
-                        </div>
-                    </article>
+                <!-- Loading State -->
+                <div class="loading-state" id="loadingState">
+                    <div class="loading-spinner"></div>
+                    <p>Loading services...</p>
+                </div>
 
-                    <article class="pillar-card" data-pillar="corporate">
-                        <div class="pillar-media" aria-hidden="true">
-                            <img src="https://images.pexels.com/photos/3184308/pexels-photo-3184308.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1" alt="Corporate and incentive travel" loading="lazy">
-                        </div>
-                        <div class="pillar-body">
-                            <div class="pillar-icon" aria-hidden="true"><i data-lucide="briefcase"></i></div>
-                            <div class="pillar-copy">
-                                <h3>Corporate & Incentive Travel</h3>
-                                <p>Creative incentive programs, leadership retreats, and lifestyle tours that blend innovation, wellness, and Scandinavian culture. Meet startups, explore trends, and discover inspiration through design and purpose.</p>
-                                <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="service" data-liv-context-name="Corporate Travel">Design With LIV</button>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="pillar-card" data-pillar="events">
-                        <div class="pillar-media" aria-hidden="true">
-                            <img src="https://images.pexels.com/photos/3171837/pexels-photo-3171837.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1" alt="Luxury events and brand experiences" loading="lazy">
-                        </div>
-                        <div class="pillar-body">
-                            <div class="pillar-icon" aria-hidden="true"><i data-lucide="sparkles"></i></div>
-                            <div class="pillar-copy">
-                                <h3>Events & Brand Experiences</h3>
-                                <p>From gala dinners and product launches to contemporary food concepts and milestone celebrations — we craft brand and private events with seamless execution and Nordic elegance.</p>
-                                <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="service" data-liv-context-name="Events">Design With LIV</button>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="pillar-card" data-pillar="production">
-                        <div class="pillar-media" aria-hidden="true">
-                            <img src="https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1" alt="Creative and production services" loading="lazy">
-                        </div>
-                        <div class="pillar-body">
-                            <div class="pillar-icon" aria-hidden="true"><i data-lucide="camera"></i></div>
-                            <div class="pillar-copy">
-                                <h3>Creative & Production Services</h3>
-                                <p>Comprehensive location scouting, on-site concierge, and creative support for media, fashion, and brand productions seeking authentic Scandinavian settings and insider access.</p>
-                                <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="service" data-liv-context-name="Production">Design With LIV</button>
-                            </div>
-                        </div>
-                    </article>
+                <!-- Services Grid -->
+                <div class="pillars-grid hidden" id="servicesGrid">
+                    <!-- Services will be loaded dynamically -->
                 </div>
             </div>
         </section>
@@ -118,7 +96,78 @@
     </div>
 
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-    <script src="/scripts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/supabase-client.js"></script>
+    <script src="/scripts.js?v=1761950330"></script>
+    <script>
+        // Load services from Supabase pillars table
+        async function loadServices() {
+            const loadingState = document.getElementById('loadingState');
+            const servicesGrid = document.getElementById('servicesGrid');
+
+            try {
+                // Check if Supabase is available
+                if (!window.Supabase || !window.Supabase.db) {
+                    throw new Error('Supabase not configured');
+                }
+
+                // Fetch services pillars (using 'services' section)
+                const services = await window.Supabase.db.getPillars('services', true);
+
+                loadingState.classList.add('hidden');
+                servicesGrid.classList.remove('hidden');
+
+                // Render services
+                if (services && services.length > 0) {
+                    servicesGrid.innerHTML = services.map(service => {
+                        const imageUrl = service.hero_image_url || 'https://images.pexels.com/photos/2024881/pexels-photo-2024881.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1';
+                        const iconName = service.icon_name || 'sparkles';
+
+                        return `
+                            <article class="pillar-card" data-pillar="${escapeHtml(service.slug)}">
+                                <div class="pillar-media" aria-hidden="true">
+                                    <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(service.title)}" loading="lazy">
+                                </div>
+                                <div class="pillar-body">
+                                    <div class="pillar-icon" aria-hidden="true"><i data-lucide="${escapeHtml(iconName)}"></i></div>
+                                    <div class="pillar-copy">
+                                        <h3>${escapeHtml(service.title)}</h3>
+                                        <p>${escapeHtml(service.excerpt)}</p>
+                                        <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="${escapeHtml(service.liv_context_type || 'service')}" data-liv-context-name="${escapeHtml(service.liv_context_name || service.title)}">${escapeHtml(service.cta_text || 'Design With LIV')}</button>
+                                    </div>
+                                </div>
+                            </article>
+                        `;
+                    }).join('');
+
+                    // Reinitialize Lucide icons
+                    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                        window.lucide.createIcons();
+                    }
+                } else {
+                    servicesGrid.innerHTML = '<p style="text-align: center; padding: 2rem;">No services found.</p>';
+                }
+            } catch (error) {
+                console.error('Error loading services:', error);
+                loadingState.classList.add('hidden');
+                servicesGrid.classList.remove('hidden');
+                servicesGrid.innerHTML = '<p style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.6);">Unable to load services. Please try again later.</p>';
+            }
+        }
+
+        // Helper function to escape HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize on DOM ready
+        document.addEventListener('DOMContentLoaded', () => {
+            loadServices();
+        });
+    </script>
 
     <!-- Menu Initialization - Simple, reliable menu system -->
     <script defer src="/menu-init.js"></script>
