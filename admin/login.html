@@ -163,8 +163,9 @@
             // Check if already logged in
             const user = await window.AuthManager.checkAuth();
             if (user) {
-                // Already logged in, redirect to dashboard
-                window.location.href = '/admin/index.html';
+                // Already logged in, redirect to saved destination or dashboard
+                const redirect = window.AuthManager.getRedirectAfterLogin();
+                window.location.href = redirect;
                 return;
             }
 
@@ -200,8 +201,9 @@
                     // Attempt login
                     await window.AuthManager.login(email, password, rememberMe);
 
-                    // Success - redirect to dashboard
-                    window.location.href = '/admin/index.html';
+                    // Success - redirect to saved destination or dashboard
+                    const redirect = window.AuthManager.getRedirectAfterLogin();
+                    window.location.href = redirect;
                 } catch (error) {
                     // Show error
                     showError(getErrorMessage(error));
