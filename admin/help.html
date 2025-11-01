@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Help & Documentation - Luxury Travel Sweden CMS</title>
+  <link rel="stylesheet" href="admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .help-section {
+      margin-bottom: 3rem;
+    }
+    .help-section h2 {
+      color: #fff;
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid rgba(255,255,255,0.1);
+    }
+    .help-section h3 {
+      color: #fff;
+      font-size: 1.25rem;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .help-section h4 {
+      color: rgba(255,255,255,0.9);
+      font-size: 1.1rem;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .help-section p,
+    .help-section li {
+      color: rgba(255,255,255,0.7);
+      line-height: 1.8;
+      margin-bottom: 0.75rem;
+    }
+    .help-section ul,
+    .help-section ol {
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .help-section code {
+      background: rgba(255,255,255,0.1);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.9rem;
+      color: #4ade80;
+    }
+    .help-section .note {
+      background: rgba(74, 222, 128, 0.1);
+      border-left: 3px solid #4ade80;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 4px;
+    }
+    .help-section .warning {
+      background: rgba(251, 191, 36, 0.1);
+      border-left: 3px solid #fbbf24;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 4px;
+    }
+    .help-section .tip {
+      background: rgba(96, 165, 250, 0.1);
+      border-left: 3px solid #60a5fa;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 4px;
+    }
+    .page-nav {
+      background: rgba(255,255,255,0.05);
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+    .page-nav h3 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+    .page-nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.5rem;
+    }
+    .page-nav a {
+      color: #60a5fa;
+      text-decoration: none;
+      display: block;
+      padding: 0.5rem;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .page-nav a:hover {
+      background: rgba(255,255,255,0.05);
+      color: #4ade80;
+    }
+    .step-number {
+      display: inline-block;
+      background: #4ade80;
+      color: #000;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 24px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      margin-right: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="loadingScreen" class="loading-screen">
+    <div class="loading-spinner"></div>
+    <p>Loading help...</p>
+  </div>
+
+  <div id="adminApp" class="admin-container" style="display: none;">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M16 2L26 8L26 24L16 30L6 24L6 8L16 2Z" fill="currentColor" opacity="0.2"/>
+            <path d="M16 2L26 8M26 8L26 24M26 24L16 30M16 30L6 24M6 24L6 8M6 8L16 2M16 2L16 30M6 8L26 24M26 8L6 24" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+          <div>
+            <h1>LTS</h1>
+            <span>CMS</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="index.html" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="3" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="11" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="3" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="11" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="destinations.html" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M10 2C10 2 4 6 4 11C4 14.3137 6.68629 17 10 17C13.3137 17 16 14.3137 16 11C16 6 10 2 10 2Z" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="10" cy="11" r="2" fill="currentColor"/>
+          </svg>
+          <span>Destinations</span>
+        </a>
+
+        <a href="leads.html" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M10 11C12.2091 11 14 9.20914 14 7C14 4.79086 12.2091 3 10 3C7.79086 3 6 4.79086 6 7C6 9.20914 7.79086 11 10 11Z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M2 17C2 14 6 12 10 12C14 12 18 14 18 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>Leads & Contacts</span>
+        </a>
+
+        <a href="press.html" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M7 7H13M7 11H13M7 14H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>Press & Media</span>
+        </a>
+
+        <a href="liv-settings.html" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M10 1V4M10 16V19M19 10H16M4 10H1M16.95 16.95L14.83 14.83M5.17 5.17L3.05 3.05M16.95 3.05L14.83 5.17M5.17 14.83L3.05 16.95" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>LIV AI Settings</span>
+        </a>
+
+        <a href="instagram-setup.html" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="3" y="3" width="14" height="14" rx="4" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="14.5" cy="5.5" r="0.5" fill="currentColor"/>
+          </svg>
+          <span>Instagram Setup</span>
+        </a>
+
+        <a href="posts.html" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M3 4H17M3 8H17M3 12H17M3 16H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>Blog Posts</span>
+        </a>
+
+        <a href="stories.html" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M7 7H13M7 11H13M7 14H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>Stories</span>
+        </a>
+
+        <a href="pillars.html" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="3" y="3" width="6" height="14" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="11" y="3" width="6" height="14" rx="1" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+          <span>Pillars</span>
+        </a>
+
+        <a href="team-members.html" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M7 8C8.65685 8 10 6.65685 10 5C10 3.34315 8.65685 2 7 2C5.34315 2 4 3.34315 4 5C4 6.65685 5.34315 8 7 8Z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M14 8C15.1046 8 16 7.10457 16 6C16 4.89543 15.1046 4 14 4C12.8954 4 12 4.89543 12 6C12 7.10457 12.8954 8 14 8Z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M2 16C2 13 4 11 7 11C10 11 12 13 12 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M12 14C12 12.5 13 11 14 11C15.5 11 17 12 18 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>Team Members</span>
+        </a>
+
+        <a href="our-story.html" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M10 2L12 7L17 7L13 11L15 16L10 13L5 16L7 11L3 7L8 7L10 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+          <span>Our Story</span>
+        </a>
+
+        <a href="pricing.html" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M10 6V10L13 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>Pricing Tiers</span>
+        </a>
+
+        <a href="faqs.html" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M10 14V14.01M10 11C10 9.89543 10.8954 9 12 9C13.1046 9 14 9.89543 14 11C14 11.7403 13.5978 12.3866 13 12.7324V13C13 13.5523 12.5523 14 12 14H10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>FAQs</span>
+        </a>
+
+        <a href="media.html" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="7.5" cy="7.5" r="1.5" fill="currentColor"/>
+            <path d="M17 13L13 9L8 14M8 14L6 12L3 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Media Library</span>
+        </a>
+
+        <a href="help.html" class="nav-item active">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M10 13.5V13.51M10 10.5C10 9.39543 10.8954 8.5 12 8.5C13.1046 8.5 14 9.39543 14 10.5C14 11.2403 13.5978 11.8866 13 12.2324V12.5C13 13.0523 12.5523 13.5 12 13.5H10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>Help & Documentation</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M4 17C4 14 6 12 10 12C14 12 16 14 16 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="user-details">
+            <div class="user-name">Admin</div>
+            <div class="user-email" id="userEmail">Loading...</div>
+          </div>
+        </div>
+        <button id="logoutBtn" class="logout-btn" title="Logout">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M13 13L17 10L13 7M17 10H7M7 3H5C3.89543 3 3 3.89543 3 5V15C3 16.1046 3.89543 17 5 17H7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="content-header">
+        <div class="header-left">
+          <h1>Help & Documentation</h1>
+          <p class="subtitle">Complete guide to using the Luxury Travel Sweden CMS</p>
+        </div>
+        <div class="header-right">
+          <a href="/" class="btn-secondary" target="_blank">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+              <path d="M10 3L3 8V17H7V12H13V17H17V8L10 3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+            View Site
+          </a>
+        </div>
+      </header>
+
+      <div class="content-card">
+        <div class="page-nav">
+          <h3>Quick Navigation</h3>
+          <ul>
+            <li><a href="#getting-started">Getting Started</a></li>
+            <li><a href="#dashboard">Dashboard</a></li>
+            <li><a href="#destinations">Destinations</a></li>
+            <li><a href="#leads">Leads & Contacts</a></li>
+            <li><a href="#press">Press & Media</a></li>
+            <li><a href="#liv">LIV AI Settings</a></li>
+            <li><a href="#instagram">Instagram Setup</a></li>
+            <li><a href="#posts">Blog Posts</a></li>
+            <li><a href="#stories">Stories</a></li>
+            <li><a href="#pillars">Pillars</a></li>
+            <li><a href="#team">Team Members</a></li>
+            <li><a href="#our-story">Our Story</a></li>
+            <li><a href="#pricing">Pricing Tiers</a></li>
+            <li><a href="#faqs">FAQs</a></li>
+            <li><a href="#media">Media Library</a></li>
+            <li><a href="#troubleshooting">Troubleshooting</a></li>
+          </ul>
+        </div>
+
+        <!-- Getting Started -->
+        <div class="help-section" id="getting-started">
+          <h2>Getting Started</h2>
+
+          <h3>Welcome to the CMS</h3>
+          <p>The Luxury Travel Sweden Content Management System (CMS) allows you to manage all content on your website without needing to write code. This documentation will guide you through each section of the CMS.</p>
+
+          <div class="note">
+            <strong>Important:</strong> All changes you make in the CMS go live on the website immediately when you click "Save" or "Publish". There is no staging environment, so always double-check your content before saving.
+          </div>
+
+          <h3>Common Features</h3>
+          <p>Most CMS pages share these common features:</p>
+          <ul>
+            <li><strong>Status Toggle:</strong> Switch between Draft and Published to control visibility on the website</li>
+            <li><strong>Rich Text Editor:</strong> Format text with bold, italic, headings, and more</li>
+            <li><strong>Image Upload:</strong> Upload images directly or select from the Media Library</li>
+            <li><strong>Search & Filter:</strong> Find content quickly using the search bar</li>
+            <li><strong>Drag & Drop Ordering:</strong> Reorder items by dragging them up or down</li>
+          </ul>
+
+          <h3>Publishing Workflow</h3>
+          <p><span class="step-number">1</span>Create or edit content</p>
+          <p><span class="step-number">2</span>Save as Draft to preview without publishing</p>
+          <p><span class="step-number">3</span>Review content on the live site (use "View Site" button)</p>
+          <p><span class="step-number">4</span>Set status to Published when ready to go live</p>
+        </div>
+
+        <!-- Dashboard -->
+        <div class="help-section" id="dashboard">
+          <h2>Dashboard</h2>
+
+          <h3>Overview</h3>
+          <p>The Dashboard is your home page in the CMS. It provides a quick overview of your website's content and recent activity.</p>
+
+          <h3>What You'll See</h3>
+          <ul>
+            <li><strong>Content Statistics:</strong> Total counts of destinations, blog posts, stories, and team members</li>
+            <li><strong>Recent Leads:</strong> Latest contact form submissions from your website</li>
+            <li><strong>Quick Actions:</strong> Shortcuts to create new content</li>
+            <li><strong>Recent Activity:</strong> Latest updates across all content types</li>
+          </ul>
+
+          <div class="tip">
+            <strong>Tip:</strong> Use the Dashboard to get a quick pulse on your website activity. Check it regularly to see new lead submissions.
+          </div>
+        </div>
+
+        <!-- Destinations -->
+        <div class="help-section" id="destinations">
+          <h2>Destinations</h2>
+
+          <h3>What Are Destinations?</h3>
+          <p>Destinations are the locations you offer to your clients. Each destination appears on your website with rich details including descriptions, images, activities, and pricing information.</p>
+
+          <h3>How to Add a New Destination</h3>
+          <p><span class="step-number">1</span>Click the "Add New Destination" button</p>
+          <p><span class="step-number">2</span>Fill in the required fields:</p>
+          <ul>
+            <li><strong>Title:</strong> Name of the destination (e.g., "Swedish Lapland")</li>
+            <li><strong>Slug:</strong> URL-friendly version (e.g., "swedish-lapland") - auto-generated from title</li>
+            <li><strong>Description:</strong> Short overview that appears in destination cards</li>
+            <li><strong>Hero Image:</strong> Main image shown at the top of the destination page</li>
+            <li><strong>Gallery Images:</strong> Additional images shown in the photo gallery</li>
+          </ul>
+          <p><span class="step-number">3</span>Add detailed content:</p>
+          <ul>
+            <li><strong>Long Description:</strong> Full destination details with rich formatting</li>
+            <li><strong>Activities:</strong> Things visitors can do at this destination</li>
+            <li><strong>Best Time to Visit:</strong> Seasonal recommendations</li>
+            <li><strong>Duration:</strong> Typical trip length (e.g., "5-7 days")</li>
+          </ul>
+          <p><span class="step-number">4</span>Set pricing and availability</p>
+          <p><span class="step-number">5</span>Save as Draft or set to Published</p>
+
+          <h3>Managing Destination Images</h3>
+          <ul>
+            <li>Use high-quality images (minimum 1920px wide for hero images)</li>
+            <li>Landscape orientation works best for hero images</li>
+            <li>Upload multiple gallery images to showcase the destination</li>
+            <li>Add descriptive alt text for accessibility</li>
+          </ul>
+
+          <div class="warning">
+            <strong>Important:</strong> Published destinations appear immediately on the website. Use Draft status while preparing content.
+          </div>
+        </div>
+
+        <!-- Leads & Contacts -->
+        <div class="help-section" id="leads">
+          <h2>Leads & Contacts</h2>
+
+          <h3>What Are Leads?</h3>
+          <p>Leads are contact form submissions from your website. When visitors fill out the contact form, their information appears here.</p>
+
+          <h3>Managing Leads</h3>
+          <ul>
+            <li><strong>View Details:</strong> Click any lead to see full message and contact information</li>
+            <li><strong>Filter by Status:</strong> Toggle between New, Contacted, and Converted</li>
+            <li><strong>Update Status:</strong> Mark leads as you progress through your sales process</li>
+            <li><strong>Search:</strong> Find leads by name, email, or message content</li>
+            <li><strong>Delete:</strong> Remove spam or irrelevant submissions</li>
+          </ul>
+
+          <h3>Lead Workflow</h3>
+          <p><span class="step-number">1</span>New leads arrive with "New" status</p>
+          <p><span class="step-number">2</span>Review the inquiry and contact the potential client</p>
+          <p><span class="step-number">3</span>Update status to "Contacted" after initial outreach</p>
+          <p><span class="step-number">4</span>Change to "Converted" when they become a client</p>
+
+          <div class="tip">
+            <strong>Tip:</strong> Check the Leads page daily to ensure prompt responses to inquiries. Quick response times improve conversion rates.
+          </div>
+
+          <h3>Exporting Leads</h3>
+          <p>Use the "Export to CSV" button to download all leads for use in your email marketing or CRM system.</p>
+        </div>
+
+        <!-- Press & Media -->
+        <div class="help-section" id="press">
+          <h2>Press & Media</h2>
+
+          <h3>What Is Press & Media?</h3>
+          <p>This section manages press mentions, media coverage, and downloadable press materials for your business.</p>
+
+          <h3>Adding Press Items</h3>
+          <p><span class="step-number">1</span>Click "Add Press Item"</p>
+          <p><span class="step-number">2</span>Enter the details:</p>
+          <ul>
+            <li><strong>Title:</strong> Headline of the article or mention</li>
+            <li><strong>Publication:</strong> Name of the media outlet (e.g., "Travel + Leisure")</li>
+            <li><strong>Date:</strong> Publication date</li>
+            <li><strong>URL:</strong> Link to the article (optional)</li>
+            <li><strong>Summary:</strong> Brief description of the coverage</li>
+            <li><strong>Image:</strong> Publication logo or article screenshot</li>
+          </ul>
+          <p><span class="step-number">3</span>Save and publish</p>
+
+          <h3>Press Kit Files</h3>
+          <p>Upload downloadable press materials:</p>
+          <ul>
+            <li>Company logos in various formats</li>
+            <li>High-resolution images</li>
+            <li>Press releases (PDF)</li>
+            <li>Fact sheets</li>
+            <li>Media kit documents</li>
+          </ul>
+
+          <div class="note">
+            <strong>Note:</strong> Press items appear on the "Press" page of your website. Keep this section updated to build credibility.
+          </div>
+        </div>
+
+        <!-- LIV AI Settings -->
+        <div class="help-section" id="liv">
+          <h2>LIV AI Settings</h2>
+
+          <h3>What Is LIV?</h3>
+          <p>LIV is your AI-powered chat assistant that appears on your website. Visitors can ask questions and get instant responses about destinations, pricing, and travel planning.</p>
+
+          <h3>Configuring LIV</h3>
+          <h4>System Instructions</h4>
+          <p>Define how LIV should behave and respond:</p>
+          <ul>
+            <li>Set the personality and tone (professional, friendly, casual, etc.)</li>
+            <li>Define expertise areas (Swedish travel, luxury experiences, etc.)</li>
+            <li>Specify response guidelines and limitations</li>
+            <li>Add company-specific information LIV should know</li>
+          </ul>
+
+          <h4>Knowledge Base</h4>
+          <p>Upload documents that LIV can reference when answering questions:</p>
+          <ul>
+            <li>Travel guides and itineraries</li>
+            <li>Pricing information</li>
+            <li>FAQs and common questions</li>
+            <li>Company policies</li>
+          </ul>
+
+          <h4>Greeting Messages</h4>
+          <p>Customize the contextual greetings LIV shows based on which page visitors are on:</p>
+          <ul>
+            <li><strong>Homepage:</strong> General welcome message</li>
+            <li><strong>Destinations:</strong> Destination-specific questions</li>
+            <li><strong>Pricing:</strong> Pricing and booking questions</li>
+            <li><strong>Contact:</strong> How can we help you today</li>
+          </ul>
+
+          <div class="warning">
+            <strong>Important:</strong> Test LIV thoroughly after making changes. Incorrect instructions can lead to poor user experiences.
+          </div>
+
+          <h3>Monitoring Conversations</h3>
+          <p>Review conversation logs to:</p>
+          <ul>
+            <li>Understand what visitors are asking about</li>
+            <li>Identify knowledge gaps to fill</li>
+            <li>Improve LIV's instructions</li>
+            <li>Find potential leads</li>
+          </ul>
+        </div>
+
+        <!-- Instagram Setup -->
+        <div class="help-section" id="instagram">
+          <h2>Instagram Setup</h2>
+
+          <h3>What Is Instagram Integration?</h3>
+          <p>The Instagram Setup page allows you to display your latest Instagram posts on your website's homepage, automatically pulling fresh content from your Instagram account.</p>
+
+          <h3>Initial Setup</h3>
+          <p><span class="step-number">1</span>Create a Facebook App (follow the detailed instructions on the Instagram Setup page)</p>
+          <p><span class="step-number">2</span>Set up Instagram Basic Display API</p>
+          <p><span class="step-number">3</span>Generate an access token</p>
+          <p><span class="step-number">4</span>Paste the access token in the CMS</p>
+          <p><span class="step-number">5</span>Click "Test Connection" to verify it works</p>
+          <p><span class="step-number">6</span>Save the token</p>
+
+          <h3>Maintenance</h3>
+          <div class="warning">
+            <strong>Important:</strong> Instagram access tokens expire after 60 days. You'll need to regenerate and update the token every 2 months to keep the feed working.
+          </div>
+
+          <h3>What Displays on Your Site</h3>
+          <ul>
+            <li>Your 3 most recent Instagram posts</li>
+            <li>Post images</li>
+            <li>First line of each caption</li>
+            <li>Links back to Instagram</li>
+          </ul>
+
+          <div class="tip">
+            <strong>Tip:</strong> Set a calendar reminder to refresh your Instagram token every 50 days to avoid interruptions.
+          </div>
+        </div>
+
+        <!-- Blog Posts -->
+        <div class="help-section" id="posts">
+          <h2>Blog Posts</h2>
+
+          <h3>What Are Blog Posts?</h3>
+          <p>Blog posts are articles you publish on your website's blog/journal section. Use them to share travel tips, destination guides, company news, and stories.</p>
+
+          <h3>Creating a Blog Post</h3>
+          <p><span class="step-number">1</span>Click "Create New Post"</p>
+          <p><span class="step-number">2</span>Fill in the post details:</p>
+          <ul>
+            <li><strong>Title:</strong> Compelling headline (e.g., "10 Hidden Gems in Swedish Lapland")</li>
+            <li><strong>Slug:</strong> URL-friendly version (auto-generated)</li>
+            <li><strong>Featured Image:</strong> Eye-catching image shown in post listings</li>
+            <li><strong>Excerpt:</strong> Short summary (150-250 characters)</li>
+            <li><strong>Author:</strong> Select the post author from your team</li>
+            <li><strong>Publish Date:</strong> When the post should be published</li>
+            <li><strong>Categories:</strong> Select relevant categories (Travel Tips, Destinations, etc.)</li>
+            <li><strong>Tags:</strong> Add keywords for better organization</li>
+          </ul>
+          <p><span class="step-number">3</span>Write your content using the rich text editor:</p>
+          <ul>
+            <li>Use headings (H2, H3) to structure content</li>
+            <li>Add images throughout the post</li>
+            <li>Include lists for better readability</li>
+            <li>Add links to relevant destinations or other posts</li>
+          </ul>
+          <p><span class="step-number">4</span>Optimize for SEO:</p>
+          <ul>
+            <li>Write a compelling meta description</li>
+            <li>Add alt text to all images</li>
+            <li>Use keywords naturally in your content</li>
+            <li>Include internal links to other pages</li>
+          </ul>
+          <p><span class="step-number">5</span>Preview before publishing</p>
+          <p><span class="step-number">6</span>Set status to Published when ready</p>
+
+          <h3>Best Practices</h3>
+          <ul>
+            <li>Aim for 800-1500 words for in-depth posts</li>
+            <li>Use high-quality images (at least 1200px wide)</li>
+            <li>Break up text with images, headings, and lists</li>
+            <li>Write engaging introductions to hook readers</li>
+            <li>Include a call-to-action at the end</li>
+            <li>Publish consistently (weekly or bi-weekly)</li>
+          </ul>
+
+          <div class="tip">
+            <strong>Tip:</strong> Schedule posts in advance by setting the publish date to a future date. The post will automatically go live at that time.
+          </div>
+        </div>
+
+        <!-- Stories -->
+        <div class="help-section" id="stories">
+          <h2>Stories</h2>
+
+          <h3>What Are Stories?</h3>
+          <p>Stories are customer experiences, travel narratives, and testimonials that showcase the unique experiences your company provides. They're different from blog posts - they're more narrative and personal.</p>
+
+          <h3>Creating a Story</h3>
+          <p><span class="step-number">1</span>Click "Add New Story"</p>
+          <p><span class="step-number">2</span>Fill in story details:</p>
+          <ul>
+            <li><strong>Title:</strong> Story headline (e.g., "Sarah's Northern Lights Adventure")</li>
+            <li><strong>Client Name:</strong> Name of the traveler (with permission)</li>
+            <li><strong>Destination:</strong> Where the story takes place</li>
+            <li><strong>Trip Date:</strong> When the journey occurred</li>
+            <li><strong>Cover Image:</strong> Compelling photo from the trip</li>
+            <li><strong>Story Type:</strong> Adventure, Romance, Family, Solo Travel, etc.</li>
+          </ul>
+          <p><span class="step-number">3</span>Write the narrative:</p>
+          <ul>
+            <li>Tell the story from the traveler's perspective</li>
+            <li>Include specific details and emotions</li>
+            <li>Highlight unique experiences</li>
+            <li>Add multiple images throughout</li>
+          </ul>
+          <p><span class="step-number">4</span>Add a testimonial quote (optional but recommended)</p>
+          <p><span class="step-number">5</span>Save and publish</p>
+
+          <h3>Story Best Practices</h3>
+          <ul>
+            <li>Get written permission from clients before publishing their stories</li>
+            <li>Use authentic, unedited photos when possible</li>
+            <li>Focus on emotional experiences, not just activities</li>
+            <li>Keep stories between 500-1000 words</li>
+            <li>Include specific details that paint a vivid picture</li>
+          </ul>
+
+          <div class="note">
+            <strong>Note:</strong> Stories are powerful sales tools. They help potential clients envision their own experiences with your company.
+          </div>
+        </div>
+
+        <!-- Pillars -->
+        <div class="help-section" id="pillars">
+          <h2>Pillars</h2>
+
+          <h3>What Are Pillars?</h3>
+          <p>Pillars are the core values, principles, or service pillars that define your company. They typically appear on your homepage and about page to communicate what makes your company unique.</p>
+
+          <h3>Managing Pillars</h3>
+          <p><span class="step-number">1</span>Click "Add New Pillar" (typically you'll have 3-6 pillars)</p>
+          <p><span class="step-number">2</span>Fill in pillar details:</p>
+          <ul>
+            <li><strong>Title:</strong> Pillar name (e.g., "Sustainable Travel", "Local Expertise", "Personalized Service")</li>
+            <li><strong>Icon:</strong> Select an icon that represents this pillar</li>
+            <li><strong>Description:</strong> Explain what this pillar means (2-3 sentences)</li>
+            <li><strong>Order:</strong> Set the display order on your website</li>
+          </ul>
+          <p><span class="step-number">3</span>Save and publish</p>
+
+          <h3>Pillar Best Practices</h3>
+          <ul>
+            <li>Keep pillar titles short and punchy (2-3 words)</li>
+            <li>Write concise descriptions (50-100 words)</li>
+            <li>Make pillars actionable and specific to your business</li>
+            <li>Use positive, confident language</li>
+            <li>Ensure pillars differentiate you from competitors</li>
+          </ul>
+
+          <div class="tip">
+            <strong>Tip:</strong> Use the drag-and-drop feature to reorder pillars. Place your most important pillar first.
+          </div>
+        </div>
+
+        <!-- Team Members -->
+        <div class="help-section" id="team">
+          <h2>Team Members</h2>
+
+          <h3>What Are Team Members?</h3>
+          <p>This section manages your company's team page, showcasing the people behind your luxury travel experiences.</p>
+
+          <h3>Adding Team Members</h3>
+          <p><span class="step-number">1</span>Click "Add Team Member"</p>
+          <p><span class="step-number">2</span>Enter team member details:</p>
+          <ul>
+            <li><strong>Name:</strong> Full name</li>
+            <li><strong>Role/Title:</strong> Job title (e.g., "Lead Travel Designer", "Founder & CEO")</li>
+            <li><strong>Photo:</strong> Professional headshot (square format, 500x500px minimum)</li>
+            <li><strong>Bio:</strong> Professional background and expertise (150-300 words)</li>
+            <li><strong>Specialties:</strong> Areas of expertise (e.g., "Arctic Travel", "Adventure Planning")</li>
+            <li><strong>Email:</strong> Contact email (optional)</li>
+            <li><strong>Phone:</strong> Direct line (optional)</li>
+          </ul>
+          <p><span class="step-number">3</span>Add social media links (optional):</p>
+          <ul>
+            <li>LinkedIn profile</li>
+            <li>Instagram account</li>
+            <li>Twitter/X handle</li>
+          </ul>
+          <p><span class="step-number">4</span>Set display order (use drag-and-drop)</p>
+          <p><span class="step-number">5</span>Save and publish</p>
+
+          <h3>Photo Guidelines</h3>
+          <ul>
+            <li>Use consistent photo style across all team members</li>
+            <li>Professional quality, well-lit photos</li>
+            <li>Neutral or branded background</li>
+            <li>Square aspect ratio (1:1)</li>
+            <li>Show personality while maintaining professionalism</li>
+          </ul>
+
+          <div class="tip">
+            <strong>Tip:</strong> Strong team pages build trust. Include personal touches in bios to help clients connect with your team.
+          </div>
+        </div>
+
+        <!-- Our Story -->
+        <div class="help-section" id="our-story">
+          <h2>Our Story</h2>
+
+          <h3>What Is Our Story?</h3>
+          <p>The Our Story section manages your company's about page content, telling the narrative of how your business came to be and what drives your mission.</p>
+
+          <h3>Managing Story Sections</h3>
+          <p>Your story is divided into sections that you can add, edit, and reorder:</p>
+
+          <p><span class="step-number">1</span>Click "Add Section"</p>
+          <p><span class="step-number">2</span>Choose section type:</p>
+          <ul>
+            <li><strong>Hero:</strong> Opening statement with large image</li>
+            <li><strong>Timeline:</strong> Company history and milestones</li>
+            <li><strong>Mission:</strong> Your purpose and values</li>
+            <li><strong>Team Intro:</strong> Introduction to your team</li>
+            <li><strong>Text Block:</strong> General content section</li>
+            <li><strong>Image + Text:</strong> Combined image and text layout</li>
+            <li><strong>Quote:</strong> Highlighted testimonial or mission statement</li>
+          </ul>
+          <p><span class="step-number">3</span>Fill in section content based on the type</p>
+          <p><span class="step-number">4</span>Upload relevant images</p>
+          <p><span class="step-number">5</span>Use drag-and-drop to arrange sections</p>
+          <p><span class="step-number">6</span>Save changes</p>
+
+          <h3>Storytelling Tips</h3>
+          <ul>
+            <li>Start with why you started the business</li>
+            <li>Include personal anecdotes and experiences</li>
+            <li>Show passion for travel and Sweden</li>
+            <li>Highlight what makes you different</li>
+            <li>Use authentic photos from your own travels</li>
+            <li>Keep language warm and personal</li>
+            <li>End with your vision for the future</li>
+          </ul>
+
+          <div class="note">
+            <strong>Note:</strong> Your story page is often the second most-visited page after the homepage. Make it compelling and authentic.
+          </div>
+        </div>
+
+        <!-- Pricing Tiers -->
+        <div class="help-section" id="pricing">
+          <h2>Pricing Tiers</h2>
+
+          <h3>What Are Pricing Tiers?</h3>
+          <p>Pricing tiers are the different service levels or packages you offer, typically displayed on your pricing or services page.</p>
+
+          <h3>Creating Pricing Tiers</h3>
+          <p><span class="step-number">1</span>Click "Add Pricing Tier"</p>
+          <p><span class="step-number">2</span>Fill in tier details:</p>
+          <ul>
+            <li><strong>Tier Name:</strong> Package name (e.g., "Essential", "Luxury", "Ultimate")</li>
+            <li><strong>Tagline:</strong> Brief description (e.g., "Perfect for first-time visitors")</li>
+            <li><strong>Price:</strong> Starting price or price range</li>
+            <li><strong>Price Note:</strong> Additional pricing context (e.g., "per person", "starting from")</li>
+            <li><strong>Features:</strong> What's included in this tier (add multiple features)</li>
+            <li><strong>Highlighted:</strong> Mark this tier as "Most Popular" or "Best Value"</li>
+            <li><strong>Order:</strong> Display position (typically cheapest to most expensive)</li>
+          </ul>
+          <p><span class="step-number">3</span>Add features:</p>
+          <ul>
+            <li>List specific inclusions (accommodations, guides, meals, etc.)</li>
+            <li>Use checkmarks for included features</li>
+            <li>Optionally show what's NOT included with X marks</li>
+          </ul>
+          <p><span class="step-number">4</span>Set CTA (Call-to-Action):</p>
+          <ul>
+            <li>Button text (e.g., "Get Started", "Contact Us", "Book Now")</li>
+            <li>Button link (contact page, booking form, etc.)</li>
+          </ul>
+          <p><span class="step-number">5</span>Save and publish</p>
+
+          <h3>Pricing Strategy Tips</h3>
+          <ul>
+            <li>Offer 3-4 tiers maximum (too many causes decision paralysis)</li>
+            <li>Clearly differentiate what each tier includes</li>
+            <li>Highlight your recommended tier</li>
+            <li>Use anchoring (show highest price first to make others seem reasonable)</li>
+            <li>Be transparent about what's included vs. add-ons</li>
+          </ul>
+
+          <div class="warning">
+            <strong>Important:</strong> If you prefer not to show prices publicly, you can use text like "Custom Quote" or "Contact for Pricing" instead of specific amounts.
+          </div>
+        </div>
+
+        <!-- FAQs -->
+        <div class="help-section" id="faqs">
+          <h2>FAQs (Frequently Asked Questions)</h2>
+
+          <h3>What Are FAQs?</h3>
+          <p>FAQs answer common questions your clients ask, reducing support burden and helping visitors find information quickly.</p>
+
+          <h3>Adding FAQs</h3>
+          <p><span class="step-number">1</span>Click "Add FAQ"</p>
+          <p><span class="step-number">2</span>Enter FAQ details:</p>
+          <ul>
+            <li><strong>Question:</strong> The question exactly as customers ask it</li>
+            <li><strong>Answer:</strong> Clear, concise answer with all relevant details</li>
+            <li><strong>Category:</strong> Group related questions (Booking, Travel, Pricing, etc.)</li>
+            <li><strong>Order:</strong> Priority (most common questions first)</li>
+          </ul>
+          <p><span class="step-number">3</span>Format the answer:</p>
+          <ul>
+            <li>Use bullet points for lists</li>
+            <li>Add links to relevant pages</li>
+            <li>Keep answers scannable</li>
+            <li>Include specific details (numbers, dates, etc.)</li>
+          </ul>
+          <p><span class="step-number">4</span>Save and publish</p>
+
+          <h3>FAQ Best Practices</h3>
+          <ul>
+            <li>Write questions exactly as customers would ask them</li>
+            <li>Keep answers concise but complete</li>
+            <li>Update FAQs based on actual customer questions</li>
+            <li>Organize FAQs into logical categories</li>
+            <li>Put most common questions at the top</li>
+            <li>Link to detailed pages when appropriate</li>
+            <li>Review and update quarterly</li>
+          </ul>
+
+          <h3>Recommended FAQ Categories</h3>
+          <ul>
+            <li>Booking & Reservations</li>
+            <li>Pricing & Payments</li>
+            <li>Travel Planning</li>
+            <li>What to Expect</li>
+            <li>Changes & Cancellations</li>
+            <li>During Your Trip</li>
+          </ul>
+
+          <div class="tip">
+            <strong>Tip:</strong> Review your lead inquiries regularly. Common questions should be added to your FAQ page to save time.
+          </div>
+        </div>
+
+        <!-- Media Library -->
+        <div class="help-section" id="media">
+          <h2>Media Library</h2>
+
+          <h3>What Is the Media Library?</h3>
+          <p>The Media Library is your central repository for all images, documents, and files used across your website.</p>
+
+          <h3>Uploading Files</h3>
+          <p><span class="step-number">1</span>Click "Upload Files"</p>
+          <p><span class="step-number">2</span>Select files from your computer or drag-and-drop</p>
+          <p><span class="step-number">3</span>Wait for upload to complete</p>
+          <p><span class="step-number">4</span>Add file details:</p>
+          <ul>
+            <li><strong>Title:</strong> Descriptive name</li>
+            <li><strong>Alt Text:</strong> Image description for accessibility and SEO</li>
+            <li><strong>Caption:</strong> Optional text to display with image</li>
+            <li><strong>Tags:</strong> Keywords for easy finding</li>
+          </ul>
+          <p><span class="step-number">5</span>Save file information</p>
+
+          <h3>Organizing Files</h3>
+          <ul>
+            <li>Use descriptive filenames before uploading</li>
+            <li>Tag files by category (destinations, team, blog, etc.)</li>
+            <li>Delete unused files periodically</li>
+            <li>Use search to find files quickly</li>
+            <li>Filter by file type (images, documents, videos)</li>
+          </ul>
+
+          <h3>Image Requirements</h3>
+          <ul>
+            <li><strong>Hero Images:</strong> Minimum 1920x1080px, landscape orientation</li>
+            <li><strong>Featured Images:</strong> Minimum 1200x800px</li>
+            <li><strong>Team Photos:</strong> 500x500px, square format</li>
+            <li><strong>Gallery Images:</strong> Minimum 1200px on longest side</li>
+            <li><strong>File Format:</strong> JPG or PNG (WebP for smaller file sizes)</li>
+            <li><strong>File Size:</strong> Optimize to under 500KB when possible</li>
+          </ul>
+
+          <h3>Using Media in Content</h3>
+          <ul>
+            <li>Click "Select from Media Library" when adding images to posts or pages</li>
+            <li>Search or filter to find the right image</li>
+            <li>Click image to insert it</li>
+            <li>Adjust size and alignment as needed</li>
+          </ul>
+
+          <div class="warning">
+            <strong>Important:</strong> Only upload images you have rights to use. Avoid using stock photos without proper licensing.
+          </div>
+        </div>
+
+        <!-- Troubleshooting -->
+        <div class="help-section" id="troubleshooting">
+          <h2>Troubleshooting</h2>
+
+          <h3>Common Issues and Solutions</h3>
+
+          <h4>I can't log in to the CMS</h4>
+          <ul>
+            <li>Check that you're using the correct email address</li>
+            <li>Ensure your password is correct (passwords are case-sensitive)</li>
+            <li>Try resetting your password using the "Forgot Password" link</li>
+            <li>Clear your browser cache and cookies</li>
+            <li>Try a different browser (Chrome, Firefox, Safari)</li>
+          </ul>
+
+          <h4>Changes aren't appearing on the website</h4>
+          <ul>
+            <li>Verify the content status is set to "Published" (not "Draft")</li>
+            <li>Hard refresh your browser (Ctrl+Shift+R or Cmd+Shift+R)</li>
+            <li>Clear your browser cache</li>
+            <li>Try viewing in an incognito/private browser window</li>
+            <li>Wait 1-2 minutes for changes to propagate</li>
+          </ul>
+
+          <h4>Images won't upload</h4>
+          <ul>
+            <li>Check file size - files over 10MB may fail to upload</li>
+            <li>Ensure file format is JPG, PNG, or WebP</li>
+            <li>Check your internet connection</li>
+            <li>Try compressing the image using a tool like TinyPNG</li>
+            <li>Rename file to remove special characters</li>
+          </ul>
+
+          <h4>The rich text editor isn't working</h4>
+          <ul>
+            <li>Refresh the page</li>
+            <li>Try a different browser</li>
+            <li>Disable browser extensions temporarily</li>
+            <li>Check for JavaScript errors in browser console (F12)</li>
+          </ul>
+
+          <h4>Instagram feed not updating</h4>
+          <ul>
+            <li>Check if your access token has expired (tokens last 60 days)</li>
+            <li>Regenerate a new access token following the setup instructions</li>
+            <li>Click "Test Connection" to verify the token works</li>
+            <li>Ensure your Instagram account is public</li>
+          </ul>
+
+          <h4>LIV AI giving incorrect responses</h4>
+          <ul>
+            <li>Review and update the system instructions</li>
+            <li>Check the knowledge base documents for accuracy</li>
+            <li>Remove outdated information from knowledge base</li>
+            <li>Test changes in the preview before publishing</li>
+          </ul>
+
+          <h4>Can't delete an item</h4>
+          <ul>
+            <li>Ensure you have permission to delete content</li>
+            <li>Check if the item is referenced elsewhere (e.g., blog post linked to destination)</li>
+            <li>Try refreshing the page and deleting again</li>
+          </ul>
+
+          <h4>Drag-and-drop reordering not working</h4>
+          <ul>
+            <li>Ensure you're clicking and holding on the drag handle (≡ icon)</li>
+            <li>Try using a mouse instead of trackpad</li>
+            <li>Refresh the page and try again</li>
+            <li>Try a different browser</li>
+          </ul>
+
+          <div class="note">
+            <strong>Still Having Issues?</strong> If you continue experiencing problems, contact technical support with:
+            <ul style="margin-top: 0.5rem;">
+              <li>Description of the issue</li>
+              <li>What you were trying to do</li>
+              <li>What happened instead</li>
+              <li>Browser and device you're using</li>
+              <li>Screenshot of any error messages</li>
+            </ul>
+          </div>
+
+          <h3>Best Practices to Avoid Issues</h3>
+          <ul>
+            <li>Save your work frequently (every few minutes)</li>
+            <li>Don't leave the editor open for extended periods - refresh periodically</li>
+            <li>Use modern browsers (Chrome, Firefox, Safari, Edge - latest versions)</li>
+            <li>Keep images optimized before uploading</li>
+            <li>Test changes in Draft mode before publishing</li>
+            <li>Back up important content before making major changes</li>
+            <li>Don't make changes from multiple devices simultaneously</li>
+          </ul>
+
+          <h3>Browser Recommendations</h3>
+          <p>For the best CMS experience, we recommend:</p>
+          <ul>
+            <li><strong>Best:</strong> Google Chrome (latest version)</li>
+            <li><strong>Great:</strong> Mozilla Firefox (latest version)</li>
+            <li><strong>Good:</strong> Safari (macOS/iOS latest version)</li>
+            <li><strong>Good:</strong> Microsoft Edge (latest version)</li>
+            <li><strong>Avoid:</strong> Internet Explorer (no longer supported)</li>
+          </ul>
+        </div>
+
+        <!-- Tips for Success -->
+        <div class="help-section">
+          <h2>Tips for Success</h2>
+
+          <h3>Content Strategy</h3>
+          <ul>
+            <li>Publish new blog posts regularly (weekly or bi-weekly)</li>
+            <li>Update destination information seasonally</li>
+            <li>Add new customer stories monthly</li>
+            <li>Review and update FAQs quarterly</li>
+            <li>Keep pricing information current</li>
+          </ul>
+
+          <h3>SEO Best Practices</h3>
+          <ul>
+            <li>Use descriptive, keyword-rich titles</li>
+            <li>Write compelling meta descriptions (150-160 characters)</li>
+            <li>Add alt text to all images</li>
+            <li>Use headings (H2, H3) to structure content</li>
+            <li>Include internal links between related content</li>
+            <li>Keep URLs short and descriptive</li>
+          </ul>
+
+          <h3>Image Best Practices</h3>
+          <ul>
+            <li>Use high-quality, professional photos</li>
+            <li>Optimize image file sizes before uploading</li>
+            <li>Use descriptive filenames (swedish-lapland-northern-lights.jpg)</li>
+            <li>Always add alt text for accessibility and SEO</li>
+            <li>Maintain consistent image style across your site</li>
+          </ul>
+
+          <h3>Writing Best Practices</h3>
+          <ul>
+            <li>Write in a friendly, conversational tone</li>
+            <li>Keep paragraphs short (2-3 sentences)</li>
+            <li>Use bullet points for lists</li>
+            <li>Include specific details and examples</li>
+            <li>Proofread before publishing</li>
+            <li>Write for your target audience (luxury travelers)</li>
+          </ul>
+
+          <h3>Workflow Tips</h3>
+          <ul>
+            <li>Create a content calendar to plan posts</li>
+            <li>Use Draft status while preparing content</li>
+            <li>Preview on mobile devices before publishing</li>
+            <li>Check the live site after publishing</li>
+            <li>Respond to leads within 24 hours</li>
+            <li>Review analytics to see what content performs best</li>
+          </ul>
+
+          <div class="tip">
+            <strong>Pro Tip:</strong> Bookmark the pages you use most often in the CMS for quick access. You can also use keyboard shortcuts: Ctrl/Cmd+S often works to save forms quickly.
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="auth.js"></script>
+  <script>
+    // Display user email
+    async function displayUserInfo() {
+      const user = await window.Supabase.getUser();
+      if (user) {
+        document.getElementById('userEmail').textContent = user.email;
+      }
+    }
+
+    // Logout functionality
+    document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+      await window.Supabase.logout();
+    });
+
+    // Initialize
+    displayUserInfo();
+
+    // Smooth scroll to anchors
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
