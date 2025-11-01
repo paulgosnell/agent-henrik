@@ -773,6 +773,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Get form data
                     const phone = document.getElementById('enquiryPhone')?.value.trim();
                     const tripType = enquiryTripType?.value;
+                    const people = document.getElementById('enquiryPeople')?.value.trim();
+                    const budget = document.getElementById('enquiryBudget')?.value.trim();
                     const dates = enquiryDates?.value.trim();
                     const details = enquiryDetails?.value.trim();
                     const source = enquirySourceField?.value || 'contact_form';
@@ -803,7 +805,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             email: emailValid,
                             name: nameValid,
                             phone: phone || null,
-                            special_requests: `${tripType ? 'Trip Type: ' + tripType + '\n' : ''}${dates ? 'Dates: ' + dates + '\n' : ''}${details || ''}`.trim(),
+                            special_requests: `${tripType ? 'Trip Type: ' + tripType + '\n' : ''}${people ? 'Number of people: ' + people + '\n' : ''}${budget ? 'Budget: ' + budget + '\n' : ''}${dates ? 'Dates: ' + dates + '\n' : ''}${details || ''}`.trim(),
                             itinerary_summary: itineraryDraftField?.value || null,
                             status: 'pending'
                         });

@@ -2413,13 +2413,25 @@
         .accent-card li {
             display: flex;
             align-items: flex-start;
-            gap: 1rem;
+            gap: 1.5rem;
         }
 
-        .accent-card li span {
+        .accent-card li span:first-child {
             font-size: 0.8rem;
             letter-spacing: 0.35rem;
             text-transform: uppercase;
+            font-weight: 600;
+            min-width: 180px;
+            flex-shrink: 0;
+        }
+
+        .accent-card li span:last-child {
+            font-size: 0.95rem;
+            letter-spacing: 0;
+            text-transform: none;
+            font-weight: 400;
+            line-height: 1.6;
+            flex: 1;
         }
 
         .stories-grid {
@@ -4246,9 +4258,15 @@
                 gap: 0.5rem;
             }
 
-            .accent-card li span {
+            .accent-card li span:first-child {
                 font-size: 0.75rem;
                 letter-spacing: 0.28rem;
+                min-width: auto;
+            }
+
+            .accent-card li span:last-child {
+                font-size: 0.9rem;
+                letter-spacing: 0;
             }
         }
 
