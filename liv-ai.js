@@ -348,8 +348,43 @@ class LivAI {
     // Show confirmation
     this.appendMessage('ai', `Thank you${name ? ', ' + name : ''}! I've got your details. Let me craft a perfect itinerary for you.`);
 
+    // Immediately save lead to database by sending a system message
+    // This ensures the lead is captured even if the user closes the chat
+    await this.saveLead();
+
     // Clear context after capturing lead
     this.context = null;
+  }
+
+  /**
+   * Save lead information to database immediately
+   */
+  async saveLead() {
+    if (!this.leadInfo || !this.leadInfo.email) return;
+
+    try {
+      // Send lead info to backend immediately
+      await fetch(this.edgeFunctionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.supabaseAnonKey}`,
+          'apikey': this.supabaseAnonKey
+        },
+        body: JSON.stringify({
+          messages: this.conversationHistory,
+          sessionId: this.sessionId,
+          context: this.context,
+          stream: false,
+          leadInfo: this.leadInfo,
+          storytellerInquiry: this.context?.type === 'storyteller' ? this.storytellerInquiry : undefined
+        })
+      });
+      console.log('✅ Lead saved successfully');
+    } catch (error) {
+      console.error('❌ Error saving lead:', error);
+      // Don't show error to user - lead will be saved on next message anyway
+    }
   }
 
   /**
