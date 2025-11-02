@@ -31,6 +31,98 @@
         .hidden {
             display: none !important;
         }
+
+        /* Pricing & FAQ Traditional Layout */
+        .pricing-tier {
+            max-width: 800px;
+            margin: 0 auto 4rem;
+            padding: 0 2rem;
+        }
+
+        .pricing-tier h3 {
+            font-family: var(--font-serif);
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.95);
+            line-height: 1.3;
+        }
+
+        .pricing-tier p {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.75);
+            margin-bottom: 1rem;
+        }
+
+        .pricing-tier .price-info {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: rgba(212, 175, 55, 0.95);
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .faq-item {
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            padding: 0 2rem;
+        }
+
+        .faq-item h3 {
+            font-family: var(--font-serif);
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.95);
+            line-height: 1.4;
+        }
+
+        .faq-item p {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .section-title {
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            padding: 0 2rem;
+            text-align: center;
+        }
+
+        .section-title h2 {
+            font-family: var(--font-serif);
+            font-size: 2.2rem;
+            margin-bottom: 0;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .pricing-note {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            border-left: 3px solid rgba(212, 175, 55, 0.6);
+        }
+
+        .pricing-note p {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.7);
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .pricing-tier h3,
+            .faq-item h3 {
+                font-size: 1.3rem;
+            }
+
+            .section-title h2 {
+                font-size: 1.8rem;
+            }
+        }
     </style>
 
     <!-- Component Loader - Load shared header/footer -->
@@ -52,8 +144,10 @@
                 </div>
 
                 <!-- Pricing Section -->
-                <div style="max-width: 900px; margin: 4rem auto;">
-                    <h2 style="font-size: 2rem; margin-bottom: 2rem; font-weight: 600;" data-editable="pricing.section1.title">How We Price Our Services</h2>
+                <div style="margin: 5rem auto;">
+                    <div class="section-title">
+                        <h2 data-editable="pricing.section1.title">How We Price Our Services</h2>
+                    </div>
 
                     <!-- Loading State for Pricing -->
                     <div class="loading-state" id="pricingLoadingState">
@@ -61,21 +155,23 @@
                         <p>Loading pricing information...</p>
                     </div>
 
-                    <!-- Pricing Grid -->
-                    <div class="pillars-grid hidden" id="pricingGrid" style="grid-template-columns: 1fr;">
+                    <!-- Pricing Container -->
+                    <div class="hidden" id="pricingGrid">
                         <!-- Pricing tiers will be loaded dynamically -->
                     </div>
 
-                    <div style="margin-top: 3rem; padding: 2rem; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
-                        <p style="font-size: 0.95rem; line-height: 1.8; margin: 0;" data-editable="pricing.note">
+                    <div class="pricing-note">
+                        <p data-editable="pricing.note">
                             <strong>Note:</strong> All pricing is transparent and confirmed before booking. No hidden fees. Payment plans available for journeys exceeding €10,000.
                         </p>
                     </div>
                 </div>
 
                 <!-- FAQ Section -->
-                <div style="max-width: 900px; margin: 6rem auto;">
-                    <h2 style="font-size: 2rem; margin-bottom: 3rem; font-weight: 600;" data-editable="faq.section.title">Frequently Asked Questions</h2>
+                <div style="margin: 6rem auto;">
+                    <div class="section-title">
+                        <h2 data-editable="faq.section.title">Frequently Asked Questions</h2>
+                    </div>
 
                     <!-- Loading State for FAQs -->
                     <div class="loading-state" id="faqLoadingState">
@@ -84,7 +180,7 @@
                     </div>
 
                     <!-- FAQ Container -->
-                    <div style="display: flex; flex-direction: column; gap: 2rem;" class="hidden" id="faqContainer">
+                    <div class="hidden" id="faqContainer">
                         <!-- FAQ items will be loaded dynamically -->
                     </div>
                 </div>
@@ -175,24 +271,14 @@
 
                 if (pricingTiers && pricingTiers.length > 0) {
                     pricingGrid.innerHTML = pricingTiers.map(tier => {
-                        const iconName = tier.icon_name || 'sparkles';
                         return `
-                            <article class="pillar-card">
-                                <div class="pillar-body">
-                                    <div class="pillar-icon" aria-hidden="true"><i data-lucide="${escapeHtml(iconName)}"></i></div>
-                                    <div class="pillar-copy">
-                                        <h3>${escapeHtml(tier.title)}</h3>
-                                        <p>${escapeHtml(tier.description)}</p>
-                                        ${tier.price_info ? `<p style="margin-top: 1rem; font-weight: 600; opacity: 0.9;">${escapeHtml(tier.price_info)}</p>` : ''}
-                                    </div>
-                                </div>
-                            </article>
+                            <div class="pricing-tier">
+                                <h3>${escapeHtml(tier.title)}</h3>
+                                <p>${escapeHtml(tier.description)}</p>
+                                ${tier.price_info ? `<div class="price-info">${escapeHtml(tier.price_info)}</div>` : ''}
+                            </div>
                         `;
                     }).join('');
-
-                    if (window.lucide && typeof window.lucide.createIcons === 'function') {
-                        window.lucide.createIcons();
-                    }
                 } else {
                     pricingGrid.innerHTML = '<p style="text-align: center; padding: 2rem;">No pricing information available.</p>';
                 }
@@ -228,12 +314,8 @@
                 if (faqs && faqs.length > 0) {
                     faqContainer.innerHTML = faqs.map(faq => `
                         <div class="faq-item">
-                            <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem; font-weight: 600; color: #fff;">
-                                ${escapeHtml(faq.question)}
-                            </h3>
-                            <p style="line-height: 1.8; opacity: 0.85;">
-                                ${escapeHtml(faq.answer)}
-                            </p>
+                            <h3>${escapeHtml(faq.question)}</h3>
+                            <p>${escapeHtml(faq.answer)}</p>
                         </div>
                     `).join('');
                 } else {
