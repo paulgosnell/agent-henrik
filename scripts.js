@@ -2159,6 +2159,11 @@ async function loadStorytellers() {
 
 // Initialize read-more buttons (called after loading storytellers)
 function initializeReadMoreButtons() {
+    // Skip if page has its own modal initialization
+    if (window.SKIP_GLOBAL_PILLAR_MODALS) {
+        return;
+    }
+
     const pillarModal = document.getElementById('pillarModal');
     const modalTitle = document.querySelector('#pillarModal .pillar-modal-title');
     const modalImage = document.querySelector('#pillarModal .pillar-modal-image');
@@ -2310,6 +2315,12 @@ function updatePillarsSection(sectionId, pillars, section) {
 }
 
 function initializePillarModals() {
+    // Skip if page has its own modal initialization
+    if (window.SKIP_GLOBAL_PILLAR_MODALS) {
+        console.log('Skipping global pillar modal initialization (page has custom handlers)');
+        return;
+    }
+
     console.log('Initializing pillar modals...');
 
     const pillarModal = document.getElementById('pillarModal');
