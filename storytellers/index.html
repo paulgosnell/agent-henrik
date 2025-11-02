@@ -168,18 +168,23 @@
     </div>
 
     <!-- Pillar Modal for Storyteller Details -->
-    <div class="pillar-modal-overlay" id="pillarModal">
-        <div class="pillar-modal-content">
+    <div class="pillar-modal" id="pillarModal" style="display: none;">
+        <div class="pillar-modal-overlay"></div>
+        <div class="pillar-modal-container">
             <button class="pillar-modal-close" aria-label="Close modal">&times;</button>
-            <img src="" alt="" class="pillar-modal-image" id="modal-image">
-            <div class="pillar-modal-body">
-                <h2 class="pillar-modal-title" id="modal-title">Storyteller Name</h2>
-                <div class="pillar-modal-description" id="modal-description">
-                    <p>Description will appear here...</p>
+            <div class="pillar-modal-content">
+                <div class="pillar-modal-media">
+                    <img src="" alt="" class="pillar-modal-image" id="modal-image">
                 </div>
-                <button type="button" class="pillar-modal-cta" id="modal-cta" data-open-liv data-liv-context-type="storyteller" data-liv-context-name="Storyteller">
-                    Design with LIV
-                </button>
+                <div class="pillar-modal-body">
+                    <h2 class="pillar-modal-title" id="modal-title">Storyteller Name</h2>
+                    <div class="pillar-modal-description" id="modal-description">
+                        <p>Description will appear here...</p>
+                    </div>
+                    <button type="button" class="pillar-modal-cta" id="modal-cta" data-open-liv data-liv-context-type="storyteller" data-liv-context-name="Storyteller">
+                        Design with LIV
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -351,7 +356,7 @@
                             modalCta.setAttribute('data-liv-context-name', data.contextName);
                         }
 
-                        pillarModal.style.display = 'flex';
+                        pillarModal.style.display = 'block';
                         document.body.style.overflow = 'hidden';
                     }
                 });
@@ -363,6 +368,15 @@
                     pillarModal.style.display = 'none';
                     document.body.style.overflow = '';
                 }
+            }
+
+            // Click on overlay background to close
+            if (pillarModal) {
+                pillarModal.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('pillar-modal-overlay')) {
+                        closeModal();
+                    }
+                });
             }
 
             if (modalClose) {
