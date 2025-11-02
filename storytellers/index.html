@@ -316,12 +316,23 @@
 
             if (!pillarModal) return;
 
-            // Attach click handlers to read-more buttons
+            // Remove any existing event listeners by cloning buttons
             document.querySelectorAll('.read-more-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+            });
+
+            // Attach fresh click handlers to read-more buttons
+            document.querySelectorAll('.read-more-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
                     const pillarCard = this.closest('.pillar-card');
                     const slug = pillarCard?.dataset.storyteller;
-                    const data = window.storytellerData[slug];
+                    const data = window.storytellerData?.[slug];
+
+                    console.log('Read more clicked for:', slug, data);
 
                     if (data && modalTitle && modalImage && modalDescription && modalCta) {
                         modalTitle.textContent = data.title;
@@ -387,6 +398,13 @@
         // Initialize on DOM ready
         document.addEventListener('DOMContentLoaded', () => {
             init();
+
+            // Re-initialize modals after a short delay to ensure we override any global handlers
+            setTimeout(() => {
+                if (allStorytellers.length > 0) {
+                    initializeStorytellerModals();
+                }
+            }, 200);
         });
     </script>
 
