@@ -1,7 +1,7 @@
 // Service Worker for Luxury Travel Sweden
 // Caches images and assets for better performance
 
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const CACHE_NAME = `lts-cache-${CACHE_VERSION}`;
 
 // Assets to cache immediately on install
@@ -120,16 +120,28 @@ async function cacheFirst(request, maxAge) {
 
     if (cached) {
         // Check if cached response is still fresh
-        const cachedTime = new Date(cached.headers.get('sw-cached-date'));
-        const now = new Date();
+        const cachedDateHeader = cached.headers.get('sw-cached-date');
 
-        if (maxAge && (now - cachedTime < maxAge)) {
-            console.log('[Service Worker] Cache hit (fresh):', request.url);
-            return cached;
+        if (cachedDateHeader && maxAge) {
+            const cachedTime = new Date(cachedDateHeader);
+            const now = new Date();
+
+            // Only check freshness if we have a valid date
+            if (!isNaN(cachedTime.getTime())) {
+                if (now - cachedTime < maxAge) {
+                    console.log('[Service Worker] Cache hit (fresh):', request.url);
+                    return cached;
+                }
+                // Stale but valid - update in background
+                console.log('[Service Worker] Cache hit (stale, updating in background):', request.url);
+                fetchAndCache(request, cache);
+                return cached;
+            }
         }
-        console.log('[Service Worker] Cache hit (stale, updating):', request.url);
-        // Return stale cache but update in background
-        fetchAndCache(request, cache);
+
+        // If no date header or invalid, just return the cached version
+        // Images should be cached indefinitely once fetched
+        console.log('[Service Worker] Cache hit (serving cached):', request.url);
         return cached;
     }
 
