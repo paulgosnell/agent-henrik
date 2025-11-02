@@ -29,6 +29,88 @@
         .hidden {
             display: none !important;
         }
+
+        /* Traditional Services Layout */
+        .services-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .service-item {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 3rem;
+            margin-bottom: 5rem;
+            padding-bottom: 5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .service-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .service-image {
+            width: 100%;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .service-content h3 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            font-weight: 400;
+        }
+
+        .service-description {
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .service-description p {
+            margin-bottom: 1rem;
+        }
+
+        .service-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            background: transparent;
+            color: inherit;
+            cursor: pointer;
+        }
+
+        .service-cta:hover {
+            border-color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        @media (max-width: 768px) {
+            .service-item {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                margin-bottom: 3rem;
+                padding-bottom: 3rem;
+            }
+
+            .service-image {
+                max-width: 300px;
+                margin: 0 auto;
+            }
+
+            .service-content h3 {
+                font-size: 1.75rem;
+            }
+        }
     </style>
 
     <!-- Component Loader - Load shared header/footer -->
@@ -52,8 +134,8 @@
                     <p>Loading services...</p>
                 </div>
 
-                <!-- Services Grid -->
-                <div class="pillars-grid hidden" id="servicesGrid">
+                <!-- Services Container -->
+                <div class="services-container hidden" id="servicesContainer">
                     <!-- Services will be loaded dynamically -->
                 </div>
             </div>
@@ -103,7 +185,7 @@
         // Load services from Supabase pillars table
         async function loadServices() {
             const loadingState = document.getElementById('loadingState');
-            const servicesGrid = document.getElementById('servicesGrid');
+            const servicesContainer = document.getElementById('servicesContainer');
 
             try {
                 // Check if Supabase is available
@@ -115,26 +197,28 @@
                 const services = await window.Supabase.db.getPillars('services', true);
 
                 loadingState.classList.add('hidden');
-                servicesGrid.classList.remove('hidden');
+                servicesContainer.classList.remove('hidden');
 
                 // Render services
                 if (services && services.length > 0) {
-                    servicesGrid.innerHTML = services.map(service => {
+                    servicesContainer.innerHTML = services.map(service => {
                         const imageUrl = service.hero_image_url || 'https://images.pexels.com/photos/2024881/pexels-photo-2024881.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1';
                         const iconName = service.icon_name || 'sparkles';
 
                         return `
-                            <article class="pillar-card" data-pillar="${escapeHtml(service.slug)}">
-                                <div class="pillar-media" aria-hidden="true">
-                                    <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(service.title)}" loading="lazy">
+                            <article class="service-item" data-pillar="${escapeHtml(service.slug)}">
+                                <div class="service-image-wrapper">
+                                    <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(service.title)}" class="service-image" loading="lazy">
                                 </div>
-                                <div class="pillar-body">
-                                    <div class="pillar-icon" aria-hidden="true"><i data-lucide="${escapeHtml(iconName)}"></i></div>
-                                    <div class="pillar-copy">
-                                        <h3>${escapeHtml(service.title)}</h3>
+                                <div class="service-content">
+                                    <h3>${escapeHtml(service.title)}</h3>
+                                    <div class="service-description">
                                         <p>${escapeHtml(service.excerpt)}</p>
-                                        <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="${escapeHtml(service.liv_context_type || 'service')}" data-liv-context-name="${escapeHtml(service.liv_context_name || service.title)}">${escapeHtml(service.cta_text || 'Design With LIV')}</button>
                                     </div>
+                                    <button type="button" class="service-cta" data-open-liv data-liv-context-type="${escapeHtml(service.liv_context_type || 'service')}" data-liv-context-name="${escapeHtml(service.liv_context_name || service.title)}">
+                                        <i data-lucide="${escapeHtml(iconName)}"></i>
+                                        ${escapeHtml(service.cta_text || 'Design With LIV')}
+                                    </button>
                                 </div>
                             </article>
                         `;
@@ -145,13 +229,13 @@
                         window.lucide.createIcons();
                     }
                 } else {
-                    servicesGrid.innerHTML = '<p style="text-align: center; padding: 2rem;">No services found.</p>';
+                    servicesContainer.innerHTML = '<p style="text-align: center; padding: 2rem;">No services found.</p>';
                 }
             } catch (error) {
                 console.error('Error loading services:', error);
                 loadingState.classList.add('hidden');
-                servicesGrid.classList.remove('hidden');
-                servicesGrid.innerHTML = '<p style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.6);">Unable to load services. Please try again later.</p>';
+                servicesContainer.classList.remove('hidden');
+                servicesContainer.innerHTML = '<p style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.6);">Unable to load services. Please try again later.</p>';
             }
         }
 

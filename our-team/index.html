@@ -29,6 +29,98 @@
         .hidden {
             display: none !important;
         }
+
+        /* Traditional Team Layout */
+        .team-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .team-member {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 3rem;
+            margin-bottom: 5rem;
+            padding-bottom: 5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .team-member:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .team-member-image {
+            width: 100%;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .team-member-content h3 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 400;
+        }
+
+        .team-member-role {
+            font-style: italic;
+            opacity: 0.8;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .team-member-bio {
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .team-member-bio p {
+            margin-bottom: 1rem;
+        }
+
+        .team-member-links {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .team-member-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .team-member-link:hover {
+            border-color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        @media (max-width: 768px) {
+            .team-member {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                margin-bottom: 3rem;
+                padding-bottom: 3rem;
+            }
+
+            .team-member-image {
+                max-width: 300px;
+                margin: 0 auto;
+            }
+
+            .team-member-content h3 {
+                font-size: 1.75rem;
+            }
+        }
     </style>
 
     <!-- Component Loader - Load shared header/footer -->
@@ -43,7 +135,7 @@
             <div class="section-inner">
                 <div class="section-heading">
                     <span class="eyebrow">Our Team</span>
-                    <h2>The people behind every extraordinary journey.</h2>
+                    <h2>Bold minds. Wild ideas. Real results</h2>
                 </div>
 
                 <!-- Loading State -->
@@ -52,8 +144,8 @@
                     <p>Loading team members...</p>
                 </div>
 
-                <!-- Team Grid -->
-                <div class="pillars-grid hidden" id="teamGrid" style="margin-bottom: 4rem;">
+                <!-- Team Container -->
+                <div class="team-container hidden" id="teamContainer">
                     <!-- Team members will be loaded dynamically -->
                 </div>
             </div>
@@ -103,7 +195,7 @@
         // Load team members from Supabase
         async function loadTeamMembers() {
             const loadingState = document.getElementById('loadingState');
-            const teamGrid = document.getElementById('teamGrid');
+            const teamContainer = document.getElementById('teamContainer');
 
             try {
                 // Check if Supabase is available
@@ -121,28 +213,34 @@
                 if (error) throw error;
 
                 loadingState.classList.add('hidden');
-                teamGrid.classList.remove('hidden');
+                teamContainer.classList.remove('hidden');
 
                 // Render team members
                 if (teamMembers && teamMembers.length > 0) {
-                    teamGrid.innerHTML = teamMembers.map(member => {
+                    teamContainer.innerHTML = teamMembers.map(member => {
                         const imageUrl = member.image_url || 'https://images.pexels.com/photos/3184398/pexels-photo-3184398.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1';
-                        const iconName = member.linkedin_url ? 'linkedin' : 'user';
+
+                        // Build links section
+                        const links = [];
+                        if (member.linkedin_url) {
+                            links.push(`<a href="${escapeHtml(member.linkedin_url)}" target="_blank" rel="noopener noreferrer" class="team-member-link"><i data-lucide="linkedin"></i> LinkedIn</a>`);
+                        }
+                        if (member.email) {
+                            links.push(`<a href="mailto:${escapeHtml(member.email)}" class="team-member-link"><i data-lucide="mail"></i> Email</a>`);
+                        }
 
                         return `
-                            <article class="pillar-card" data-member="${escapeHtml(member.id)}">
-                                <div class="pillar-media" aria-hidden="true">
-                                    <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(member.name)}" loading="lazy">
+                            <article class="team-member" data-member="${escapeHtml(member.id)}">
+                                <div class="team-member-image-wrapper">
+                                    <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(member.name)}" class="team-member-image" loading="lazy">
                                 </div>
-                                <div class="pillar-body">
-                                    <div class="pillar-icon" aria-hidden="true"><i data-lucide="${iconName}"></i></div>
-                                    <div class="pillar-copy">
-                                        <h3>${escapeHtml(member.name)}</h3>
-                                        <p style="font-style: italic; opacity: 0.9; margin-bottom: 1rem;">${escapeHtml(member.role)}</p>
-                                        ${member.bio ? `<p>${escapeHtml(member.bio)}</p>` : ''}
-                                        ${member.linkedin_url ? `<a href="${escapeHtml(member.linkedin_url)}" target="_blank" rel="noopener noreferrer" class="pillar-cta">View LinkedIn Profile</a>` : ''}
-                                        ${member.email && !member.linkedin_url ? `<a href="mailto:${escapeHtml(member.email)}" class="pillar-cta">Contact ${escapeHtml(member.name)}</a>` : ''}
+                                <div class="team-member-content">
+                                    <h3>${escapeHtml(member.name)}</h3>
+                                    <div class="team-member-role">${escapeHtml(member.role)}</div>
+                                    <div class="team-member-bio">
+                                        ${member.bio ? `<p>${escapeHtml(member.bio)}</p>` : '<p>Team member bio coming soon.</p>'}
                                     </div>
+                                    ${links.length > 0 ? `<div class="team-member-links">${links.join('')}</div>` : ''}
                                 </div>
                             </article>
                         `;
@@ -153,13 +251,13 @@
                         window.lucide.createIcons();
                     }
                 } else {
-                    teamGrid.innerHTML = '<p style="text-align: center; padding: 2rem;">No team members found.</p>';
+                    teamContainer.innerHTML = '<p style="text-align: center; padding: 2rem;">No team members found.</p>';
                 }
             } catch (error) {
                 console.error('Error loading team members:', error);
                 loadingState.classList.add('hidden');
-                teamGrid.classList.remove('hidden');
-                teamGrid.innerHTML = '<p style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.6);">Unable to load team members. Please try again later.</p>';
+                teamContainer.classList.remove('hidden');
+                teamContainer.innerHTML = '<p style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.6);">Unable to load team members. Please try again later.</p>';
             }
         }
 
