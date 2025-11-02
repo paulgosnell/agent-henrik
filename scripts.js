@@ -1870,47 +1870,49 @@ document.addEventListener('DOMContentLoaded', function() {
             // Make storytellerData available globally
             window.storytellerData = storytellerData;
 
-            // Open modal when read-more button is clicked
-            document.querySelectorAll('.read-more-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    // Check if it's a pillar card or story card
-                    const pillarCard = this.closest('.pillar-card');
-                    const storyCard = this.closest('.story-card');
+            // Open modal when read-more button is clicked (skip if page has custom handlers)
+            if (!window.SKIP_GLOBAL_PILLAR_MODALS) {
+                document.querySelectorAll('.read-more-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        // Check if it's a pillar card or story card
+                        const pillarCard = this.closest('.pillar-card');
+                        const storyCard = this.closest('.story-card');
 
-                    let data = null;
+                        let data = null;
 
-                    if (pillarCard) {
-                        // Check if it's a storyteller card first
-                        if (pillarCard.dataset.storyteller) {
-                            const storytellerType = pillarCard.dataset.storyteller;
+                        if (pillarCard) {
+                            // Check if it's a storyteller card first
+                            if (pillarCard.dataset.storyteller) {
+                                const storytellerType = pillarCard.dataset.storyteller;
+                                data = storytellerData[storytellerType];
+                            } else {
+                                const pillarType = pillarCard.dataset.pillar;
+                                data = pillarData[pillarType];
+                            }
+                        } else if (storyCard) {
+                            const storytellerType = storyCard.dataset.storyteller;
                             data = storytellerData[storytellerType];
-                        } else {
-                            const pillarType = pillarCard.dataset.pillar;
-                            data = pillarData[pillarType];
-                        }
-                    } else if (storyCard) {
-                        const storytellerType = storyCard.dataset.storyteller;
-                        data = storytellerData[storytellerType];
-                    }
-
-                    if (data && pillarModal && modalTitle && modalImage && modalDescription && modalCta) {
-                        modalTitle.textContent = data.title;
-                        modalImage.src = data.image;
-                        modalImage.alt = data.title;
-                        modalDescription.innerHTML = data.content;
-                        modalCta.textContent = data.cta;
-
-                        // Set context attributes for LIV personalization
-                        if (data.contextType && data.contextName) {
-                            modalCta.setAttribute('data-liv-context-type', data.contextType);
-                            modalCta.setAttribute('data-liv-context-name', data.contextName);
                         }
 
-                        pillarModal.style.display = 'flex';
-                        document.body.style.overflow = 'hidden';
-                    }
+                        if (data && pillarModal && modalTitle && modalImage && modalDescription && modalCta) {
+                            modalTitle.textContent = data.title;
+                            modalImage.src = data.image;
+                            modalImage.alt = data.title;
+                            modalDescription.innerHTML = data.content;
+                            modalCta.textContent = data.cta;
+
+                            // Set context attributes for LIV personalization
+                            if (data.contextType && data.contextName) {
+                                modalCta.setAttribute('data-liv-context-type', data.contextType);
+                                modalCta.setAttribute('data-liv-context-name', data.contextName);
+                            }
+
+                            pillarModal.style.display = 'flex';
+                            document.body.style.overflow = 'hidden';
+                        }
+                    });
                 });
-            });
+            }
 
             // Close modal
             function closePillarModal() {
