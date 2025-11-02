@@ -20,3 +20,6 @@ contentful-credentials.txt
 # Build output (if you add build tools later)
 dist/
 build/
+
+# Supabase temporary files
+supabase/.temp/
