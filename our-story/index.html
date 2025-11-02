@@ -29,6 +29,120 @@
         .hidden {
             display: none !important;
         }
+
+        /* Traditional Story Layout */
+        .story-section {
+            max-width: 900px;
+            margin: 0 auto 4rem;
+            padding: 0 2rem;
+        }
+
+        .story-section h2 {
+            font-family: var(--font-serif);
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: rgba(255, 255, 255, 0.95);
+            line-height: 1.3;
+        }
+
+        .story-section h3 {
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            margin-top: 3rem;
+            color: rgba(255, 255, 255, 0.92);
+            line-height: 1.4;
+        }
+
+        .story-section p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.82);
+            margin-bottom: 1.5rem;
+        }
+
+        .story-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0 2rem;
+        }
+
+        .story-section ul li {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .story-section ul li::before {
+            content: '•';
+            position: absolute;
+            left: 0.5rem;
+            color: rgba(212, 175, 55, 0.9);
+            font-size: 1.2rem;
+        }
+
+        .story-quote {
+            max-width: 800px;
+            margin: 4rem auto;
+            padding: 2.5rem 3rem;
+            border-left: 4px solid rgba(212, 175, 55, 0.6);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .story-quote blockquote {
+            font-size: 1.4rem;
+            font-style: italic;
+            font-family: var(--font-serif);
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+            margin: 0;
+        }
+
+        .story-quote cite {
+            display: block;
+            margin-top: 1.5rem;
+            font-size: 1rem;
+            font-style: normal;
+            opacity: 0.7;
+        }
+
+        .story-image {
+            max-width: 900px;
+            margin: 3rem auto;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .story-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .story-section h2 {
+                font-size: 2rem;
+            }
+
+            .story-section h3 {
+                font-size: 1.5rem;
+            }
+
+            .story-section p {
+                font-size: 1rem;
+            }
+
+            .story-quote {
+                padding: 1.5rem 1.5rem;
+            }
+
+            .story-quote blockquote {
+                font-size: 1.2rem;
+            }
+        }
     </style>
 
     <!-- Component Loader - Load shared header/footer -->
@@ -155,46 +269,39 @@
         // Render hero section (main heading with eyebrow)
         function renderHeroSection(section) {
             return `
-                <div class="section-heading">
+                <div class="section-heading" style="text-align: center; margin-bottom: 5rem;">
                     ${section.metadata?.eyebrow ? `<span class="eyebrow">${escapeHtml(section.metadata.eyebrow)}</span>` : ''}
-                    <h2>${escapeHtml(section.title || '')}</h2>
-                    ${section.content ? `<p>${escapeHtml(section.content)}</p>` : ''}
+                    <h2 style="font-size: 3rem; margin-top: 1rem;">${escapeHtml(section.title || '')}</h2>
+                    ${section.content ? `<p style="max-width: 800px; margin: 1.5rem auto 0; font-size: 1.2rem; line-height: 1.7;">${escapeHtml(section.content)}</p>` : ''}
                 </div>
             `;
         }
 
         // Render text section
         function renderTextSection(section) {
-            const marginTop = section.metadata?.marginTop || '4rem';
             return `
-                <div class="section-heading" style="margin-top: ${escapeHtml(marginTop)};">
-                    ${section.title ? `<h2>${escapeHtml(section.title)}</h2>` : ''}
+                <div class="story-section">
+                    ${section.title ? `<h3>${escapeHtml(section.title)}</h3>` : ''}
                     ${section.content ? `<p>${escapeHtml(section.content)}</p>` : ''}
                 </div>
             `;
         }
 
-        // Render image section (path cards)
+        // Render image section (traditional content blocks)
         function renderImageSection(section) {
             const cards = section.metadata?.cards || [];
-            const marginTop = section.metadata?.marginTop || '4rem';
 
             if (cards.length === 0) return '';
 
             const cardsHtml = cards.map(card => {
-                const imageUrl = card.image_url || 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1';
+                const imageUrl = card.image_url;
 
                 // Check if content is a list (starts with bullets or has list items)
                 let contentHtml = '';
                 if (card.content_type === 'list' && card.items) {
                     contentHtml = `
-                        <ul style="list-style: none; padding: 0; margin-top: 1rem; color: rgba(255, 255, 255, 0.82);">
-                            ${card.items.map(item => `
-                                <li style="margin-bottom: 0.75rem; padding-left: 1.5rem; position: relative;">
-                                    <span style="position: absolute; left: 0; top: 0; color: rgba(212, 175, 55, 0.9);">•</span>
-                                    ${escapeHtml(item)}
-                                </li>
-                            `).join('')}
+                        <ul>
+                            ${card.items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}
                         </ul>
                     `;
                 } else {
@@ -202,39 +309,34 @@
                 }
 
                 return `
-                    <div class="path-card" style="--card-image: url('${escapeHtml(imageUrl)}');">
-                        <h3>${escapeHtml(card.title || '')}</h3>
+                    <div class="story-section">
+                        ${card.title ? `<h3>${escapeHtml(card.title)}</h3>` : ''}
+                        ${imageUrl ? `<div class="story-image"><img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(card.title || '')}" loading="lazy"></div>` : ''}
                         ${contentHtml}
                     </div>
                 `;
             }).join('');
 
-            return `
-                <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); margin-top: ${escapeHtml(marginTop)};">
-                    ${cardsHtml}
-                </div>
-            `;
+            return cardsHtml;
         }
 
         // Render quote section
         function renderQuoteSection(section) {
-            const marginTop = section.metadata?.marginTop || '4rem';
             return `
-                <div style="margin-top: ${escapeHtml(marginTop)}; padding: 3rem 2rem; text-align: center; border-left: 4px solid rgba(212, 175, 55, 0.5);">
-                    <blockquote style="font-size: 1.5rem; font-style: italic; margin: 0;">
+                <div class="story-quote">
+                    <blockquote>
                         "${escapeHtml(section.content || '')}"
                     </blockquote>
-                    ${section.title ? `<p style="margin-top: 1.5rem; opacity: 0.8;">— ${escapeHtml(section.title)}</p>` : ''}
+                    ${section.title ? `<cite>— ${escapeHtml(section.title)}</cite>` : ''}
                 </div>
             `;
         }
 
-        // Render timeline section (can be expanded later)
+        // Render timeline section
         function renderTimelineSection(section) {
-            const marginTop = section.metadata?.marginTop || '4rem';
             return `
-                <div style="margin-top: ${escapeHtml(marginTop)};">
-                    ${section.title ? `<h3 style="font-size: 1.5rem; margin-bottom: 1rem;">${escapeHtml(section.title)}</h3>` : ''}
+                <div class="story-section">
+                    ${section.title ? `<h3>${escapeHtml(section.title)}</h3>` : ''}
                     ${section.content ? `<p>${escapeHtml(section.content)}</p>` : ''}
                 </div>
             `;
