@@ -80,26 +80,6 @@
             margin-bottom: 1rem;
         }
 
-        .service-cta {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 2px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-            background: transparent;
-            color: inherit;
-            cursor: pointer;
-        }
-
-        .service-cta:hover {
-            border-color: rgba(255, 255, 255, 0.8);
-            background: rgba(255, 255, 255, 0.05);
-        }
-
         @media (max-width: 768px) {
             .service-item {
                 grid-template-columns: 1fr;
@@ -209,7 +189,6 @@
                 if (services && services.length > 0) {
                     servicesContainer.innerHTML = services.map(service => {
                         const imageUrl = service.hero_image_url || 'https://images.pexels.com/photos/2024881/pexels-photo-2024881.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1';
-                        const iconName = service.icon_name || 'sparkles';
 
                         return `
                             <article class="service-item" data-pillar="${escapeHtml(service.slug)}">
@@ -221,19 +200,10 @@
                                     <div class="service-description">
                                         <p>${escapeHtml(service.excerpt)}</p>
                                     </div>
-                                    <button type="button" class="service-cta" data-open-liv data-liv-context-type="${escapeHtml(service.liv_context_type || 'service')}" data-liv-context-name="${escapeHtml(service.liv_context_name || service.title)}">
-                                        <i data-lucide="${escapeHtml(iconName)}"></i>
-                                        ${escapeHtml(service.cta_text || 'Design With LIV')}
-                                    </button>
                                 </div>
                             </article>
                         `;
                     }).join('');
-
-                    // Reinitialize Lucide icons
-                    if (window.lucide && typeof window.lucide.createIcons === 'function') {
-                        window.lucide.createIcons();
-                    }
                 } else {
                     servicesContainer.innerHTML = '<p style="text-align: center; padding: 2rem;">No services found.</p>';
                 }
