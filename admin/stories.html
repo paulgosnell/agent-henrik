@@ -463,6 +463,54 @@
                   </div>
                   <span class="form-hint">Select activities this storyteller can offer</span>
                 </div>
+
+                <!-- Map Location Section -->
+                <div class="form-group full-width" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid rgba(234, 179, 8, 0.2);">
+                  <h4 style="margin: 0 0 1rem 0; color: #eab308; font-size: 1rem;">📍 Map Location</h4>
+
+                  <!-- Show on Map Checkbox -->
+                  <div class="form-group full-width" style="margin-bottom: 1rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                      <input type="checkbox" id="showOnMap" name="showOnMap" style="width: auto;">
+                      <span style="font-weight: 600;">Show this storyteller on the map</span>
+                    </label>
+                    <span class="form-hint" style="margin-left: 1.5rem;">Enable to display as a map marker on the homepage</span>
+                  </div>
+
+                  <!-- Latitude/Longitude -->
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                      <label class="form-label" for="latitude">Latitude</label>
+                      <input
+                        type="number"
+                        id="latitude"
+                        class="form-input"
+                        placeholder="e.g., 59.3293"
+                        step="0.000001"
+                        min="-90"
+                        max="90"
+                      >
+                      <span class="form-hint">Decimal degrees (-90 to 90)</span>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label" for="longitude">Longitude</label>
+                      <input
+                        type="number"
+                        id="longitude"
+                        class="form-input"
+                        placeholder="e.g., 18.0686"
+                        step="0.000001"
+                        min="-180"
+                        max="180"
+                      >
+                      <span class="form-hint">Decimal degrees (-180 to 180)</span>
+                    </div>
+                  </div>
+
+                  <span class="form-hint" style="margin-top: 0.5rem; display: block;">
+                    💡 Tip: Use <a href="https://www.latlong.net/" target="_blank" style="color: #eab308;">latlong.net</a> to find coordinates
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -822,6 +870,11 @@
         document.querySelectorAll('input[name="activityType"]').forEach(checkbox => {
           checkbox.checked = currentStory.activity_types?.includes(checkbox.value) || false;
         });
+
+        // Set location fields
+        document.getElementById('showOnMap').checked = currentStory.show_on_map || false;
+        document.getElementById('latitude').value = currentStory.latitude || '';
+        document.getElementById('longitude').value = currentStory.longitude || '';
       }
 
       // Set published date if exists
@@ -1086,6 +1139,9 @@
         let specialtyTopics = [];
         let activityTypes = [];
         let bio = null;
+        let showOnMap = false;
+        let latitude = null;
+        let longitude = null;
 
         if (category === 'Storyteller') {
           // Get checked specialty topics
@@ -1099,6 +1155,13 @@
           });
 
           bio = document.getElementById('bio').value.trim() || null;
+
+          // Get location fields
+          showOnMap = document.getElementById('showOnMap').checked;
+          const latValue = document.getElementById('latitude').value.trim();
+          const lngValue = document.getElementById('longitude').value.trim();
+          latitude = latValue ? parseFloat(latValue) : null;
+          longitude = lngValue ? parseFloat(lngValue) : null;
         }
 
         // Prepare data
@@ -1114,7 +1177,10 @@
           published_at: publishedAt,
           specialty_topics: specialtyTopics.length > 0 ? specialtyTopics : null,
           activity_types: activityTypes.length > 0 ? activityTypes : null,
-          bio: bio
+          bio: bio,
+          show_on_map: showOnMap,
+          latitude: latitude,
+          longitude: longitude
         };
 
         // Save to database

@@ -291,6 +291,25 @@ const DB = {
   },
 
   /**
+   * Get storytellers for map display
+   */
+  async getStorytellersForMap() {
+    const { data, error } = await supabaseClient
+      .from('stories')
+      .select('*')
+      .eq('category', 'Storyteller')
+      .eq('show_on_map', true)
+      .not('latitude', 'is', null)
+      .not('longitude', 'is', null)
+      .not('published_at', 'is', null)
+      .lte('published_at', new Date().toISOString())
+      .order('display_order');
+
+    if (error) throw error;
+    return data || [];
+  },
+
+  /**
    * Create story
    */
   async createStory(story) {
@@ -723,22 +742,40 @@ async function loadDataForLegacyScripts() {
   try {
     console.log('📊 Loading data from Supabase...');
 
-    // Load themes and destinations in parallel
-    const [themes, destinations] = await Promise.all([
+    // Load themes, destinations, and storytellers in parallel
+    const [themes, destinations, storytellers] = await Promise.all([
       DB.getThemes(),
-      DB.getDestinations()
+      DB.getDestinations(),
+      DB.getStorytellersForMap()
     ]);
 
     // Populate global variables that existing scripts expect
     window.destinationData = transformDestinationsForMap(destinations);
+
+    // Add storytellers to destination data with storyteller category
+    storytellers.forEach(storyteller => {
+      const slug = storyteller.slug || `storyteller_${storyteller.id}`;
+      window.destinationData[slug] = {
+        title: storyteller.title,
+        description: storyteller.excerpt || storyteller.content?.replace(/<[^>]*>/g, '').substring(0, 200),
+        image: storyteller.hero_image_url || '',
+        themes: [], // Storytellers don't use the theme system
+        seasons: ['Spring', 'Summer', 'Autumn', 'Winter'], // Available year-round
+        coordinates: [storyteller.longitude, storyteller.latitude], // Leaflet uses [lng, lat]
+        themeKeys: [],
+        category: 'storyteller'
+      };
+    });
+
     window.LIV_THEME_LIBRARY = transformThemesForLegacy(themes);
 
     console.log(`✅ Loaded ${destinations.length} destinations`);
+    console.log(`✅ Loaded ${storytellers.length} storytellers for map`);
     console.log(`✅ Loaded ${themes.length} themes`);
 
     // Dispatch event for map initialization
     window.dispatchEvent(new CustomEvent('supabaseDataLoaded', {
-      detail: { destinations, themes }
+      detail: { destinations, themes, storytellers }
     }));
 
   } catch (error) {

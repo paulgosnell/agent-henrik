@@ -1154,47 +1154,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     coordinates: [14.6, 63.2],
                     themeKeys: ['nature', 'legacy'],
                     category: 'ski'
-                },
-                storyteller_astrid: {
-                    title: 'Astrid\'s Sweden',
-                    description: 'Follow the literary journey of Astrid Lindgren. Explore Vimmerby, storytelling experiences, and the landscapes that inspired Pippi Longstocking.',
-                    image: 'https://images.pexels.com/photos/2901209/pexels-photo-2901209.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1',
-                    themes: ['Royal, Art & Culture', 'Legacy & Purpose'],
-                    seasons: ['Spring', 'Summer', 'Autumn', 'Winter'],
-                    coordinates: [15.8551, 57.6681],
-                    themeKeys: ['royal-culture', 'legacy'],
-                    category: 'storyteller'
-                },
-                storyteller_bergman: {
-                    title: 'Bergman\'s Fårö',
-                    description: 'Discover Ingmar Bergman\'s island retreat. Explore film locations, the director\'s home, and the stark landscapes that shaped cinematic masterpieces.',
-                    image: 'https://images.pexels.com/photos/2901209/pexels-photo-2901209.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1',
-                    themes: ['Royal, Art & Culture', 'Nature & Wellness'],
-                    seasons: ['Spring', 'Summer', 'Autumn'],
-                    coordinates: [19.1, 57.95],
-                    themeKeys: ['royal-culture', 'nature'],
-                    category: 'storyteller'
-                },
-                storyteller_abba: {
-                    title: 'ABBA Experience',
-                    description: 'Immerse yourself in ABBA\'s musical legacy. Visit the interactive museum, recording studios, and Stockholm venues where the legends performed.',
-                    image: 'https://images.pexels.com/photos/1388030/pexels-photo-1388030.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1',
-                    themes: ['Royal, Art & Culture', 'Nightlife & Celebrations'],
-                    seasons: ['Spring', 'Summer', 'Autumn', 'Winter'],
-                    coordinates: [18.09, 59.32],
-                    themeKeys: ['royal-culture', 'nightlife'],
-                    category: 'storyteller'
-                },
-                storyteller_nobel: {
-                    title: 'Nobel Legacy',
-                    description: 'Trace Alfred Nobel\'s footsteps through Stockholm. Experience the Nobel Prize Museum, annual ceremony venues, and the inventor\'s innovative spirit.',
-                    image: 'https://images.pexels.com/photos/1388030/pexels-photo-1388030.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1',
-                    themes: ['Legacy & Purpose', 'Design & Innovation', 'Royal, Art & Culture'],
-                    seasons: ['Spring', 'Summer', 'Autumn', 'Winter'],
-                    coordinates: [18.07, 59.325],
-                    themeKeys: ['legacy', 'design', 'royal-culture'],
-                    category: 'storyteller'
                 }
+                // NOTE: Storyteller markers are now loaded dynamically from the stories table
+                // via supabase-client.js. No need for hardcoded fallback storytellers.
             };
 
             const destinationCardsGrid = document.getElementById('destinationCardsGrid');
