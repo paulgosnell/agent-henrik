@@ -8,6 +8,11 @@
   <!-- Quill.js CSS -->
   <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
+  <!-- Leaflet CSS for map picker -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+
   <!-- Admin CSS -->
   <link rel="stylesheet" href="admin.css">
 </head>
@@ -477,6 +482,13 @@
                     <span class="form-hint" style="margin-left: 1.5rem;">Enable to display as a map marker on the homepage</span>
                   </div>
 
+                  <!-- Interactive Map Picker -->
+                  <div class="form-group full-width" style="margin-bottom: 1rem;">
+                    <label class="form-label">Click on map to set location</label>
+                    <div id="storytellerMapPicker" style="height: 400px; width: 100%; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0;"></div>
+                    <span class="form-hint">Click anywhere on the map or drag the marker to set coordinates</span>
+                  </div>
+
                   <!-- Latitude/Longitude -->
                   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                     <div class="form-group">
@@ -508,7 +520,7 @@
                   </div>
 
                   <span class="form-hint" style="margin-top: 0.5rem; display: block;">
-                    💡 Tip: Use <a href="https://www.latlong.net/" target="_blank" style="color: #eab308;">latlong.net</a> to find coordinates
+                    💡 Tip: You can also type coordinates directly in the fields above
                   </span>
                 </div>
               </div>
@@ -593,6 +605,14 @@
   <!-- Quill.js -->
   <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
+  <!-- Leaflet.js for map picker -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
+
+  <!-- Map Picker Component -->
+  <script src="components/map-picker.js"></script>
+
   <!-- Supabase Client -->
   <script src="../supabase-client.js?v=2"></script>
 
@@ -609,6 +629,7 @@
     let currentImageFile = null;
     let existingImageUrl = null;
     let categories = new Set();
+    let storytellerMapPicker = null;
 
     // ==========================================
     // INITIALIZATION
@@ -828,6 +849,12 @@
       if (quillEditor) {
         quillEditor = null;
       }
+
+      // Destroy map picker
+      if (storytellerMapPicker) {
+        storytellerMapPicker.destroy();
+        storytellerMapPicker = null;
+      }
     }
 
     function toggleStorytellerFields() {
@@ -836,9 +863,39 @@
 
       if (category === 'Storyteller') {
         storytellerFields.style.display = 'block';
+
+        // Initialize map picker when storyteller fields are shown
+        setTimeout(() => {
+          initStorytellerMapPicker();
+        }, 100);
       } else {
         storytellerFields.style.display = 'none';
+
+        // Destroy map picker when storyteller fields are hidden
+        if (storytellerMapPicker) {
+          storytellerMapPicker.destroy();
+          storytellerMapPicker = null;
+        }
       }
+    }
+
+    function initStorytellerMapPicker() {
+      // Don't reinitialize if already exists
+      if (storytellerMapPicker) {
+        storytellerMapPicker.refresh();
+        return;
+      }
+
+      // Get current coordinates or default to Sweden center
+      const latInput = document.getElementById('latitude');
+      const lngInput = document.getElementById('longitude');
+      const lat = parseFloat(latInput.value) || 62.0;
+      const lng = parseFloat(lngInput.value) || 15.0;
+
+      // Initialize map picker
+      storytellerMapPicker = new MapPicker();
+      storytellerMapPicker.init('storytellerMapPicker', lat, lng);
+      storytellerMapPicker.bindInputs(latInput, lngInput);
     }
 
     function editStory(id) {
