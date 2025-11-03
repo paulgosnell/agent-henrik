@@ -357,7 +357,7 @@
                         }
 
                         pillarModal.style.display = 'flex';
-                        document.body.style.overflow = 'hidden';
+                        document.documentElement.style.overflow = 'hidden';
                     }
                 });
             });
@@ -366,7 +366,7 @@
             function closeModal() {
                 if (pillarModal) {
                     pillarModal.style.display = 'none';
-                    document.body.style.overflow = '';
+                    document.documentElement.style.overflow = '';
                 }
             }
 

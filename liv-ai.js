@@ -91,14 +91,22 @@ class LivAI {
         }
       });
 
-      // Mobile keyboard handling - scroll to input when focused
+      // Mobile keyboard handling - dynamic height adjustment
+      if ('visualViewport' in window) {
+        // Listen for viewport changes (keyboard appearance)
+        window.visualViewport.addEventListener('resize', () => {
+          this.adjustChatHeight();
+        });
+        window.visualViewport.addEventListener('scroll', () => {
+          this.adjustChatHeight();
+        });
+      }
+
+      // Scroll to bottom when input is focused
       this.chatInput.addEventListener('focus', () => {
-        // Small delay to allow keyboard to appear
-        setTimeout(() => {
-          if (this.chatInput) {
-            this.chatInput.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          }
-        }, 300);
+        requestAnimationFrame(() => {
+          this.scrollToBottom();
+        });
       });
     }
 
@@ -656,6 +664,25 @@ class LivAI {
   /**
    * Scroll chat to bottom
    */
+  adjustChatHeight() {
+    if (!this.chatContainer) return;
+
+    const viewport = window.visualViewport || {
+      width: window.innerWidth,
+      height: window.innerHeight
+    };
+
+    // On mobile, adjust height when keyboard appears
+    // Use 85% of visible viewport to ensure send button stays accessible
+    let containerHeight = viewport.height * 0.85;
+
+    // Ensure minimum height for chat visibility
+    containerHeight = Math.max(containerHeight, 300);
+
+    this.chatContainer.style.height = containerHeight + 'px';
+    this.scrollToBottom();
+  }
+
   scrollToBottom() {
     if (this.chatMessages) {
       // Use requestAnimationFrame for smoother scrolling

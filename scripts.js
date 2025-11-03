@@ -1870,7 +1870,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             }
 
                             pillarModal.style.display = 'flex';
-                            document.body.style.overflow = 'hidden';
+                            document.documentElement.style.overflow = 'hidden';
                         }
                     });
                 });
@@ -1880,7 +1880,7 @@ document.addEventListener('DOMContentLoaded', function() {
             function closePillarModal() {
                 if (pillarModal) {
                     pillarModal.style.display = 'none';
-                    document.body.style.overflow = '';
+                    document.documentElement.style.overflow = '';
                 }
             }
 
@@ -2162,7 +2162,7 @@ function initializeReadMoreButtons() {
                     }
 
                     pillarModal.style.display = 'flex';
-                    document.body.style.overflow = 'hidden';
+                    document.documentElement.style.overflow = 'hidden';
                 }
             }
         });
@@ -2354,7 +2354,7 @@ function initializePillarModals() {
                 }
 
                 pillarModal.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
+                document.documentElement.style.overflow = 'hidden';
             } else {
                 console.error(`No data found for slug: ${slug}`);
             }
