@@ -4871,20 +4871,22 @@
                 align-items: stretch;
                 justify-content: stretch;
                 padding: 0;
+                margin: 0;
+                height: 100vh;
+                height: 100dvh;
+                min-height: 100vh;
+                min-height: 100dvh;
             }
 
             .pillar-modal-container {
                 position: relative;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
                 width: 100%;
                 height: 100%;
                 max-height: none;
                 max-width: 100%;
                 border-radius: 0;
                 margin: 0;
+                padding: 0;
                 display: flex;
                 flex-direction: column;
             }
@@ -4895,20 +4897,26 @@
                 max-height: none;
                 display: flex;
                 flex-direction: column;
+                margin: 0;
+                padding: 0;
             }
 
             .pillar-modal-media {
                 height: 250px;
                 min-height: 250px;
+                max-height: 250px;
                 flex-shrink: 0;
+                flex-grow: 0;
             }
 
             .pillar-modal-body {
-                padding: 1.5rem 1.5rem 0;
+                padding: 1.5rem;
+                margin: 0;
                 height: auto;
                 max-height: none;
-                flex: 1;
+                flex: 1 1 auto;
                 overflow-y: auto;
+                overflow-x: hidden;
             }
 
             .pillar-modal-close {
