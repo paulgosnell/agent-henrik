@@ -4844,15 +4844,18 @@
 
             .pillar-modal-content {
                 grid-template-columns: 1fr;
+                height: 100vh;
                 max-height: 100vh;
             }
 
             .pillar-modal-media {
                 height: 250px;
+                min-height: 250px;
             }
 
             .pillar-modal-body {
-                padding: 2rem 1.5rem;
+                padding: 1.5rem 1.5rem 0;
+                height: calc(100vh - 250px);
                 max-height: calc(100vh - 250px);
             }
 
