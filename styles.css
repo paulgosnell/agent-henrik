@@ -1425,29 +1425,29 @@
             background: var(--theme-color);
         }
 
-        /* Theme-specific colors */
+        /* Theme-specific colors - All using lighter grey per client request */
         .filter-btn[data-filter="nature"] {
-            --theme-color: #4ade80;
+            --theme-color: #9ca3af;
         }
 
         .filter-btn[data-filter="design"] {
-            --theme-color: #818cf8;
+            --theme-color: #9ca3af;
         }
 
         .filter-btn[data-filter="royal-culture"] {
-            --theme-color: #fbbf24;
+            --theme-color: #9ca3af;
         }
 
         .filter-btn[data-filter="culinary"] {
-            --theme-color: #fb923c;
+            --theme-color: #9ca3af;
         }
 
         .filter-btn[data-filter="nightlife"] {
-            --theme-color: #f472b6;
+            --theme-color: #9ca3af;
         }
 
         .filter-btn[data-filter="legacy"] {
-            --theme-color: #22d3ee;
+            --theme-color: #9ca3af;
         }
 
         /* 'All' filter doesn't need a circle */
