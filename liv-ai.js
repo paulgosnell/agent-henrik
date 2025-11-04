@@ -191,9 +191,11 @@ class LivAI {
   openChat() {
     if (this.chatOverlay) {
       this.chatOverlay.classList.add('show');
-      if (this.chatInput) {
-        this.chatInput.focus();
-      }
+      // Removed auto-focus to prevent mobile keyboard from pushing content off screen
+      // User can tap into input field when ready
+      // if (this.chatInput) {
+      //   this.chatInput.focus();
+      // }
 
       // Add floating contact button after a few messages
       this.maybeShowContactButton();
@@ -640,7 +642,8 @@ class LivAI {
       this.isStreaming = false;
       if (this.chatInput) this.chatInput.disabled = false;
       if (this.sendButton) this.sendButton.disabled = false;
-      if (this.chatInput) this.chatInput.focus();
+      // Removed auto-focus to prevent mobile keyboard issues
+      // if (this.chatInput) this.chatInput.focus();
     }
   }
 
