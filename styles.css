@@ -1459,6 +1459,21 @@
             padding: 0.6rem 1.4rem;
         }
 
+        /* Mobile: Hide dots and adjust padding */
+        @media (max-width: 768px) {
+            .filter-btn::before {
+                display: none;
+            }
+
+            .filter-btn {
+                padding: 0.6rem 1.2rem;
+            }
+
+            .filter-btn[data-filter="all"] {
+                padding: 0.6rem 1.2rem;
+            }
+        }
+
         /* Category filters */
         .category-filters {
             display: flex;
