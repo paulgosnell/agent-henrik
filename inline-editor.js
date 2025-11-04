@@ -129,35 +129,29 @@ async function loadStaticContent() {
 
 /**
  * Create the editor UI buttons
+ * Only creates buttons if user is authenticated
  */
 function createEditorUI() {
-  // Create edit mode toggle button
+  // Don't create edit button if not authenticated
+  // Footer already has a "LOGIN TO EDIT" link for non-authenticated users
+  if (!InlineEditor.isAuthenticated) {
+    console.log('🔒 Not authenticated - edit buttons hidden');
+    return;
+  }
+
+  // Create edit mode toggle button (only for authenticated users)
   InlineEditor.editModeBtn = document.createElement('button');
   InlineEditor.editModeBtn.id = 'editModeBtn';
   InlineEditor.editModeBtn.className = 'edit-mode-btn';
   InlineEditor.editModeBtn.setAttribute('aria-label', 'Toggle edit mode');
+  InlineEditor.editModeBtn.innerHTML = `
+    <span class="edit-mode-icon">✏️</span>
+    <span class="edit-mode-text">Edit Mode: OFF</span>
+  `;
+  InlineEditor.editModeBtn.onclick = toggleEditMode;
 
-  if (!InlineEditor.isAuthenticated) {
-    // Show login prompt
-    InlineEditor.editModeBtn.innerHTML = `
-      <span class="edit-mode-icon">🔒</span>
-      <span class="edit-mode-text">Login to Edit</span>
-    `;
-    InlineEditor.editModeBtn.onclick = () => {
-      window.location.href = '/admin/login.html';
-    };
-  } else {
-    // Show edit mode toggle
-    InlineEditor.editModeBtn.innerHTML = `
-      <span class="edit-mode-icon">✏️</span>
-      <span class="edit-mode-text">Edit Mode: OFF</span>
-    `;
-    InlineEditor.editModeBtn.onclick = toggleEditMode;
-  }
-
-  // Append to footer instead of body (keep it discreet)
-  const footer = document.querySelector('footer') || document.body;
-  footer.appendChild(InlineEditor.editModeBtn);
+  // Append to body
+  document.body.appendChild(InlineEditor.editModeBtn);
 
   // Create save changes button (initially hidden)
   InlineEditor.saveChangesBtn = document.createElement('button');
@@ -171,8 +165,8 @@ function createEditorUI() {
   `;
   InlineEditor.saveChangesBtn.onclick = saveChanges;
 
-  // Append save button to footer (reuse footer reference)
-  footer.appendChild(InlineEditor.saveChangesBtn);
+  // Append save button to body
+  document.body.appendChild(InlineEditor.saveChangesBtn);
 }
 
 // ==========================================
