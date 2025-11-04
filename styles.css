@@ -4830,16 +4830,23 @@
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .pillar-modal {
-                align-items: stretch;
-                justify-content: stretch;
+                display: block;
+                align-items: initial;
+                justify-content: initial;
             }
 
             .pillar-modal-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
                 width: 100%;
                 height: 100vh;
                 max-height: 100vh;
                 max-width: 100%;
                 border-radius: 0;
+                margin: 0;
             }
 
             .pillar-modal-content {
