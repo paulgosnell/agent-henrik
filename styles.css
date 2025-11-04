@@ -4702,6 +4702,7 @@
         .pillar-modal-body {
             padding: 3rem;
             overflow-y: auto;
+            overflow-x: hidden;
             max-height: 85vh;
             scrollbar-width: thin;
             scrollbar-color: var(--color-border) transparent;
@@ -4767,6 +4768,32 @@
             margin-top: 2rem;
             margin-bottom: 1rem;
             color: var(--color-text);
+        }
+
+        .pillar-modal-body hr {
+            width: 100%;
+            max-width: 100%;
+            border: none;
+            border-top: 1px solid var(--color-border);
+            margin: 2rem 0;
+            box-sizing: border-box;
+        }
+
+        [data-theme="light"] .pillar-modal-body hr {
+            border-top-color: rgba(0, 0, 0, 0.1);
+        }
+
+        /* Prevent any admin-added content from causing horizontal scroll */
+        .pillar-modal-body * {
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .pillar-modal-body img,
+        .pillar-modal-body video,
+        .pillar-modal-body iframe {
+            max-width: 100%;
+            height: auto;
         }
 
         .pillar-modal-body #modal-cta {
