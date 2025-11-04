@@ -158,41 +158,41 @@
 
         /* Light mode text colors */
         [data-theme="light"] .story-section h2 {
-            color: rgba(0, 0, 0, 0.9);
+            color: rgba(0, 0, 0, 0.9) !important;
         }
 
         [data-theme="light"] .story-section h3 {
-            color: rgba(0, 0, 0, 0.85);
+            color: rgba(0, 0, 0, 0.85) !important;
         }
 
         [data-theme="light"] .story-section p {
-            color: rgba(0, 0, 0, 0.7);
+            color: rgba(0, 0, 0, 0.7) !important;
         }
 
         [data-theme="light"] .story-section ul li {
-            color: rgba(0, 0, 0, 0.75);
+            color: rgba(0, 0, 0, 0.75) !important;
         }
 
         [data-theme="light"] .story-quote {
-            background: rgba(0, 0, 0, 0.03);
-            border-left-color: rgba(160, 125, 26, 0.6);
+            background: rgba(0, 0, 0, 0.03) !important;
+            border-left-color: rgba(160, 125, 26, 0.6) !important;
         }
 
         [data-theme="light"] .story-quote blockquote {
-            color: rgba(0, 0, 0, 0.85);
+            color: rgba(0, 0, 0, 0.85) !important;
         }
 
         [data-theme="light"] .story-quote cite {
-            color: rgba(0, 0, 0, 0.6);
+            color: rgba(0, 0, 0, 0.6) !important;
         }
 
         [data-theme="light"] .loading-state {
-            color: rgba(0, 0, 0, 0.8);
+            color: rgba(0, 0, 0, 0.8) !important;
         }
 
         [data-theme="light"] .loading-spinner {
-            border-color: rgba(0, 0, 0, 0.1);
-            border-top-color: rgba(0, 0, 0, 0.6);
+            border-color: rgba(0, 0, 0, 0.1) !important;
+            border-top-color: rgba(0, 0, 0, 0.6) !important;
         }
     </style>
 
@@ -293,7 +293,7 @@
                 console.error('Error loading story:', error);
                 loadingState.classList.add('hidden');
                 storyContent.classList.remove('hidden');
-                storyContent.innerHTML = '<p style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.6);">Unable to load story content. Please try again later.</p>';
+                storyContent.innerHTML = '<p style="text-align: center; padding: 2rem;">Unable to load story content. Please try again later.</p>';
             }
         }
 
@@ -322,8 +322,8 @@
             return `
                 <div class="section-heading" style="text-align: center; margin-bottom: 3rem; max-width: 900px; margin-left: auto; margin-right: auto; padding: 0 2rem;">
                     ${section.metadata?.eyebrow ? `<span class="eyebrow">${escapeHtml(section.metadata.eyebrow)}</span>` : ''}
-                    <h1 style="font-family: var(--font-serif); font-size: 3.5rem; margin-top: 1rem; line-height: 1.2; color: rgba(255, 255, 255, 0.97);">${escapeHtml(section.title || '')}</h1>
-                    ${section.content ? `<p style="margin: 2rem auto 0; font-size: 1.15rem; line-height: 1.8; color: rgba(255, 255, 255, 0.7); max-width: 700px;">${escapeHtml(section.content)}</p>` : ''}
+                    <h1 style="font-family: var(--font-serif); font-size: 3.5rem; margin-top: 1rem; line-height: 1.2;">${escapeHtml(section.title || '')}</h1>
+                    ${section.content ? `<p style="margin: 2rem auto 0; font-size: 1.15rem; line-height: 1.8; max-width: 700px;">${escapeHtml(section.content)}</p>` : ''}
                 </div>
             `;
         }
