@@ -1911,6 +1911,7 @@
                 max-height: none;
                 border-radius: 0;
                 animation: fadeIn 0.3s ease forwards;
+                z-index: 1100;
             }
 
             .map-card-close {
