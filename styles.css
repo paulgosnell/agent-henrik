@@ -1673,7 +1673,7 @@
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 16px;
             overflow: hidden;
-            z-index: 1050;
+            z-index: 9998;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(20px);
             animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1911,7 +1911,7 @@
                 max-height: none;
                 border-radius: 0;
                 animation: fadeIn 0.3s ease forwards;
-                z-index: 1100;
+                z-index: 9998;
             }
 
             .map-card-close {
