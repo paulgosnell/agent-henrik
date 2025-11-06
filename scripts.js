@@ -6,7 +6,6 @@ if (window.lucide && typeof window.lucide.createIcons === 'function') {
 document.addEventListener('DOMContentLoaded', function() {
 
             // Theme Toggle Functionality
-            const themeToggle = document.getElementById('themeToggle');
             const htmlElement = document.documentElement;
             let currentTileLayer = null;
 
@@ -64,14 +63,24 @@ document.addEventListener('DOMContentLoaded', function() {
             // Initialize theme
             setTheme(getPreferredTheme());
 
-            // Theme toggle click handler
-            if (themeToggle) {
-                themeToggle.addEventListener('click', () => {
-                    const currentTheme = htmlElement.getAttribute('data-theme') || 'dark';
-                    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                    setTheme(newTheme);
-                });
+            // Initialize theme toggle - wait for footer component to load
+            function initThemeToggle() {
+                const themeToggle = document.getElementById('themeToggle');
+                if (themeToggle) {
+                    themeToggle.addEventListener('click', () => {
+                        const currentTheme = htmlElement.getAttribute('data-theme') || 'dark';
+                        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                        setTheme(newTheme);
+                    });
+                    console.log('✅ Theme toggle initialized');
+                }
             }
+
+            // Listen for footer component to load, then initialize theme toggle
+            document.addEventListener('component-loaded:footer', initThemeToggle);
+
+            // Also try to initialize immediately in case footer is already loaded
+            initThemeToggle();
 
             // Listen for system theme changes
             window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', (e) => {
