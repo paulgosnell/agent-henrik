@@ -1319,12 +1319,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Show card
                 mapOverlayCard.style.display = 'block';
+
+                // Hide header on mobile
+                const navHeader = document.querySelector('.nav-header');
+                if (navHeader && window.innerWidth <= 768) {
+                    navHeader.style.display = 'none';
+                }
             }
 
             // Hide map overlay card
             function hideMapOverlayCard() {
                 if (mapOverlayCard) {
                     mapOverlayCard.style.display = 'none';
+                }
+
+                // Show header again
+                const navHeader = document.querySelector('.nav-header');
+                if (navHeader) {
+                    navHeader.style.display = '';
                 }
             }
 
