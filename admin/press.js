@@ -28,8 +28,8 @@ async function loadPressItems() {
 
     const { data, error } = await window.Supabase.client
       .from('press_items')
-      .eq('site', window.SiteSelector.getSelectedSite())
       .select('*')
+      .eq('site', window.CURRENT_SITE || 'henrik')
       .order('display_order', { ascending: true });
 
     if (error) throw error;
@@ -183,7 +183,7 @@ async function savePressItem(event, isDraft = false) {
     link_type: document.getElementById('linkType').value,
     display_order: parseInt(document.getElementById('displayOrder').value) || 0,
     published_at: isDraft ? null : (document.getElementById('publishedAt').value || new Date().toISOString()),
-    site: window.SiteSelector.getSelectedSite()
+    site: window.CURRENT_SITE || 'henrik'
   };
 
   try {
@@ -202,6 +202,7 @@ async function savePressItem(event, isDraft = false) {
         .from('press_items')
         .update(formData)
         .eq('id', currentPressId)
+        .eq('site', window.CURRENT_SITE || 'henrik')
         .select()
         .single();
     } else {
@@ -261,7 +262,8 @@ async function confirmDelete() {
     const { error } = await window.Supabase.client
       .from('press_items')
       .delete()
-      .eq('id', currentPressId);
+      .eq('id', currentPressId)
+      .eq('site', window.CURRENT_SITE || 'henrik');
 
     if (error) throw error;
 

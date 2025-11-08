@@ -54,6 +54,9 @@ function detectCurrentSite() {
 // Get current site - this will be used by all DB queries
 const CURRENT_SITE = detectCurrentSite();
 
+// Make CURRENT_SITE globally available for admin panels
+window.CURRENT_SITE = CURRENT_SITE;
+
 console.log(`🌍 Site detected: ${CURRENT_SITE === 'sweden' ? 'Luxury Travel Sweden' : 'Agent Henrik'}`);
 
 // ==========================================

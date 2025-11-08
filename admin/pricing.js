@@ -19,8 +19,8 @@ async function loadPricingTiers() {
     showLoading(true);
     const { data, error } = await window.Supabase.client
       .from('pricing_tiers')
-      .eq('site', window.SiteSelector.getSelectedSite())
       .select('*')
+      .eq('site', window.CURRENT_SITE || 'henrik')
       .order('display_order', { ascending: true });
     if (error) throw error;
     pricingTiers = data || [];
@@ -139,7 +139,7 @@ async function savePricing(event) {
     price_info: document.getElementById('priceInfo').value.trim() || null,
     display_order: parseInt(document.getElementById('displayOrder').value) || 0,
     is_published: document.getElementById('isPublished').checked,
-    site: window.SiteSelector.getSelectedSite()
+    site: window.CURRENT_SITE || 'henrik'
   };
 
   try {
@@ -154,6 +154,7 @@ async function savePricing(event) {
         .from('pricing_tiers')
         .update(formData)
         .eq('id', currentPricingId)
+        .eq('site', window.CURRENT_SITE || 'henrik')
         .select()
         .single();
     } else {
@@ -207,7 +208,8 @@ async function confirmDelete() {
     const { error } = await window.Supabase.client
       .from('pricing_tiers')
       .delete()
-      .eq('id', currentPricingId);
+      .eq('id', currentPricingId)
+      .eq('site', window.CURRENT_SITE || 'henrik');
 
     if (error) throw error;
 

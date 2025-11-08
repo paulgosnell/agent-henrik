@@ -112,6 +112,7 @@ async function loadLeads() {
         const { data: leads, error } = await window.Supabase.client
             .from('leads')
             .select('*')
+            .eq('site', window.CURRENT_SITE || 'henrik')
             .order('created_at', { ascending: false });
 
         if (error) throw error;
@@ -387,7 +388,8 @@ async function saveLeadNotes(leadId) {
         const { error } = await window.Supabase.client
             .from('leads')
             .update({ notes })
-            .eq('id', leadId);
+            .eq('id', leadId)
+            .eq('site', window.CURRENT_SITE || 'henrik');
 
         if (error) throw error;
 
@@ -417,7 +419,8 @@ async function updateLeadStatus(leadId) {
         const { error } = await window.Supabase.client
             .from('leads')
             .update({ status: nextStatus })
-            .eq('id', leadId);
+            .eq('id', leadId)
+            .eq('site', window.CURRENT_SITE || 'henrik');
 
         if (error) throw error;
 

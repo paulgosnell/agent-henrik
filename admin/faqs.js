@@ -20,8 +20,8 @@ async function loadFaqs() {
     showLoading(true);
     const { data, error } = await window.Supabase.client
       .from('faqs')
-      .eq('site', window.SiteSelector.getSelectedSite())
       .select('*')
+      .eq('site', window.CURRENT_SITE || 'henrik')
       .order('display_order', { ascending: true });
     if (error) throw error;
     faqs = data || [];
@@ -130,7 +130,7 @@ async function saveFaq(event) {
     category: document.getElementById('category').value || 'general',
     display_order: parseInt(document.getElementById('displayOrder').value) || 0,
     is_published: document.getElementById('isPublished').checked,
-    site: window.SiteSelector.getSelectedSite()
+    site: window.CURRENT_SITE || 'henrik'
   };
 
   try {
@@ -145,6 +145,7 @@ async function saveFaq(event) {
         .from('faqs')
         .update(formData)
         .eq('id', currentFaqId)
+        .eq('site', window.CURRENT_SITE || 'henrik')
         .select()
         .single();
     } else {
@@ -197,7 +198,8 @@ async function confirmDelete() {
     const { error } = await window.Supabase.client
       .from('faqs')
       .delete()
-      .eq('id', currentFaqId);
+      .eq('id', currentFaqId)
+      .eq('site', window.CURRENT_SITE || 'henrik');
 
     if (error) throw error;
 

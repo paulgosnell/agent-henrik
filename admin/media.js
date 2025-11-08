@@ -257,6 +257,7 @@ const MediaLibrary = {
                         .from('media')
                         .update({ width: dims.width, height: dims.height })
                         .eq('id', file.id)
+                        .eq('site', window.CURRENT_SITE || 'henrik')
                         .then(() => {})
                         .catch(err => console.error('Failed to update dimensions:', err));
                 }
@@ -466,7 +467,8 @@ const MediaLibrary = {
                         width: dimensions.width,
                         height: dimensions.height
                     })
-                    .eq('id', result.mediaId);
+                    .eq('id', result.mediaId)
+                    .eq('site', window.CURRENT_SITE || 'henrik');
             }
 
             // Update status
@@ -615,7 +617,8 @@ const MediaLibrary = {
                     caption: caption,
                     updated_at: new Date().toISOString()
                 })
-                .eq('id', this.currentPreviewItem.id);
+                .eq('id', this.currentPreviewItem.id)
+                .eq('site', window.CURRENT_SITE || 'henrik');
 
             // Update local data
             this.currentPreviewItem.alt_text = altText;

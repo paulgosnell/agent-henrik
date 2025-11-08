@@ -42,8 +42,8 @@
         try {
             const { data, error } = await supabase
                 .from('liv_instructions')
-                .eq('site', window.SiteSelector.getSelectedSite())
                 .select('*')
+                .eq('site', window.CURRENT_SITE || 'henrik')
                 .order('priority', { ascending: false })
                 .order('created_at', { ascending: false });
 
@@ -164,7 +164,7 @@
             instruction: document.getElementById('instructionText').value.trim(),
             priority: parseInt(document.getElementById('instructionPriority').value),
             is_active: document.getElementById('instructionActive').checked,
-            site: window.SiteSelector.getSelectedSite()
+            site: window.CURRENT_SITE || 'henrik'
         };
 
         try {
@@ -173,7 +173,8 @@
                 const { error } = await supabase
                     .from('liv_instructions')
                     .update(data)
-                    .eq('id', id);
+                    .eq('id', id)
+                    .eq('site', window.CURRENT_SITE || 'henrik');
 
                 if (error) throw error;
                 showNotification('Instruction updated successfully', 'success');
@@ -200,7 +201,8 @@
             const { error } = await supabase
                 .from('liv_instructions')
                 .update({ is_active: isActive })
-                .eq('id', id);
+                .eq('id', id)
+                .eq('site', window.CURRENT_SITE || 'henrik');
 
             if (error) throw error;
 
@@ -221,7 +223,8 @@
             const { error } = await supabase
                 .from('liv_instructions')
                 .delete()
-                .eq('id', id);
+                .eq('id', id)
+                .eq('site', window.CURRENT_SITE || 'henrik');
 
             if (error) throw error;
 
