@@ -8,6 +8,9 @@
 
     // Initialize when DOM is ready
     document.addEventListener('DOMContentLoaded', async () => {
+        // Initialize site selector
+        window.SiteSelector.initializeSiteSelector();
+
         await loadInstructions();
         setupEventListeners();
     });
@@ -39,6 +42,7 @@
         try {
             const { data, error } = await supabase
                 .from('liv_instructions')
+                .eq('site', window.SiteSelector.getSelectedSite())
                 .select('*')
                 .order('priority', { ascending: false })
                 .order('created_at', { ascending: false });
@@ -159,7 +163,8 @@
             category: document.getElementById('instructionCategory').value,
             instruction: document.getElementById('instructionText').value.trim(),
             priority: parseInt(document.getElementById('instructionPriority').value),
-            is_active: document.getElementById('instructionActive').checked
+            is_active: document.getElementById('instructionActive').checked,
+            site: window.SiteSelector.getSelectedSite()
         };
 
         try {

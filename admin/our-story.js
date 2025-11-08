@@ -3,6 +3,9 @@ let storySections = [];
 let currentSectionId = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Initialize site selector
+  window.SiteSelector.initializeSiteSelector();
+
   await loadStorySections();
   document.getElementById('statusFilter')?.addEventListener('change', renderSectionsTable);
   document.getElementById('typeFilter')?.addEventListener('change', renderSectionsTable);
@@ -17,6 +20,7 @@ async function loadStorySections() {
     showLoading(true);
     const { data, error } = await window.Supabase.client
       .from('our_story_sections')
+      .eq('site', window.SiteSelector.getSelectedSite())
       .select('*')
       .order('display_order', { ascending: true });
     if (error) throw error;
@@ -162,7 +166,8 @@ async function saveSection(event) {
     image_url: document.getElementById('imageUrl').value.trim() || null,
     display_order: parseInt(document.getElementById('displayOrder').value) || 0,
     metadata: metadata,
-    is_published: document.getElementById('isPublished').checked
+    is_published: document.getElementById('isPublished').checked,
+    site: window.SiteSelector.getSelectedSite()
   };
 
   try {

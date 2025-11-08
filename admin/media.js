@@ -54,6 +54,9 @@ const MediaLibrary = {
     async init() {
         console.log('Initializing Media Library...');
 
+        // Initialize site selector
+        window.SiteSelector.initializeSiteSelector();
+
         // Cache DOM elements
         this.uploadZone = document.getElementById('uploadZone');
         this.fileInput = document.getElementById('fileInput');

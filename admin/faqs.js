@@ -3,6 +3,9 @@ let faqs = [];
 let currentFaqId = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Initialize site selector
+  window.SiteSelector.initializeSiteSelector();
+
   await loadFaqs();
   document.getElementById('statusFilter')?.addEventListener('change', renderFaqsTable);
   document.getElementById('categoryFilter')?.addEventListener('change', renderFaqsTable);
@@ -17,6 +20,7 @@ async function loadFaqs() {
     showLoading(true);
     const { data, error } = await window.Supabase.client
       .from('faqs')
+      .eq('site', window.SiteSelector.getSelectedSite())
       .select('*')
       .order('display_order', { ascending: true });
     if (error) throw error;
@@ -125,7 +129,8 @@ async function saveFaq(event) {
     answer: document.getElementById('answer').value.trim(),
     category: document.getElementById('category').value || 'general',
     display_order: parseInt(document.getElementById('displayOrder').value) || 0,
-    is_published: document.getElementById('isPublished').checked
+    is_published: document.getElementById('isPublished').checked,
+    site: window.SiteSelector.getSelectedSite()
   };
 
   try {

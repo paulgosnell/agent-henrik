@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    // Initialize site selector
+    window.SiteSelector.initializeSiteSelector();
+
     // Setup event listeners
     setupEventListeners();
 

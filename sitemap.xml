@@ -4,61 +4,61 @@
 
   <!-- Homepage -->
   <url>
-    <loc>https://luxurytravelsweden.com/</loc>
-    <lastmod>2025-10-31</lastmod>
+    <loc>https://agenthhenrik.com/</loc>
+    <lastmod>2025-11-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://luxurytravelsweden.com/og-image.jpg</image:loc>
-      <image:title>Luxury Travel Sweden - Bespoke Swedish Experiences</image:title>
+      <image:loc>https://agenthhenrik.com/og-image.jpg</image:loc>
+      <image:title>Agent Henrik - Global Luxury Travel Architect</image:title>
     </image:image>
   </url>
 
   <!-- Main Sections (as anchors on homepage) -->
   <url>
-    <loc>https://luxurytravelsweden.com/#map</loc>
+    <loc>https://agenthhenrik.com/#map</loc>
     <lastmod>2025-10-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://luxurytravelsweden.com/#journeys</loc>
+    <loc>https://agenthhenrik.com/#journeys</loc>
     <lastmod>2025-10-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://luxurytravelsweden.com/#corporate</loc>
+    <loc>https://agenthhenrik.com/#corporate</loc>
     <lastmod>2025-10-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://luxurytravelsweden.com/#storytellers</loc>
+    <loc>https://agenthhenrik.com/#storytellers</loc>
     <lastmod>2025-10-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://luxurytravelsweden.com/#stories</loc>
+    <loc>https://agenthhenrik.com/#stories</loc>
     <lastmod>2025-10-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://luxurytravelsweden.com/#press</loc>
+    <loc>https://agenthhenrik.com/#press</loc>
     <lastmod>2025-10-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://luxurytravelsweden.com/#contact</loc>
+    <loc>https://agenthhenrik.com/#contact</loc>
     <lastmod>2025-10-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -66,21 +66,21 @@
 
   <!-- Legal Pages (external) -->
   <url>
-    <loc>https://luxurytravelsweden.com/terms-conditions/</loc>
+    <loc>https://agenthhenrik.com/terms-conditions/</loc>
     <lastmod>2025-10-31</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://luxurytravelsweden.com/data-protection/</loc>
+    <loc>https://agenthhenrik.com/data-protection/</loc>
     <lastmod>2025-10-31</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://luxurytravelsweden.com/imprint</loc>
+    <loc>https://agenthhenrik.com/imprint</loc>
     <lastmod>2025-10-31</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>

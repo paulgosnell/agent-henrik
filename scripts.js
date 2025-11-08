@@ -5,6 +5,22 @@ if (window.lucide && typeof window.lucide.createIcons === 'function') {
 
 document.addEventListener('DOMContentLoaded', function() {
 
+            // Hero Video - Show content after video ends
+            const heroVideo = document.getElementById('heroVideo');
+            const heroContent = document.getElementById('heroContent');
+            const heroActions = document.querySelector('.hero-actions');
+            const heroOverlay = document.querySelector('.hero-overlay');
+
+            if (heroVideo && heroContent && heroActions && heroOverlay) {
+                heroVideo.addEventListener('ended', function() {
+                    // Fade to complete darkness and show content after video ends (8 seconds)
+                    heroOverlay.style.transition = 'background 1s ease-in';
+                    heroOverlay.style.background = 'rgba(0, 0, 0, 0.9)';
+                    heroContent.style.opacity = '1';
+                    heroActions.style.opacity = '1';
+                });
+            }
+
             // Theme Toggle Functionality
             const htmlElement = document.documentElement;
             let currentTileLayer = null;
@@ -56,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const logo = document.getElementById('siteLogo');
                 if (logo) {
                     // Always use white logo
-                    logo.src = 'lts-logo-white.png';
+                    logo.src = 'AHT_White.png';
                 }
             };
 
@@ -1207,8 +1223,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 const isMobile = window.innerWidth <= 768 || ('ontouchstart' in window);
 
                 map = L.map('map', {
-                    center: [62, 15],
-                    zoom: 5,
+                    center: [30, 0],
+                    zoom: 2,
+                    minZoom: 2,
+                    maxZoom: 18,
                     zoomControl: true,
                     scrollWheelZoom: false, // Disabled by default to prevent scroll hijacking
                     dragging: !isMobile, // Disable dragging on mobile initially
@@ -1310,7 +1328,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                     category: data.category,
                                     themes: data.themes,
                                     seasons: data.seasons,
-                                    description: data.description
+                                    description: data.description,
+                                    region: data.region
                                 }
                             }
                         }));
@@ -1408,7 +1427,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     const seasonMatch = data.seasons.map(s => s.toLowerCase()).includes(currentSeason);
                     // Check if any active theme matches any of the destination's themes
-                    const themeMatch = activeThemes.size === 0 ? false : data.themeKeys.some(theme => activeThemes.has(theme));
+                    // If destination has no themes (Agent Henrik uses services), always show it (themeMatch = true)
+                    const hasThemes = data.themeKeys && data.themeKeys.length > 0;
+                    const themeMatch = !hasThemes ? true : data.themeKeys.some(theme => activeThemes.has(theme));
                     const categoryMatch = activeCategories.has(data.category);
 
                     const markerEl = marker.getElement();
@@ -1604,6 +1625,49 @@ document.addEventListener('DOMContentLoaded', function() {
                     categoryToggleAll.textContent = 'All Off';
                 }
             }
+
+            // Region Filter Functions
+            function initializeRegionFilters() {
+                const regions = ['All', 'Nordic', 'Mediterranean', 'Asia Pacific', 'Americas'];
+                const filterContainer = document.getElementById('regionFilters');
+
+                if (!filterContainer) return;
+
+                regions.forEach(region => {
+                    const btn = document.createElement('button');
+                    btn.textContent = region;
+                    btn.className = 'region-filter-btn';
+                    btn.dataset.region = region;
+                    if (region === 'All') btn.classList.add('active');
+
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.region-filter-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        filterByRegion(region);
+                    });
+
+                    filterContainer.appendChild(btn);
+                });
+            }
+
+            function filterByRegion(region) {
+                if (!destinationData || !markers) return;
+
+                Object.entries(markers).forEach(([key, marker]) => {
+                    const destination = destinationData[key];
+                    if (region === 'All' || destination.region === region) {
+                        marker.addTo(map);
+                    } else {
+                        map.removeLayer(marker);
+                    }
+                });
+            }
+
+            // Initialize region filters after markers are created
+            setTimeout(() => {
+                initializeRegionFilters();
+            }, 300);
+
             } // End of if (map) check - map successfully initialized
             } // End of initializeMap function
 

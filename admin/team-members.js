@@ -4,6 +4,9 @@ let currentMemberId = null;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
+  // Initialize site selector
+  window.SiteSelector.initializeSiteSelector();
+
   await loadTeamMembers();
 
   // Setup status filter
@@ -25,6 +28,7 @@ async function loadTeamMembers() {
 
     const { data, error } = await window.Supabase.client
       .from('team_members')
+      .eq('site', window.SiteSelector.getSelectedSite())
       .select('*')
       .order('display_order', { ascending: true });
 
@@ -169,7 +173,8 @@ async function saveMember(event) {
     email: document.getElementById('email').value.trim() || null,
     linkedin_url: document.getElementById('linkedinUrl').value.trim() || null,
     display_order: parseInt(document.getElementById('displayOrder').value) || 0,
-    is_published: document.getElementById('isPublished').checked
+    is_published: document.getElementById('isPublished').checked,
+    site: window.SiteSelector.getSelectedSite()
   };
 
   try {

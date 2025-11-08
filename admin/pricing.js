@@ -3,6 +3,9 @@ let pricingTiers = [];
 let currentPricingId = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Initialize site selector
+  window.SiteSelector.initializeSiteSelector();
+
   await loadPricingTiers();
   document.getElementById('statusFilter')?.addEventListener('change', renderPricingTable);
   document.getElementById('pricingForm')?.addEventListener('submit', (e) => {
@@ -16,6 +19,7 @@ async function loadPricingTiers() {
     showLoading(true);
     const { data, error } = await window.Supabase.client
       .from('pricing_tiers')
+      .eq('site', window.SiteSelector.getSelectedSite())
       .select('*')
       .order('display_order', { ascending: true });
     if (error) throw error;
@@ -134,7 +138,8 @@ async function savePricing(event) {
     icon_name: document.getElementById('iconName').value.trim() || 'sparkles',
     price_info: document.getElementById('priceInfo').value.trim() || null,
     display_order: parseInt(document.getElementById('displayOrder').value) || 0,
-    is_published: document.getElementById('isPublished').checked
+    is_published: document.getElementById('isPublished').checked,
+    site: window.SiteSelector.getSelectedSite()
   };
 
   try {

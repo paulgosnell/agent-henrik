@@ -266,7 +266,7 @@ class LivAI {
       // If there's context, we'll skip the generic welcome - the contextual greeting will be sent separately
       if (!this.context) {
         const welcomeMessage = `<div class="chat-message ai">
-            <p>Welcome. I'm LIV — Luxury Itinerary Visionary. I'm here to craft extraordinary Swedish journeys tailored to your desires.</p>
+            <p>Welcome. I'm Agent Henrik — Your Global Luxury Travel Architect. I'm here to craft extraordinary journeys tailored to your desires.</p>
           </div>`;
         this.chatMessages.innerHTML = welcomeMessage;
       } else {

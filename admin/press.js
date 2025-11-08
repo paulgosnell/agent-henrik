@@ -4,6 +4,9 @@ let currentPressId = null;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
+  // Initialize site selector
+  window.SiteSelector.initializeSiteSelector();
+
   await loadPressItems();
 
   // Setup status filter
@@ -25,6 +28,7 @@ async function loadPressItems() {
 
     const { data, error } = await window.Supabase.client
       .from('press_items')
+      .eq('site', window.SiteSelector.getSelectedSite())
       .select('*')
       .order('display_order', { ascending: true });
 
@@ -178,7 +182,8 @@ async function savePressItem(event, isDraft = false) {
     link_url: document.getElementById('linkUrl').value.trim(),
     link_type: document.getElementById('linkType').value,
     display_order: parseInt(document.getElementById('displayOrder').value) || 0,
-    published_at: isDraft ? null : (document.getElementById('publishedAt').value || new Date().toISOString())
+    published_at: isDraft ? null : (document.getElementById('publishedAt').value || new Date().toISOString()),
+    site: window.SiteSelector.getSelectedSite()
   };
 
   try {

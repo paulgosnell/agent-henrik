@@ -2904,3 +2904,177 @@ select:focus {
     padding: 0.75rem 0.5rem;
   }
 }
+
+/* ==========================================
+   SITE SELECTOR STYLES
+   Multi-Site CMS (Sweden & Agent Henrik)
+   ========================================== */
+
+.site-selector {
+  padding: 1rem;
+  border-bottom: 1px solid var(--admin-border);
+  background: var(--admin-surface);
+}
+
+.site-selector-label {
+  display: block;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--admin-text-muted);
+  margin-bottom: 0.625rem;
+  font-weight: 600;
+}
+
+.site-selector-dropdown {
+  position: relative;
+}
+
+.site-selector-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--admin-surface-elevated);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-sm);
+  color: var(--admin-text);
+  font-size: 0.9375rem;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.site-selector-btn:hover {
+  background: var(--admin-surface-raised);
+  border-color: var(--admin-border-strong);
+}
+
+.site-selector-btn .site-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.site-selector-btn .site-name {
+  flex: 1;
+  text-align: left;
+  font-weight: 500;
+}
+
+.site-selector-btn .chevron {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.site-selector-btn[aria-expanded="true"] .chevron {
+  transform: rotate(180deg);
+}
+
+.site-selector-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  background: var(--admin-surface-elevated);
+  border: 1px solid var(--admin-border-strong);
+  border-radius: var(--admin-radius-sm);
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.site-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 1rem;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--admin-border);
+  color: var(--admin-text);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  text-align: left;
+}
+
+.site-option:last-child {
+  border-bottom: none;
+}
+
+.site-option:not(:disabled):hover {
+  background: var(--admin-surface-raised);
+}
+
+.site-option:disabled {
+  cursor: default;
+  background: var(--admin-surface-raised);
+}
+
+.site-option .site-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.site-option .site-details {
+  flex: 1;
+}
+
+.site-option .site-name {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  margin-bottom: 0.125rem;
+}
+
+.site-option .site-domain {
+  font-size: 0.75rem;
+  color: var(--admin-text-secondary);
+}
+
+.site-option svg {
+  flex-shrink: 0;
+  color: var(--admin-success);
+}
+
+.site-option.active {
+  background: var(--admin-surface-raised);
+}
+
+/* Site badge in page headers */
+.site-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  margin-left: 1rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .site-selector {
+    padding: 0.75rem;
+  }
+
+  .site-selector-btn {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+  }
+
+  .site-option {
+    padding: 0.875rem;
+  }
+
+  .site-option .site-name {
+    font-size: 0.875rem;
+  }
+
+  .site-option .site-domain {
+    font-size: 0.6875rem;
+  }
+}

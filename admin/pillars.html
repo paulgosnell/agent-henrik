@@ -66,6 +66,8 @@
         </div>
       </div>
 
+      <div id="siteSelectorContainer"></div>
+
       <nav class="sidebar-nav">
         <a href="index.html" class="nav-item">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -574,6 +576,9 @@
   <!-- Supabase Client -->
   <script src="../supabase-client.js?v=2"></script>
 
+  <!-- Site Selector -->
+  <script src="site-selector.js"></script>
+
   <!-- Main Application Script -->
   <script>
     // ==========================================
@@ -613,6 +618,9 @@
           showAlert('error', 'Supabase is not configured. Please update your credentials in supabase-client.js');
           return;
         }
+
+        // Initialize site selector
+        window.SiteSelector.initializeSiteSelector();
 
         // Load data
         await loadPillars();

@@ -30,6 +30,33 @@ const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ==========================================
+// SITE DETECTION
+// ==========================================
+
+/**
+ * Detect which site we're on based on hostname
+ * Returns 'sweden' for luxury-travel-sweden domains
+ * Returns 'henrik' for agent henrik domains (default)
+ */
+function detectCurrentSite() {
+  const hostname = window.location.hostname;
+
+  // Check for Sweden domain (handle both production and Netlify URLs)
+  if (hostname.includes('luxury-travel-sweden') ||
+      hostname.includes('luxurytravelsweden')) {
+    return 'sweden';
+  }
+
+  // Default to Agent Henrik for all other domains (including agenthenrik.com, localhost, etc.)
+  return 'henrik';
+}
+
+// Get current site - this will be used by all DB queries
+const CURRENT_SITE = detectCurrentSite();
+
+console.log(`🌍 Site detected: ${CURRENT_SITE === 'sweden' ? 'Luxury Travel Sweden' : 'Agent Henrik'}`);
+
+// ==========================================
 // AUTHENTICATION HELPERS
 // ==========================================
 
@@ -98,12 +125,13 @@ const Auth = {
 
 const DB = {
   /**
-   * Get all themes
+   * Get all themes for current site
    */
   async getThemes() {
     const { data, error } = await supabaseClient
       .from('themes')
       .select('*')
+      .eq('site', CURRENT_SITE)
       .order('label');
 
     if (error) throw error;
@@ -117,6 +145,7 @@ const DB = {
     let query = supabaseClient
       .from('destinations')
       .select('*')
+      .eq('site', CURRENT_SITE)
       .order('title');
 
     if (!includeUnpublished) {
@@ -143,6 +172,7 @@ const DB = {
     const { data, error } = await supabaseClient
       .from('destinations')
       .select('*')
+      .eq('site', CURRENT_SITE)
       .eq('slug', slug)
       .single();
 
@@ -161,7 +191,7 @@ const DB = {
   async createDestination(destination) {
     const { data, error } = await supabaseClient
       .from('destinations')
-      .insert(destination)
+      .insert({ ...destination, site: CURRENT_SITE })
       .select()
       .single();
 
@@ -177,6 +207,7 @@ const DB = {
       .from('destinations')
       .update(updates)
       .eq('id', id)
+      .eq('site', CURRENT_SITE)
       .select()
       .single();
 
@@ -191,7 +222,8 @@ const DB = {
     const { error } = await supabaseClient
       .from('destinations')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .eq('site', CURRENT_SITE);
 
     if (error) throw error;
   },
@@ -203,6 +235,7 @@ const DB = {
     let query = supabaseClient
       .from('blog_posts')
       .select('*')
+      .eq('site', CURRENT_SITE)
       .order('published_at', { ascending: false, nullsFirst: false });
 
     if (publishedOnly) {
@@ -222,6 +255,7 @@ const DB = {
     const { data, error } = await supabaseClient
       .from('blog_posts')
       .select('*')
+      .eq('site', CURRENT_SITE)
       .eq('slug', slug)
       .single();
 
@@ -235,7 +269,7 @@ const DB = {
   async createBlogPost(post) {
     const { data, error } = await supabaseClient
       .from('blog_posts')
-      .insert(post)
+      .insert({ ...post, site: CURRENT_SITE })
       .select()
       .single();
 
@@ -251,6 +285,7 @@ const DB = {
       .from('blog_posts')
       .update(updates)
       .eq('id', id)
+      .eq('site', CURRENT_SITE)
       .select()
       .single();
 
@@ -265,7 +300,8 @@ const DB = {
     const { error } = await supabaseClient
       .from('blog_posts')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .eq('site', CURRENT_SITE);
 
     if (error) throw error;
   },
@@ -277,6 +313,7 @@ const DB = {
     let query = supabaseClient
       .from('stories')
       .select('*')
+      .eq('site', CURRENT_SITE)
       .order('display_order')
       .order('published_at', { ascending: false, nullsFirst: false });
 
@@ -297,6 +334,7 @@ const DB = {
     const { data, error } = await supabaseClient
       .from('stories')
       .select('*')
+      .eq('site', CURRENT_SITE)
       .eq('category', 'Storyteller')
       .eq('show_on_map', true)
       .not('latitude', 'is', null)
@@ -315,7 +353,7 @@ const DB = {
   async createStory(story) {
     const { data, error } = await supabaseClient
       .from('stories')
-      .insert(story)
+      .insert({ ...story, site: CURRENT_SITE })
       .select()
       .single();
 
@@ -331,6 +369,7 @@ const DB = {
       .from('stories')
       .update(updates)
       .eq('id', id)
+      .eq('site', CURRENT_SITE)
       .select()
       .single();
 
@@ -345,7 +384,8 @@ const DB = {
     const { error } = await supabaseClient
       .from('stories')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .eq('site', CURRENT_SITE);
 
     if (error) throw error;
   },
@@ -357,6 +397,7 @@ const DB = {
     let query = supabaseClient
       .from('pillars')
       .select('*')
+      .eq('site', CURRENT_SITE)
       .order('display_order');
 
     if (section) {
@@ -378,7 +419,7 @@ const DB = {
   async createPillar(pillar) {
     const { data, error } = await supabaseClient
       .from('pillars')
-      .insert(pillar)
+      .insert({ ...pillar, site: CURRENT_SITE })
       .select()
       .single();
 
@@ -394,6 +435,7 @@ const DB = {
       .from('pillars')
       .update(updates)
       .eq('id', id)
+      .eq('site', CURRENT_SITE)
       .select()
       .single();
 
@@ -408,7 +450,8 @@ const DB = {
     const { error } = await supabaseClient
       .from('pillars')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .eq('site', CURRENT_SITE);
 
     if (error) throw error;
   },
@@ -419,7 +462,8 @@ const DB = {
   async getStaticContent(section = null) {
     let query = supabaseClient
       .from('static_content')
-      .select('*');
+      .select('*')
+      .eq('site', CURRENT_SITE);
 
     if (section) {
       query = query.eq('section', section);
@@ -441,9 +485,9 @@ const DB = {
    * Update static content
    */
   async updateStaticContent(key, value) {
-    const { data, error } = await supabaseClient
+    const { data, error} = await supabaseClient
       .from('static_content')
-      .upsert({ key, value, updated_at: new Date().toISOString() })
+      .upsert({ key, value, site: CURRENT_SITE, updated_at: new Date().toISOString() })
       .select()
       .single();
 
@@ -458,6 +502,7 @@ const DB = {
     const records = Object.entries(updates).map(([key, value]) => ({
       key,
       value,
+      site: CURRENT_SITE,
       updated_at: new Date().toISOString()
     }));
 
@@ -476,6 +521,7 @@ const DB = {
     const { data, error} = await supabaseClient
       .from('press_quotes')
       .select('*')
+      .eq('site', CURRENT_SITE)
       .eq('published', true)
       .order('display_order');
 
@@ -490,6 +536,7 @@ const DB = {
     let query = supabaseClient
       .from('experiences')
       .select('*')
+      .eq('site', CURRENT_SITE)
       .order('display_order');
 
     if (publishedOnly) {
@@ -508,6 +555,103 @@ const DB = {
     let query = supabaseClient
       .from('corporate_offerings')
       .select('*')
+      .eq('site', CURRENT_SITE)
+      .order('display_order');
+
+    if (publishedOnly) {
+      query = query.eq('published', true);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data;
+  },
+
+  /**
+   * Get services (Agent Henrik specific)
+   */
+  async getServices(publishedOnly = true) {
+    let query = supabaseClient
+      .from('services')
+      .select('*')
+      .eq('site', CURRENT_SITE)
+      .order('display_order');
+
+    if (publishedOnly) {
+      query = query.eq('published', true);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data;
+  },
+
+  /**
+   * Get press items (Agent Henrik specific)
+   */
+  async getPressItems(publishedOnly = true) {
+    let query = supabaseClient
+      .from('press_items')
+      .select('*')
+      .eq('site', CURRENT_SITE)
+      .order('published_at', { ascending: false });
+
+    if (publishedOnly) {
+      query = query.not('published_at', 'is', null)
+                   .lte('published_at', new Date().toISOString());
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data;
+  },
+
+  /**
+   * Get team members
+   */
+  async getTeamMembers(publishedOnly = true) {
+    let query = supabaseClient
+      .from('team_members')
+      .select('*')
+      .eq('site', CURRENT_SITE)
+      .order('display_order');
+
+    if (publishedOnly) {
+      query = query.eq('published', true);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data;
+  },
+
+  /**
+   * Get FAQs
+   */
+  async getFaqs(publishedOnly = true) {
+    let query = supabaseClient
+      .from('faqs')
+      .select('*')
+      .eq('site', CURRENT_SITE)
+      .order('display_order');
+
+    if (publishedOnly) {
+      query = query.eq('published', true);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data;
+  },
+
+  /**
+   * Get pricing tiers
+   */
+  async getPricingTiers(publishedOnly = true) {
+    let query = supabaseClient
+      .from('pricing_tiers')
+      .select('*')
+      .eq('site', CURRENT_SITE)
       .order('display_order');
 
     if (publishedOnly) {
@@ -557,7 +701,8 @@ const Storage = {
       storage_path: data.path,
       url: publicUrl,
       size_bytes: file.size,
-      mime_type: file.type
+      mime_type: file.type,
+      site: CURRENT_SITE
     };
 
     const { data: mediaData, error: mediaError } = await supabaseClient
@@ -588,22 +733,24 @@ const Storage = {
 
     if (storageError) throw storageError;
 
-    // Delete from media table
+    // Delete from media table (only for current site)
     const { error: dbError } = await supabaseClient
       .from('media')
       .delete()
-      .eq('storage_path', path);
+      .eq('storage_path', path)
+      .eq('site', CURRENT_SITE);
 
     if (dbError) console.error('Failed to delete media record:', dbError);
   },
 
   /**
-   * Get all media files
+   * Get all media files for current site
    */
   async getMediaFiles() {
     const { data, error } = await supabaseClient
       .from('media')
       .select('*')
+      .eq('site', CURRENT_SITE)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -660,15 +807,20 @@ function transformDestinationsForMap(destinations) {
   const destinationData = {};
 
   destinations.forEach(dest => {
+    // Agent Henrik uses services, not themes - themes may be empty or undefined
+    const themes = dest.themes || [];
+    const hasThemes = themes.length > 0;
+
     destinationData[dest.slug] = {
       title: dest.title,
       description: dest.description,
       image: dest.image_url || '',
-      themes: dest.themes.map(t => t.label),
-      seasons: dest.seasons,
+      themes: hasThemes ? themes.map(t => t.label) : [],
+      seasons: dest.seasons || ['Spring', 'Summer', 'Autumn', 'Winter'],
       coordinates: [dest.longitude, dest.latitude], // Leaflet uses [lng, lat]
-      themeKeys: dest.themes.map(t => t.slug),
-      category: dest.category
+      themeKeys: hasThemes ? themes.map(t => t.slug) : [],
+      category: dest.category,
+      region: dest.region // Agent Henrik uses regions
     };
   });
 

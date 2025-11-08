@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+
+    <!-- Primary Meta Tags -->
+    <title>Press & Media — Agent Henrik</title>
+    <meta name="title" content="Press & Media — Agent Henrik">
+    <meta name="description" content="Agent Henrik featured in The New York Times, Forbes, Condé Nast Traveler, and more. Discover what the world's leading media says about our transformative luxury travel experiences.">
+    <meta name="keywords" content="Agent Henrik press, luxury travel media, travel awards, press coverage, media features">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://agenthhenrik.com/press/">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://agenthhenrik.com/press/">
+    <meta property="og:title" content="Press & Media — Agent Henrik">
+    <meta property="og:description" content="Featured in The New York Times, Forbes, Condé Nast Traveler, and more. Discover what the world's leading media says about our transformative luxury travel experiences.">
+    <meta property="og:image" content="https://agenthhenrik.com/og-image.jpg">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://agenthhenrik.com/press/">
+    <meta name="twitter:title" content="Press & Media — Agent Henrik">
+    <meta name="twitter:description" content="Featured in The New York Times, Forbes, Condé Nast Traveler, and more.">
+    <meta name="twitter:image" content="https://agenthhenrik.com/twitter-image.jpg">
+
+    <!-- Preconnect to external domains for performance -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fjnfsabvuiyzuzfhxzcc.supabase.co" crossorigin>
+
+    <!-- Lucide Icons -->
+    <script defer src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
+
+    <!-- External Stylesheet -->
+    <link rel="stylesheet" href="/styles.css?v=1738502400">
+
+    <!-- Component Loader - Load shared header/footer -->
+    <script src="/component-loader.js"></script>
+
+    <!-- Structured Data (Schema.org) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Press & Media — Agent Henrik",
+      "description": "Agent Henrik featured in The New York Times, Forbes, Condé Nast Traveler, and more.",
+      "url": "https://agenthhenrik.com/press/",
+      "mainEntity": {
+        "@type": "TravelAgency",
+        "name": "Agent Henrik",
+        "url": "https://agenthhenrik.com"
+      }
+    }
+    </script>
+</head>
+<body>
+    <!-- Header loaded from /components/header.html -->
+    <div id="header-placeholder"></div>
+
+    <!-- Press Hero Section -->
+    <section class="press-hero">
+        <div class="container">
+            <div class="press-hero-content">
+                <span class="eyebrow">Press & Media</span>
+                <h1 class="press-hero-title">What the World Says About Agent Henrik</h1>
+                <p class="press-hero-description">Our work has been recognized by the world's leading voices in luxury, travel, design, and culture. From The New York Times to Forbes, our transformative journeys continue to inspire and captivate.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Press Grid Section -->
+    <main class="site-main">
+        <section class="section press-section">
+            <div class="section-inner">
+                <div class="press-grid" id="pressGrid">
+                    <!-- Press items loaded dynamically from Supabase -->
+                    <div class="press-loading">
+                        <div class="spinner"></div>
+                        <p>Loading press coverage...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pull Quotes Section -->
+        <section class="section press-quotes-section">
+            <div class="section-inner">
+                <div class="section-heading">
+                    <span class="eyebrow">Testimonials</span>
+                    <h2>What They're Saying</h2>
+                </div>
+                <div class="press-quotes-grid">
+                    <blockquote class="press-quote">
+                        <p>"Agent Henrik curates experiences that go beyond luxury — they create transformative journeys that stay with you long after you return home."</p>
+                        <cite>— The New York Times</cite>
+                    </blockquote>
+                    <blockquote class="press-quote">
+                        <p>"A masterclass in bespoke travel design. Agent Henrik opens doors to Sweden's most exclusive and authentic experiences."</p>
+                        <cite>— Forbes</cite>
+                    </blockquote>
+                    <blockquote class="press-quote">
+                        <p>"From underground culture to royal palaces, Agent Henrik's insider access is unparalleled in the luxury travel industry."</p>
+                        <cite>— Condé Nast Traveler</cite>
+                    </blockquote>
+                </div>
+            </div>
+        </section>
+
+        <!-- Press Contact Section -->
+        <section class="section press-contact-section">
+            <div class="section-inner">
+                <div class="press-contact-box">
+                    <h3>Press Inquiries</h3>
+                    <p>For media inquiries, interview requests, or high-resolution images, please contact our press team.</p>
+                    <a href="mailto:press@agenthhenrik.com" class="press-contact-btn">press@agenthhenrik.com</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer loaded from /components/footer.html -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Supabase JS Client -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Our Supabase Client Wrapper -->
+    <script defer src="/supabase-client.js?v=2"></script>
+
+    <!-- Press Page Script -->
+    <script defer src="/press.js"></script>
+
+    <!-- Menu Initialization -->
+    <script defer src="/menu-init.js"></script>
+
+    <!-- Inline Editor -->
+    <script defer src="/inline-editor.js?v=3"></script>
+</body>
+</html>
