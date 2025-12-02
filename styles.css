@@ -2376,10 +2376,12 @@
             left: 0;
             right: 0;
             z-index: 1;
-            padding: 2rem;
+            padding: 1.5rem;
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
+            gap: 0.5rem;
+            max-height: 70%;
+            overflow: hidden;
         }
 
         /* Card titles */
@@ -2395,15 +2397,19 @@
             color: #ffffff;
         }
 
-        /* Card descriptions */
+        /* Card descriptions - truncate to fit */
         .pillar-card p,
         .story-card p,
         .story-card .story-excerpt,
         .destination-card p {
             color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9rem;
-            line-height: 1.6;
+            font-size: 0.85rem;
+            line-height: 1.5;
             margin: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         /* Card button row - side by side buttons */
