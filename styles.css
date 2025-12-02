@@ -2309,10 +2309,12 @@
             height: 100%;
             border-radius: 0;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: #0a0c0e;
+            border: none;
+            background: #000;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-            transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
         }
 
         .pillar-card:hover,
@@ -2320,7 +2322,6 @@
         .destination-card:hover {
             transform: translateY(-6px);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            border-color: rgba(255, 255, 255, 0.2);
         }
 
         /* Full-bleed background image */
@@ -2328,9 +2329,20 @@
         .story-media,
         .destination-media {
             position: absolute;
-            inset: 0;
+            inset: -4px;
             overflow: hidden;
             z-index: 0;
+            transform: scale(1) translateZ(0);
+            transition: transform 0.5s ease;
+            will-change: transform;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+
+        .pillar-card:hover .pillar-media,
+        .story-card:hover .story-media,
+        .destination-card:hover .destination-media {
+            transform: scale(1.04) translateZ(0);
         }
 
         .pillar-media img,
@@ -2340,14 +2352,6 @@
             height: 100%;
             object-fit: cover;
             display: block;
-            transform: scale(1.02);
-            transition: transform 0.5s ease;
-        }
-
-        .pillar-card:hover .pillar-media img,
-        .story-card:hover .story-media img,
-        .destination-card:hover .destination-media img {
-            transform: scale(1.08);
         }
 
         /* Gradient overlay - same for all cards */
@@ -2356,13 +2360,13 @@
         .destination-media::after {
             content: "";
             position: absolute;
-            inset: 0;
+            inset: -2px;
             background: linear-gradient(
                 180deg,
-                rgba(0, 0, 0, 0.1) 0%,
-                rgba(0, 0, 0, 0.3) 30%,
-                rgba(0, 0, 0, 0.7) 70%,
-                rgba(0, 0, 0, 0.9) 100%
+                rgba(0, 0, 0, 0.2) 0%,
+                rgba(0, 0, 0, 0.4) 30%,
+                rgba(0, 0, 0, 0.75) 60%,
+                rgba(0, 0, 0, 0.95) 100%
             );
             pointer-events: none;
         }
@@ -2395,6 +2399,7 @@
             line-height: 1.3;
             margin: 0;
             color: #ffffff;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
         }
 
         /* Card descriptions - truncate to fit */
@@ -2402,7 +2407,7 @@
         .story-card p,
         .story-card .story-excerpt,
         .destination-card p {
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.9);
             font-size: 0.85rem;
             line-height: 1.5;
             margin: 0;
@@ -2410,6 +2415,7 @@
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
         }
 
         /* Card button row - side by side buttons */
@@ -2485,7 +2491,6 @@
         [data-theme="light"] .pillar-card,
         [data-theme="light"] .story-card,
         [data-theme="light"] .destination-card {
-            border-color: rgba(0, 0, 0, 0.1);
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
         }
 
@@ -2702,12 +2707,14 @@
             z-index: 1;
         }
 
-        .story-card .story-meta .eyebrow {
-            color: rgba(255, 255, 255, 0.8);
+        .story-card .story-meta .eyebrow,
+        .story-card .eyebrow {
+            color: rgba(255, 255, 255, 0.9);
             font-size: 0.7rem;
             letter-spacing: 0.15em;
             text-transform: uppercase;
             margin-bottom: 0.5rem;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
         }
 
         /* Story image positioning for portraits */

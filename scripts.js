@@ -2326,24 +2326,33 @@ async function loadJournalPosts() {
                 .sort((a, b) => new Date(b.published_at) - new Date(a.published_at))
                 .slice(0, 3);
 
-            // Replace static content with dynamic blog posts
+            // Replace static content with dynamic blog posts - use pillar-card structure for consistency
             journalGrid.innerHTML = recentPosts.map(post => {
-                // Set background image style or use placeholder gradient
-                const bgStyle = post.hero_image_url
-                    ? `background-image: url('${escapeHtml(post.hero_image_url)}'); background-size: cover; background-position: center;`
-                    : `background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);`;
+                const imageUrl = post.hero_image_url || 'https://via.placeholder.com/600x400';
 
                 return `
-                    <article class="story-card" data-story="${post.slug}" aria-label="${escapeHtml(post.title)}" style="${bgStyle}">
-                        <div class="story-meta">
-                            <span class="eyebrow" style="margin-bottom:0.5rem;">${escapeHtml(post.author || 'LIV Team')}</span>
-                            <h3>${escapeHtml(post.title)}</h3>
-                            <p>${escapeHtml(post.excerpt || '')}</p>
-                            <a href="/journal-post/?slug=${encodeURIComponent(post.slug)}" class="story-cta" style="display: inline-block; margin-top: 1rem; color: inherit; text-decoration: none; font-weight: 600;">Read More →</a>
+                    <article class="pillar-card" data-pillar="${post.slug}">
+                        <div class="pillar-media" aria-hidden="true">
+                            <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(post.title)}" loading="lazy">
+                        </div>
+                        <div class="pillar-body">
+                            <div class="pillar-copy">
+                                <span class="eyebrow">${escapeHtml(post.author || 'LIV Team')}</span>
+                                <h3>${escapeHtml(post.title)}</h3>
+                                <p>${escapeHtml(post.excerpt || '')}</p>
+                                <div class="card-buttons">
+                                    <a href="/journal-post/?slug=${encodeURIComponent(post.slug)}" class="read-more-btn"><i data-lucide="book-open"></i> Read More</a>
+                                </div>
+                            </div>
                         </div>
                     </article>
                 `;
             }).join('');
+
+            // Initialize Lucide icons for the new content
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
 
             // Note: "SEE ALL JOURNAL POSTS" link is already in the HTML below the grid
         }
