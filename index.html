@@ -54,62 +54,10 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <!-- External Stylesheet -->
-    <link rel="stylesheet" href="styles.css?v=1733150023">
+    <link rel="stylesheet" href="styles.css?v=1764710759">
 
     <!-- Component Loader - Load shared header/footer -->
     <script src="component-loader.js?v=1732877000"></script>
-    <style>
-        /* FIX: Prevent image layout shift and flickering */
-        .pillar-media,
-        .story-media {
-            background: #0a0c0e;
-            will-change: auto;
-        }
-
-        .pillar-media img,
-        .story-media img {
-            transform: none !important;
-            filter: none !important;
-            transition: none !important;
-            will-change: auto !important;
-            content-visibility: auto;
-            image-rendering: auto;
-        }
-
-        .path-card::before {
-            transform: none !important;
-            filter: none !important;
-            transition: none !important;
-            will-change: auto;
-        }
-
-        .pillar-card,
-        .story-card,
-        .path-card {
-            transform: none !important;
-            will-change: auto;
-        }
-
-        .pillar-card:hover,
-        .story-card:hover,
-        .path-card:hover {
-            transform: none !important;
-        }
-
-        .pillar-card:hover .pillar-media img,
-        .story-card:hover .story-media img,
-        .path-card:hover::before {
-            transform: none !important;
-            filter: none !important;
-        }
-
-        /* Force GPU to cache images */
-        .pillar-media img,
-        .story-media img {
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-        }
-    </style>
 
     <!-- Structured Data (Schema.org) -->
     <script type="application/ld+json">
