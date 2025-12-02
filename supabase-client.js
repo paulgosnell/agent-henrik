@@ -1,5 +1,5 @@
 /**
- * Supabase Client - Luxury Travel Sweden
+ * Supabase Client - Agent Henrik
  *
  * This file initializes the Supabase client and provides helper functions
  * for working with the database, auth, and storage.
@@ -15,6 +15,10 @@
 
 const SUPABASE_URL = 'https://fjnfsabvuiyzuzfhxzcc.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqbmZzYWJ2dWl5enV6Zmh4emNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0NzA1NTMsImV4cCI6MjA3NzA0NjU1M30.q3hphcyHp5Elk7HS5OzD8KmhrjJmOfQefmCjxPG1SLA';
+
+// Export to global scope for liv-ai.js and other modules
+window.SUPABASE_URL = SUPABASE_URL;
+window.SUPABASE_ANON_KEY = SUPABASE_ANON_KEY;
 
 // ==========================================
 // INITIALIZE SUPABASE CLIENT
@@ -40,6 +44,7 @@ const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
  */
 function detectCurrentSite() {
   const hostname = window.location.hostname;
+  const pathname = window.location.pathname;
 
   // Check for Sweden domain (handle both production and Netlify URLs)
   if (hostname.includes('luxury-travel-sweden') ||
@@ -47,7 +52,7 @@ function detectCurrentSite() {
     return 'sweden';
   }
 
-  // Default to Agent Henrik for all other domains (including agenthenrik.com, localhost, etc.)
+  // Default to Agent Henrik for all other domains (including localhost)
   return 'henrik';
 }
 
@@ -209,8 +214,8 @@ const DB = {
     const { data, error } = await supabaseClient
       .from('destinations')
       .update(updates)
-      .eq('id', id)
       .eq('site', CURRENT_SITE)
+      .eq('id', id)
       .select()
       .single();
 
@@ -225,8 +230,8 @@ const DB = {
     const { error } = await supabaseClient
       .from('destinations')
       .delete()
-      .eq('id', id)
-      .eq('site', CURRENT_SITE);
+      .eq('site', CURRENT_SITE)
+      .eq('id', id);
 
     if (error) throw error;
   },
@@ -287,8 +292,8 @@ const DB = {
     const { data, error } = await supabaseClient
       .from('blog_posts')
       .update(updates)
-      .eq('id', id)
       .eq('site', CURRENT_SITE)
+      .eq('id', id)
       .select()
       .single();
 
@@ -303,8 +308,8 @@ const DB = {
     const { error } = await supabaseClient
       .from('blog_posts')
       .delete()
-      .eq('id', id)
-      .eq('site', CURRENT_SITE);
+      .eq('site', CURRENT_SITE)
+      .eq('id', id);
 
     if (error) throw error;
   },
@@ -371,8 +376,8 @@ const DB = {
     const { data, error } = await supabaseClient
       .from('stories')
       .update(updates)
-      .eq('id', id)
       .eq('site', CURRENT_SITE)
+      .eq('id', id)
       .select()
       .single();
 
@@ -387,8 +392,8 @@ const DB = {
     const { error } = await supabaseClient
       .from('stories')
       .delete()
-      .eq('id', id)
-      .eq('site', CURRENT_SITE);
+      .eq('site', CURRENT_SITE)
+      .eq('id', id);
 
     if (error) throw error;
   },
@@ -437,8 +442,8 @@ const DB = {
     const { data, error } = await supabaseClient
       .from('pillars')
       .update(updates)
-      .eq('id', id)
       .eq('site', CURRENT_SITE)
+      .eq('id', id)
       .select()
       .single();
 
@@ -453,8 +458,8 @@ const DB = {
     const { error } = await supabaseClient
       .from('pillars')
       .delete()
-      .eq('id', id)
-      .eq('site', CURRENT_SITE);
+      .eq('site', CURRENT_SITE)
+      .eq('id', id);
 
     if (error) throw error;
   },
@@ -488,7 +493,7 @@ const DB = {
    * Update static content
    */
   async updateStaticContent(key, value) {
-    const { data, error} = await supabaseClient
+    const { data, error } = await supabaseClient
       .from('static_content')
       .upsert({ key, value, site: CURRENT_SITE, updated_at: new Date().toISOString() })
       .select()
@@ -557,102 +562,6 @@ const DB = {
   async getCorporateOfferings(publishedOnly = true) {
     let query = supabaseClient
       .from('corporate_offerings')
-      .select('*')
-      .eq('site', CURRENT_SITE)
-      .order('display_order');
-
-    if (publishedOnly) {
-      query = query.eq('published', true);
-    }
-
-    const { data, error } = await query;
-    if (error) throw error;
-    return data;
-  },
-
-  /**
-   * Get services (Agent Henrik specific)
-   */
-  async getServices(publishedOnly = true) {
-    let query = supabaseClient
-      .from('services')
-      .select('*')
-      .eq('site', CURRENT_SITE)
-      .order('display_order');
-
-    if (publishedOnly) {
-      query = query.eq('published', true);
-    }
-
-    const { data, error } = await query;
-    if (error) throw error;
-    return data;
-  },
-
-  /**
-   * Get press items (Agent Henrik specific)
-   */
-  async getPressItems(publishedOnly = true) {
-    let query = supabaseClient
-      .from('press_items')
-      .select('*')
-      .eq('site', CURRENT_SITE)
-      .order('published_at', { ascending: false });
-
-    if (publishedOnly) {
-      query = query.not('published_at', 'is', null)
-                   .lte('published_at', new Date().toISOString());
-    }
-
-    const { data, error } = await query;
-    if (error) throw error;
-    return data;
-  },
-
-  /**
-   * Get team members
-   */
-  async getTeamMembers(publishedOnly = true) {
-    let query = supabaseClient
-      .from('team_members')
-      .select('*')
-      .eq('site', CURRENT_SITE)
-      .order('display_order');
-
-    if (publishedOnly) {
-      query = query.eq('published', true);
-    }
-
-    const { data, error } = await query;
-    if (error) throw error;
-    return data;
-  },
-
-  /**
-   * Get FAQs
-   */
-  async getFaqs(publishedOnly = true) {
-    let query = supabaseClient
-      .from('faqs')
-      .select('*')
-      .eq('site', CURRENT_SITE)
-      .order('display_order');
-
-    if (publishedOnly) {
-      query = query.eq('published', true);
-    }
-
-    const { data, error } = await query;
-    if (error) throw error;
-    return data;
-  },
-
-  /**
-   * Get pricing tiers
-   */
-  async getPricingTiers(publishedOnly = true) {
-    let query = supabaseClient
-      .from('pricing_tiers')
       .select('*')
       .eq('site', CURRENT_SITE)
       .order('display_order');
@@ -736,18 +645,18 @@ const Storage = {
 
     if (storageError) throw storageError;
 
-    // Delete from media table (only for current site)
+    // Delete from media table
     const { error: dbError } = await supabaseClient
       .from('media')
       .delete()
-      .eq('storage_path', path)
-      .eq('site', CURRENT_SITE);
+      .eq('site', CURRENT_SITE)
+      .eq('storage_path', path);
 
     if (dbError) console.error('Failed to delete media record:', dbError);
   },
 
   /**
-   * Get all media files for current site
+   * Get all media files
    */
   async getMediaFiles() {
     const { data, error } = await supabaseClient
@@ -810,20 +719,21 @@ function transformDestinationsForMap(destinations) {
   const destinationData = {};
 
   destinations.forEach(dest => {
-    // Agent Henrik uses services, not themes - themes may be empty or undefined
-    const themes = dest.themes || [];
-    const hasThemes = themes.length > 0;
-
     destinationData[dest.slug] = {
+      slug: dest.slug,
       title: dest.title,
       description: dest.description,
       image: dest.image_url || '',
-      themes: hasThemes ? themes.map(t => t.label) : [],
-      seasons: dest.seasons || ['Spring', 'Summer', 'Autumn', 'Winter'],
+      image_url: dest.image_url || '',
+      video_url: dest.video_url || null,
+      themes: dest.themes.map(t => t.label), // String labels for display
+      themeObjects: dest.themes, // Full theme objects for advanced use
+      seasons: dest.seasons,
       coordinates: [dest.longitude, dest.latitude], // Leaflet uses [lng, lat]
-      themeKeys: hasThemes ? themes.map(t => t.slug) : [],
+      themeKeys: dest.themes.map(t => t.slug),
       category: dest.category,
-      region: dest.region // Agent Henrik uses regions
+      liv_context: dest.liv_context || null,
+      greeting_override: dest.greeting_override || null
     };
   });
 
@@ -908,8 +818,25 @@ async function loadDataForLegacyScripts() {
     window.destinationData = transformDestinationsForMap(destinations);
 
     // Add storytellers to destination data with storyteller category
+    // Initialize storytellerData if it doesn't exist
+    if (!window.storytellerData) {
+      window.storytellerData = {};
+    }
+
     storytellers.forEach(storyteller => {
       const slug = storyteller.slug || `storyteller_${storyteller.id}`;
+
+      const storytellerObj = {
+        title: storyteller.title,
+        image: storyteller.hero_image_url || '',
+        content: storyteller.content || `<p>${storyteller.excerpt || ''}</p>`,
+        cta: "Design with LIV",
+        contextType: "storyteller",
+        contextName: storyteller.title,
+        livContext: storyteller.liv_context || null,
+        greetingOverride: storyteller.greeting_override || null
+      };
+
       window.destinationData[slug] = {
         title: storyteller.title,
         description: storyteller.excerpt || storyteller.content?.replace(/<[^>]*>/g, '').substring(0, 200),
@@ -918,8 +845,25 @@ async function loadDataForLegacyScripts() {
         seasons: ['Spring', 'Summer', 'Autumn', 'Winter'], // Available year-round
         coordinates: [storyteller.longitude, storyteller.latitude], // Leaflet uses [lng, lat]
         themeKeys: [],
-        category: 'storyteller'
+        category: 'storyteller',
+        liv_context: storyteller.liv_context,
+        greeting_override: storyteller.greeting_override
       };
+
+      // Add to storytellerData with full slug
+      window.storytellerData[slug] = storytellerObj;
+
+      // Also create short slug mappings for homepage hardcoded storytellers
+      // Map: mogens-lena-historical-mansion -> mogens-lena
+      const shortSlugMap = {
+        'mogens-lena-historical-mansion': 'mogens-lena',
+        'robert-mikael-the-villa': 'robert-mikael',
+        'trend-stefan-stockholm-design': 'trend-stefan'
+      };
+
+      if (shortSlugMap[slug]) {
+        window.storytellerData[shortSlugMap[slug]] = storytellerObj;
+      }
     });
 
     window.LIV_THEME_LIBRARY = transformThemesForLegacy(themes);

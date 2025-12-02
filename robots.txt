@@ -1,5 +1,5 @@
-# robots.txt for Agent Henrik
-# https://agenthhenrik.com
+# robots.txt for Luxury Travel Sweden
+# https://luxurytravelsweden.com
 
 User-agent: *
 Allow: /
@@ -9,4 +9,4 @@ Disallow: /admin/
 Disallow: /supabase/
 
 # Sitemap location
-Sitemap: https://agenthhenrik.com/sitemap.xml
+Sitemap: https://luxurytravelsweden.com/sitemap.xml

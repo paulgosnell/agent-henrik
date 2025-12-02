@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../">
     <title>Our Services — Luxury Travel Sweden</title>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="styles.css">
     <style>
         /* Loading State */
         .loading-state {
@@ -122,7 +123,7 @@
     </style>
 
     <!-- Component Loader - Load shared header/footer -->
-    <script src="/component-loader.js"></script>
+    <script src="component-loader.js?v=1763042246"></script>
 </head>
 <body>
     <!-- Header loaded from /components/header.html -->
@@ -187,8 +188,8 @@
 
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/supabase-client.js"></script>
-    <script src="/scripts.js?v=1761950330"></script>
+    <script src="supabase-client.js"></script>
+    <script src="scripts.js?v=1761950330"></script>
     <script>
         // Load services from Supabase pillars table
         async function loadServices() {
@@ -197,52 +198,47 @@
 
             try {
                 // Check if Supabase is available
-                if (!window.Supabase || !window.Supabase.db) {
+                if (!window.Supabase || !window.Supabase.client) {
                     throw new Error('Supabase not configured');
                 }
 
-                // Fetch services pillars (using 'services' section)
-                const services = await window.Supabase.db.getPillars('services', true);
+                // Fetch services content from static_content table
+                const { data, error } = await window.Supabase.client
+                    .from('static_content')
+                    .select('value')
+                    .eq('key', 'our_services.content')
+                    .eq('site', window.CURRENT_SITE || 'sweden')
+                    .single();
+
+                if (error && error.code !== 'PGRST116') throw error;
 
                 loadingState.classList.add('hidden');
                 servicesContainer.classList.remove('hidden');
 
-                // Render services
-                if (services && services.length > 0) {
-                    servicesContainer.innerHTML = services.map(service => {
-                        const imageUrl = service.hero_image_url || 'https://images.pexels.com/photos/2024881/pexels-photo-2024881.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1280&dpr=1';
+                // Display content
+                if (data && data.value) {
+                    const content = typeof data.value === 'string' ? JSON.parse(data.value) : data.value;
 
-                        return `
-                            <article class="service-item" data-pillar="${escapeHtml(service.slug)}">
-                                <div class="service-image-wrapper">
-                                    <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(service.title)}" class="service-image" loading="lazy">
-                                </div>
-                                <div class="service-content">
-                                    <h3>${escapeHtml(service.title)}</h3>
-                                    <div class="service-description">
-                                        <p>${escapeHtml(service.excerpt)}</p>
-                                    </div>
-                                </div>
-                            </article>
-                        `;
-                    }).join('');
+                    // Update header if elements exist
+                    const eyebrow = document.querySelector('.section-heading .eyebrow');
+                    const title = document.querySelector('.section-heading h2');
+                    const subtitle = document.querySelector('.section-heading p');
+
+                    if (eyebrow && content.eyebrow) eyebrow.textContent = content.eyebrow;
+                    if (title && content.title) title.textContent = content.title;
+                    if (subtitle && content.subtitle) subtitle.textContent = content.subtitle;
+
+                    // Display main content
+                    servicesContainer.innerHTML = content.content || '';
                 } else {
-                    servicesContainer.innerHTML = '<p style="text-align: center; padding: 2rem;">No services found.</p>';
+                    servicesContainer.innerHTML = '<p style="text-align: center; padding: 2rem;">No services content available yet. Please check back soon.</p>';
                 }
             } catch (error) {
                 console.error('Error loading services:', error);
                 loadingState.classList.add('hidden');
                 servicesContainer.classList.remove('hidden');
-                servicesContainer.innerHTML = '<p style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.6);">Unable to load services. Please try again later.</p>';
+                servicesContainer.innerHTML = '<p style="text-align: center; padding: 2rem;">Unable to load services. Please try again later.</p>';
             }
-        }
-
-        // Helper function to escape HTML
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
         }
 
         // Initialize on DOM ready
@@ -252,6 +248,6 @@
     </script>
 
     <!-- Menu Initialization - Simple, reliable menu system -->
-    <script defer src="/menu-init.js"></script>
+    <script defer src="menu-init.js"></script>
 </body>
 </html>

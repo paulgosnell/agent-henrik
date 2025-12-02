@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../">
     <title>Storytellers — Luxury Travel Sweden</title>
     <meta name="description" content="Meet the curators, guides, and local experts who bring Sweden's hidden stories to life. Each storyteller opens doors to authentic experiences beyond the guidebook.">
 
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="styles.css">
     <style>
         /* Storytellers Page Styles */
         .storytellers-hero {
@@ -104,7 +105,7 @@
     </style>
 
     <!-- Component Loader - Load shared header/footer -->
-    <script src="/component-loader.js"></script>
+    <script src="component-loader.js?v=1763042246"></script>
 </head>
 <body>
     <!-- Header loaded from /components/header.html -->
@@ -192,13 +193,13 @@
     <!-- Scripts -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/supabase-client.js"></script>
-    <script defer src="/liv-ai.js?v=9"></script>
+    <script src="supabase-client.js"></script>
+    <script defer src="liv-ai.js?v=9"></script>
     <script>
         // Flag to tell scripts.js NOT to initialize pillar modals on this page
         window.SKIP_GLOBAL_PILLAR_MODALS = true;
     </script>
-    <script src="/scripts.js?v=1761950330"></script>
+    <script src="scripts.js?v=1761950330"></script>
     <script>
         // Storytellers Page State
         let allStorytellers = [];
@@ -275,7 +276,7 @@
 
             // Generate HTML
             storytellersGrid.innerHTML = sortedStorytellers.map(story => {
-                const slug = generateSlug(story.title);
+                const slug = story.slug || generateSlug(story.title);
                 const imageUrl = story.hero_image_url || 'https://via.placeholder.com/400x500';
 
                 // Store in global object for modal
@@ -285,7 +286,9 @@
                     content: story.content || `<p>${escapeHtml(story.excerpt || '')}</p>`,
                     cta: "Design with LIV",
                     contextType: "storyteller",
-                    contextName: story.title
+                    contextName: story.title,
+                    livContext: story.liv_context || null,
+                    greetingOverride: story.greeting_override || null
                 };
 
                 return `
@@ -298,7 +301,7 @@
                                 <h3>${escapeHtml(story.title)}</h3>
                                 <p>${escapeHtml(story.excerpt || '')}</p>
                                 <button type="button" class="read-more-btn">read more</button>
-                                <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="storyteller" data-liv-context-name="${escapeHtml(story.title)}">Design with LIV</button>
+                                <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="storyteller" data-liv-context-name="${escapeHtml(story.title)}" data-storyteller-slug="${slug}">Design with LIV</button>
                             </div>
                         </div>
                     </article>
@@ -420,6 +423,6 @@
     </script>
 
     <!-- Menu Initialization - Simple, reliable menu system -->
-    <script defer src="/menu-init.js"></script>
+    <script defer src="menu-init.js"></script>
 </body>
 </html>

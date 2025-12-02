@@ -3,9 +3,6 @@ let faqs = [];
 let currentFaqId = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Initialize site selector
-  window.SiteSelector.initializeSiteSelector();
-
   await loadFaqs();
   document.getElementById('statusFilter')?.addEventListener('change', renderFaqsTable);
   document.getElementById('categoryFilter')?.addEventListener('change', renderFaqsTable);
@@ -21,7 +18,7 @@ async function loadFaqs() {
     const { data, error } = await window.Supabase.client
       .from('faqs')
       .select('*')
-      .eq('site', window.CURRENT_SITE || 'henrik')
+      .eq('site', window.CURRENT_SITE || 'sweden')
       .order('display_order', { ascending: true });
     if (error) throw error;
     faqs = data || [];
@@ -130,7 +127,7 @@ async function saveFaq(event) {
     category: document.getElementById('category').value || 'general',
     display_order: parseInt(document.getElementById('displayOrder').value) || 0,
     is_published: document.getElementById('isPublished').checked,
-    site: window.CURRENT_SITE || 'henrik'
+    site: window.CURRENT_SITE || 'sweden'
   };
 
   try {
@@ -145,7 +142,7 @@ async function saveFaq(event) {
         .from('faqs')
         .update(formData)
         .eq('id', currentFaqId)
-        .eq('site', window.CURRENT_SITE || 'henrik')
+        .eq('site', window.CURRENT_SITE || 'sweden')
         .select()
         .single();
     } else {
@@ -199,7 +196,7 @@ async function confirmDelete() {
       .from('faqs')
       .delete()
       .eq('id', currentFaqId)
-      .eq('site', window.CURRENT_SITE || 'henrik');
+      .eq('site', window.CURRENT_SITE || 'sweden');
 
     if (error) throw error;
 

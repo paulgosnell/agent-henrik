@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../">
     <title>Booking Process — Luxury Travel Sweden</title>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="styles.css">
     <style>
         .process-container {
             max-width: 800px;
@@ -99,7 +100,7 @@
     </style>
 
     <!-- Component Loader - Load shared header/footer -->
-    <script src="/component-loader.js"></script>
+    <script src="component-loader.js?v=1763042246"></script>
 </head>
 <body>
     <!-- Header loaded from /components/header.html -->
@@ -114,43 +115,14 @@
                     <p>From first conversation to final farewell, we guide you through a seamless five-step process designed for discerning travelers who expect nothing less than perfection.</p>
                 </div>
 
-                <div class="process-container" style="margin-top: 4rem;">
-                    <div class="process-step">
-                        <div class="process-step-number">01</div>
-                        <h3>Your Input</h3>
-                        <p>We start with you—your preferences, personality, and travel history. From the cinematic homepage, choose <strong>Explore</strong> (map), <strong>Design with LIV</strong> (our AI Luxury Itinerary Visionary), or <strong>Enter the Experience</strong>.</p>
-                        <p>LIV drafts your trip around dates, group size, and interests (six themes: Nature & Wellness, Design & Innovation, Culinary experiences, Nightlife & Celebration, Royal, Art & Culture, Legacy & Meaningful Travel).</p>
-                        <p>Send your AI-drafted enquiry, and a human curator takes over. Not sure where to begin? Let's brainstorm together.</p>
-                    </div>
+                <!-- Loading State -->
+                <div id="loadingState" style="text-align: center; padding: 4rem 2rem; margin-top: 4rem;">
+                    <p>Loading booking process...</p>
+                </div>
 
-                    <div class="process-step">
-                        <div class="process-step-number">02</div>
-                        <h3>Research & Story Development</h3>
-                        <p>Your human curator refines the draft with insider access, seasonal/logistical alignment, and storyteller insights. They then present a first Story Proposal with activities, indicative pricing, and sustainability elements.</p>
-                    </div>
-
-                    <div class="process-step">
-                        <div class="process-step-number">03</div>
-                        <h3>Confirmation & Details</h3>
-                        <p>Once the story and costs are agreed, a deposit confirms your experience ("No money, no honey" is our policy). We then:</p>
-                        <ul>
-                            <li>Implement the itinerary as soon as possible to secure your experiences</li>
-                            <li>Coordinate dietary needs, rooming, occasions, or corporate/legacy goals.</li>
-                            <li>Adjust the fine details as needed (with price updates before changes).</li>
-                        </ul>
-                    </div>
-
-                    <div class="process-step">
-                        <div class="process-step-number">04</div>
-                        <h3>Final Review & Departure</h3>
-                        <p>We reconfirm every detail—contacts, packing notes, seasonal tips, and support. Your curator don´t leave anything to your destiny.</p>
-                    </div>
-
-                    <div class="process-step">
-                        <div class="process-step-number">05</div>
-                        <h3>Travel & Follow Up</h3>
-                        <p>On trip, you're in safe hands. For self-guided journeys, we check in and provide 24/7 support. Afterward, we collect feedback, may share social media highlights (with permission), and refine your profile and references so your next draft is even better.</p>
-                    </div>
+                <!-- Content Container -->
+                <div class="process-container" id="processContainer" style="margin-top: 4rem; display: none;">
+                    <!-- Content will be loaded dynamically from Supabase -->
                 </div>
             </div>
         </section>
@@ -192,9 +164,70 @@
     </div>
 
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-    <script src="/scripts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-client.js"></script>
+    <script src="scripts.js"></script>
+    <script>
+        // Load booking process content from Supabase static_content table
+        async function loadBookingProcess() {
+            const loadingState = document.getElementById('loadingState');
+            const processContainer = document.getElementById('processContainer');
+
+            try {
+                // Check if Supabase is available
+                if (!window.Supabase || !window.Supabase.client) {
+                    throw new Error('Supabase not configured');
+                }
+
+                // Fetch booking process content from static_content table
+                const { data, error } = await window.Supabase.client
+                    .from('static_content')
+                    .select('value')
+                    .eq('key', 'booking_process.content')
+                    .eq('site', window.CURRENT_SITE || 'sweden')
+                    .single();
+
+                if (error && error.code !== 'PGRST116') throw error;
+
+                loadingState.style.display = 'none';
+                processContainer.style.display = 'block';
+
+                // Display content
+                if (data && data.value) {
+                    // Handle both old format (plain HTML string) and new format (JSON)
+                    const content = typeof data.value === 'string' && data.value.startsWith('{')
+                        ? JSON.parse(data.value)
+                        : { content: data.value }; // Legacy format
+
+                    // Update header if elements exist
+                    const eyebrow = document.querySelector('.section-heading .eyebrow');
+                    const title = document.querySelector('.section-heading h2');
+                    const subtitle = document.querySelector('.section-heading p');
+
+                    if (eyebrow && content.eyebrow) eyebrow.textContent = content.eyebrow;
+                    if (title && content.title) title.textContent = content.title;
+                    if (subtitle && content.subtitle) subtitle.textContent = content.subtitle;
+
+                    // Display main content
+                    processContainer.innerHTML = content.content || '';
+                } else {
+                    processContainer.innerHTML = '<p style="text-align: center; padding: 2rem;">No booking process content available yet. Please check back soon.</p>';
+                }
+            } catch (error) {
+                console.error('Error loading booking process:', error);
+                loadingState.style.display = 'none';
+                processContainer.style.display = 'block';
+                processContainer.innerHTML = '<p style="text-align: center; padding: 2rem;">Unable to load booking process. Please try again later.</p>';
+            }
+        }
+
+        // Initialize on DOM ready
+        document.addEventListener('DOMContentLoaded', () => {
+            loadBookingProcess();
+        });
+    </script>
 
     <!-- Menu Initialization - Simple, reliable menu system -->
-    <script defer src="/menu-init.js"></script>
+    <script defer src="menu-init.js"></script>
 </body>
 </html>

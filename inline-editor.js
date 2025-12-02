@@ -200,6 +200,11 @@ function enableEditMode() {
   const editableElements = document.querySelectorAll('[data-editable]');
 
   editableElements.forEach(el => {
+    // Skip links - they should remain clickable
+    if (el.tagName === 'A') {
+      return;
+    }
+
     // Make element editable
     if (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA' && el.tagName !== 'BUTTON') {
       el.contentEditable = true;

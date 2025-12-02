@@ -25,9 +25,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Initialize site selector
-    window.SiteSelector.initializeSiteSelector();
-
     // Load dashboard
     await initializeDashboard();
 });

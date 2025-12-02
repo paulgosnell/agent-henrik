@@ -21,6 +21,7 @@ class LivAI {
     this.isInitialized = false;
     this.sessionId = null;
     this.leadInfo = null;
+    this.formSubmitted = false; // Track if contact form has been submitted
 
     // Storyteller-specific state
     this.storytellerInquiry = {
@@ -131,7 +132,9 @@ class LivAI {
         name: destination.title,
         category: destination.category,
         themes: destination.themes?.map(t => t.label) || [],
-        location: destination.title
+        location: destination.title,
+        livContext: destination.livContext || null,
+        greetingOverride: destination.greetingOverride || null
       });
     });
 
@@ -140,7 +143,8 @@ class LivAI {
       const { story } = event.detail;
       this.openChatWithContext({
         type: 'story',
-        name: story.title
+        name: story.title,
+        livContext: story.liv_context || null
       });
     });
 
@@ -249,6 +253,7 @@ class LivAI {
     this.conversationHistory = [];
     this.sessionId = this.generateSessionId();
     this.leadInfo = null;
+    this.formSubmitted = false;
 
     // Reset storyteller inquiry state
     this.storytellerInquiry = {
@@ -265,10 +270,17 @@ class LivAI {
     if (this.chatMessages) {
       // If there's context, we'll skip the generic welcome - the contextual greeting will be sent separately
       if (!this.context) {
+        const welcomeText = `Welcome. I'm LIV — Luxury Itinerary Visionary. I'm here to craft extraordinary Swedish journeys tailored to your desires.`;
         const welcomeMessage = `<div class="chat-message ai">
-            <p>Welcome. I'm Agent Henrik — Your Global Luxury Travel Architect. I'm here to craft extraordinary journeys tailored to your desires.</p>
+            <p>${welcomeText}</p>
           </div>`;
         this.chatMessages.innerHTML = welcomeMessage;
+
+        // Add welcome message to conversation history so AI remembers it
+        this.conversationHistory.push({
+          role: 'assistant',
+          content: welcomeText
+        });
       } else {
         // Just clear the messages - contextual greeting will be added
         this.chatMessages.innerHTML = '';
@@ -313,6 +325,18 @@ class LivAI {
           <label for="leadCountry">Country (optional)</label>
           <input type="text" id="leadCountry" placeholder="Your country" />
         </div>
+        <div class="form-group">
+          <label for="leadPeople">Number of people (optional)</label>
+          <input type="number" id="leadPeople" placeholder="e.g., 2" min="1" />
+        </div>
+        <div class="form-group">
+          <label for="leadBudget">Budget (optional)</label>
+          <input type="text" id="leadBudget" placeholder="e.g., €10,000" />
+        </div>
+        <div class="form-group">
+          <label for="leadDates">Ideal Dates & Duration (optional)</label>
+          <input type="text" id="leadDates" placeholder="e.g., 7 nights in February 2026" />
+        </div>
         <button class="btn-submit-contact" id="submitContact">Submit</button>
         <button class="btn-skip-contact" id="skipContact">Maybe later</button>
       </div>
@@ -336,6 +360,9 @@ class LivAI {
     const email = document.getElementById('leadEmail')?.value.trim();
     const phone = document.getElementById('leadPhone')?.value.trim();
     const country = document.getElementById('leadCountry')?.value.trim();
+    const people = document.getElementById('leadPeople')?.value.trim();
+    const budget = document.getElementById('leadBudget')?.value.trim();
+    const dates = document.getElementById('leadDates')?.value.trim();
 
     if (!email) {
       alert('Please enter your email address');
@@ -354,8 +381,14 @@ class LivAI {
       name: name || undefined,
       email,
       phone: phone || undefined,
-      country: country || undefined
+      country: country || undefined,
+      people: people || undefined,
+      budget: budget || undefined,
+      dates: dates || undefined
     };
+
+    // Mark form as submitted
+    this.formSubmitted = true;
 
     // Remove form
     document.getElementById('contactForm')?.remove();
@@ -366,6 +399,11 @@ class LivAI {
     // Immediately save lead to database by sending a system message
     // This ensures the lead is captured even if the user closes the chat
     await this.saveLead();
+
+    // Show final confirmation message after lead is saved
+    setTimeout(() => {
+      this.appendMessage('ai', `Perfect! I've sent all the details to our team. You'll receive a confirmation email at ${this.leadInfo.email} within 24 hours, and our curators will reach out with a personalized itinerary.\n\nFeel free to continue exploring the site, or let me know if you have any other questions!`);
+    }, 1500);
 
     // Clear context after capturing lead
     this.context = null;
@@ -422,8 +460,14 @@ class LivAI {
     // Add a small delay to feel natural
     await new Promise(resolve => setTimeout(resolve, 600));
 
-    // Show the contextual greeting
+    // Show the contextual greeting in UI
     this.appendMessage('ai', greeting);
+
+    // IMPORTANT: Add the greeting to conversation history so the AI remembers it
+    this.conversationHistory.push({
+      role: 'assistant',
+      content: greeting
+    });
   }
 
   /**
@@ -431,7 +475,29 @@ class LivAI {
    * Each greeting now includes an engaging question to prompt conversation
    */
   generateContextualGreeting(context) {
+    // If greeting_override is set, use it!
+    if (context && context.greetingOverride) {
+      return context.greetingOverride;
+    }
+
+    // Otherwise fall back to existing random greeting system
     const { type, name } = context;
+
+    // Generic context names that should use a general greeting instead
+    const genericNames = ['Hero', 'AI Concierge Button', 'LIV Concierge', 'General'];
+    const isGenericContext = !name || genericNames.some(generic =>
+      name.toLowerCase().includes(generic.toLowerCase())
+    );
+
+    // If context is generic, use general greeting
+    if (isGenericContext || type === 'general') {
+      const generalGreetings = [
+        `Welcome. I'm LIV — Luxury Itinerary Visionary. I'm here to craft extraordinary Swedish journeys tailored to your desires. What kind of experience are you dreaming of?`,
+        `Hello! I specialize in creating bespoke Swedish adventures that go beyond the ordinary. Are you drawn to nature and wellness, design and innovation, or perhaps our rich cultural heritage?`,
+        `Wonderful to meet you! I design ultra-luxury itineraries across Sweden — from Northern Lights in Lapland to exclusive access in Stockholm. What brings you to Sweden?`
+      ];
+      return generalGreetings[Math.floor(Math.random() * generalGreetings.length)];
+    }
 
     const greetings = {
       'destination': [
@@ -502,8 +568,8 @@ class LivAI {
           country: null
         };
 
-        // Save lead immediately
-        await this.saveLead();
+        // DON'T save lead yet - wait for form submission
+        // Just store the email locally for now
 
         // Show contact form to collect additional details after AI responds
         setTimeout(() => {
@@ -514,28 +580,31 @@ class LivAI {
       }
     }
 
-    // Detect high-intent keywords and trigger contact form
-    if (!this.leadInfo) {
-      const highIntentKeywords = [
-        'send me', 'email me', 'book', 'pricing', 'price',
-        'available', 'availability', 'cost', 'dates', 'reserve',
-        'reservation', 'interested in', 'quote', 'itinerary',
-        'details', 'more information', 'get in touch', 'contact',
-        'ready to', 'how much', 'budget'
-      ];
-
-      const messageLower = message.toLowerCase();
-      const hasHighIntent = highIntentKeywords.some(keyword => messageLower.includes(keyword));
-
-      if (hasHighIntent) {
-        // Show contact form after AI responds (3 seconds delay)
-        setTimeout(() => {
-          if (!this.leadInfo && !document.getElementById('contactForm')) {
-            this.showContactForm();
-          }
-        }, 3000);
-      }
-    }
+    // DISABLED: Automatic keyword-based form triggering
+    // The form was appearing too aggressively during natural conversation.
+    // Form will only show when user provides their email address.
+    //
+    // if (!this.leadInfo) {
+    //   const highIntentKeywords = [
+    //     'send me', 'email me', 'book', 'pricing', 'price',
+    //     'available', 'availability', 'cost', 'dates', 'reserve',
+    //     'reservation', 'interested in', 'quote', 'itinerary',
+    //     'details', 'more information', 'get in touch', 'contact',
+    //     'ready to', 'how much', 'budget'
+    //   ];
+    //
+    //   const messageLower = message.toLowerCase();
+    //   const hasHighIntent = highIntentKeywords.some(keyword => messageLower.includes(keyword));
+    //
+    //   if (hasHighIntent) {
+    //     // Show contact form after AI responds (3 seconds delay)
+    //     setTimeout(() => {
+    //       if (!this.leadInfo && !document.getElementById('contactForm')) {
+    //         this.showContactForm();
+    //       }
+    //     }, 3000);
+    //   }
+    // }
 
     // Get AI response
     await this.getAIResponse();
@@ -564,7 +633,7 @@ class LivAI {
           sessionId: this.sessionId,
           context: this.context,
           stream: true,
-          leadInfo: this.leadInfo,
+          leadInfo: this.formSubmitted ? this.leadInfo : null, // Only send leadInfo after form submission
           storytellerInquiry: this.context?.type === 'storyteller' ? this.storytellerInquiry : undefined
         })
       });

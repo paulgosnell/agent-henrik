@@ -4,9 +4,6 @@ let currentPressId = null;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
-  // Initialize site selector
-  window.SiteSelector.initializeSiteSelector();
-
   await loadPressItems();
 
   // Setup status filter
@@ -29,7 +26,7 @@ async function loadPressItems() {
     const { data, error } = await window.Supabase.client
       .from('press_items')
       .select('*')
-      .eq('site', window.CURRENT_SITE || 'henrik')
+      .eq('site', window.CURRENT_SITE || 'sweden')
       .order('display_order', { ascending: true });
 
     if (error) throw error;
@@ -183,7 +180,7 @@ async function savePressItem(event, isDraft = false) {
     link_type: document.getElementById('linkType').value,
     display_order: parseInt(document.getElementById('displayOrder').value) || 0,
     published_at: isDraft ? null : (document.getElementById('publishedAt').value || new Date().toISOString()),
-    site: window.CURRENT_SITE || 'henrik'
+    site: window.CURRENT_SITE || 'sweden'
   };
 
   try {
@@ -202,7 +199,7 @@ async function savePressItem(event, isDraft = false) {
         .from('press_items')
         .update(formData)
         .eq('id', currentPressId)
-        .eq('site', window.CURRENT_SITE || 'henrik')
+        .eq('site', window.CURRENT_SITE || 'sweden')
         .select()
         .single();
     } else {
@@ -263,7 +260,7 @@ async function confirmDelete() {
       .from('press_items')
       .delete()
       .eq('id', currentPressId)
-      .eq('site', window.CURRENT_SITE || 'henrik');
+      .eq('site', window.CURRENT_SITE || 'sweden');
 
     if (error) throw error;
 

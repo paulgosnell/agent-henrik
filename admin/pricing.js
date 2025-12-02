@@ -3,9 +3,6 @@ let pricingTiers = [];
 let currentPricingId = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Initialize site selector
-  window.SiteSelector.initializeSiteSelector();
-
   await loadPricingTiers();
   document.getElementById('statusFilter')?.addEventListener('change', renderPricingTable);
   document.getElementById('pricingForm')?.addEventListener('submit', (e) => {
@@ -20,7 +17,7 @@ async function loadPricingTiers() {
     const { data, error } = await window.Supabase.client
       .from('pricing_tiers')
       .select('*')
-      .eq('site', window.CURRENT_SITE || 'henrik')
+      .eq('site', window.CURRENT_SITE || 'sweden')
       .order('display_order', { ascending: true });
     if (error) throw error;
     pricingTiers = data || [];
@@ -139,7 +136,7 @@ async function savePricing(event) {
     price_info: document.getElementById('priceInfo').value.trim() || null,
     display_order: parseInt(document.getElementById('displayOrder').value) || 0,
     is_published: document.getElementById('isPublished').checked,
-    site: window.CURRENT_SITE || 'henrik'
+    site: window.CURRENT_SITE || 'sweden'
   };
 
   try {
@@ -154,7 +151,7 @@ async function savePricing(event) {
         .from('pricing_tiers')
         .update(formData)
         .eq('id', currentPricingId)
-        .eq('site', window.CURRENT_SITE || 'henrik')
+        .eq('site', window.CURRENT_SITE || 'sweden')
         .select()
         .single();
     } else {
@@ -209,7 +206,7 @@ async function confirmDelete() {
       .from('pricing_tiers')
       .delete()
       .eq('id', currentPricingId)
-      .eq('site', window.CURRENT_SITE || 'henrik');
+      .eq('site', window.CURRENT_SITE || 'sweden');
 
     if (error) throw error;
 

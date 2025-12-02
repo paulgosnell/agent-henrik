@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site Detection Test - Agent Henrik</title>
+    <base href="../">
+    <title>Site Detection Test</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../supabase-client.js?v=3"></script>
+    <script src="supabase-client.js?v=3"></script>
     <style>
         body {
             font-family: system-ui, -apple-system, sans-serif;
@@ -42,17 +43,11 @@
             font-weight: bold;
             color: #666;
         }
-        .success {
-            color: green;
-        }
-        .error {
-            color: red;
-        }
     </style>
 </head>
 <body>
     <div class="test-card">
-        <h1>🔍 Agent Henrik Site Detection Test</h1>
+        <h1>🔍 Site Detection Test</h1>
 
         <div class="test-result" id="detection-result">
             <div class="label">Detected Site:</div>
@@ -74,24 +69,18 @@
 
         <div class="test-result">
             <div class="label">Expected Behavior:</div>
-            <div>✅ agent-henrik.netlify.app → <strong>henrik</strong></div>
+            <div>✅ luxury-travel-sweden.netlify.app → <strong>sweden</strong></div>
+            <div>✅ luxurytravelsweden.com → <strong>sweden</strong></div>
+            <div>✅ localhost/luxury-travel-sweden → <strong>sweden</strong></div>
             <div>✅ agenthenrik.com → <strong>henrik</strong></div>
             <div>✅ localhost/agent-henrik → <strong>henrik</strong></div>
-            <div>❌ luxury-travel-sweden.netlify.app → <strong>sweden</strong></div>
-            <div>❌ luxurytravelsweden.com → <strong>sweden</strong></div>
         </div>
     </div>
 
     <div class="test-card">
         <h2>📊 Database Query Test</h2>
-        <button onclick="testQuery()">Test Database Query with Site Filter</button>
+        <button onclick="testQuery()">Test Database Query</button>
         <div id="query-result" style="margin-top: 20px;"></div>
-    </div>
-
-    <div class="test-card">
-        <h2>🔧 Admin Panel Functions Test</h2>
-        <button onclick="testAdminQueries()">Test Admin Panel Queries</button>
-        <div id="admin-result" style="margin-top: 20px;"></div>
     </div>
 
     <script>
@@ -114,11 +103,6 @@
             } else if (site === 'henrik') {
                 resultDiv.classList.add('henrik');
             }
-
-            // Check if correct site
-            if (window.location.hostname.includes('agent-henrik') && site !== 'henrik') {
-                document.getElementById('site-value').innerHTML += '<div class="error">⚠️ INCORRECT! Should be HENRIK</div>';
-            }
         });
 
         // Test database query
@@ -133,72 +117,27 @@
 
                 // Test query with site filter
                 const { data, error } = await window.Supabase.client
-                    .from('destinations')
+                    .from('themes')
                     .select('*')
-                    .eq('site', window.CURRENT_SITE || 'henrik')
+                    .eq('site', window.CURRENT_SITE || 'sweden')
                     .limit(5);
 
                 if (error) throw error;
 
                 resultDiv.innerHTML = `
-                    <div class="success">✅ Query successful!</div>
-                    <div>Site filter: ${window.CURRENT_SITE || 'henrik'}</div>
+                    <div style="color: green;">✅ Query successful!</div>
+                    <div>Site filter: ${window.CURRENT_SITE || 'sweden'}</div>
                     <div>Records found: ${data ? data.length : 0}</div>
-                    ${data && data.length > 0 ? `
-                    <div>Sample data:</div>
-                    <pre style="background: #f5f5f5; padding: 10px; overflow: auto; max-height: 300px;">
-${JSON.stringify(data.map(d => ({ title: d.title, site: d.site })), null, 2)}
-                    </pre>` : '<div>No records found (this is OK if no data exists yet)</div>'}
+                    <pre style="background: #f5f5f5; padding: 10px; overflow: auto;">
+${JSON.stringify(data, null, 2)}
+                    </pre>
                 `;
             } catch (error) {
                 resultDiv.innerHTML = `
-                    <div class="error">❌ Query failed!</div>
+                    <div style="color: red;">❌ Query failed!</div>
                     <div>Error: ${error.message}</div>
                 `;
             }
-        }
-
-        // Test admin panel queries
-        async function testAdminQueries() {
-            const resultDiv = document.getElementById('admin-result');
-            resultDiv.innerHTML = '<div>Testing admin panel queries...</div>';
-
-            const tests = [
-                { table: 'team_members', name: 'Team Members' },
-                { table: 'our_story_sections', name: 'Our Story' },
-                { table: 'pricing_tiers', name: 'Pricing' },
-                { table: 'faqs', name: 'FAQs' },
-                { table: 'liv_instructions', name: 'LIV Settings' }
-            ];
-
-            let results = [];
-
-            for (const test of tests) {
-                try {
-                    const { data, error } = await window.Supabase.client
-                        .from(test.table)
-                        .select('*')
-                        .eq('site', window.CURRENT_SITE || 'henrik')
-                        .limit(1);
-
-                    if (error) {
-                        results.push(`<div class="error">❌ ${test.name}: ${error.message}</div>`);
-                    } else {
-                        results.push(`<div class="success">✅ ${test.name}: Query works (${data.length} records)</div>`);
-                    }
-                } catch (err) {
-                    results.push(`<div class="error">❌ ${test.name}: ${err.message}</div>`);
-                }
-            }
-
-            resultDiv.innerHTML = `
-                <div><strong>Admin Panel Query Tests:</strong></div>
-                ${results.join('')}
-                <div style="margin-top: 10px; padding: 10px; background: #f0f8ff; border-radius: 4px;">
-                    <strong>Note:</strong> These queries should now work in the admin panel.
-                    Clear your browser cache if you still see errors.
-                </div>
-            `;
         }
     </script>
 </body>

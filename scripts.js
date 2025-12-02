@@ -5,33 +5,17 @@ if (window.lucide && typeof window.lucide.createIcons === 'function') {
 
 document.addEventListener('DOMContentLoaded', function() {
 
-            // Hero Video - Show content after video ends
-            const heroVideo = document.getElementById('heroVideo');
-            const heroContent = document.getElementById('heroContent');
-            const heroActions = document.querySelector('.hero-actions');
-            const heroOverlay = document.querySelector('.hero-overlay');
-
-            if (heroVideo && heroContent && heroActions && heroOverlay) {
-                heroVideo.addEventListener('ended', function() {
-                    // Fade to complete darkness and show content after video ends (8 seconds)
-                    heroOverlay.style.transition = 'background 1s ease-in';
-                    heroOverlay.style.background = 'rgba(0, 0, 0, 0.9)';
-                    heroContent.style.opacity = '1';
-                    heroActions.style.opacity = '1';
-                });
-            }
-
             // Theme Toggle Functionality
             const htmlElement = document.documentElement;
             let currentTileLayer = null;
 
-            // Check for saved theme preference or default to user's system preference
+            // Check for saved theme preference or default to dark mode
             const getPreferredTheme = () => {
                 const savedTheme = localStorage.getItem('theme');
                 if (savedTheme) {
                     return savedTheme;
                 }
-                return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+                return 'dark'; // Default to dark mode
             };
 
             // Set theme
@@ -72,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const logo = document.getElementById('siteLogo');
                 if (logo) {
                     // Always use white logo
-                    logo.src = 'AHT_White.png';
+                    logo.src = 'lts-logo-white.png';
                 }
             };
 
@@ -114,6 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const { data: pressItems, error } = await window.Supabase.client
                         .from('press_items')
                         .select('*')
+                        .eq('site', window.CURRENT_SITE)
                         .not('published_at', 'is', null)
                         .order('display_order', { ascending: true });
 
@@ -293,17 +278,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (primaryHeroVideo) {
                 primaryHeroVideo.addEventListener('playing', () => {
-                    scheduleHeroReveal(1800);
+                    // Hero video is 8 seconds, reveal text at 7 seconds
+                    scheduleHeroReveal(7000);
                 });
                 primaryHeroVideo.addEventListener('loadeddata', () => {
-                    scheduleHeroReveal(2000);
+                    scheduleHeroReveal(7000);
                 });
                 primaryHeroVideo.addEventListener('error', revealHero);
+                // Fade video to black when it ends
+                primaryHeroVideo.addEventListener('ended', () => {
+                    primaryHeroVideo.style.transition = 'opacity 1s ease-out';
+                    primaryHeroVideo.style.opacity = '0';
+                });
             } else {
+                // No video, reveal after short delay
                 scheduleHeroReveal(2200);
             }
 
-            scheduleHeroReveal(2800);
+            // Fallback in case video events don't fire
+            scheduleHeroReveal(7500);
 
             // Initialize nav header state (for both hero and non-hero pages)
             updateNavPinnedState();
@@ -804,54 +797,77 @@ document.addEventListener('DOMContentLoaded', function() {
                     const details = enquiryDetails?.value.trim();
                     const source = enquirySourceField?.value || 'contact_form';
 
-                    // Upsert lead (insert or update if email exists)
-                    const { data: lead, error: leadError } = await window.Supabase.client
+                    // Try to insert lead (without .select() to avoid RLS permission issue)
+                    const { error: insertError } = await window.Supabase.client
                         .from('leads')
-                        .upsert({
+                        .insert({
                             email: emailValid,
                             name: nameValid,
                             phone: phone || null,
                             source: source,
-                            status: 'new'
-                        }, {
-                            onConflict: 'email',
-                            ignoreDuplicates: false
-                        })
-                        .select()
-                        .single();
+                            status: 'new',
+                            site: window.CURRENT_SITE || 'sweden'
+                        });
 
-                    if (leadError) throw leadError;
+                    // Check if error is NOT a duplicate (duplicates are fine, we still want to create booking inquiry)
+                    if (insertError) {
+                        const isDuplicate = insertError.code === '23505' ||
+                                           (insertError.message && insertError.message.toLowerCase().includes('duplicate')) ||
+                                           (insertError.details && insertError.details.toLowerCase().includes('duplicate'));
 
-                    // Create booking inquiry
+                        if (!isDuplicate) {
+                            throw insertError;
+                        }
+                        // If duplicate, continue - lead already exists
+                    }
+
+                    // Parse dates if provided (expecting format like "7 nights in February 2026" or "10-15 Dec 2025")
+                    let travelDatesStart = null;
+                    let travelDatesEnd = null;
+
+                    // Create booking inquiry (edge function will look up lead_id by email)
                     const { error: inquiryError } = await window.Supabase.client
                         .from('booking_inquiries')
                         .insert({
-                            lead_id: lead?.id || null,
+                            lead_id: null,  // Edge function will populate this by looking up email
                             email: emailValid,
                             name: nameValid,
                             phone: phone || null,
-                            special_requests: `${tripType ? 'Trip Type: ' + tripType + '\n' : ''}${people ? 'Number of people: ' + people + '\n' : ''}${budget ? 'Budget: ' + budget + '\n' : ''}${dates ? 'Dates: ' + dates + '\n' : ''}${details || ''}`.trim(),
+                            travel_dates_start: travelDatesStart,
+                            travel_dates_end: travelDatesEnd,
+                            group_size: people ? parseInt(people) : null,
+                            budget_range: budget || null,
+                            special_requests: `${tripType ? 'Trip Type: ' + tripType + '\n' : ''}${dates ? 'Dates: ' + dates + '\n' : ''}${details || ''}`.trim(),
                             itinerary_summary: itineraryDraftField?.value || null,
-                            status: 'pending'
+                            status: 'pending',
+                            site: window.CURRENT_SITE || 'sweden'
                         });
 
                     if (inquiryError) throw inquiryError;
 
+                    console.log('✅ Form submitted successfully');
+
                     // Show success message
                     if (enquiryStatus) {
-                        enquiryStatus.textContent = 'Tack! Our curators will respond within 24 hours.';
-                        enquiryStatus.style.color = 'var(--color-accent-forest, green)';
+                        enquiryStatus.textContent = '✅ Tack! Our curators will respond within 24 hours.';
+                        enquiryStatus.style.cssText = 'display: block !important; color: #22c55e !important; font-weight: 600 !important; font-size: 1rem !important; margin-top: 1rem !important; padding: 0.75rem !important; background: rgba(34, 197, 94, 0.1) !important; border-radius: 6px !important;';
+                        console.log('✅ Success message displayed');
+                    } else {
+                        console.warn('⚠️ enquiryStatus element not found');
                     }
 
-                    // Reset form
-                    enquiryForm.reset();
-                    if (itineraryDraftField) itineraryDraftField.value = '';
+                    // Reset form after delay so user sees the message
+                    setTimeout(() => {
+                        enquiryForm.reset();
+                        if (itineraryDraftField) itineraryDraftField.value = '';
+                        // Keep success message visible
+                    }, 500);
 
                 } catch (error) {
-                    console.error('Error submitting form:', error);
+                    console.error('❌ Error submitting form:', error);
                     if (enquiryStatus) {
-                        enquiryStatus.textContent = 'Sorry, there was an error. Please try again or email us directly.';
-                        enquiryStatus.style.color = 'red';
+                        enquiryStatus.textContent = '❌ Sorry, there was an error. Please try again or email us directly.';
+                        enquiryStatus.style.cssText = 'display: block !important; color: #ef4444 !important; font-weight: 600 !important; font-size: 1rem !important; margin-top: 1rem !important; padding: 0.75rem !important; background: rgba(239, 68, 68, 0.1) !important; border-radius: 6px !important;';
                     }
                 }
             }
@@ -877,7 +893,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
             // Use event delegation to handle both static and dynamically generated buttons
-            document.addEventListener('click', (event) => {
+            document.addEventListener('click', async (event) => {
                 // Check if clicked element or any parent has [data-open-liv]
                 const trigger = event.target.closest('[data-open-liv]');
                 if (!trigger) return;
@@ -888,14 +904,156 @@ document.addEventListener('DOMContentLoaded', function() {
                 const contextType = trigger.getAttribute('data-liv-context-type');
                 const contextName = trigger.getAttribute('data-liv-context-name');
                 const contextGreeting = trigger.getAttribute('data-liv-greeting');
+                const pillarSlug = trigger.getAttribute('data-pillar-slug');
+                const storytellerSlug = trigger.getAttribute('data-storyteller-slug');
+                const destinationSlug = trigger.getAttribute('data-destination-slug');
+                const corporateSlug = trigger.getAttribute('data-corporate-slug');
+                const contextKey = trigger.getAttribute('data-context-key');
 
-                // Use new LivAI class
-                if (window.LivAI && contextType && contextName) {
-                    const context = {
+                // Initialize context object
+                let context = null;
+
+                // If this is a destination button, fetch liv_context from Supabase
+                if (destinationSlug && window.Supabase?.client) {
+                    try {
+                        const { data: destination, error } = await window.Supabase.client
+                            .from('destinations')
+                            .select('liv_context, greeting_override')
+                            .eq('slug', destinationSlug)
+                            .single();
+
+                        if (error) {
+                            console.error('Error fetching destination liv_context:', error);
+                        } else if (destination?.liv_context) {
+                            // Use liv_context from database
+                            context = {
+                                type: contextType,
+                                name: contextName,
+                                greeting: contextGreeting,
+                                livContext: destination.liv_context,
+                                greetingOverride: destination.greeting_override
+                            };
+                        }
+                    } catch (err) {
+                        console.error('Failed to fetch destination data:', err);
+                    }
+                }
+
+                // If this is a pillar button, fetch liv_context from Supabase
+                if (!context && pillarSlug && window.Supabase?.client) {
+                    try {
+                        const { data: pillar, error } = await window.Supabase.client
+                            .from('pillars')
+                            .select('liv_context, greeting_override')
+                            .eq('slug', pillarSlug)
+                            .single();
+
+                        if (error) {
+                            console.error('Error fetching pillar liv_context:', error);
+                        } else if (pillar?.liv_context) {
+                            // Use liv_context from database
+                            context = {
+                                type: contextType,
+                                name: contextName,
+                                greeting: contextGreeting,
+                                livContext: pillar.liv_context,
+                                greetingOverride: pillar.greeting_override
+                            };
+                        }
+                    } catch (err) {
+                        console.error('Failed to fetch pillar data:', err);
+                    }
+                }
+
+                // If this is a storyteller button, fetch liv_context from Supabase
+                if (!context && storytellerSlug && window.Supabase?.client) {
+                    try {
+                        const { data: story, error } = await window.Supabase.client
+                            .from('stories')
+                            .select('liv_context, greeting_override')
+                            .eq('slug', storytellerSlug)
+                            .single();
+
+                        if (error) {
+                            console.error('Error fetching story liv_context:', error);
+                        } else if (story?.liv_context) {
+                            // Use liv_context from database
+                            context = {
+                                type: contextType,
+                                name: contextName,
+                                greeting: contextGreeting,
+                                livContext: story.liv_context,
+                                greetingOverride: story.greeting_override
+                            };
+                        }
+                    } catch (err) {
+                        console.error('Failed to fetch story data:', err);
+                    }
+                }
+
+                // If this is a corporate experience button, fetch liv_context from Supabase
+                if (!context && corporateSlug && window.Supabase?.client) {
+                    try {
+                        const { data: corporate, error } = await window.Supabase.client
+                            .from('corporate_experiences')
+                            .select('liv_context, greeting_override')
+                            .eq('slug', corporateSlug)
+                            .single();
+
+                        if (error) {
+                            console.error('Error fetching corporate experience liv_context:', error);
+                        } else if (corporate?.liv_context) {
+                            // Use liv_context from database
+                            context = {
+                                type: contextType,
+                                name: contextName,
+                                greeting: contextGreeting,
+                                livContext: corporate.liv_context,
+                                greetingOverride: corporate.greeting_override
+                            };
+                        }
+                    } catch (err) {
+                        console.error('Failed to fetch corporate experience data:', err);
+                    }
+                }
+
+                // If this is a global context button (Hero, Floating), fetch from global_liv_contexts
+                if (!context && contextKey && window.Supabase?.client) {
+                    try {
+                        const { data: globalCtx, error } = await window.Supabase.client
+                            .from('global_liv_contexts')
+                            .select('liv_context, greeting_override')
+                            .eq('context_key', contextKey)
+                            .single();
+
+                        if (error) {
+                            console.error('Error fetching global liv_context:', error);
+                        } else if (globalCtx?.liv_context) {
+                            // Use liv_context from database
+                            context = {
+                                type: contextType,
+                                name: contextName,
+                                greeting: contextGreeting,
+                                livContext: globalCtx.liv_context,
+                                greetingOverride: globalCtx.greeting_override
+                            };
+                        }
+                    } catch (err) {
+                        console.error('Failed to fetch global context data:', err);
+                    }
+                }
+
+                // If no context from any database lookup, build basic context
+                if (!context && contextType && contextName) {
+                    context = {
                         type: contextType,
                         name: contextName,
                         greeting: contextGreeting
                     };
+                }
+
+                // Use new LivAI class
+                if (window.LivAI && context) {
                     window.LivAI.openChatWithContext(context);
                 } else if (window.LivAI) {
                     // Open without context for general AI button
@@ -903,11 +1061,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     // Fallback to old implementation if LivAI not loaded
                     resetConversation();
-                    if (contextType && contextName) {
+                    if (context) {
                         livConversation.context = {
-                            type: contextType,
-                            name: contextName,
-                            greeting: contextGreeting || generateGreeting(contextType, contextName)
+                            type: context.type,
+                            name: context.name,
+                            greeting: context.greeting || generateGreeting(context.type, context.name),
+                            liv_context: context.liv_context
                         };
                     }
                     openChat();
@@ -917,6 +1076,11 @@ document.addEventListener('DOMContentLoaded', function() {
             // Generate personalized greeting based on context
             function generateGreeting(type, name) {
                 const greetings = {
+                    'general': [
+                        `Welcome. I'm LIV — Luxury Itinerary Visionary. I'm here to craft extraordinary Swedish journeys tailored to your desires.`,
+                        `Hello! I specialize in creating bespoke Swedish adventures that go beyond the ordinary. What kind of experience are you dreaming of?`,
+                        `Wonderful to meet you! I design ultra-luxury itineraries across Sweden. How may I help you today?`
+                    ],
                     'destination': [
                         `Ah, ${name}! Magnificent choice. This is one of Sweden's most captivating destinations. Let me help you craft an unforgettable experience there.`,
                         `${name} — excellent taste. I'd be delighted to design a bespoke journey for you around this remarkable location.`,
@@ -933,7 +1097,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     ]
                 };
 
-                const messages = greetings[type] || greetings['experience'];
+                const messages = greetings[type] || greetings['general'];
                 return messages[Math.floor(Math.random() * messages.length)];
             }
 
@@ -981,57 +1145,77 @@ document.addEventListener('DOMContentLoaded', function() {
                 enquiryForm.addEventListener('submit', handleFormSubmit);
             }
 
-            // Newsletter form handler
-            const newsletterForm = document.getElementById('newsletterForm');
-            const newsletterEmail = document.getElementById('newsletterEmail');
-            const newsletterStatus = document.getElementById('newsletterStatus');
+            // Newsletter form handler - Wait for footer to load via component-loader
+            function initNewsletterForm() {
+                const newsletterForm = document.getElementById('newsletterForm');
+                const newsletterEmail = document.getElementById('newsletterEmail');
+                const newsletterStatus = document.getElementById('newsletterStatus');
 
-            if (newsletterForm) {
-                newsletterForm.addEventListener('submit', async (event) => {
-                    event.preventDefault();
+                if (newsletterForm) {
+                    newsletterForm.addEventListener('submit', async (event) => {
+                        event.preventDefault();
 
-                    const email = newsletterEmail?.value.trim();
-                    if (!email) return;
+                        const email = newsletterEmail?.value.trim();
+                        if (!email) return;
 
-                    // Show loading state
-                    if (newsletterStatus) {
-                        newsletterStatus.textContent = 'Subscribing...';
-                        newsletterStatus.style.color = '';
-                    }
-
-                    try {
-                        // Upsert lead (insert or update if email exists)
-                        const { error } = await window.Supabase.client
-                            .from('leads')
-                            .upsert({
-                                email: email,
-                                source: 'newsletter',
-                                status: 'new'
-                            }, {
-                                onConflict: 'email',
-                                ignoreDuplicates: false
-                            });
-
-                        if (error) throw error;
-
-                        // Show success message
+                        // Show loading state
                         if (newsletterStatus) {
-                            newsletterStatus.textContent = 'Thank you for subscribing!';
-                            newsletterStatus.style.color = 'var(--color-accent-forest, green)';
+                            newsletterStatus.textContent = 'Subscribing...';
+                            newsletterStatus.style.color = '';
                         }
 
-                        // Reset form
-                        newsletterForm.reset();
+                        try {
+                            // Insert lead (ignore if email already exists)
+                            const { error } = await window.Supabase.client
+                                .from('leads')
+                                .insert({
+                                    email: email,
+                                    source: 'newsletter',
+                                    status: 'new',
+                                    site: window.CURRENT_SITE || 'sweden'
+                                });
 
-                    } catch (error) {
-                        console.error('Error subscribing to newsletter:', error);
-                        if (newsletterStatus) {
-                            newsletterStatus.textContent = 'Sorry, there was an error. Please try again.';
-                            newsletterStatus.style.color = 'red';
+                            // If duplicate email, treat as success (error code 23505 or message contains 'duplicate')
+                            if (error) {
+                                const isDuplicate = error.code === '23505' ||
+                                                   (error.message && error.message.toLowerCase().includes('duplicate')) ||
+                                                   (error.details && error.details.toLowerCase().includes('duplicate'));
+
+                                if (!isDuplicate) {
+                                    throw error;
+                                }
+                                // If duplicate, continue to show success message
+                            }
+
+                            // Show success message
+                            if (newsletterStatus) {
+                                newsletterStatus.textContent = 'Thank you for subscribing!';
+                                newsletterStatus.style.color = 'var(--color-accent-forest, green)';
+                            }
+
+                            // Reset form
+                            newsletterForm.reset();
+
+                        } catch (error) {
+                            console.error('Error subscribing to newsletter:', error);
+                            if (newsletterStatus) {
+                                newsletterStatus.textContent = 'Sorry, there was an error. Please try again.';
+                                newsletterStatus.style.color = 'red';
+                            }
                         }
-                    }
-                });
+                    });
+                    console.log('✅ Newsletter form handler attached');
+                }
             }
+
+            // Try to initialize immediately (in case footer already loaded)
+            initNewsletterForm();
+
+            // Also listen for components-loaded event (for dynamically loaded footer)
+            document.addEventListener('components-loaded', function() {
+                console.log('📢 Components loaded, initializing newsletter form');
+                initNewsletterForm();
+            });
 
             // Escape key to close chat
             document.addEventListener('keydown', function(e) {
@@ -1189,8 +1373,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const filterBtns = document.querySelectorAll('.filter-btn');
             const categoryFilterBtns = document.querySelectorAll('.category-filter-btn');
             const categoryToggleAll = document.getElementById('categoryToggleAll');
+            const seasonToggleAll = document.getElementById('seasonToggleAll');
 
-            let currentSeason = 'spring';
+            let activeSeasons = new Set(['spring', 'summer', 'autumn', 'winter']); // All active by default
             let activeThemes = new Set(['nature', 'design', 'royal-culture', 'culinary', 'nightlife', 'legacy']); // All active by default
             let activeCategories = new Set(['province', 'city', 'seaside', 'beach', 'ski', 'park', 'storyteller']); // All active by default
             let selectedCities = new Set();
@@ -1225,8 +1410,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 map = L.map('map', {
                     center: [30, 0],
                     zoom: 2,
-                    minZoom: 2,
-                    maxZoom: 18,
                     zoomControl: true,
                     scrollWheelZoom: false, // Disabled by default to prevent scroll hijacking
                     dragging: !isMobile, // Disable dragging on mobile initially
@@ -1310,6 +1493,57 @@ document.addEventListener('DOMContentLoaded', function() {
                     .map(season => `<span class="map-card-season-tag">${season}</span>`)
                     .join('');
 
+                // Handle "read more" button for storytellers
+                const mapCardReadMore = document.getElementById('mapCardReadMore');
+                if (mapCardReadMore) {
+                    // Check if this is a storyteller with detailed content in storytellerData
+                    if (data.category === 'storyteller' && window.storytellerData && window.storytellerData[cityKey]) {
+                        mapCardReadMore.style.display = 'flex';
+                        mapCardReadMore.onclick = () => {
+                            // Get full storyteller data
+                            const storytellerData = window.storytellerData[cityKey];
+
+                            // Open the pillar modal with storyteller details
+                            const pillarModal = document.getElementById('pillarModal');
+                            const modalTitle = document.getElementById('modal-title');
+                            const modalImage = document.getElementById('modal-image');
+                            const modalDescription = document.getElementById('modal-description');
+                            const modalCta = document.getElementById('modal-cta');
+                            const modalMapBtn = document.getElementById('modal-map-btn');
+
+                            if (pillarModal && storytellerData) {
+                                modalTitle.textContent = storytellerData.title;
+                                modalImage.src = storytellerData.image;
+                                modalImage.alt = storytellerData.title;
+                                modalDescription.innerHTML = storytellerData.content;
+                                modalCta.textContent = storytellerData.cta;
+
+                                // Set LIV context
+                                if (storytellerData.contextType && storytellerData.contextName) {
+                                    modalCta.setAttribute('data-liv-context-type', storytellerData.contextType);
+                                    modalCta.setAttribute('data-liv-context-name', storytellerData.contextName);
+                                }
+
+                                // Hide the "View on Map" button since we're already on map
+                                if (modalMapBtn) {
+                                    modalMapBtn.style.display = 'none';
+                                }
+
+                                // Mark that modal was opened from map panel
+                                pillarModal.setAttribute('data-opened-from-map', 'true');
+                                pillarModal.setAttribute('data-map-citykey', cityKey);
+
+                                // Hide map card and show modal
+                                hideMapOverlayCard();
+                                pillarModal.style.display = 'flex';
+                                document.documentElement.style.overflow = 'hidden';
+                            }
+                        };
+                    } else {
+                        mapCardReadMore.style.display = 'none';
+                    }
+                }
+
                 // Update the map card CTA button with context attributes
                 const mapCardCta = mapOverlayCard.querySelector('.map-card-cta');
                 if (mapCardCta) {
@@ -1329,7 +1563,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                     themes: data.themes,
                                     seasons: data.seasons,
                                     description: data.description,
-                                    region: data.region
+                                    livContext: data.liv_context || null,
+                                    greetingOverride: data.greeting_override || null
                                 }
                             }
                         }));
@@ -1359,6 +1594,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
+            // Make showMapOverlayCard globally accessible for modal close handler
+            window.showMapOverlayCard = showMapOverlayCard;
+
             // Close button handler
             if (mapCardClose) {
                 mapCardClose.addEventListener('click', hideMapOverlayCard);
@@ -1384,7 +1622,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             ${data.themes.map(theme => `<span class="destination-tag">${theme}</span>`).join('')}
                             ${data.seasons.map(season => `<span class="destination-tag destination-season-tag">${season}</span>`).join('')}
                         </div>
-                        <button type="button" class="destination-cta" data-open-liv data-liv-context-type="destination" data-liv-context-name="${data.title}">Design Journey with LIV</button>
+                        <button type="button" class="destination-cta" data-open-liv data-liv-context-type="destination" data-liv-context-name="${data.title}" data-destination-slug="${cityKey}">Design Journey with LIV</button>
                     </div>
                 `;
 
@@ -1425,11 +1663,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     if (!marker) return;
 
-                    const seasonMatch = data.seasons.map(s => s.toLowerCase()).includes(currentSeason);
+                    // Check if any active season matches any of the destination's seasons
+                    // If no seasons selected, show all. If destination has no seasons, show it.
+                    const seasonMatch = activeSeasons.size === 0 ? true :
+                        (!data.seasons || data.seasons.length === 0) ? true :
+                        data.seasons.some(s => activeSeasons.has(s.toLowerCase()));
+
                     // Check if any active theme matches any of the destination's themes
-                    // If destination has no themes (Agent Henrik uses services), always show it (themeMatch = true)
-                    const hasThemes = data.themeKeys && data.themeKeys.length > 0;
-                    const themeMatch = !hasThemes ? true : data.themeKeys.some(theme => activeThemes.has(theme));
+                    // For storytellers or destinations without themes, skip theme filtering
+                    const hasNoThemes = !data.themeKeys || data.themeKeys.length === 0;
+                    const themeMatch = data.category === 'storyteller' || hasNoThemes ? true :
+                        (activeThemes.size === 0 ? true : data.themeKeys.some(theme => activeThemes.has(theme)));
+
                     const categoryMatch = activeCategories.has(data.category);
 
                     const markerEl = marker.getElement();
@@ -1493,15 +1738,65 @@ document.addEventListener('DOMContentLoaded', function() {
             // Initial filter
             setTimeout(() => filterMarkers(), 200);
 
-            // Season toggle
+            // Season filters - allow multiple selections
             seasonBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
-                    seasonBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    currentSeason = this.dataset.season;
+                    const season = this.dataset.season;
+
+                    // Toggle season
+                    if (activeSeasons.has(season)) {
+                        activeSeasons.delete(season);
+                        this.classList.remove('active');
+                    } else {
+                        activeSeasons.add(season);
+                        this.classList.add('active');
+                    }
+
+                    // Update toggle button state
+                    updateSeasonToggleButtonState();
                     filterMarkers();
                 });
             });
+
+            // Season toggle all button
+            if (seasonToggleAll) {
+                seasonToggleAll.addEventListener('click', function() {
+                    const isActive = this.classList.contains('active');
+                    if (isActive) {
+                        // Turn all off
+                        activeSeasons.clear();
+                        seasonBtns.forEach(btn => btn.classList.remove('active'));
+                        this.classList.remove('active');
+                        this.textContent = 'All Off';
+                    } else {
+                        // Turn all on
+                        activeSeasons = new Set(['spring', 'summer', 'autumn', 'winter']);
+                        seasonBtns.forEach(btn => btn.classList.add('active'));
+                        this.classList.add('active');
+                        this.textContent = 'All On';
+                    }
+                    filterMarkers();
+                });
+            }
+
+            // Helper function to update season toggle button state
+            function updateSeasonToggleButtonState() {
+                if (!seasonToggleAll) return;
+
+                const allActive = activeSeasons.size === 4;
+                const noneActive = activeSeasons.size === 0;
+
+                if (allActive) {
+                    seasonToggleAll.classList.add('active');
+                    seasonToggleAll.textContent = 'All On';
+                } else if (noneActive) {
+                    seasonToggleAll.classList.remove('active');
+                    seasonToggleAll.textContent = 'All Off';
+                } else {
+                    seasonToggleAll.classList.remove('active');
+                    seasonToggleAll.textContent = 'All Off';
+                }
+            }
 
             // Theme filters
             const themeToggleAll = document.getElementById('themeToggleAll');
@@ -1625,49 +1920,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     categoryToggleAll.textContent = 'All Off';
                 }
             }
-
-            // Region Filter Functions
-            function initializeRegionFilters() {
-                const regions = ['All', 'Nordic', 'Mediterranean', 'Asia Pacific', 'Americas'];
-                const filterContainer = document.getElementById('regionFilters');
-
-                if (!filterContainer) return;
-
-                regions.forEach(region => {
-                    const btn = document.createElement('button');
-                    btn.textContent = region;
-                    btn.className = 'region-filter-btn';
-                    btn.dataset.region = region;
-                    if (region === 'All') btn.classList.add('active');
-
-                    btn.addEventListener('click', () => {
-                        document.querySelectorAll('.region-filter-btn').forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                        filterByRegion(region);
-                    });
-
-                    filterContainer.appendChild(btn);
-                });
-            }
-
-            function filterByRegion(region) {
-                if (!destinationData || !markers) return;
-
-                Object.entries(markers).forEach(([key, marker]) => {
-                    const destination = destinationData[key];
-                    if (region === 'All' || destination.region === region) {
-                        marker.addTo(map);
-                    } else {
-                        map.removeLayer(marker);
-                    }
-                });
-            }
-
-            // Initialize region filters after markers are created
-            setTimeout(() => {
-                initializeRegionFilters();
-            }, 300);
-
             } // End of if (map) check - map successfully initialized
             } // End of initializeMap function
 
@@ -1874,48 +2126,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             };
 
-            // Storyteller data for modal
-            const storytellerData = {
-                'mogens-lena': {
-                    title: "Dine with the priests Mogens & Lena in a historical mansion",
-                    image: "https://sverigeagenten.com/wp-content/uploads/2021/04/Priest-couple-Staircase-scaled_small-uai-258x172.jpg",
-                    content: `
-                        <p>This is the story of two priests - Mogens & Lena - who found the perfect place to host intimate gatherings that blend spirituality, history, and culinary excellence in their beautifully restored mansion.</p>
-                        <p>Nestled in the Swedish countryside, their historical mansion tells centuries of stories through its walls. Mogens and Lena have transformed this sacred space into a destination where guests can experience authentic Swedish hospitality, meaningful conversations, and exquisite locally-sourced cuisine.</p>
-                        <p>Each dining experience is a carefully orchestrated journey through Swedish traditions, seasonal ingredients, and the profound connection between place, people, and purpose. Their gatherings are intimate by design, creating space for reflection, connection, and transformation.</p>
-                    `,
-                    cta: "Design with LIV",
-                    contextType: "storyteller",
-                    contextName: "Mogens & Lena"
-                },
-                'robert-mikael': {
-                    title: "THE VILLA – A bizarre dinner gathering with Robert & Mikael",
-                    image: "https://sverigeagenten.com/wp-content/uploads/2021/04/Founders-OOOW-Profile-scaled_small-uai-258x172.jpg",
-                    content: `
-                        <p>With the slogan "Louder music, Less conversations" Robert Pihl and Mikael Wennerros create unforgettable evenings where sound, atmosphere, and unexpected encounters take center stage.</p>
-                        <p>THE VILLA is not your typical dinner party. It's an immersive experience where boundaries blur between performance art, culinary excellence, and social experimentation. The duo believes in the power of sound to create connection, letting music speak where words often fail.</p>
-                        <p>Guests arrive not knowing what to expect and leave transformed by an evening that challenges convention. Each gathering is unique, carefully curated to surprise, delight, and push the boundaries of what a dinner party can be.</p>
-                    `,
-                    cta: "Design with LIV",
-                    contextType: "storyteller",
-                    contextName: "Robert & Mikael"
-                },
-                'trend-stefan': {
-                    title: "A Stockholm design tour with Trend Stefan",
-                    image: "https://sverigeagenten.com/wp-content/uploads/2021/04/Potrait-Trendstefan-scaled_small-uai-258x172.jpg",
-                    content: `
-                        <p>Trend Stefan is recognized as one of the foremost trend scouts of Sweden and he reveals the hidden design gems, emerging studios, and creative spaces that define Stockholm's innovative spirit.</p>
-                        <p>With decades of experience in Swedish design, Stefan has his finger on the pulse of Stockholm's creative scene. He knows the studios before they're famous, the designers before they break through, and the spaces where innovation happens.</p>
-                        <p>His tours are not about visiting tourist attractions—they're about understanding the DNA of Swedish design. From underground workshops to cutting-edge showrooms, Stefan opens doors that remain closed to most visitors, offering insights into the philosophy, process, and people behind Sweden's design revolution.</p>
-                    `,
-                    cta: "Design with LIV",
-                    contextType: "storyteller",
-                    contextName: "Trend Stefan"
-                }
-            };
-
-            // Make storytellerData available globally
-            window.storytellerData = storytellerData;
+            // Storyteller data is now loaded from database via supabase-client.js
+            // No need for hardcoded data - all storytellers come from CMS
 
             // Open modal when read-more button is clicked (skip if page has custom handlers)
             if (!window.SKIP_GLOBAL_PILLAR_MODALS) {
@@ -1964,8 +2176,21 @@ document.addEventListener('DOMContentLoaded', function() {
             // Close modal
             function closePillarModal() {
                 if (pillarModal) {
+                    // Check if modal was opened from map panel
+                    const openedFromMap = pillarModal.getAttribute('data-opened-from-map');
+                    const cityKey = pillarModal.getAttribute('data-map-citykey');
+
                     pillarModal.style.display = 'none';
                     document.documentElement.style.overflow = '';
+
+                    // If opened from map, show the map panel again
+                    if (openedFromMap === 'true' && cityKey && window.showMapOverlayCard && window.destinationData && window.destinationData[cityKey]) {
+                        window.showMapOverlayCard(cityKey, window.destinationData[cityKey]);
+                    }
+
+                    // Clear the attributes
+                    pillarModal.removeAttribute('data-opened-from-map');
+                    pillarModal.removeAttribute('data-map-citykey');
                 }
             }
 
@@ -2079,25 +2304,13 @@ async function loadJournalPosts() {
                             <span class="eyebrow" style="margin-bottom:0.5rem;">${escapeHtml(post.author || 'LIV Team')}</span>
                             <h3>${escapeHtml(post.title)}</h3>
                             <p>${escapeHtml(post.excerpt || '')}</p>
-                            <a href="/journal-post.html?slug=${encodeURIComponent(post.slug)}" class="story-cta" style="display: inline-block; margin-top: 1rem; color: inherit; text-decoration: none; font-weight: 600;">Read More →</a>
+                            <a href="/journal-post/?slug=${encodeURIComponent(post.slug)}" class="story-cta" style="display: inline-block; margin-top: 1rem; color: inherit; text-decoration: none; font-weight: 600;">Read More →</a>
                         </div>
                     </article>
                 `;
             }).join('');
 
-            // Add "View All" link if there are more posts
-            if (posts.length > 3) {
-                const viewAllCard = `
-                    <article class="story-card" style="display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.03);">
-                        <div class="story-meta" style="text-align: center;">
-                            <h3>View All Journal Posts</h3>
-                            <p>Explore more stories and travel insights</p>
-                            <a href="/journal.html" class="story-cta" style="display: inline-block; margin-top: 1rem; color: inherit; text-decoration: none; font-weight: 600;">View All →</a>
-                        </div>
-                    </article>
-                `;
-                journalGrid.innerHTML += viewAllCard;
-            }
+            // Note: "SEE ALL JOURNAL POSTS" link is already in the HTML below the grid
         }
     } catch (error) {
         console.error('Error loading journal posts:', error);
@@ -2117,7 +2330,7 @@ function escapeHtml(text) {
 // STORYTELLERS FUNCTIONALITY
 // ==========================================
 async function loadStorytellers() {
-    const storiesGrid = document.querySelector('#storytellers .stories-grid');
+    const storiesGrid = document.getElementById('storytellersGrid') || document.querySelector('#storytellers .stories-grid');
     if (!storiesGrid) return; // Only run on pages with storytellers section
 
     try {
@@ -2155,7 +2368,7 @@ async function loadStorytellers() {
 
             // Replace static content with CMS stories
             storiesGrid.innerHTML = featuredStories.map(story => {
-                const slug = generateSlug(story.title);
+                const slug = story.slug || generateSlug(story.title);
                 const imageUrl = story.hero_image_url || 'https://via.placeholder.com/258x172';
 
                 return `
@@ -2167,7 +2380,7 @@ async function loadStorytellers() {
                             <h3 class="story-title">${escapeHtml(story.title)}</h3>
                             <p class="story-excerpt">${escapeHtml(story.excerpt || '')}</p>
                             <button type="button" class="read-more-btn">read more</button>
-                            <button type="button" class="story-cta" data-open-liv data-liv-context-type="storyteller" data-liv-context-name="${escapeHtml(story.title)}">Design with LIV</button>
+                            <button type="button" class="story-cta" data-open-liv data-liv-context-type="storyteller" data-liv-context-name="${escapeHtml(story.title)}" data-storyteller-slug="${slug}">Design with LIV</button>
                         </div>
                     </article>
                 `;
@@ -2176,14 +2389,15 @@ async function loadStorytellers() {
             // Update storytellerData object with CMS data
             const storytellerData = {};
             featuredStories.forEach(story => {
-                const slug = generateSlug(story.title);
+                const slug = story.slug || generateSlug(story.title);
                 storytellerData[slug] = {
                     title: story.title,
                     image: story.hero_image_url || 'https://via.placeholder.com/258x172',
                     content: story.content || `<p>${story.excerpt}</p>`,
                     cta: "Design with LIV",
                     contextType: "storyteller",
-                    contextName: story.title
+                    contextName: story.title,
+                    livContext: story.liv_context || null
                 };
             });
 
@@ -2214,10 +2428,10 @@ function initializeReadMoreButtons() {
     }
 
     const pillarModal = document.getElementById('pillarModal');
-    const modalTitle = document.querySelector('#pillarModal .pillar-modal-title');
-    const modalImage = document.querySelector('#pillarModal .pillar-modal-image');
-    const modalDescription = document.querySelector('#pillarModal .pillar-modal-description');
-    const modalCta = document.querySelector('#pillarModal .pillar-modal-cta');
+    const modalTitle = document.getElementById('modal-title');
+    const modalImage = document.getElementById('modal-image');
+    const modalDescription = document.getElementById('modal-description');
+    const modalCta = document.getElementById('modal-cta');
 
     if (!pillarModal) return;
 
@@ -2246,12 +2460,61 @@ function initializeReadMoreButtons() {
                         modalCta.setAttribute('data-liv-context-name', data.contextName);
                     }
 
+                    // Handle "View on Map" button for storytellers
+                    const mapBtn = document.getElementById('modal-map-btn');
+                    if (mapBtn && window.destinationData && window.destinationData[storytellerType]) {
+                        // Storyteller has map location, show button
+                        mapBtn.style.display = 'block';
+                        mapBtn.setAttribute('data-storyteller-slug', storytellerType);
+                    } else if (mapBtn) {
+                        // No map location, hide button
+                        mapBtn.style.display = 'none';
+                    }
+
                     pillarModal.style.display = 'flex';
                     document.documentElement.style.overflow = 'hidden';
                 }
             }
         });
     });
+
+    // Handle "View on Map" button click
+    const mapBtn = document.getElementById('modal-map-btn');
+    if (mapBtn) {
+        mapBtn.addEventListener('click', function() {
+            const storytellerSlug = this.getAttribute('data-storyteller-slug');
+            if (storytellerSlug && window.destinationData && window.destinationData[storytellerSlug]) {
+                const data = window.destinationData[storytellerSlug];
+
+                // Close the modal
+                pillarModal.style.display = 'none';
+                document.documentElement.style.overflow = '';
+
+                // Scroll to map section
+                const mapSection = document.getElementById('destinations-map');
+                if (mapSection) {
+                    mapSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+
+                // Trigger map marker click event after a short delay for scroll
+                setTimeout(() => {
+                    document.dispatchEvent(new CustomEvent('mapMarkerClicked', {
+                        detail: {
+                            destination: {
+                                title: data.title,
+                                category: data.category,
+                                themes: data.themes,
+                                seasons: data.seasons,
+                                description: data.description,
+                                livContext: data.liv_context || null,
+                                greetingOverride: data.greeting_override || null
+                            }
+                        }
+                    }));
+                }, 500);
+            }
+        });
+    }
 }
 
 // ==========================================
@@ -2385,9 +2648,6 @@ function initializePillarModals() {
 
     const readMoreButtons = document.querySelectorAll('.read-more-btn');
     console.log(`Found ${readMoreButtons.length} read-more buttons`);
-    console.log('Available CMS pillar data:', window.pillarDataCMS ? Object.keys(window.pillarDataCMS) : 'none');
-    console.log('Available hardcoded pillar data:', window.pillarData ? Object.keys(window.pillarData) : 'none');
-    console.log('Available storyteller data:', window.storytellerData ? Object.keys(window.storytellerData) : 'none');
 
     // Remove old event listeners by cloning and replacing
     readMoreButtons.forEach((btn, index) => {
@@ -2407,9 +2667,7 @@ function initializePillarModals() {
                 // Check if it's a storyteller card first
                 if (pillarCard.dataset.storyteller) {
                     slug = pillarCard.dataset.storyteller;
-                    console.log(`Storyteller pillar card clicked with slug: ${slug}`);
                     data = window.storytellerData?.[slug];
-                    console.log(`Found storyteller data:`, data ? 'YES' : 'NO');
                 } else {
                     slug = pillarCard.dataset.pillar;
                     console.log(`Pillar card clicked with slug: ${slug}`);
@@ -2419,13 +2677,10 @@ function initializePillarModals() {
                 }
             } else if (storyCard) {
                 slug = storyCard.dataset.storyteller;
-                console.log(`Story card clicked with slug: ${slug}`);
                 data = window.storytellerData?.[slug];
-                console.log(`Found storyteller data:`, data ? 'YES' : 'NO');
             }
 
             if (data) {
-                console.log('Opening modal with data:', data.title);
                 modalTitle.textContent = data.title;
                 modalImage.src = data.image;
                 modalImage.alt = data.title;
@@ -2440,13 +2695,524 @@ function initializePillarModals() {
 
                 pillarModal.style.display = 'flex';
                 document.documentElement.style.overflow = 'hidden';
-            } else {
-                console.error(`No data found for slug: ${slug}`);
             }
         });
     });
 
     console.log('Pillar modal initialization complete');
+}
+
+// ==========================================
+// HERO DESTINATION MODAL FUNCTIONALITY
+// ==========================================
+
+function initializeHeroDestinationModal() {
+    console.log('Initializing hero destination modal...');
+
+    // Custom dropdown elements
+    const heroWrapper = document.getElementById('heroDropdownWrapper');
+    const heroTrigger = document.getElementById('heroDropdownTrigger');
+    const heroMenu = document.getElementById('heroDropdownMenu');
+    const heroList = document.getElementById('heroDropdownList');
+
+    const modalWrapper = document.getElementById('modalDropdownWrapper');
+    const modalTrigger = document.getElementById('modalDropdownTrigger');
+    const modalMenu = document.getElementById('modalDropdownMenu');
+    const modalList = document.getElementById('modalDropdownList');
+
+    // Modal elements
+    const modal = document.getElementById('destinationModal');
+    const modalClose = document.getElementById('destinationModalClose');
+    const modalImage = document.getElementById('destinationModalImage');
+    const modalVideo = document.getElementById('destinationModalVideo');
+    const modalTitle = document.getElementById('destinationModalTitle');
+    const modalSubtitle = document.getElementById('destinationModalSubtitle');
+    const modalWelcome = document.getElementById('destinationModalWelcome');
+    const modalPanel = document.getElementById('destinationModalPanel');
+    const modalPanelTitle = document.getElementById('destinationModalPanelTitle');
+    const modalThemes = document.getElementById('destinationModalThemes');
+    const modalSeasons = document.getElementById('destinationModalSeasons');
+    const modalDescription = document.getElementById('destinationModalDescription');
+    const modalLivBtn = document.getElementById('destinationModalLivBtn');
+
+    if (!heroWrapper || !modal) {
+        console.log('Hero destination modal elements not found');
+        return;
+    }
+
+    // Store all destinations for later use
+    let allDestinations = [];
+    let panelShowTimeout = null;
+
+    // Toggle dropdown open/close
+    function toggleDropdown(wrapper) {
+        const isOpen = wrapper.classList.contains('open');
+        // Close all dropdowns first
+        document.querySelectorAll('.hero-dropdown-wrapper.open').forEach(w => w.classList.remove('open'));
+        // Toggle this one
+        if (!isOpen) {
+            wrapper.classList.add('open');
+        }
+    }
+
+    // Close all dropdowns
+    function closeAllDropdowns() {
+        document.querySelectorAll('.hero-dropdown-wrapper.open').forEach(w => w.classList.remove('open'));
+    }
+
+    // Populate dropdowns from destinations data
+    function populateDropdowns() {
+        // Get destinations from window.destinationData (populated by supabase-client.js)
+        if (window.destinationData && Object.keys(window.destinationData).length > 0) {
+            allDestinations = Object.values(window.destinationData);
+            console.log(`Populating dropdowns with ${allDestinations.length} destinations`);
+
+            // Sort alphabetically by title
+            allDestinations.sort((a, b) => a.title.localeCompare(b.title));
+
+            // Clear existing list items
+            if (heroList) heroList.innerHTML = '';
+            if (modalList) modalList.innerHTML = '';
+
+            // Add destination items
+            allDestinations.forEach(dest => {
+                // Hero dropdown
+                if (heroList) {
+                    const item1 = document.createElement('div');
+                    item1.className = 'hero-dropdown-item';
+                    item1.dataset.value = dest.slug;
+                    item1.textContent = dest.title;
+                    heroList.appendChild(item1);
+                }
+
+                // Modal dropdown
+                if (modalList) {
+                    const item2 = document.createElement('div');
+                    item2.className = 'hero-dropdown-item';
+                    item2.dataset.value = dest.slug;
+                    item2.textContent = dest.title;
+                    modalList.appendChild(item2);
+                }
+            });
+
+            console.log('Dropdowns populated successfully');
+        } else {
+            console.log('No destination data available yet');
+        }
+    }
+
+    // Get random destination
+    function getRandomDestination() {
+        if (allDestinations.length === 0) return null;
+        const randomIndex = Math.floor(Math.random() * allDestinations.length);
+        return allDestinations[randomIndex];
+    }
+
+    // Get destination by slug
+    function getDestinationBySlug(slug) {
+        return allDestinations.find(d => d.slug === slug);
+    }
+
+    // Handle item selection
+    function handleSelection(value, triggerText) {
+        console.log('handleSelection called with value:', value);
+        console.log('allDestinations count:', allDestinations.length);
+        closeAllDropdowns();
+
+        if (!value) {
+            console.log('No value provided');
+            return;
+        }
+
+        let destination;
+        if (value === 'random') {
+            destination = getRandomDestination();
+            console.log('Random destination selected:', destination?.title);
+        } else {
+            destination = getDestinationBySlug(value);
+            console.log('Destination by slug:', destination?.title);
+        }
+
+        if (destination) {
+            // Update trigger text briefly
+            if (triggerText) {
+                triggerText.textContent = destination.title;
+                setTimeout(() => {
+                    triggerText.textContent = 'Select a destination';
+                }, 500);
+            }
+            openDestinationModal(destination);
+        } else {
+            console.log('No destination found for value:', value);
+        }
+    }
+
+    // Open modal with destination
+    function openDestinationModal(destination) {
+        if (!destination) return;
+
+        console.log('Opening destination modal for:', destination.title);
+
+        // Reset modal state
+        modalWelcome.classList.remove('fade-out');
+        modalPanel.classList.remove('show');
+        modalImage.classList.remove('ken-burns');
+        modalImage.style.display = 'block';
+        modalVideo.style.display = 'none';
+        if (modalVideo.src) modalVideo.pause();
+
+        // Set welcome text
+        modalTitle.textContent = destination.title;
+        const shortDesc = destination.description ?
+            (destination.description.length > 150 ? destination.description.substring(0, 150) + '...' : destination.description)
+            : '';
+        modalSubtitle.textContent = shortDesc;
+
+        // Set background media
+        if (destination.video_url) {
+            // Use video if available
+            modalImage.style.display = 'none';
+            modalVideo.src = destination.video_url;
+            modalVideo.style.display = 'block';
+            modalVideo.play().catch(e => console.log('Video autoplay prevented:', e));
+        } else if (destination.image_url || destination.image) {
+            // Use image with Ken Burns effect
+            const imgUrl = destination.image_url || destination.image;
+            modalImage.src = imgUrl;
+            modalImage.alt = destination.title;
+            // Start Ken Burns animation after image loads
+            modalImage.onload = () => {
+                modalImage.classList.add('ken-burns');
+            };
+            // If image is already cached, trigger immediately
+            if (modalImage.complete) {
+                modalImage.classList.add('ken-burns');
+            }
+        }
+
+        // Set panel content
+        modalPanelTitle.textContent = destination.title;
+        modalDescription.textContent = destination.description || '';
+
+        // Set themes
+        modalThemes.innerHTML = '';
+        if (destination.themes && destination.themes.length > 0) {
+            destination.themes.forEach(theme => {
+                const tag = document.createElement('span');
+                tag.className = 'tag';
+                tag.textContent = theme.label || theme;
+                modalThemes.appendChild(tag);
+            });
+        }
+
+        // Set seasons
+        modalSeasons.innerHTML = '';
+        if (destination.seasons && destination.seasons.length > 0) {
+            destination.seasons.forEach(season => {
+                const tag = document.createElement('span');
+                tag.className = 'tag';
+                tag.textContent = season;
+                modalSeasons.appendChild(tag);
+            });
+        }
+
+        // Set LIV button context
+        modalLivBtn.setAttribute('data-liv-context-type', 'destination');
+        modalLivBtn.setAttribute('data-liv-context-name', destination.title);
+        modalLivBtn.setAttribute('data-destination-slug', destination.slug);
+
+        // Reset modal dropdown text
+        if (modalTrigger) {
+            modalTrigger.querySelector('.hero-dropdown-text').textContent = 'Choose another';
+        }
+
+        // Show modal
+        modal.style.display = 'block';
+        document.documentElement.style.overflow = 'hidden';
+
+        // Show panel after delay (3 seconds for video intro feel)
+        if (panelShowTimeout) clearTimeout(panelShowTimeout);
+        panelShowTimeout = setTimeout(() => {
+            modalWelcome.classList.add('fade-out');
+            setTimeout(() => {
+                modalPanel.classList.add('show');
+            }, 300);
+        }, 3000);
+    }
+
+    // Close modal
+    function closeModal() {
+        modal.style.display = 'none';
+        document.documentElement.style.overflow = '';
+        modalPanel.classList.remove('show');
+        modalWelcome.classList.remove('fade-out');
+        if (modalVideo.src) modalVideo.pause();
+        if (panelShowTimeout) clearTimeout(panelShowTimeout);
+        closeAllDropdowns();
+
+        // Reset hero dropdown text
+        if (heroTrigger) {
+            heroTrigger.querySelector('.hero-dropdown-text').textContent = 'Select a destination';
+        }
+
+        // Scroll to map section
+        const mapSection = document.querySelector('.map-section');
+        if (mapSection) {
+            mapSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    // Expose openDestinationModal globally for map card to use
+    window.openDestinationModal = openDestinationModal;
+    window.getDestinationBySlug = getDestinationBySlug;
+
+    // Event listeners for hero dropdown
+    if (heroTrigger) {
+        heroTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleDropdown(heroWrapper);
+        });
+    }
+
+    if (heroMenu) {
+        heroMenu.addEventListener('click', (e) => {
+            const item = e.target.closest('.hero-dropdown-item');
+            if (item) {
+                const value = item.dataset.value;
+                const triggerText = heroTrigger?.querySelector('.hero-dropdown-text');
+                handleSelection(value, triggerText);
+            }
+        });
+    }
+
+    // Event listeners for modal dropdown
+    if (modalTrigger) {
+        modalTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleDropdown(modalWrapper);
+        });
+    }
+
+    if (modalMenu) {
+        modalMenu.addEventListener('click', (e) => {
+            const item = e.target.closest('.hero-dropdown-item');
+            if (item) {
+                const value = item.dataset.value;
+                // Quick transition to new destination
+                modalPanel.classList.remove('show');
+                modalWelcome.classList.remove('fade-out');
+                closeAllDropdowns();
+
+                setTimeout(() => {
+                    handleSelection(value, null);
+                }, 400);
+            }
+        });
+    }
+
+    // Close modal button
+    if (modalClose) {
+        modalClose.addEventListener('click', closeModal);
+    }
+
+    // LIV Chat within modal panel
+    const modalInfoView = document.getElementById('destinationModalInfoView');
+    const modalChatView = document.getElementById('destinationModalChatView');
+    const modalChatBack = document.getElementById('destinationModalChatBack');
+    const modalChatMessages = document.getElementById('destinationModalChatMessages');
+    const modalChatInput = document.getElementById('destinationModalChatInput');
+    const modalChatSend = document.getElementById('destinationModalChatSend');
+
+    let currentModalDestination = null;
+    let modalChatHistory = [];
+
+    // Switch to chat view
+    function showChatView() {
+        if (modalInfoView) modalInfoView.style.display = 'none';
+        if (modalChatView) modalChatView.style.display = 'flex';
+
+        // Clear previous chat and start fresh
+        modalChatHistory = [];
+        if (modalChatMessages) modalChatMessages.innerHTML = '';
+
+        // Add greeting message
+        const destinationName = currentModalDestination?.title || 'this destination';
+        addModalChatMessage('assistant', `Hello! I'm LIV, your AI travel curator. I'd love to help you design an unforgettable journey to ${destinationName}. What kind of experience are you looking for?`);
+
+        // Focus input
+        setTimeout(() => {
+            if (modalChatInput) modalChatInput.focus();
+        }, 100);
+    }
+
+    // Switch back to info view
+    function showInfoView() {
+        if (modalChatView) modalChatView.style.display = 'none';
+        if (modalInfoView) modalInfoView.style.display = 'flex';
+    }
+
+    // Add message to chat
+    function addModalChatMessage(role, content) {
+        if (!modalChatMessages) return;
+
+        const messageEl = document.createElement('div');
+        messageEl.className = `destination-modal-chat-message ${role}`;
+        messageEl.textContent = content;
+        modalChatMessages.appendChild(messageEl);
+
+        // Scroll to bottom
+        modalChatMessages.scrollTop = modalChatMessages.scrollHeight;
+
+        // Store in history
+        modalChatHistory.push({ role, content });
+    }
+
+    // Show typing indicator
+    function showTypingIndicator() {
+        if (!modalChatMessages) return null;
+
+        const typingEl = document.createElement('div');
+        typingEl.className = 'destination-modal-chat-message assistant typing';
+        typingEl.innerHTML = '<span></span><span></span><span></span>';
+        modalChatMessages.appendChild(typingEl);
+        modalChatMessages.scrollTop = modalChatMessages.scrollHeight;
+
+        return typingEl;
+    }
+
+    // Send message to LIV
+    async function sendModalChatMessage() {
+        if (!modalChatInput) return;
+
+        const message = modalChatInput.value.trim();
+        if (!message) return;
+
+        // Add user message
+        addModalChatMessage('user', message);
+        modalChatInput.value = '';
+        modalChatInput.style.height = 'auto';
+
+        // Show typing indicator
+        const typingIndicator = showTypingIndicator();
+
+        try {
+            // Build context for LIV
+            const destinationContext = currentModalDestination ? {
+                type: 'destination',
+                name: currentModalDestination.title,
+                liv_context: currentModalDestination.liv_context,
+                description: currentModalDestination.description
+            } : null;
+
+            // Call LIV AI if available
+            if (window.LivAI && typeof window.LivAI.sendMessage === 'function') {
+                const response = await window.LivAI.sendMessage(message, destinationContext, modalChatHistory);
+
+                // Remove typing indicator
+                if (typingIndicator) typingIndicator.remove();
+
+                // Add response
+                addModalChatMessage('assistant', response);
+            } else {
+                // Fallback - simulate response
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                if (typingIndicator) typingIndicator.remove();
+
+                addModalChatMessage('assistant', `I'd be happy to help you explore ${currentModalDestination?.title || 'this destination'}! To provide personalized recommendations, could you tell me more about your travel dates and what experiences interest you most?`);
+            }
+        } catch (error) {
+            console.error('Error sending modal chat message:', error);
+            if (typingIndicator) typingIndicator.remove();
+            addModalChatMessage('assistant', 'I apologize, but I encountered an issue. Please try again or contact our team directly for assistance.');
+        }
+    }
+
+    // LIV button click - switch to chat view
+    if (modalLivBtn) {
+        modalLivBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            console.log('Modal LIV button clicked, switching to chat view');
+            showChatView();
+        });
+    }
+
+    // Back button - return to info view
+    if (modalChatBack) {
+        modalChatBack.addEventListener('click', (e) => {
+            e.preventDefault();
+            showInfoView();
+        });
+    }
+
+    // Send button click
+    if (modalChatSend) {
+        modalChatSend.addEventListener('click', sendModalChatMessage);
+    }
+
+    // Enter key to send (shift+enter for newline)
+    if (modalChatInput) {
+        modalChatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendModalChatMessage();
+            }
+        });
+
+        // Auto-resize textarea
+        modalChatInput.addEventListener('input', () => {
+            modalChatInput.style.height = 'auto';
+            modalChatInput.style.height = Math.min(modalChatInput.scrollHeight, 120) + 'px';
+        });
+    }
+
+    // Store current destination when opening modal
+    const originalOpenDestinationModal = openDestinationModal;
+    openDestinationModal = function(destination) {
+        currentModalDestination = destination;
+        showInfoView(); // Reset to info view when opening
+        originalOpenDestinationModal(destination);
+    };
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.hero-dropdown-wrapper')) {
+            closeAllDropdowns();
+        }
+    });
+
+    // Close on escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (modal.style.display === 'block') {
+                closeModal();
+            } else {
+                closeAllDropdowns();
+            }
+        }
+    });
+
+    // Populate dropdowns when data is loaded
+    if (window.destinationData && Object.keys(window.destinationData).length > 0) {
+        populateDropdowns();
+    }
+
+    // Listen for Supabase data loaded event
+    window.addEventListener('supabaseDataLoaded', () => {
+        console.log('Supabase data loaded, populating hero dropdowns...');
+        populateDropdowns();
+    });
+
+    console.log('Hero destination modal initialization complete');
+}
+
+// Initialize hero destination modal on DOM ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeHeroDestinationModal);
+} else {
+    initializeHeroDestinationModal();
 }
 
 // NOTE: Menu initialization moved to menu-init.js

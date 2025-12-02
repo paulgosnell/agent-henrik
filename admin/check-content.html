@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../">
+  <title>Database Content Checker</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 { color: #333; }
+    .result {
+      background: #f5f5f5;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      border-left: 4px solid #4a9eff;
+    }
+    .error {
+      border-left-color: #ff4a4a;
+      background: #fff5f5;
+    }
+    .key { font-weight: bold; color: #4a9eff; }
+    pre {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    button {
+      background: #4a9eff;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    button:hover {
+      background: #3a8eef;
+    }
+  </style>
+</head>
+<body>
+  <h1>Database Content Checker</h1>
+  <p>This page checks what content exists in the database for the pages that aren't loading.</p>
+
+  <button onclick="checkContent()">Check Database Content</button>
+
+  <div id="results"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js?v=2"></script>
+
+  <script>
+    const supabase = window.Supabase?.client;
+    const resultsDiv = document.getElementById('results');
+
+    async function checkContent() {
+      resultsDiv.innerHTML = '<p>Checking database...</p>';
+
+      // First check authentication
+      const { data: { session } } = await supabase.auth.getSession();
+
+      let html = `
+        <div class="result">
+          <div class="key">Authentication Status</div>
+          <p><strong>Logged in:</strong> ${session ? '✅ Yes' : '❌ No'}</p>
+          ${session ? `<p><strong>User:</strong> ${session.user.email}</p>` : ''}
+        </div>
+      `;
+
+      const keysToCheck = [
+        'our_story.content',
+        'our_services.content',
+        'booking_process.content'
+      ];
+
+
+
+      for (const key of keysToCheck) {
+        try {
+          const { data, error } = await supabase
+            .from('static_content')
+            .select('*')
+            .eq('key', key)
+            .eq('site', 'sweden')
+            .single();
+
+          if (error) {
+            if (error.code === 'PGRST116') {
+              html += `
+                <div class="result error">
+                  <div class="key">${key}</div>
+                  <p><strong>Status:</strong> NOT FOUND - No data exists in database</p>
+                  <p>This content needs to be created/saved from the CMS page.</p>
+                </div>
+              `;
+            } else {
+              html += `
+                <div class="result error">
+                  <div class="key">${key}</div>
+                  <p><strong>Error:</strong> ${error.message}</p>
+                  <pre>${JSON.stringify(error, null, 2)}</pre>
+                </div>
+              `;
+            }
+          } else {
+            let valuePreview = data.value;
+            if (typeof valuePreview === 'string') {
+              try {
+                const parsed = JSON.parse(valuePreview);
+                valuePreview = parsed;
+              } catch (e) {
+                // Already a string, leave it
+              }
+            }
+
+            html += `
+              <div class="result">
+                <div class="key">${key}</div>
+                <p><strong>Status:</strong> ✅ FOUND</p>
+                <p><strong>Section:</strong> ${data.section}</p>
+                <p><strong>Content Type:</strong> ${data.content_type}</p>
+                <p><strong>Last Updated:</strong> ${data.updated_at}</p>
+                <p><strong>Value:</strong></p>
+                <pre>${JSON.stringify(valuePreview, null, 2)}</pre>
+              </div>
+            `;
+          }
+        } catch (err) {
+          html += `
+            <div class="result error">
+              <div class="key">${key}</div>
+              <p><strong>Exception:</strong> ${err.message}</p>
+            </div>
+          `;
+        }
+      }
+
+      resultsDiv.innerHTML = html;
+    }
+
+    // Auto-check on load
+    if (supabase) {
+      setTimeout(checkContent, 500);
+    } else {
+      resultsDiv.innerHTML = '<div class="result error"><p>Supabase client not available</p></div>';
+    }
+  </script>
+</body>
+</html>

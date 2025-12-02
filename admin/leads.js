@@ -18,9 +18,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Initialize site selector
-    window.SiteSelector.initializeSiteSelector();
-
     // Setup event listeners
     setupEventListeners();
 
@@ -112,7 +109,7 @@ async function loadLeads() {
         const { data: leads, error } = await window.Supabase.client
             .from('leads')
             .select('*')
-            .eq('site', window.CURRENT_SITE || 'henrik')
+            .eq('site', window.CURRENT_SITE || 'sweden')
             .order('created_at', { ascending: false });
 
         if (error) throw error;
@@ -242,6 +239,7 @@ async function viewLead(leadId) {
             .from('leads')
             .select('*')
             .eq('id', leadId)
+            .eq('site', window.CURRENT_SITE || 'sweden')
             .single();
 
         if (leadError) throw leadError;
@@ -289,6 +287,10 @@ async function viewLead(leadId) {
 function renderLeadDetail(lead, conversations, inquiries, storytellerInquiries = []) {
     const content = document.getElementById('leadDetailContent');
 
+    // Extract travel details from preferences
+    const travelDetails = lead.preferences?.travel_details || {};
+    const hasTravelDetails = travelDetails.people || travelDetails.budget || travelDetails.dates;
+
     const detailHTML = `
         <div class="lead-detail">
             <div class="lead-info-grid">
@@ -302,6 +304,15 @@ function renderLeadDetail(lead, conversations, inquiries, storytellerInquiries =
                     <div class="info-row"><strong>Status:</strong> <span class="status-badge status-${lead.status}">${formatStatus(lead.status)}</span></div>
                     <div class="info-row"><strong>Created:</strong> ${formatDateTime(lead.created_at)}</div>
                 </div>
+
+                ${hasTravelDetails ? `
+                <div class="info-section">
+                    <h3>Travel Details</h3>
+                    ${travelDetails.people ? `<div class="info-row"><strong>Number of people:</strong> ${travelDetails.people}</div>` : ''}
+                    ${travelDetails.budget ? `<div class="info-row"><strong>Budget:</strong> ${travelDetails.budget}</div>` : ''}
+                    ${travelDetails.dates ? `<div class="info-row"><strong>Ideal Dates & Duration:</strong> ${travelDetails.dates}</div>` : ''}
+                </div>
+                ` : ''}
 
                 <div class="info-section">
                     <h3>Notes</h3>
@@ -389,7 +400,7 @@ async function saveLeadNotes(leadId) {
             .from('leads')
             .update({ notes })
             .eq('id', leadId)
-            .eq('site', window.CURRENT_SITE || 'henrik');
+            .eq('site', window.CURRENT_SITE || 'sweden');
 
         if (error) throw error;
 
@@ -420,7 +431,7 @@ async function updateLeadStatus(leadId) {
             .from('leads')
             .update({ status: nextStatus })
             .eq('id', leadId)
-            .eq('site', window.CURRENT_SITE || 'henrik');
+            .eq('site', window.CURRENT_SITE || 'sweden');
 
         if (error) throw error;
 

@@ -21,6 +21,7 @@ interface ChatRequest {
     themes?: string[];
     season?: string;
     location?: string;
+    livContext?: string;
   };
   stream?: boolean;
   leadInfo?: {
@@ -28,6 +29,9 @@ interface ChatRequest {
     name?: string;
     phone?: string;
     country?: string;
+    people?: string;
+    budget?: string;
+    dates?: string;
   };
   storytellerInquiry?: {
     topic?: string;
@@ -68,31 +72,35 @@ Deno.serve(async (req) => {
     let storytellers: any[] = [];
 
     if (isStorytellerMode) {
-      // Load storytellers for storyteller mode
-      const [storytellersResult] = await Promise.all([
+      // Load storytellers and storyteller-specific instructions for storyteller mode
+      const [storytellersResult, instructionsResult] = await Promise.all([
         supabase.from('stories')
           .select('*')
           .eq('category', 'Storyteller')
           .not('published_at', 'is', null)
-          .order('display_order', { ascending: true })
+          .order('display_order', { ascending: true }),
+        supabase.from('liv_instructions')
+          .select('*')
+          .eq('is_active', true)
+          .in('mode', ['storyteller', 'both'])
+          .order('priority', { ascending: false })
       ]);
       storytellers = storytellersResult.data || [];
+      instructions = instructionsResult.data || [];
     } else {
-      // Load destinations, services, press items, and instructions for Agent Henrik mode
-      const [destinationsResult, servicesResult, pressItemsResult, instructionsResult] = await Promise.all([
-        supabase.from('destinations').select('*').eq('site', 'henrik').eq('published', true),
-        supabase.from('services').select('*').eq('site', 'henrik').eq('published', true).order('display_order'),
-        supabase.from('press_items').select('*').eq('site', 'henrik').not('published_at', 'is', null).order('published_at', { ascending: false }).limit(6),
-        supabase.from('liv_instructions').select('*').eq('site', 'henrik').eq('is_active', true).order('priority', { ascending: false })
+      // Load destinations, themes, and instructions for regular itinerary mode
+      const [destinationsResult, themesResult, instructionsResult] = await Promise.all([
+        supabase.from('destinations').select('*').eq('published', true),
+        supabase.from('themes').select('*'),
+        supabase.from('liv_instructions')
+          .select('*')
+          .eq('is_active', true)
+          .in('mode', ['regular', 'both'])
+          .order('priority', { ascending: false })
       ]);
       destinations = destinationsResult.data || [];
-      themes = servicesResult.data || []; // Repurposing themes variable for services
+      themes = themesResult.data || [];
       instructions = instructionsResult.data || [];
-      // Store press items in a separate variable for use in system prompt
-      const pressItems = pressItemsResult.data || [];
-      // Make press items available to buildSystemPrompt by adding to context
-      if (!context) context = {};
-      (context as any).pressItems = pressItems;
     }
 
     // Save or update conversation
@@ -148,13 +156,13 @@ Deno.serve(async (req) => {
     // Handle lead capture
     let leadId: string | null = existingConversation?.lead_id || null;
 
-    if (leadInfo && leadInfo.email && !leadId) {
+    if (leadInfo && leadInfo.email) {
       console.log('📧 Lead capture triggered:', leadInfo.email);
 
-      // Check if lead already exists
+      // Check if lead already exists for THIS email
       const { data: existingLead, error: leadCheckError } = await supabase
         .from('leads')
-        .select('id')
+        .select('id, email')
         .eq('email', leadInfo.email)
         .single();
 
@@ -197,6 +205,15 @@ Deno.serve(async (req) => {
           } else {
             preferences.interest_summary = 'General inquiry';
           }
+        }
+
+        // Add travel details from lead form
+        if (leadInfo.people || leadInfo.budget || leadInfo.dates) {
+          preferences.travel_details = {
+            people: leadInfo.people || null,
+            budget: leadInfo.budget || null,
+            dates: leadInfo.dates || null
+          };
         }
 
         // Add storyteller inquiry details if available
@@ -286,10 +303,48 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Build Agent Henrik's system prompt based on conversation mode
+    // Handle booking inquiry capture (for regular itinerary mode)
+    if (!isStorytellerMode && leadInfo?.email && leadId) {
+      console.log('📋 Creating booking inquiry for lead:', leadId);
+
+      // Extract conversation summary from messages
+      const conversationSummary = messages
+        .slice(-5) // Last 5 messages for context
+        .map((m: any) => `${m.role}: ${m.content}`)
+        .join('\n\n');
+
+      const { data: bookingInquiry, error: bookingError } = await supabase
+        .from('booking_inquiries')
+        .insert({
+          conversation_id: conversationId,
+          lead_id: leadId,
+          email: leadInfo.email,
+          name: leadInfo.name || null,
+          phone: leadInfo.phone || null,
+          travel_dates_start: leadInfo.dates?.split(' to ')[0] || null,
+          travel_dates_end: leadInfo.dates?.split(' to ')[1] || null,
+          group_size: leadInfo.people ? parseInt(leadInfo.people) : null,
+          budget_range: leadInfo.budget || null,
+          destinations_of_interest: context?.name ? [context.name] : null,
+          themes_of_interest: context?.themes || null,
+          special_requests: conversationSummary || null,
+          status: 'pending',
+          site: 'sweden'
+        })
+        .select()
+        .single();
+
+      if (bookingError) {
+        console.error('❌ Error creating booking inquiry:', bookingError);
+      } else {
+        console.log('✅ Booking inquiry created:', bookingInquiry?.id);
+      }
+    }
+
+    // Build LIV's system prompt based on conversation mode
     const systemPrompt = isStorytellerMode
-      ? buildStorytellerPrompt(storytellers, context, storytellerInquiry, !!leadInfo?.email)
-      : buildSystemPrompt(destinations, themes, instructions, context, !!leadInfo?.email); // themes variable now contains services data
+      ? buildStorytellerPrompt(storytellers, instructions, context, storytellerInquiry, !!leadInfo?.email)
+      : buildSystemPrompt(destinations, themes, instructions, context, !!leadInfo?.email);
 
     // Prepare messages for OpenAI
     const openaiMessages: ChatMessage[] = [
@@ -432,38 +487,20 @@ Deno.serve(async (req) => {
   }
 });
 
-function buildSystemPrompt(destinations: any[], services: any[], instructions: any[], context?: ChatRequest['context'], hasContactInfo: boolean = false): string {
-  // Extract press items from context if available
-  const pressItems = (context as any)?.pressItems || [];
+function buildSystemPrompt(destinations: any[], themes: any[], instructions: any[], context?: ChatRequest['context'], hasContactInfo: boolean = false): string {
+  // Build destinations knowledge
+  const destinationsKnowledge = destinations.map(d => {
+    const themeNames = d.theme_ids?.map((tid: string) =>
+      themes.find(t => t.id === tid)?.label
+    ).filter(Boolean).join(', ') || 'None';
 
-  // Build press knowledge section
-  const pressKnowledge = pressItems.length > 0
-    ? pressItems.map((p: any) => `- "${p.quote}" — ${p.source}${p.title ? ` (${p.title})` : ''}`).join('\n')
-    : '- Featured in international luxury travel publications';
+    return `- ${d.title} (${d.category}): ${d.description} | Themes: ${themeNames} | Seasons: ${d.seasons?.join(', ') || 'All'}`;
+  }).join('\n');
 
-  // Build services knowledge
-  const servicesKnowledge = services.length > 0
-    ? services.map((s: any) => {
-        const regions = s.region_availability?.join(', ') || 'Global';
-        return `### ${s.title} (${s.service_type || 'Experience'})
-${s.description}
-Available regions: ${regions}`;
-      }).join('\n\n')
-    : '';
-
-  // Build destination knowledge grouped by region
-  const destinationsByRegion = destinations.reduce((acc: any, d: any) => {
-    const region = d.region || 'Other';
-    if (!acc[region]) acc[region] = [];
-    acc[region].push(d);
-    return acc;
-  }, {});
-
-  const destinationsKnowledge = Object.entries(destinationsByRegion)
-    .map(([region, dests]: [string, any]) => `
-**${region} Region:**
-${(dests as any[]).map(d => `- ${d.title}: ${d.description}`).join('\n')}`
-    ).join('\n');
+  // Build themes knowledge
+  const themesKnowledge = themes.map(t =>
+    `- ${t.label}: ${t.highlight || ''}`
+  ).join('\n');
 
   // Build admin instructions by category
   const instructionsByCategory = {
@@ -494,81 +531,100 @@ ${instructionsByCategory.general.length > 0 ? `### General Guidelines:
 ${instructionsByCategory.general.map(i => `- **${i.title}**: ${i.instruction}`).join('\n')}
 ` : ''}` : '';
 
+  // NEW: Add item-specific context section
+  const itemSpecificContext = context?.livContext ? `
+
+## SPECIFIC CONTEXT FOR THIS ITEM
+
+${context.livContext}
+
+**IMPORTANT:** The instructions above are specific to what the user clicked on (destination, experience, or storyteller). Follow them closely as they provide critical details about duration, pricing, seasonality, and unique characteristics of this particular offering.
+
+` : '';
+
   // Context-aware greeting
   let contextIntro = '';
-  if (context?.type === 'destination' && context?.name) {
-    const dest = destinations.find(d => d.title === context.name || d.slug === context.name);
-    contextIntro = `\n## Current Context\nThe user is exploring **${context.name}** in the ${dest?.region || context.region || 'Unknown'} region.`;
-    if (dest?.press_featured) {
-      contextIntro += ' This destination has been featured in international press.';
+  if (context) {
+    switch (context.type) {
+      case 'map':
+        contextIntro = `The visitor has just clicked on "${context.name || context.location}" on the map${context.category ? ` (a ${context.category})` : ''}. They are clearly interested in this destination${context.themes?.length ? ` and themes like ${context.themes.join(', ')}` : ''}.`;
+        break;
+      case 'story':
+        contextIntro = `The visitor has just read a story about "${context.name}". They are engaged with this narrative and likely interested in similar experiences.`;
+        break;
+      case 'experience':
+        contextIntro = `The visitor has just viewed an experience related to "${context.name}"${context.themes?.length ? ` involving ${context.themes.join(', ')}` : ''}.`;
+        break;
+      case 'theme':
+        contextIntro = `The visitor has just explored the "${context.name}" theme. They're interested in this type of experience.`;
+        break;
+      case 'destination':
+        contextIntro = `The visitor has just been viewing "${context.name}" and wants to learn more.`;
+        break;
     }
-  } else if (context?.type === 'map' && context?.name) {
-    contextIntro = `\n## Current Context\nThe user clicked on **${context.name}** on the world map. They are interested in this destination.`;
-  } else if (context?.type === 'story' && context?.name) {
-    contextIntro = `\n## Current Context\nThe user just read a story about **${context.name}**. They are engaged with this narrative.`;
-  } else if (context?.type === 'experience' && context?.name) {
-    contextIntro = `\n## Current Context\nThe user viewed an experience related to **${context.name}**.`;
   }
 
-  // Contact guidance
   const contactInfoGuidance = hasContactInfo
-    ? '\n## Lead Status\nYou already have their contact information. Focus on refining their journey and confirming next steps. Be concrete: "I\'ll send you a detailed proposal within 24 hours, and our team will reach out to discuss."'
-    : '\n## Contact Collection\nWhen the conversation shows clear intent (specific dates, group size, budget discussion, or words like "interested," "book," "reserve"), naturally ask: "To craft your personalized itinerary, may I have your name and email?" Watch for high-intent signals and collect contact info within 2-3 messages.';
+    ? '\n\n**The visitor has provided their contact information, indicating serious interest. Focus on specific itinerary planning and next steps toward booking. Be concrete about what happens next: "I\'ll send you a detailed proposal within 24 hours, and our team will reach out to answer any questions."**'
+    : '\n\n**When the conversation shows genuine interest (asking about specific dates, budgets, pricing, availability, or expressing desire to book), naturally transition to capturing their contact information. Use phrases like:**\n- "I\'d love to send you a detailed itinerary. May I have your email?"\n- "Let me put together a custom proposal for you. What\'s the best email to send it to?"\n- "I can create a personalized journey plan. Where should I send it?"\n\n**Watch for high-intent signals:**\n- Mentions of specific dates or timeframes\n- Questions about pricing, costs, or budget\n- Asking for availability or booking information\n- Requesting detailed information or proposals\n- Using words like "interested," "book," "reserve," "send me"\n\n**When you detect high intent, smoothly ask for their contact information within 1-2 messages.**';
 
-  return `You are Agent Henrik, a global luxury travel architect and cultural curator.
+  return `You are LIV (Luxury Itinerary Visionary), an AI concierge for Luxury Travel Sweden. You are sophisticated, warm, knowledgeable, and proactive. Your role is to craft bespoke, narrative-rich travel itineraries for discerning travelers seeking extraordinary Swedish experiences.
 
-## Your Identity
-You design transformative journeys across the world's most compelling destinations. You blend hidden culture, insider access, and storytelling to create exclusive narrative experiences. You are sophisticated yet warm, editorial yet conversational.
+## Your Personality
+- Sophisticated yet approachable, like a well-traveled cultural insider
+- Use evocative, sensory language that paints vivid pictures
+- Be proactive in making specific recommendations, not generic suggestions
+- Show deep knowledge of Swedish culture, seasons, and hidden gems
+- Balance luxury with authenticity and meaning
 
-## Your Global Expertise
+## Your Knowledge Base
 
-### Press Recognition
-Your work has been featured in:
-${pressKnowledge}
+### Available Destinations:
+${destinationsKnowledge}
 
-### Services & Transformations
-You offer experience types designed to transform perspectives:
-${servicesKnowledge || 'Custom luxury experiences tailored to each traveler'}
+### Experience Themes:
+${themesKnowledge}
 
-### Destinations Knowledge
-${destinationsKnowledge || 'Curated global destinations spanning multiple continents'}
+### Seasonal Considerations:
+- **Spring (Mar-May)**: Awakening nature, midnight sun begins, Easter traditions, fewer crowds
+- **Summer (Jun-Aug)**: Midnight sun, archipelago season, festivals, perfect for outdoor adventures
+- **Autumn (Sep-Nov)**: Fall colors, harvest season, northern lights begin, cultural season starts
+- **Winter (Dec-Feb)**: Northern lights, winter sports, ice hotels, Christmas markets, aurora viewing
+${adminInstructionsSection}${itemSpecificContext}
 
-## Regional Seasonal Awareness
-- **Nordic**: Northern Lights (Oct-Mar), Midnight Sun (Jun-Jul), Design Week (Sep)
-- **Mediterranean**: Peak summer (Jun-Sep), Mild winters, Cultural festivals (year-round)
-- **Asia Pacific**: Cherry blossoms (Mar-Apr), Monsoon awareness, Festival seasons
-- **Americas**: Seasonal diversity, Cultural events, Natural wonders
+## Context for This Conversation:
+${contextIntro || 'The visitor has opened the chat to explore possibilities.'}${contactInfoGuidance}
 
-${contextIntro}
+## Your Approach
+1. **Start smart**: Don't ask basic questions. Use the context above to show you already understand their interest.
+2. **Be specific**: Recommend actual destinations, experiences, and itineraries from your knowledge base.
+3. **Paint pictures**: Use vivid, sensory descriptions that help them imagine the experience.
+4. **Suggest proactively**: Don't just wait for them to ask - offer creative ideas based on their interests.
+5. **Build narratives**: Weave destinations and experiences into cohesive story-driven itineraries.
+6. **Ask smart questions**: When you need clarification, ask about preferences, not basics.
+7. **Capture interest**: When engagement is high, suggest sharing contact details to receive a personalized itinerary.
+8. **Close with action**: Guide them toward booking or connecting with the team.
 
-${contactInfoGuidance}
+## Itinerary Creation Guidelines
+When creating itineraries:
+- Start with a compelling narrative hook
+- Suggest 3-7 days for most journeys
+- Include specific destinations from your knowledge base
+- Weave in themes that match their interests
+- Consider seasonal appropriateness
+- Add unique touches (private access, local experts, hidden gems)
+- End with a memorable crescendo experience
+- Keep it aspirational yet achievable
 
-## Your Conversational Approach
-1. **Be context-aware**: Reference the destination or service they clicked on
-2. **Ask open-ended questions**: Duration, travel style, group composition, what excites them
-3. **Paint pictures**: Use editorial language, not transactional
-4. **Build trust**: Reference press recognition naturally when relevant
-5. **Service-driven**: Focus on transformation type, not just geography
-6. **Lead gently**: After 3-4 exchanges showing intent, collect contact info
+## Example Opening (if context suggests interest in Stockholm nightlife):
+"I see Stockholm's nightlife has caught your eye. Let me paint you an evening that goes beyond the usual — we'll begin in the Grand Hôtel's Cadier Bar at dusk, then slip into an underground jazz speakeasy that locals guard jealously, followed by a private rooftop cocktail experience where a mixologist has reserved the bar just for you. Should we build this into a 3-day Stockholm cultural immersion, or are you dreaming of something that spans the entire country?"
 
-## Itinerary Structure
-When creating draft itineraries, use this story arc:
-- **Day 1-2**: Arrival and Immersion (cultural grounding)
-- **Day 3-4**: Climax (peak experiences, insider access)
-- **Day 5**: Reflection (meaningful encounters, integration)
-
-Keep itineraries editorial and immersive, never transactional.
-
-${adminInstructionsSection}
-
-## Example Opening (destination context):
-"I see ${context?.name || 'extraordinary destinations'} has caught your attention. This is where culture breathes beneath the surface. What draws you here — is it the underground art scene, the culinary alchemy, or something that hasn't been written about yet?"
-
-Remember: You are Agent Henrik — architect of transformative global journeys, curator of hidden culture, creator of narrative experiences.`;
+Remember: You're not just answering questions - you're the architect of unforgettable Swedish journeys.`;
 }
 
 function buildStorytellerPrompt(
   storytellers: any[],
+  instructions: any[],
   context?: ChatRequest['context'],
   storytellerInquiry?: ChatRequest['storytellerInquiry'],
   hasContactInfo: boolean = false
@@ -583,6 +639,46 @@ function buildStorytellerPrompt(
   Bio: ${s.excerpt || s.bio || 'No description available'}
   ID: ${s.id}`;
   }).join('\n\n');
+
+  // Build admin instructions by category (similar to regular mode)
+  const instructionsByCategory = {
+    promote: instructions.filter(i => i.category === 'promote'),
+    avoid: instructions.filter(i => i.category === 'avoid'),
+    knowledge: instructions.filter(i => i.category === 'knowledge'),
+    tone: instructions.filter(i => i.category === 'tone'),
+    general: instructions.filter(i => i.category === 'general')
+  };
+
+  const adminInstructionsSection = instructions.length > 0 ? `
+
+## ADMIN INSTRUCTIONS (CRITICAL - FOLLOW THESE CLOSELY)
+
+${instructionsByCategory.promote.length > 0 ? `### Things to Promote and Highlight:
+${instructionsByCategory.promote.map(i => `- **${i.title}**: ${i.instruction}`).join('\n')}
+` : ''}
+${instructionsByCategory.avoid.length > 0 ? `### Things to Avoid or Not Mention:
+${instructionsByCategory.avoid.map(i => `- **${i.title}**: ${i.instruction}`).join('\n')}
+` : ''}
+${instructionsByCategory.knowledge.length > 0 ? `### Special Knowledge:
+${instructionsByCategory.knowledge.map(i => `- **${i.title}**: ${i.instruction}`).join('\n')}
+` : ''}
+${instructionsByCategory.tone.length > 0 ? `### Tone and Communication Style:
+${instructionsByCategory.tone.map(i => `- **${i.title}**: ${i.instruction}`).join('\n')}
+` : ''}
+${instructionsByCategory.general.length > 0 ? `### General Guidelines:
+${instructionsByCategory.general.map(i => `- **${i.title}**: ${i.instruction}`).join('\n')}
+` : ''}` : '';
+
+  // NEW: Add item-specific context section
+  const itemSpecificContext = context?.livContext ? `
+
+## SPECIFIC CONTEXT FOR THIS ITEM
+
+${context.livContext}
+
+**IMPORTANT:** The instructions above are specific to what the user clicked on (destination, experience, or storyteller). Follow them closely as they provide critical details about duration, pricing, seasonality, and unique characteristics of this particular offering.
+
+` : '';
 
   // Check if a specific storyteller was clicked (context.name matches a storyteller title)
   const selectedStoryteller = context?.name ?
@@ -709,6 +805,7 @@ ${storytellersKnowledge}
 - **Meet & Greet**: 1-2 hour intimate conversation, Q&A, coffee/drinks meeting
 - **Workshop**: Half-day or full-day hands-on learning experience
 - **Creative Activity**: Collaborative project, studio visit, immersive experience
+${adminInstructionsSection}${itemSpecificContext}
 ${stageGuidance}${contactInfoGuidance}
 
 ## Conversation Guidelines

@@ -14,10 +14,23 @@
 (function() {
     'use strict';
 
+    // Detect base path from current location
+    function getBasePath() {
+        const path = window.location.pathname;
+        // Find the admin folder position and get everything before it
+        const adminIndex = path.indexOf('/admin/');
+        if (adminIndex > 0) {
+            return path.substring(0, adminIndex);
+        }
+        return '';
+    }
+
+    const BASE_PATH = getBasePath();
+
     // Configuration
     const CONFIG = {
-        LOGIN_PAGE: '/admin/login.html',
-        DASHBOARD_PAGE: '/admin/index.html',
+        LOGIN_PAGE: BASE_PATH + '/admin/login.html',
+        DASHBOARD_PAGE: BASE_PATH + '/admin/index.html',
         SESSION_KEY: 'lts_admin_session',
         REMEMBER_KEY: 'lts_admin_remember',
         SESSION_TIMEOUT: 24 * 60 * 60 * 1000, // 24 hours
@@ -278,7 +291,7 @@
 
             // Send password reset email
             const { error } = await window.Supabase.client.auth.resetPasswordForEmail(email, {
-                redirectTo: `${window.location.origin}/admin/reset-password.html`
+                redirectTo: `${window.location.origin}${BASE_PATH}/admin/reset-password.html`
             });
 
             if (error) throw error;

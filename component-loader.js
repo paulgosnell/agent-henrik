@@ -12,13 +12,27 @@
 (function() {
     'use strict';
 
+    // Get base path from the script's own src attribute
+    function getBasePath() {
+        const scripts = document.querySelectorAll('script[src*="component-loader"]');
+        if (scripts.length > 0) {
+            const src = scripts[scripts.length - 1].src;
+            // Get the directory containing the script
+            return src.substring(0, src.lastIndexOf('/') + 1);
+        }
+        // Fallback: use current page's directory
+        return '';
+    }
+
+    const BASE_PATH = getBasePath();
+
     const COMPONENTS = {
         header: {
-            url: '/components/header.html',
+            url: BASE_PATH + 'components/header.html?v=' + Date.now(),
             placeholder: '#header-placeholder'
         },
         footer: {
-            url: '/components/footer.html',
+            url: BASE_PATH + 'components/footer.html?v=' + Date.now(),
             placeholder: '#footer-placeholder'
         }
     };

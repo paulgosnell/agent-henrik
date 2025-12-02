@@ -3,174 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../">
   <title>Instagram Setup - Luxury Travel Sweden CMS</title>
-  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="admin/admin.css">
+
+    <!-- Component Loader -->
+    <script src="admin/admin-component-loader.js?v=3"></script>
 </head>
 <body>
   <div class="admin-container">
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div class="logo">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-            <path d="M16 2L26 8L26 24L16 30L6 24L6 8L16 2Z" fill="currentColor" opacity="0.2"/>
-            <path d="M16 2L26 8M26 8L26 24M26 24L16 30M16 30L6 24M6 24L6 8M6 8L16 2M16 2L16 30M6 8L26 24M26 8L6 24" stroke="currentColor" stroke-width="1.5"/>
-          </svg>
-          <div>
-            <h1>LTS</h1>
-            <span>CMS</span>
-          </div>
-        </div>
-      </div>
+    <!-- Sidebar Navigation - Loaded from component -->
 
-      <div id="siteSelectorContainer"></div>
-
-      <nav class="sidebar-nav">
-        <a href="index.html" class="nav-item">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <rect x="3" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
-            <rect x="11" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
-            <rect x="3" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
-            <rect x="11" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
-          </svg>
-          <span>Dashboard</span>
-        </a>
-
-        <a href="destinations.html" class="nav-item">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M10 2C10 2 4 6 4 11C4 14.3137 6.68629 17 10 17C13.3137 17 16 14.3137 16 11C16 6 10 2 10 2Z" stroke="currentColor" stroke-width="1.5"/>
-            <circle cx="10" cy="11" r="2" fill="currentColor"/>
-          </svg>
-          <span>Destinations</span>
-        </a>
-
-        <a href="leads.html" class="nav-item">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M10 11C12.2091 11 14 9.20914 14 7C14 4.79086 12.2091 3 10 3C7.79086 3 6 4.79086 6 7C6 9.20914 7.79086 11 10 11Z" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M2 17C2 14 6 12 10 12C14 12 18 14 18 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <span>Leads & Contacts</span>
-        </a>
-
-        <a href="press.html" class="nav-item">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M7 7H13M7 11H13M7 14H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <span>Press & Media</span>
-        </a>
-
-        <a href="liv-settings.html" class="nav-item">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M10 1V4M10 16V19M19 10H16M4 10H1M16.95 16.95L14.83 14.83M5.17 5.17L3.05 3.05M16.95 3.05L14.83 5.17M5.17 14.83L3.05 16.95" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <span>LIV AI Settings</span>
-        </a>
-
-        <a href="instagram-setup.html" class="nav-item active">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <rect x="3" y="3" width="14" height="14" rx="4" stroke="currentColor" stroke-width="1.5"/>
-            <circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/>
-            <circle cx="14.5" cy="5.5" r="0.5" fill="currentColor"/>
-          </svg>
-          <span>Instagram Setup</span>
-        </a>
-
-        <a href="posts.html" class="nav-item">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M3 4H17M3 8H17M3 12H17M3 16H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <span>Blog Posts</span>
-        </a>
-
-        <a href="stories.html" class="nav-item">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M7 7H13M7 11H13M7 14H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <span>Stories</span>
-        </a>
-
-        <a href="pillars.html" class="nav-item">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <rect x="3" y="3" width="6" height="14" rx="1" stroke="currentColor" stroke-width="1.5"/>
-            <rect x="11" y="3" width="6" height="14" rx="1" stroke="currentColor" stroke-width="1.5"/>
-          </svg>
-          <span>Pillars</span>
-        </a>
-
-        <a href="team-members.html" class="nav-item">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M7 8C8.65685 8 10 6.65685 10 5C10 3.34315 8.65685 2 7 2C5.34315 2 4 3.34315 4 5C4 6.65685 5.34315 8 7 8Z" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M14 8C15.1046 8 16 7.10457 16 6C16 4.89543 15.1046 4 14 4C12.8954 4 12 4.89543 12 6C12 7.10457 12.8954 8 14 8Z" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M2 16C2 13 4 11 7 11C10 11 12 13 12 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M12 14C12 12.5 13 11 14 11C15.5 11 17 12 18 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <span>Team Members</span>
-        </a>
-
-        <a href="our-story.html" class="nav-item">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M10 2L12 7L17 7L13 11L15 16L10 13L5 16L7 11L3 7L8 7L10 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-          </svg>
-          <span>Our Story</span>
-        </a>
-
-        <a href="pricing.html" class="nav-item">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M10 6V10L13 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <span>Pricing Tiers</span>
-        </a>
-
-        <a href="faqs.html" class="nav-item">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M10 14V14.01M10 11C10 9.89543 10.8954 9 12 9C13.1046 9 14 9.89543 14 11C14 11.7403 13.5978 12.3866 13 12.7324V13C13 13.5523 12.5523 14 12 14H10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <span>FAQs</span>
-        </a>
-
-        <a href="media.html" class="nav-item">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
-            <circle cx="7.5" cy="7.5" r="1.5" fill="currentColor"/>
-            <path d="M17 13L13 9L8 14M8 14L6 12L3 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>Media Library</span>
-        </a>
-
-        <a href="help.html" class="nav-item">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M10 13.5V13.51M10 10.5C10 9.39543 10.8954 8.5 12 8.5C13.1046 8.5 14 9.39543 14 10.5C14 11.2403 13.5978 11.8866 13 12.2324V12.5C13 13.0523 12.5523 13.5 12 13.5H10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <span>Help & Documentation</span>
-        </a>
-      </nav>
-
-      <div class="sidebar-footer">
-        <div class="user-info">
-          <div class="user-avatar">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/>
-              <path d="M4 17C4 14 6 12 10 12C14 12 16 14 16 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div class="user-details">
-            <div class="user-name">Admin</div>
-            <div class="user-email" id="userEmail">Loading...</div>
-          </div>
-        </div>
-        <button id="logoutBtn" class="logout-btn" title="Logout">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M13 13L17 10L13 7M17 10H7M7 3H5C3.89543 3 3 3.89543 3 5V15C3 16.1046 3.89543 17 5 17H7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
-    </aside>
+    <div id="sidebar-placeholder"></div>
 
     <main class="main-content">
       <header class="content-header">
@@ -190,95 +34,143 @@
 
       <div id="alertContainer"></div>
 
+      <!-- Simple Token Entry -->
       <div class="content-card">
-        <h3>Instagram Access Token</h3>
+        <h3>Connect Your Instagram Account</h3>
         <p style="margin-bottom: 1.5rem; color: rgba(255,255,255,0.6);">
-          Enter your Instagram Basic Display API access token to display your latest posts on the homepage.
+          Paste your Instagram access token below to display your photos on the homepage.
         </p>
 
         <form id="tokenForm">
           <div class="form-group">
-            <label class="form-label" for="accessToken">Access Token</label>
+            <label class="form-label" for="manualToken">Instagram Access Token</label>
             <textarea
-              id="accessToken"
-              class="form-textarea"
+              id="manualToken"
+              class="form-input"
               placeholder="Paste your Instagram access token here..."
-              style="min-height: 120px; font-family: monospace; font-size: 0.875rem;"
-              required
+              rows="4"
+              style="font-family: monospace; font-size: 0.875rem;"
             ></textarea>
+            <p style="margin-top: 0.5rem; font-size: 0.875rem; color: rgba(255,255,255,0.5);">
+              Don't have a token? <a href="https://spotlightwp.com/access-token-generator/" target="_blank" style="color: var(--admin-accent);">Get one here in 1 minute</a>
+            </p>
           </div>
 
-          <div class="form-actions" style="display: flex; gap: 1rem;">
-            <button type="submit" class="btn btn-success" id="saveBtn">
-              <span id="saveBtnText">Save Token</span>
-            </button>
-            <button type="button" class="btn btn-secondary" onclick="testConnection()">
-              Test Connection
-            </button>
-          </div>
+          <button type="submit" class="btn btn-success" id="saveTokenBtn">
+            <span id="saveTokenBtnText">Save Token</span>
+          </button>
+          <button type="button" class="btn btn-secondary" id="clearTokenBtn" style="margin-left: 1rem;">
+            Clear Token (Use Free Feed)
+          </button>
         </form>
+      </div>
+
+      <!-- Current Status -->
+      <div class="content-card" style="margin-top: 2rem;">
+        <h3>Connection Status</h3>
+        <div id="currentStatus" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+          <div class="loading" style="width: 30px; height: 30px;"></div>
+          <span>Loading status...</span>
+        </div>
+
+        <div id="tokenActions" style="margin-top: 1.5rem; display: none;">
+          <button onclick="refreshToken()" class="btn btn-secondary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+              <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0115.5-8.5l4 4M22 12.5a10 10 0 01-15.5 8.5l-4-4"/>
+            </svg>
+            Refresh Token (Extend Expiration)
+          </button>
+          <button onclick="testConnection()" class="btn btn-secondary" style="margin-left: 1rem;">
+            Test Connection
+          </button>
+        </div>
 
         <div id="statusMessage" style="margin-top: 1.5rem; padding: 1rem; border-radius: 8px; display: none;"></div>
       </div>
 
+      <!-- Setup Instructions -->
       <div class="content-card" style="margin-top: 2rem;">
-        <h3>Setup Instructions</h3>
-        <ol style="line-height: 1.8; color: rgba(255,255,255,0.8);">
-          <li>Go to <a href="https://developers.facebook.com/apps/" target="_blank" style="color: var(--admin-accent);">Facebook Developers</a> and create a new app</li>
-          <li>Add "Instagram Basic Display" product to your app</li>
-          <li>Under "User Token Generator", click "Generate Token" for your Instagram account</li>
-          <li>Authorize the app to access your Instagram account</li>
-          <li>Copy the generated access token and paste it above</li>
-          <li>Click "Save Token" to enable Instagram feed on your homepage</li>
+        <h3>How to Get Your Instagram Token</h3>
+
+        <div style="padding: 1rem; background: rgba(33,150,243,0.1); border-left: 3px solid #2196f3; border-radius: 4px; margin-bottom: 1.5rem;">
+          <strong>Note:</strong> Without a custom token, your site uses a free Instagram feed powered by StormLikes. Add your own token for a custom-designed feed.
+        </div>
+
+        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Quick Setup (1 minute)</h4>
+        <ol style="line-height: 1.8; color: rgba(255,255,255,0.8); margin-left: 1.5rem;">
+          <li>Visit <a href="https://spotlightwp.com/access-token-generator/" target="_blank" style="color: var(--admin-accent);">Spotlight Token Generator</a></li>
+          <li>Click "Generate Token" and log in to Instagram</li>
+          <li>Copy the token it gives you</li>
+          <li>Paste it in the field above and click "Save Token"</li>
+          <li>Done! Your custom feed will appear on the homepage</li>
         </ol>
 
-        <p style="margin-top: 1.5rem; padding: 1rem; background: rgba(255,193,7,0.1); border-left: 3px solid #ffc107; border-radius: 4px; color: rgba(255,255,255,0.8);">
-          <strong>Note:</strong> Access tokens expire after 60 days. You'll need to regenerate and update the token periodically.
-        </p>
-      </div>
+        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Requirements</h4>
+        <ul style="line-height: 1.8; color: rgba(255,255,255,0.8); margin-left: 1.5rem;">
+          <li>Your Instagram account must be set to <strong>Business</strong> or <strong>Creator</strong> mode</li>
+          <li>To switch: Open Instagram app → Settings → Account → Switch to Professional Account</li>
+        </ul>
 
-      <div class="content-card" style="margin-top: 2rem;">
-        <h3>Current Status</h3>
-        <div id="currentStatus" style="display: flex; gap: 1rem; align-items: center;">
-          <div class="loading" style="width: 30px; height: 30px;"></div>
-          <span>Loading status...</span>
+        <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(76,175,80,0.1); border-left: 3px solid #4caf50; border-radius: 4px; color: rgba(255,255,255,0.8);">
+          <strong>Token Lifespan:</strong> Tokens last 60 days. When it expires, just get a new one using the same process - takes 1 minute!
         </div>
       </div>
     </main>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../supabase-client.js?v=2"></script>
-  <script src="auth.js"></script>
-  <script src="site-selector.js"></script>
+  <script src="supabase-client.js?v=2"></script>
+  <script src="admin/auth.js"></script>
 
   <script>
-    let currentToken = null;
-
-    async function loadCurrentToken() {
+    async function loadSettings() {
       try {
         const { data, error } = await window.Supabase.client
           .from('instagram_settings')
-          .select('access_token, last_fetched_at')
+          .select('manual_token, access_token, token_expires_at, last_fetched_at, user_id')
           .single();
 
         if (error) throw error;
 
-        currentToken = data.access_token;
+        // Populate manual token field if exists
+        if (data.manual_token) {
+          document.getElementById('manualToken').value = data.manual_token;
+        }
 
-        if (currentToken) {
-          document.getElementById('accessToken').value = currentToken;
-          updateStatus('Connected', 'success', data.last_fetched_at);
+        // Update connection status
+        const activeToken = data.manual_token || data.access_token;
+        if (activeToken) {
+          const expiresAt = data.token_expires_at ? new Date(data.token_expires_at) : null;
+          const now = new Date();
+          const daysUntilExpiry = expiresAt ? Math.floor((expiresAt - now) / (1000 * 60 * 60 * 24)) : null;
+
+          let statusType = 'success';
+          let statusMessage = data.manual_token ? 'Connected (Custom Token)' : 'Connected (OAuth)';
+
+          if (daysUntilExpiry !== null) {
+            if (daysUntilExpiry < 0) {
+              statusType = 'error';
+              statusMessage = 'Token Expired';
+            } else if (daysUntilExpiry < 7) {
+              statusType = 'warning';
+              statusMessage = `${data.manual_token ? 'Custom Token' : 'OAuth'} (Expires in ${daysUntilExpiry} days)`;
+            } else {
+              statusMessage = `${data.manual_token ? 'Custom Token' : 'OAuth'} (Expires in ${daysUntilExpiry} days)`;
+            }
+          }
+
+          updateStatus(statusMessage, statusType, data.last_fetched_at, expiresAt);
+          document.getElementById('tokenActions').style.display = 'block';
         } else {
-          updateStatus('Not configured', 'warning');
+          updateStatus('Using free StormLikes feed', 'warning');
         }
       } catch (error) {
-        console.error('Error loading token:', error);
+        console.error('Error loading settings:', error);
         updateStatus('Error loading status', 'error');
       }
     }
 
-    function updateStatus(message, type, lastFetched = null) {
+    function updateStatus(message, type, lastFetched = null, expiresAt = null) {
       const statusDiv = document.getElementById('currentStatus');
       const colors = {
         success: '#4caf50',
@@ -291,9 +183,16 @@
         <span>${message}</span>
       `;
 
+      if (expiresAt) {
+        const date = new Date(expiresAt);
+        html += `<span style="margin-left: 1rem; color: rgba(255,255,255,0.5); font-size: 0.875rem;">
+          Expires: ${date.toLocaleDateString()}
+        </span>`;
+      }
+
       if (lastFetched) {
         const date = new Date(lastFetched);
-        html += `<span style="margin-left: auto; color: rgba(255,255,255,0.5); font-size: 0.875rem;">
+        html += `<span style="margin-left: 1rem; color: rgba(255,255,255,0.5); font-size: 0.875rem;">
           Last synced: ${date.toLocaleString()}
         </span>`;
       }
@@ -304,12 +203,12 @@
     async function saveToken(event) {
       event.preventDefault();
 
-      const saveBtn = document.getElementById('saveBtn');
-      const saveBtnText = document.getElementById('saveBtnText');
-      const token = document.getElementById('accessToken').value.trim();
+      const saveBtn = document.getElementById('saveTokenBtn');
+      const saveBtnText = document.getElementById('saveTokenBtnText');
+      const token = document.getElementById('manualToken').value.trim();
 
       if (!token) {
-        showAlert('Please enter an access token', 'error');
+        showAlert('Please enter an Instagram access token', 'error');
         return;
       }
 
@@ -320,15 +219,15 @@
         const { error } = await window.Supabase.client
           .from('instagram_settings')
           .update({
-            access_token: token,
+            manual_token: token,
             updated_at: new Date().toISOString()
           })
           .eq('id', '00000000-0000-0000-0000-000000000001');
 
         if (error) throw error;
 
-        showAlert('Access token saved successfully!', 'success');
-        await loadCurrentToken();
+        showAlert('Instagram token saved successfully! Your photos will now appear on the homepage.', 'success');
+        await loadSettings();
       } catch (error) {
         console.error('Error saving token:', error);
         showAlert('Failed to save token: ' + error.message, 'error');
@@ -338,11 +237,63 @@
       }
     }
 
+    async function clearToken() {
+      if (!confirm('Clear your custom Instagram token and use the free StormLikes feed instead?')) {
+        return;
+      }
+
+      try {
+        const { error } = await window.Supabase.client
+          .from('instagram_settings')
+          .update({
+            manual_token: null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', '00000000-0000-0000-0000-000000000001');
+
+        if (error) throw error;
+
+        document.getElementById('manualToken').value = '';
+        showAlert('Token cleared. Now using free StormLikes feed.', 'success');
+        await loadSettings();
+      } catch (error) {
+        console.error('Error clearing token:', error);
+        showAlert('Failed to clear token: ' + error.message, 'error');
+      }
+    }
+
+    async function refreshToken() {
+      const statusMessage = document.getElementById('statusMessage');
+      statusMessage.style.display = 'block';
+      statusMessage.style.background = 'rgba(255,255,255,0.05)';
+      statusMessage.innerHTML = '<div class="loading" style="width: 24px; height: 24px; display: inline-block; vertical-align: middle;"></div><span style="margin-left: 1rem;">Refreshing token...</span>';
+
+      try {
+        const response = await fetch('https://fjnfsabvuiyzuzfhxzcc.supabase.co/functions/v1/instagram-oauth?action=refresh');
+        const data = await response.json();
+
+        if (data.error) {
+          statusMessage.style.background = 'rgba(244,67,54,0.1)';
+          statusMessage.style.borderLeft = '3px solid #f44336';
+          statusMessage.innerHTML = `<strong>Refresh Failed</strong><br>${data.error}`;
+        } else {
+          statusMessage.style.background = 'rgba(76,175,80,0.1)';
+          statusMessage.style.borderLeft = '3px solid #4caf50';
+          statusMessage.innerHTML = `<strong>Success!</strong><br>Token refreshed. Valid for ${data.expires_in_days} more days.`;
+          await loadSettings();
+        }
+      } catch (error) {
+        statusMessage.style.background = 'rgba(244,67,54,0.1)';
+        statusMessage.style.borderLeft = '3px solid #f44336';
+        statusMessage.innerHTML = `<strong>Error</strong><br>${error.message}`;
+      }
+    }
+
     async function testConnection() {
       const statusMessage = document.getElementById('statusMessage');
       statusMessage.style.display = 'block';
       statusMessage.style.background = 'rgba(255,255,255,0.05)';
-      statusMessage.innerHTML = '<div class="loading" style="width: 24px; height: 24px;"></div><span style="margin-left: 1rem;">Testing connection...</span>';
+      statusMessage.innerHTML = '<div class="loading" style="width: 24px; height: 24px; display: inline-block; vertical-align: middle;"></div><span style="margin-left: 1rem;">Testing connection...</span>';
 
       try {
         const response = await fetch('https://fjnfsabvuiyzuzfhxzcc.supabase.co/functions/v1/fetch-instagram');
@@ -351,7 +302,7 @@
         if (data.error) {
           statusMessage.style.background = 'rgba(244,67,54,0.1)';
           statusMessage.style.borderLeft = '3px solid #f44336';
-          statusMessage.innerHTML = `<strong>Connection Failed</strong><br>${data.error}`;
+          statusMessage.innerHTML = `<strong>Connection Failed</strong><br>${data.error || data.details}`;
         } else if (data.posts && data.posts.length > 0) {
           statusMessage.style.background = 'rgba(76,175,80,0.1)';
           statusMessage.style.borderLeft = '3px solid #4caf50';
@@ -359,7 +310,7 @@
         } else {
           statusMessage.style.background = 'rgba(255,152,0,0.1)';
           statusMessage.style.borderLeft = '3px solid #ff9800';
-          statusMessage.innerHTML = '<strong>Connected</strong><br>No posts found. Make sure your Instagram account has public posts.';
+          statusMessage.innerHTML = '<strong>Connected</strong><br>No posts found. Make sure your Instagram Business account has posts.';
         }
       } catch (error) {
         statusMessage.style.background = 'rgba(244,67,54,0.1)';
@@ -392,12 +343,13 @@
     }
 
     document.getElementById('tokenForm').addEventListener('submit', saveToken);
+    document.getElementById('clearTokenBtn').addEventListener('click', clearToken);
 
     (async function() {
       const user = await window.AuthManager.requireAuth();
       if (user) {
         await window.AuthManager.updateUserInfoUI();
-        await loadCurrentToken();
+        await loadSettings();
       }
     })();
   </script>

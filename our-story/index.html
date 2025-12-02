@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Story — Luxury Travel Sweden</title>
-    <link rel="stylesheet" href="/styles.css">
+    <base href="../">
+    <link rel="stylesheet" href="styles.css">
     <style>
         /* Loading State */
         .loading-state {
@@ -44,7 +45,7 @@
             margin-top: 4rem;
             color: rgba(255, 255, 255, 0.95);
             line-height: 1.3;
-            text-align: center;
+            text-align: left;
         }
 
         .story-section h3 {
@@ -54,7 +55,7 @@
             margin-top: 4rem;
             color: rgba(255, 255, 255, 0.92);
             line-height: 1.4;
-            text-align: center;
+            text-align: left;
         }
 
         .story-section p {
@@ -199,7 +200,7 @@
     </style>
 
     <!-- Component Loader - Load shared header/footer -->
-    <script src="/component-loader.js"></script>
+    <script src="component-loader.js?v=1732878000"></script>
 </head>
 <body>
     <!-- Header loaded from /components/header.html -->
@@ -208,6 +209,12 @@
     <main class="site-main">
         <section class="section" style="padding-top: 180px;">
             <div class="section-inner">
+                <div class="section-heading">
+                    <span class="eyebrow">Our Story</span>
+                    <h2>Where luxury meets authenticity</h2>
+                    <p>Discover the journey behind our passion for crafting unforgettable Swedish experiences.</p>
+                </div>
+
                 <!-- Loading State -->
                 <div class="loading-state" id="loadingState">
                     <div class="loading-spinner"></div>
@@ -259,10 +266,10 @@
 
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/supabase-client.js"></script>
-    <script src="/scripts.js?v=1761950330"></script>
+    <script src="supabase-client.js"></script>
+    <script src="scripts.js?v=1732878000"></script>
     <script>
-        // Load story sections from Supabase
+        // Load story content from Supabase static_content table
         async function loadStory() {
             const loadingState = document.getElementById('loadingState');
             const storyContent = document.getElementById('storyContent');
@@ -273,23 +280,39 @@
                     throw new Error('Supabase not configured');
                 }
 
-                // Fetch published story sections
-                const { data: sections, error } = await window.Supabase.client
-                    .from('our_story_sections')
-                    .select('*')
-                    .eq('is_published', true)
-                    .order('display_order', { ascending: true });
+                // Fetch story content from static_content table
+                const { data, error } = await window.Supabase.client
+                    .from('static_content')
+                    .select('value')
+                    .eq('key', 'our_story.content')
+                    .eq('site', window.CURRENT_SITE || 'sweden')
+                    .single();
 
-                if (error) throw error;
+                if (error && error.code !== 'PGRST116') throw error;
 
                 loadingState.classList.add('hidden');
                 storyContent.classList.remove('hidden');
 
-                // Render sections
-                if (sections && sections.length > 0) {
-                    storyContent.innerHTML = renderSections(sections);
+                // Display content
+                if (data && data.value) {
+                    // Handle both old format (plain HTML string) and new format (JSON)
+                    const content = typeof data.value === 'string' && data.value.startsWith('{')
+                        ? JSON.parse(data.value)
+                        : { content: data.value }; // Legacy format
+
+                    // Update header if elements exist
+                    const eyebrow = document.querySelector('.section-heading .eyebrow');
+                    const title = document.querySelector('.section-heading h2');
+                    const subtitle = document.querySelector('.section-heading p');
+
+                    if (eyebrow && content.eyebrow) eyebrow.textContent = content.eyebrow;
+                    if (title && content.title) title.textContent = content.title;
+                    if (subtitle && content.subtitle) subtitle.textContent = content.subtitle;
+
+                    // Display main content
+                    storyContent.innerHTML = `<div class="story-section">${content.content || ''}</div>`;
                 } else {
-                    storyContent.innerHTML = '<p style="text-align: center; padding: 2rem;">No story content available.</p>';
+                    storyContent.innerHTML = '<p style="text-align: center; padding: 2rem;">No story content available yet. Please check back soon.</p>';
                 }
             } catch (error) {
                 console.error('Error loading story:', error);
@@ -299,110 +322,6 @@
             }
         }
 
-        // Render sections based on their type
-        function renderSections(sections) {
-            return sections.map(section => {
-                switch (section.section_type) {
-                    case 'hero':
-                        return renderHeroSection(section);
-                    case 'text':
-                        return renderTextSection(section);
-                    case 'image':
-                        return renderImageSection(section);
-                    case 'quote':
-                        return renderQuoteSection(section);
-                    case 'timeline':
-                        return renderTimelineSection(section);
-                    default:
-                        return '';
-                }
-            }).join('');
-        }
-
-        // Render hero section (main heading with eyebrow)
-        function renderHeroSection(section) {
-            return `
-                <div class="section-heading" style="text-align: center; margin-bottom: 3rem; max-width: 900px; margin-left: auto; margin-right: auto; padding: 0 2rem;">
-                    ${section.metadata?.eyebrow ? `<span class="eyebrow">${escapeHtml(section.metadata.eyebrow)}</span>` : ''}
-                    <h1 class="story-section" style="font-family: var(--font-serif); font-size: 3.5rem; margin-top: 1rem; line-height: 1.2;">${escapeHtml(section.title || '')}</h1>
-                    ${section.content ? `<p class="story-section" style="margin: 2rem auto 0; font-size: 1.15rem; line-height: 1.8; max-width: 700px;">${escapeHtml(section.content)}</p>` : ''}
-                </div>
-            `;
-        }
-
-        // Render text section
-        function renderTextSection(section) {
-            return `
-                <div class="story-section">
-                    ${section.title ? `<h3>${escapeHtml(section.title)}</h3>` : ''}
-                    ${section.content ? `<p>${escapeHtml(section.content)}</p>` : ''}
-                </div>
-            `;
-        }
-
-        // Render image section (traditional content blocks)
-        function renderImageSection(section) {
-            const cards = section.metadata?.cards || [];
-
-            if (cards.length === 0) return '';
-
-            const cardsHtml = cards.map(card => {
-                const imageUrl = card.image_url;
-
-                // Check if content is a list (starts with bullets or has list items)
-                let contentHtml = '';
-                if (card.content_type === 'list' && card.items) {
-                    contentHtml = `
-                        <ul>
-                            ${card.items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}
-                        </ul>
-                    `;
-                } else {
-                    contentHtml = `<p>${escapeHtml(card.content || '')}</p>`;
-                }
-
-                return `
-                    <div class="story-section">
-                        ${card.title ? `<h3>${escapeHtml(card.title)}</h3>` : ''}
-                        ${contentHtml}
-                        ${imageUrl ? `<div class="story-image"><img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(card.title || '')}" loading="lazy"></div>` : ''}
-                    </div>
-                `;
-            }).join('');
-
-            return cardsHtml;
-        }
-
-        // Render quote section
-        function renderQuoteSection(section) {
-            return `
-                <div class="story-quote">
-                    <blockquote>
-                        "${escapeHtml(section.content || '')}"
-                    </blockquote>
-                    ${section.title ? `<cite>— ${escapeHtml(section.title)}</cite>` : ''}
-                </div>
-            `;
-        }
-
-        // Render timeline section
-        function renderTimelineSection(section) {
-            return `
-                <div class="story-section">
-                    ${section.title ? `<h3>${escapeHtml(section.title)}</h3>` : ''}
-                    ${section.content ? `<p>${escapeHtml(section.content)}</p>` : ''}
-                </div>
-            `;
-        }
-
-        // Helper function to escape HTML
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
         // Initialize on DOM ready
         document.addEventListener('DOMContentLoaded', () => {
             loadStory();
@@ -410,6 +329,6 @@
     </script>
 
     <!-- Menu Initialization - Simple, reliable menu system -->
-    <script defer src="/menu-init.js"></script>
+    <script defer src="menu-init.js"></script>
 </body>
 </html>

@@ -8,10 +8,11 @@
 
     // Initialize when DOM is ready
     document.addEventListener('DOMContentLoaded', async () => {
-        // Initialize site selector
-        window.SiteSelector.initializeSiteSelector();
-
-        await loadInstructions();
+        await Promise.all([
+            loadInstructions(),
+            loadGlobalContexts(),
+            loadCorporateExperiences()
+        ]);
         setupEventListeners();
     });
 
@@ -43,7 +44,7 @@
             const { data, error } = await supabase
                 .from('liv_instructions')
                 .select('*')
-                .eq('site', window.CURRENT_SITE || 'henrik')
+                .eq('site', window.CURRENT_SITE || 'sweden')
                 .order('priority', { ascending: false })
                 .order('created_at', { ascending: false });
 
@@ -91,6 +92,7 @@
                         <h3 class="instruction-title">${escapeHtml(instruction.title)}</h3>
                         <div class="instruction-meta">
                             <span class="category-badge ${instruction.category}">${instruction.category}</span>
+                            <span class="category-badge" style="background: ${instruction.mode === 'storyteller' ? '#fff3e0' : instruction.mode === 'both' ? '#e1f5fe' : '#f5f5f5'}; color: ${instruction.mode === 'storyteller' ? '#e65100' : instruction.mode === 'both' ? '#01579b' : '#616161'};">${instruction.mode || 'regular'}</span>
                             <span class="priority-badge">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                                     <path d="M6 2L7.5 5H10L7.5 7L8.5 10L6 8L3.5 10L4.5 7L2 5H4.5L6 2Z" fill="currentColor"/>
@@ -132,6 +134,7 @@
         document.getElementById('instructionForm').reset();
         document.getElementById('instructionId').value = '';
         document.getElementById('instructionPriority').value = '50';
+        document.getElementById('instructionMode').value = 'regular';
         document.getElementById('instructionActive').checked = true;
         document.getElementById('instructionModal').classList.add('active');
     }
@@ -144,6 +147,7 @@
         document.getElementById('instructionId').value = instruction.id;
         document.getElementById('instructionTitle').value = instruction.title;
         document.getElementById('instructionCategory').value = instruction.category;
+        document.getElementById('instructionMode').value = instruction.mode || 'regular';
         document.getElementById('instructionText').value = instruction.instruction;
         document.getElementById('instructionPriority').value = instruction.priority;
         document.getElementById('instructionActive').checked = instruction.is_active;
@@ -161,10 +165,11 @@
         const data = {
             title: document.getElementById('instructionTitle').value.trim(),
             category: document.getElementById('instructionCategory').value,
+            mode: document.getElementById('instructionMode').value,
             instruction: document.getElementById('instructionText').value.trim(),
             priority: parseInt(document.getElementById('instructionPriority').value),
             is_active: document.getElementById('instructionActive').checked,
-            site: window.CURRENT_SITE || 'henrik'
+            site: window.CURRENT_SITE || 'sweden'
         };
 
         try {
@@ -174,7 +179,7 @@
                     .from('liv_instructions')
                     .update(data)
                     .eq('id', id)
-                    .eq('site', window.CURRENT_SITE || 'henrik');
+                    .eq('site', window.CURRENT_SITE || 'sweden');
 
                 if (error) throw error;
                 showNotification('Instruction updated successfully', 'success');
@@ -202,7 +207,7 @@
                 .from('liv_instructions')
                 .update({ is_active: isActive })
                 .eq('id', id)
-                .eq('site', window.CURRENT_SITE || 'henrik');
+                .eq('site', window.CURRENT_SITE || 'sweden');
 
             if (error) throw error;
 
@@ -224,7 +229,7 @@
                 .from('liv_instructions')
                 .delete()
                 .eq('id', id)
-                .eq('site', window.CURRENT_SITE || 'henrik');
+                .eq('site', window.CURRENT_SITE || 'sweden');
 
             if (error) throw error;
 
@@ -267,6 +272,211 @@
         div.textContent = text;
         return div.innerHTML;
     }
+
+    // ============================================
+    // GLOBAL CONTEXTS (Hero & Floating Button)
+    // ============================================
+
+    async function loadGlobalContexts() {
+        try {
+            const { data, error } = await supabase
+                .from('global_liv_contexts')
+                .select('*')
+                .eq('is_active', true)
+                .order('context_key');
+
+            if (error) throw error;
+
+            renderGlobalContexts(data || []);
+        } catch (error) {
+            console.error('Error loading global contexts:', error);
+            document.getElementById('globalContextsList').innerHTML = '<p style="color: var(--admin-text-secondary);">Failed to load global contexts</p>';
+        }
+    }
+
+    function renderGlobalContexts(contexts) {
+        const container = document.getElementById('globalContextsList');
+
+        if (contexts.length === 0) {
+            container.innerHTML = '<p style="color: var(--admin-text-secondary);">No global contexts found</p>';
+            return;
+        }
+
+        container.innerHTML = contexts.map(ctx => `
+            <div class="instruction-card" style="background: var(--admin-surface-elevated);">
+                <div class="instruction-header">
+                    <div class="instruction-title-group">
+                        <h3 class="instruction-title">${escapeHtml(ctx.context_name)}</h3>
+                        <p style="color: var(--admin-text-secondary); font-size: 13px; margin: 4px 0 0 0;">
+                            ${escapeHtml(ctx.description)}
+                        </p>
+                    </div>
+                </div>
+                <div class="instruction-content" style="margin-top: 12px;">
+                    ${ctx.liv_context ? escapeHtml(ctx.liv_context) : '<em style="color: var(--admin-text-secondary);">No context added yet. Click edit to add instructions for LIV.</em>'}
+                </div>
+                <div class="instruction-actions" style="margin-top: 12px;">
+                    <button class="btn-secondary" onclick="editGlobalContext('${ctx.id}')">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M11 2L14 5L5 14H2V11L11 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Edit Context
+                    </button>
+                    <div id="copyGlobal${ctx.id}" style="display: inline-block; margin-left: 8px;"></div>
+                </div>
+            </div>
+        `).join('');
+
+        // Initialize copy buttons
+        if (window.ChatGPTHelper) {
+            contexts.forEach(ctx => {
+                const copyBtn = window.ChatGPTHelper.createCopyButton('global', ctx.context_name, ctx.description, 'context');
+                const container = document.getElementById(`copyGlobal${ctx.id}`);
+                if (container) {
+                    container.innerHTML = '';
+                    container.appendChild(copyBtn);
+                }
+            });
+        }
+    }
+
+    window.editGlobalContext = async function(id) {
+        try {
+            const { data, error } = await supabase
+                .from('global_liv_contexts')
+                .select('*')
+                .eq('id', id)
+                .single();
+
+            if (error) throw error;
+
+            const newContext = prompt(
+                `Edit LIV Context for "${data.context_name}"\n\nProvide instructions for how LIV should behave when users click this button:\n\nHint: Click the Copy button below this context to generate better instructions with ChatGPT`,
+                data.liv_context || ''
+            );
+
+            if (newContext === null) return; // User cancelled
+
+            const { error: updateError } = await supabase
+                .from('global_liv_contexts')
+                .update({ liv_context: newContext.trim() || null })
+                .eq('id', id);
+
+            if (updateError) throw updateError;
+
+            showNotification('Global context updated successfully', 'success');
+            await loadGlobalContexts();
+        } catch (error) {
+            console.error('Error updating global context:', error);
+            showNotification('Failed to update global context', 'error');
+        }
+    };
+
+    // ============================================
+    // CORPORATE EXPERIENCES
+    // ============================================
+
+    async function loadCorporateExperiences() {
+        try {
+            const { data, error } = await supabase
+                .from('corporate_experiences')
+                .select('*')
+                .eq('is_active', true)
+                .order('display_order');
+
+            if (error) throw error;
+
+            renderCorporateExperiences(data || []);
+        } catch (error) {
+            console.error('Error loading corporate experiences:', error);
+            document.getElementById('corporateExperiencesList').innerHTML = '<p style="color: var(--admin-text-secondary);">Failed to load corporate experiences</p>';
+        }
+    }
+
+    function renderCorporateExperiences(experiences) {
+        const container = document.getElementById('corporateExperiencesList');
+
+        if (experiences.length === 0) {
+            container.innerHTML = '<p style="color: var(--admin-text-secondary);">No corporate experiences found</p>';
+            return;
+        }
+
+        container.innerHTML = experiences.map(exp => `
+            <div class="instruction-card">
+                <div class="instruction-header">
+                    <div class="instruction-title-group">
+                        <h3 class="instruction-title">${escapeHtml(exp.title)}</h3>
+                        <p style="color: var(--admin-text-secondary); font-size: 13px; margin: 4px 0 0 0;">
+                            ${escapeHtml(exp.description)}
+                        </p>
+                    </div>
+                </div>
+                <div class="instruction-content" style="margin-top: 12px;">
+                    ${exp.liv_context ? escapeHtml(exp.liv_context) : '<em style="color: var(--admin-text-secondary);">No context added yet. Add group sizes, duration, pricing, and venue details.</em>'}
+                </div>
+                <div class="instruction-actions" style="margin-top: 12px;">
+                    <button class="btn-secondary" onclick="editCorporateExperience('${exp.id}')">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M11 2L14 5L5 14H2V11L11 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Edit Context
+                    </button>
+                    <div id="copyCorporate${exp.id}" style="display: inline-block; margin-left: 8px;"></div>
+                </div>
+            </div>
+        `).join('');
+
+        // Initialize copy buttons
+        if (window.ChatGPTHelper) {
+            experiences.forEach(exp => {
+                const copyBtn = window.ChatGPTHelper.createCopyButton('corporate', exp.title, exp.description, 'context');
+                const container = document.getElementById(`copyCorporate${exp.id}`);
+                if (container) {
+                    container.innerHTML = '';
+                    container.appendChild(copyBtn);
+                }
+            });
+        }
+    }
+
+    window.editCorporateExperience = async function(id) {
+        try {
+            const { data, error } = await supabase
+                .from('corporate_experiences')
+                .select('*')
+                .eq('id', id)
+                .single();
+
+            if (error) throw error;
+
+            const placeholderText = `Example:
+• Group size: 8-30 executives
+• Duration: Typically 3-5 days
+• Venues: Castles, private islands, luxury lodges
+• Price: €3500-7000 per person (all-inclusive)
+• Includes: Strategy sessions, wellness activities, team building`;
+
+            const newContext = prompt(
+                `Edit LIV Context for "${data.title}"\n\nAdd details about group sizes, duration, pricing, venues:\n\n${placeholderText}\n\nHint: Click the Copy button below this experience to generate better instructions with ChatGPT`,
+                data.liv_context || ''
+            );
+
+            if (newContext === null) return; // User cancelled
+
+            const { error: updateError } = await supabase
+                .from('corporate_experiences')
+                .update({ liv_context: newContext.trim() || null })
+                .eq('id', id);
+
+            if (updateError) throw updateError;
+
+            showNotification('Corporate experience updated successfully', 'success');
+            await loadCorporateExperiences();
+        } catch (error) {
+            console.error('Error updating corporate experience:', error);
+            showNotification('Failed to update corporate experience', 'error');
+        }
+    };
 
     // Add animations
     const style = document.createElement('style');

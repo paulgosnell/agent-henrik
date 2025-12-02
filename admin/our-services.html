@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../">
+  <title>Our Services - Luxury Travel Sweden CMS</title>
+  <link rel="stylesheet" href="admin/admin.css">
+
+    <!-- Component Loader -->
+    <script src="admin/admin-component-loader.js?v=3"></script>
+  <!-- Quill Rich Text Editor -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+  <style>
+    .story-editor {
+      max-width: 1000px;
+      margin: 2rem auto;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 2rem;
+    }
+
+    .editor-section {
+      margin-bottom: 2rem;
+    }
+
+    .editor-section label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+
+    .editor-section input[type="text"] {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      background: #ffffff;
+      color: #1a1a1a;
+    }
+
+    .editor-section input[type="text"]:focus {
+      outline: none;
+      border-color: #4a9eff;
+    }
+
+    .editor-section textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      resize: vertical;
+      background: #ffffff;
+      color: #1a1a1a;
+    }
+
+    .editor-section textarea:focus {
+      outline: none;
+      border-color: #4a9eff;
+    }
+
+    /* Quill editor styling - Override admin.css */
+    .ql-container.ql-snow {
+      min-height: 400px;
+      font-size: 1rem;
+      font-family: inherit;
+      background: #ffffff !important;
+      border: 1px solid #ddd !important;
+      border-radius: 0 0 8px 8px !important;
+    }
+
+    .ql-toolbar.ql-snow {
+      background: #f8f9fa !important;
+      border: 1px solid #ddd !important;
+      border-radius: 8px 8px 0 0 !important;
+      border-bottom: 1px solid #ddd !important;
+    }
+
+    #servicesContent .ql-container {
+      background: #ffffff !important;
+    }
+
+    #servicesContent .ql-editor {
+      min-height: 400px;
+      padding: 1rem;
+      color: #1a1a1a !important;
+      background: #ffffff !important;
+    }
+
+    #servicesContent .ql-editor * {
+      color: #1a1a1a !important;
+    }
+
+    #servicesContent .ql-editor p,
+    #servicesContent .ql-editor h2,
+    #servicesContent .ql-editor h3,
+    #servicesContent .ql-editor li,
+    #servicesContent .ql-editor strong,
+    #servicesContent .ql-editor em,
+    #servicesContent .ql-editor u,
+    #servicesContent .ql-editor span {
+      color: #1a1a1a !important;
+    }
+
+    #servicesContent .ql-editor.ql-blank::before {
+      color: #999 !important;
+      font-style: italic;
+    }
+
+    /* Toolbar icon colors */
+    .ql-stroke {
+      stroke: #444 !important;
+    }
+
+    .ql-fill {
+      fill: #444 !important;
+    }
+
+    .ql-picker-label {
+      color: #444 !important;
+    }
+
+    /* Dropdown menu styling */
+    .ql-picker-options {
+      background: #ffffff !important;
+      border: 1px solid #ddd !important;
+    }
+
+    .ql-picker-item {
+      color: #1a1a1a !important;
+    }
+
+    .ql-picker-item:hover {
+      background: #f0f0f0 !important;
+      color: #1a1a1a !important;
+    }
+
+    .editor-hint {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-top: 0.5rem;
+    }
+
+    .save-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: 2rem;
+    }
+
+    .section-divider {
+      border-top: 1px solid var(--border-color);
+      margin: 2rem 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <!-- Sidebar Navigation - Loaded from component -->
+
+    <div id="sidebar-placeholder"></div>
+
+    <main class="main-content">
+      <header class="content-header">
+        <div class="header-left">
+          <h1>Our Services</h1>
+          <p class="subtitle">Edit the Our Services page content</p>
+        </div>
+        <div class="header-right">
+          <a href="/our-services/" class="btn-secondary" target="_blank">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+              <path d="M10 3L3 8V17H7V12H13V17H17V8L10 3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+            View Page
+          </a>
+        </div>
+      </header>
+
+      <div id="alertContainer"></div>
+
+      <div class="story-editor">
+        <h3 style="margin-bottom: 2rem; font-size: 1.25rem;">Page Header</h3>
+
+        <div class="editor-section">
+          <label for="eyebrowText">Eyebrow Text</label>
+          <input type="text" id="eyebrowText" placeholder="e.g., Our Services">
+          <div class="editor-hint">Small text that appears above the main heading</div>
+        </div>
+
+        <div class="editor-section">
+          <label for="titleText">Page Title</label>
+          <input type="text" id="titleText" placeholder="e.g., How we curate your perfect journey">
+          <div class="editor-hint">Main heading text</div>
+        </div>
+
+        <div class="editor-section">
+          <label for="subtitleText">Subtitle</label>
+          <textarea id="subtitleText" placeholder="Brief description that appears below the title" rows="3"></textarea>
+          <div class="editor-hint">Introductory text below the heading</div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem;">Main Content</h3>
+
+        <div class="editor-section">
+          <label>Content</label>
+          <div id="servicesContent"></div>
+          <div class="editor-hint">
+            Use the toolbar above to format your text. You can add headings, bold, italic, lists, and links.
+          </div>
+        </div>
+
+        <div class="save-actions">
+          <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+          <button class="btn btn-primary" id="saveBtn">
+            <span>Save Services</span>
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Quill Rich Text Editor -->
+  <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+  <!-- Admin Scripts -->
+  <script src="supabase-client.js?v=2"></script>
+  <script src="admin/auth.js"></script>
+
+  <script>
+    const eyebrowText = document.getElementById('eyebrowText');
+    const titleText = document.getElementById('titleText');
+    const subtitleText = document.getElementById('subtitleText');
+    const saveBtn = document.getElementById('saveBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const alertContainer = document.getElementById('alertContainer');
+
+    // Initialize Quill editor
+    let quill = new Quill('#servicesContent', {
+      theme: 'snow',
+      modules: {
+        toolbar: [
+          [{ 'header': [2, 3, false] }],
+          ['bold', 'italic', 'underline'],
+          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+          ['link'],
+          ['clean']
+        ]
+      },
+      placeholder: 'Write your services content here...'
+    });
+
+    // Get Supabase client from shared module
+    const supabase = window.Supabase?.client;
+
+    if (!supabase) {
+      console.error('Supabase client not available');
+      showAlert('error', 'System error: Database not configured');
+    }
+
+    // Wait for auth check
+    async function init() {
+      console.log('Initializing Our Story page...');
+
+      // Wait for AuthManager to be available
+      if (!window.AuthManager || !window.AuthManager.checkAuth) {
+        console.log('Waiting for AuthManager to load...');
+        await new Promise(resolve => setTimeout(resolve, 100));
+        return init();
+      }
+
+      console.log('AuthManager available, checking auth...');
+
+      const session = await window.AuthManager.checkAuth();
+      if (!session) {
+        console.log('No session, redirecting to login');
+        return;
+      }
+
+      console.log('Session found, loading services...');
+
+      // Load user email
+      const userEmailEl = document.getElementById('userEmail');
+      if (userEmailEl && session.user?.email) {
+        userEmailEl.textContent = session.user.email;
+      }
+
+      // Load services content
+      await loadServices();
+    }
+
+    // Show alert
+    function showAlert(type, message) {
+      alertContainer.innerHTML = `
+        <div class="alert alert-${type}">
+          ${message}
+        </div>
+      `;
+      setTimeout(() => {
+        alertContainer.innerHTML = '';
+      }, 4000);
+    }
+
+    // Load current content
+    async function loadServices() {
+      try {
+        console.log('Loading services from database...');
+
+        const { data, error } = await supabase
+          .from('static_content')
+          .select('value')
+          .eq('key', 'our_services.content')
+          .eq('site', 'sweden')
+          .single();
+
+        console.log('Database response:', { data, error });
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Database error:', error);
+          throw error;
+        }
+
+        if (data && data.value) {
+          const content = typeof data.value === 'string' ? JSON.parse(data.value) : data.value;
+
+          eyebrowText.value = content.eyebrow || '';
+          titleText.value = content.title || '';
+          subtitleText.value = content.subtitle || '';
+          quill.root.innerHTML = content.content || '';
+
+          console.log('Services content loaded successfully');
+        } else {
+          console.log('No services content found in database');
+        }
+      } catch (error) {
+        console.error('Error loading services:', error);
+        showAlert('error', 'Error loading services content: ' + error.message);
+      }
+    }
+
+    // Save services
+    async function saveServices() {
+      try {
+        console.log('Save button clicked');
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span>Saving...</span>';
+
+        const contentData = {
+          eyebrow: eyebrowText.value.trim(),
+          title: titleText.value.trim(),
+          subtitle: subtitleText.value.trim(),
+          content: quill.root.innerHTML
+        };
+
+        console.log('Content to save:', contentData);
+
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log('Session:', session?.user?.id);
+
+        const payload = {
+          key: 'our_services.content',
+          value: JSON.stringify(contentData),
+          section: 'our_services',
+          description: 'Main content for Our Services page',
+          content_type: 'json',
+          site: 'sweden',
+          updated_at: new Date().toISOString(),
+          updated_by: session?.user?.id
+        };
+
+        console.log('Saving to database with payload:', payload);
+
+        const { data, error } = await supabase
+          .from('static_content')
+          .upsert(payload, {
+            onConflict: 'key,site'
+          })
+          .select();
+
+        console.log('Save response:', { data, error });
+
+        if (error) throw error;
+
+        showAlert('success', '✅ Services saved successfully!');
+
+        // Reload from database to confirm save
+        console.log('Reloading content from database...');
+        await loadServices();
+      } catch (error) {
+        console.error('Error saving services:', error);
+        showAlert('error', `Error saving services: ${error.message}`);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<span>Save Services</span>';
+      }
+    }
+
+    // Event listeners
+    saveBtn.addEventListener('click', saveServices);
+    cancelBtn.addEventListener('click', () => {
+      if (confirm('Discard changes?')) {
+        loadServices();
+      }
+    });
+
+    // Logout - wait for sidebar to load
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', async () => {
+        await supabase.auth.signOut();
+        window.location.href = '/admin/login.html';
+      });
+    }
+
+    // Initialize when ready
+    console.log('Script loaded, readyState:', document.readyState);
+
+    // Try multiple initialization points to ensure it runs
+    if (document.readyState === 'loading') {
+      console.log('Waiting for DOMContentLoaded...');
+      document.addEventListener('DOMContentLoaded', () => {
+        console.log('DOMContentLoaded fired');
+        init();
+      });
+    } else {
+      console.log('DOM already loaded, initializing now...');
+      init();
+    }
+
+    // Also try on window load as backup
+    window.addEventListener('load', () => {
+      console.log('Window load event fired');
+      // Only init if content is still empty
+      if (!eyebrowText.value && !titleText.value && quill.root.innerHTML === '<p><br></p>') {
+        console.log('Content still empty on window load, trying init again...');
+        init();
+      }
+    });
+  </script>
+</body>
+</html>

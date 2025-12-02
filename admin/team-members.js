@@ -4,9 +4,6 @@ let currentMemberId = null;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
-  // Initialize site selector
-  window.SiteSelector.initializeSiteSelector();
-
   await loadTeamMembers();
 
   // Setup status filter
@@ -29,7 +26,7 @@ async function loadTeamMembers() {
     const { data, error } = await window.Supabase.client
       .from('team_members')
       .select('*')
-      .eq('site', window.CURRENT_SITE || 'henrik')
+      .eq('site', window.CURRENT_SITE || 'sweden')
       .order('display_order', { ascending: true });
 
     if (error) throw error;
@@ -174,7 +171,7 @@ async function saveMember(event) {
     linkedin_url: document.getElementById('linkedinUrl').value.trim() || null,
     display_order: parseInt(document.getElementById('displayOrder').value) || 0,
     is_published: document.getElementById('isPublished').checked,
-    site: window.CURRENT_SITE || 'henrik'
+    site: window.CURRENT_SITE || 'sweden'
   };
 
   try {
@@ -193,7 +190,7 @@ async function saveMember(event) {
         .from('team_members')
         .update(formData)
         .eq('id', currentMemberId)
-        .eq('site', window.CURRENT_SITE || 'henrik')
+        .eq('site', window.CURRENT_SITE || 'sweden')
         .select()
         .single();
     } else {
@@ -254,7 +251,7 @@ async function confirmDelete() {
       .from('team_members')
       .delete()
       .eq('id', currentMemberId)
-      .eq('site', window.CURRENT_SITE || 'henrik');
+      .eq('site', window.CURRENT_SITE || 'sweden');
 
     if (error) throw error;
 

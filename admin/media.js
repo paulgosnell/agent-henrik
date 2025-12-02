@@ -54,9 +54,6 @@ const MediaLibrary = {
     async init() {
         console.log('Initializing Media Library...');
 
-        // Initialize site selector
-        window.SiteSelector.initializeSiteSelector();
-
         // Cache DOM elements
         this.uploadZone = document.getElementById('uploadZone');
         this.fileInput = document.getElementById('fileInput');
@@ -164,7 +161,11 @@ const MediaLibrary = {
     setupEventListeners() {
         // File input change
         this.fileInput.addEventListener('change', (e) => {
-            this.handleFileSelect(e.target.files);
+            if (e.target.files.length > 0) {
+                this.handleFileSelect(e.target.files);
+                // Reset input to allow selecting the same files again
+                e.target.value = '';
+            }
         });
 
         // Drag and drop
@@ -183,9 +184,12 @@ const MediaLibrary = {
             this.handleFileSelect(e.dataTransfer.files);
         });
 
-        // Click to upload
-        this.uploadZone.addEventListener('click', () => {
-            this.fileInput.click();
+        // Click to upload (only trigger if clicking the zone itself, not buttons inside)
+        this.uploadZone.addEventListener('click', (e) => {
+            // Don't trigger if clicking a button or input inside the zone
+            if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
+                this.fileInput.click();
+            }
         });
 
         // Search
@@ -257,7 +261,7 @@ const MediaLibrary = {
                         .from('media')
                         .update({ width: dims.width, height: dims.height })
                         .eq('id', file.id)
-                        .eq('site', window.CURRENT_SITE || 'henrik')
+                        .eq('site', window.CURRENT_SITE || 'sweden')
                         .then(() => {})
                         .catch(err => console.error('Failed to update dimensions:', err));
                 }
@@ -468,7 +472,7 @@ const MediaLibrary = {
                         height: dimensions.height
                     })
                     .eq('id', result.mediaId)
-                    .eq('site', window.CURRENT_SITE || 'henrik');
+                    .eq('site', window.CURRENT_SITE || 'sweden');
             }
 
             // Update status
@@ -618,7 +622,7 @@ const MediaLibrary = {
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', this.currentPreviewItem.id)
-                .eq('site', window.CURRENT_SITE || 'henrik');
+                .eq('site', window.CURRENT_SITE || 'sweden');
 
             // Update local data
             this.currentPreviewItem.alt_text = altText;

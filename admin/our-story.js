@@ -3,9 +3,6 @@ let storySections = [];
 let currentSectionId = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Initialize site selector
-  window.SiteSelector.initializeSiteSelector();
-
   await loadStorySections();
   document.getElementById('statusFilter')?.addEventListener('change', renderSectionsTable);
   document.getElementById('typeFilter')?.addEventListener('change', renderSectionsTable);
@@ -21,7 +18,7 @@ async function loadStorySections() {
     const { data, error } = await window.Supabase.client
       .from('our_story_sections')
       .select('*')
-      .eq('site', window.CURRENT_SITE || 'henrik')
+      .eq('site', window.CURRENT_SITE || 'sweden')
       .order('display_order', { ascending: true });
     if (error) throw error;
     storySections = data || [];
@@ -167,7 +164,7 @@ async function saveSection(event) {
     display_order: parseInt(document.getElementById('displayOrder').value) || 0,
     metadata: metadata,
     is_published: document.getElementById('isPublished').checked,
-    site: window.CURRENT_SITE || 'henrik'
+    site: window.CURRENT_SITE || 'sweden'
   };
 
   try {
@@ -182,7 +179,7 @@ async function saveSection(event) {
         .from('our_story_sections')
         .update(formData)
         .eq('id', currentSectionId)
-        .eq('site', window.CURRENT_SITE || 'henrik')
+        .eq('site', window.CURRENT_SITE || 'sweden')
         .select()
         .single();
     } else {
@@ -236,7 +233,7 @@ async function confirmDelete() {
       .from('our_story_sections')
       .delete()
       .eq('id', currentSectionId)
-      .eq('site', window.CURRENT_SITE || 'henrik');
+      .eq('site', window.CURRENT_SITE || 'sweden');
 
     if (error) throw error;
 
