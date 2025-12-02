@@ -2445,6 +2445,11 @@ async function loadStorytellers() {
                 window.storytellerData = storytellerData;
             }
 
+            // Reinitialize Lucide icons for the new content
+            if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                window.lucide.createIcons();
+            }
+
             // Re-initialize read-more button handlers for new content
             initializeReadMoreButtons();
 
