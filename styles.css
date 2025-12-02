@@ -2443,30 +2443,38 @@
             transition: all 0.3s ease;
         }
 
-        /* Primary CTA - filled style */
+        /* Read More button - lighter */
+        .read-more-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .read-more-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* LIV CTA button - darker */
         .pillar-cta,
         .story-cta,
         .destination-cta {
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
         .pillar-cta:hover,
         .story-cta:hover,
         .destination-cta:hover {
-            background: rgba(255, 255, 255, 0.25);
-            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(0, 0, 0, 0.6);
+            border-color: rgba(255, 255, 255, 0.4);
         }
 
-        /* Secondary button - outline style */
-        .read-more-btn {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .read-more-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.35);
+        /* Button icons */
+        .card-buttons button i,
+        .card-buttons button svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
         }
 
         /* Light theme */

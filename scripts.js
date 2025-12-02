@@ -2621,8 +2621,8 @@ function updatePillarsSection(sectionId, pillars, section) {
                         <h3>${escapeHtml(pillar.title)}</h3>
                         <p>${escapeHtml(pillar.excerpt)}</p>
                         <div class="card-buttons">
-                            <button type="button" class="read-more-btn">Read More</button>
-                            <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="${escapeHtml(pillar.liv_context_type)}" data-liv-context-name="${escapeHtml(pillar.liv_context_name)}">${escapeHtml(pillar.cta_text)}</button>
+                            <button type="button" class="read-more-btn"><i data-lucide="book-open"></i> Read More</button>
+                            <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="${escapeHtml(pillar.liv_context_type)}" data-liv-context-name="${escapeHtml(pillar.liv_context_name)}"><i data-lucide="sparkles"></i> ${escapeHtml(pillar.cta_text)}</button>
                         </div>
                     </div>
                 </div>
