@@ -100,7 +100,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         .select('*')
                         .eq('site', window.CURRENT_SITE)
                         .not('published_at', 'is', null)
-                        .order('display_order', { ascending: true });
+                        .order('display_order', { ascending: true })
+                        .limit(3);
 
                     if (error) throw error;
 
