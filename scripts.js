@@ -164,6 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 let lastScrollY = window.scrollY;
                 let scrollDirection = 'up';
+                let hasLeftHero = false;
 
                 const updateNavPinnedState = () => {
                     if (!navHeader) return;
@@ -187,6 +188,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Get hero height
                 const heroHeight = hero.offsetHeight;
                 const inHeroArea = currentScrollY < heroHeight;
+
+                // Track when user leaves and returns to hero for backup video
+                if (!inHeroArea) {
+                    hasLeftHero = true;
+                } else if (hasLeftHero && inHeroArea && scrollDirection === 'up') {
+                    // User has returned to hero - switch to backup video
+                    if (typeof switchToBackupVideo === 'function') {
+                        switchToBackupVideo();
+                    }
+                }
 
                 // Handle pinned state (when in hero area)
                 if (inHeroArea) {
@@ -277,6 +288,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 revealTimeoutId = window.setTimeout(revealHero, delay);
             };
 
+            // Backup video URL for when user returns to hero
+            const backupVideoUrl = 'https://api.chilledsites.com/storage/v1/object/public/p0stman/agent-henrik_video_1.mp4';
+            let introVideoEnded = false;
+            let backupVideoLoaded = false;
+
             if (primaryHeroVideo) {
                 primaryHeroVideo.addEventListener('playing', () => {
                     // Hero video is 8 seconds, reveal text at 7 seconds
@@ -286,14 +302,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     scheduleHeroReveal(7000);
                 });
                 primaryHeroVideo.addEventListener('error', revealHero);
-                // Fade video to black when it ends
+                // When intro video ends, fade out and mark as ended
                 primaryHeroVideo.addEventListener('ended', () => {
+                    introVideoEnded = true;
                     primaryHeroVideo.style.transition = 'opacity 1s ease-out';
                     primaryHeroVideo.style.opacity = '0';
                 });
             } else {
                 // No video, reveal after short delay
                 scheduleHeroReveal(2200);
+            }
+
+            // Function to switch to backup video when user returns to hero
+            function switchToBackupVideo() {
+                if (!primaryHeroVideo || !introVideoEnded || backupVideoLoaded) return;
+
+                backupVideoLoaded = true;
+                primaryHeroVideo.src = backupVideoUrl;
+                primaryHeroVideo.loop = true;
+                primaryHeroVideo.style.transition = 'opacity 1s ease-in';
+                primaryHeroVideo.style.opacity = '1';
+                primaryHeroVideo.load();
+                primaryHeroVideo.play().catch(() => {});
             }
 
             // Fallback in case video events don't fire

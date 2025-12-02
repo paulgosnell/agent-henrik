@@ -1,7 +1,7 @@
 // Service Worker for Luxury Travel Sweden
 // Caches images and assets for better performance
 
-const CACHE_VERSION = 'v12';
+const CACHE_VERSION = 'v13';
 const CACHE_NAME = `lts-cache-${CACHE_VERSION}`;
 
 // Assets to cache immediately on install
