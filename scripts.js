@@ -1591,6 +1591,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     };
                 }
 
+                // Handle "Full Experience" button - opens destination modal
+                const mapCardFullscreen = document.getElementById('mapCardFullscreen');
+                if (mapCardFullscreen) {
+                    mapCardFullscreen.onclick = (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        // Hide the map card
+                        hideMapOverlayCard();
+                        // Open the destination modal if available
+                        if (window.openDestinationModal && data) {
+                            window.openDestinationModal(data);
+                        }
+                    };
+                }
+
                 // Show card
                 mapOverlayCard.style.display = 'block';
 
