@@ -2443,15 +2443,19 @@
             transition: all 0.3s ease;
         }
 
-        /* Read More button - lighter */
-        .read-more-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.25);
+        /* Read More button in cards - lighter */
+        .card-buttons .read-more-btn {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.25) !important;
+            text-decoration: none !important;
+            padding: 0.85rem 1rem !important;
+            margin: 0 !important;
+            opacity: 1 !important;
         }
 
-        .read-more-btn:hover {
-            background: rgba(255, 255, 255, 0.18);
-            border-color: rgba(255, 255, 255, 0.4);
+        .card-buttons .read-more-btn:hover {
+            background: rgba(255, 255, 255, 0.18) !important;
+            border-color: rgba(255, 255, 255, 0.4) !important;
         }
 
         /* LIV CTA button - darker */
@@ -4796,8 +4800,9 @@
             border-color: rgba(0, 0, 0, 0.45);
         }
 
-        /* Read More Button Styles */
-        .read-more-btn {
+        /* Read More Button Styles - for modals/inline (not card buttons) */
+        .pillar-modal .read-more-btn,
+        .pillar-copy > .read-more-btn:not(.card-buttons .read-more-btn) {
             background: none;
             border: none;
             color: var(--color-text);
@@ -4812,7 +4817,7 @@
             opacity: 0.8;
         }
 
-        .read-more-btn:hover {
+        .pillar-modal .read-more-btn:hover {
             opacity: 1;
             color: var(--color-text);
         }
