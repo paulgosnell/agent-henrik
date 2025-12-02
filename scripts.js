@@ -2416,7 +2416,7 @@ async function loadStorytellers() {
                             <p class="story-excerpt">${escapeHtml(story.excerpt || '')}</p>
                             <div class="card-buttons">
                                 <button type="button" class="read-more-btn"><i data-lucide="book-open"></i> Read More</button>
-                                <button type="button" class="story-cta" data-open-liv data-liv-context-type="storyteller" data-liv-context-name="${escapeHtml(story.title)}" data-storyteller-slug="${slug}"><i data-lucide="sparkles"></i> Design With LIV</button>
+                                <button type="button" class="story-cta" data-open-liv data-liv-context-type="storyteller" data-liv-context-name="${escapeHtml(story.title)}" data-storyteller-slug="${slug}"><i data-lucide="sparkles"></i> LIV</button>
                             </div>
                         </div>
                     </article>
@@ -2431,7 +2431,7 @@ async function loadStorytellers() {
                     title: story.title,
                     image: story.hero_image_url || 'https://via.placeholder.com/258x172',
                     content: story.content || `<p>${story.excerpt}</p>`,
-                    cta: "Design with LIV",
+                    cta: "LIV",
                     contextType: "storyteller",
                     contextName: story.title,
                     livContext: story.liv_context || null
@@ -2629,7 +2629,7 @@ function updatePillarsSection(sectionId, pillars, section) {
                         <p>${escapeHtml(pillar.excerpt)}</p>
                         <div class="card-buttons">
                             <button type="button" class="read-more-btn"><i data-lucide="book-open"></i> Read More</button>
-                            <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="${escapeHtml(pillar.liv_context_type)}" data-liv-context-name="${escapeHtml(pillar.liv_context_name)}"><i data-lucide="sparkles"></i> ${escapeHtml(pillar.cta_text)}</button>
+                            <button type="button" class="pillar-cta" data-open-liv data-liv-context-type="${escapeHtml(pillar.liv_context_type)}" data-liv-context-name="${escapeHtml(pillar.liv_context_name)}"><i data-lucide="sparkles"></i> LIV</button>
                         </div>
                     </div>
                 </div>
