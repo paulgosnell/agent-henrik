@@ -717,6 +717,66 @@ class LivAI {
   }
 
   /**
+   * Public method for external components (like destination modal) to send messages
+   * Returns the AI response as a string
+   */
+  async sendMessage(message, context = null, history = []) {
+    try {
+      // Build messages array from history
+      const messages = [];
+
+      // Add history
+      for (const msg of history) {
+        messages.push({
+          role: msg.role === 'assistant' ? 'assistant' : 'user',
+          content: msg.content
+        });
+      }
+
+      // Add current message
+      messages.push({
+        role: 'user',
+        content: message
+      });
+
+      const response = await fetch(this.edgeFunctionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.supabaseAnonKey}`,
+          'apikey': this.supabaseAnonKey
+        },
+        body: JSON.stringify({
+          messages: messages,
+          sessionId: this.generateSessionId(),
+          context: context,
+          stream: false // Non-streaming for modal
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // Handle different response formats
+      if (data.choices && data.choices[0]?.message?.content) {
+        return data.choices[0].message.content;
+      } else if (data.content) {
+        return data.content;
+      } else if (typeof data === 'string') {
+        return data;
+      }
+
+      throw new Error('Unexpected response format');
+    } catch (error) {
+      console.error('Error in sendMessage:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Append message to chat
    */
   appendMessage(role, text) {

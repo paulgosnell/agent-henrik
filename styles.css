@@ -108,6 +108,44 @@
             z-index: 1;
         }
 
+        /* Skip intro button */
+        .hero-skip-btn {
+            position: absolute;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0;
+            color: rgba(255, 255, 255, 0.9);
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: opacity 0.5s ease, background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .hero-skip-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .hero-skip-btn svg {
+            opacity: 0.8;
+        }
+
+        /* Hide skip button once content is revealed */
+        .hero.intro-skipped .hero-skip-btn,
+        .hero[data-reveal="true"] .hero-skip-btn {
+            opacity: 0;
+            pointer-events: none;
+        }
 
         .hero-content {
             position: absolute;
@@ -5849,10 +5887,15 @@ section,
 /* Welcome text overlay */
 .destination-modal-welcome {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
     z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     color: #ffffff;
     opacity: 0;
@@ -5860,6 +5903,8 @@ section,
     animation-delay: 0.5s;
     pointer-events: none;
     transition: opacity 0.5s ease;
+    padding: 2rem;
+    box-sizing: border-box;
 }
 
 .destination-modal-welcome.fade-out {
@@ -5869,11 +5914,11 @@ section,
 @keyframes fadeInWelcome {
     from {
         opacity: 0;
-        transform: translate(-50%, -45%);
+        transform: translateY(10px);
     }
     to {
         opacity: 1;
-        transform: translate(-50%, -50%);
+        transform: translateY(0);
     }
 }
 
@@ -5929,6 +5974,98 @@ section,
 
 .destination-modal-panel.show {
     right: 0;
+}
+
+/* Panel collapsed state - slides off to the right, edge still visible */
+.destination-modal-panel.show.collapsed {
+    right: calc(-500px + 20px);
+}
+
+/* Panel toggle chevron button - attached to left edge of panel */
+.destination-modal-panel-toggle {
+    position: absolute;
+    top: 50%;
+    right: 500px;
+    transform: translateY(-50%);
+    z-index: 4;
+    width: 32px;
+    height: 70px;
+    background: rgba(10, 12, 14, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-right: none;
+    border-radius: 6px 0 0 6px;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: right 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, background 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.destination-modal-panel-toggle svg {
+    transition: transform 0.3s ease;
+}
+
+.destination-modal-panel-toggle:hover {
+    background: rgba(30, 32, 34, 0.95);
+    color: #ffffff;
+}
+
+/* Show toggle when panel is visible */
+.destination-modal.panel-visible .destination-modal-panel-toggle {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Flip chevron when panel is collapsed */
+.destination-modal.panel-collapsed .destination-modal-panel-toggle svg {
+    transform: rotate(180deg);
+}
+
+/* Move toggle with panel when collapsed */
+.destination-modal.panel-collapsed .destination-modal-panel-toggle {
+    right: 20px;
+}
+
+/* Play button - visible when panel collapsed */
+.destination-modal-play-btn {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 4;
+    width: 70px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    color: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s ease;
+    backdrop-filter: blur(10px);
+}
+
+.destination-modal-play-btn svg {
+    margin-left: 4px; /* Visual centering for play triangle */
+}
+
+.destination-modal-play-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.8);
+    transform: scale(1.05);
+}
+
+/* Show play button when panel is collapsed */
+.destination-modal.panel-collapsed .destination-modal-play-btn {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .destination-modal-panel-content {
@@ -6248,8 +6385,10 @@ section,
 
 @media (max-width: 768px) {
     .destination-modal-welcome {
-        top: 35%;
-        padding: 0 1.5rem;
+        top: 0;
+        right: 0;
+        bottom: 30%;
+        padding: 1.5rem;
     }
 
     .destination-modal-title {

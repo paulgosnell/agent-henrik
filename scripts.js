@@ -298,6 +298,26 @@ document.addEventListener('DOMContentLoaded', function() {
             // Fallback in case video events don't fire
             scheduleHeroReveal(7500);
 
+            // Skip intro button functionality
+            const heroSkipBtn = document.getElementById('heroSkipBtn');
+            if (heroSkipBtn) {
+                heroSkipBtn.addEventListener('click', () => {
+                    // Clear any pending reveal timeout
+                    if (revealTimeoutId) {
+                        clearTimeout(revealTimeoutId);
+                    }
+                    // Immediately reveal hero content
+                    revealHero();
+                    // Fade video to black
+                    if (primaryHeroVideo) {
+                        primaryHeroVideo.style.transition = 'opacity 0.5s ease-out';
+                        primaryHeroVideo.style.opacity = '0';
+                    }
+                    // Add class to hero for skip state
+                    hero?.classList.add('intro-skipped');
+                });
+            }
+
             // Initialize nav header state (for both hero and non-hero pages)
             updateNavPinnedState();
 
@@ -2936,15 +2956,17 @@ function initializeHeroDestinationModal() {
             modalWelcome.classList.add('fade-out');
             setTimeout(() => {
                 modalPanel.classList.add('show');
+                modal.classList.add('panel-visible');
             }, 300);
         }, 3000);
     }
 
-    // Close modal
+    // Close modal - just closes, no navigation
     function closeModal() {
         modal.style.display = 'none';
+        modal.classList.remove('panel-visible', 'panel-collapsed');
         document.documentElement.style.overflow = '';
-        modalPanel.classList.remove('show');
+        modalPanel.classList.remove('show', 'collapsed');
         modalWelcome.classList.remove('fade-out');
         if (modalVideo.src) modalVideo.pause();
         if (panelShowTimeout) clearTimeout(panelShowTimeout);
@@ -2955,11 +2977,39 @@ function initializeHeroDestinationModal() {
             heroTrigger.querySelector('.hero-dropdown-text').textContent = 'Select a destination';
         }
 
-        // Scroll to map section
-        const mapSection = document.querySelector('.map-section');
-        if (mapSection) {
-            mapSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Don't scroll anywhere - just return to where user was
+    }
+
+    // Panel toggle functionality
+    const panelToggle = document.getElementById('destinationModalPanelToggle');
+    const playBtn = document.getElementById('destinationModalPlayBtn');
+
+    function togglePanel() {
+        const isCollapsed = modal.classList.contains('panel-collapsed');
+        if (isCollapsed) {
+            // Expand panel
+            modal.classList.remove('panel-collapsed');
+            modalPanel.classList.remove('collapsed');
+        } else {
+            // Collapse panel
+            modal.classList.add('panel-collapsed');
+            modalPanel.classList.add('collapsed');
         }
+    }
+
+    function replayVideo() {
+        if (modalVideo && modalVideo.src) {
+            modalVideo.currentTime = 0;
+            modalVideo.play();
+        }
+    }
+
+    if (panelToggle) {
+        panelToggle.addEventListener('click', togglePanel);
+    }
+
+    if (playBtn) {
+        playBtn.addEventListener('click', replayVideo);
     }
 
     // Expose openDestinationModal globally for map card to use
@@ -3035,9 +3085,15 @@ function initializeHeroDestinationModal() {
         modalChatHistory = [];
         if (modalChatMessages) modalChatMessages.innerHTML = '';
 
-        // Add greeting message
+        // Add greeting message - use greeting_override if available
         const destinationName = currentModalDestination?.title || 'this destination';
-        addModalChatMessage('assistant', `Hello! I'm LIV, your AI travel curator. I'd love to help you design an unforgettable journey to ${destinationName}. What kind of experience are you looking for?`);
+        let greeting;
+        if (currentModalDestination?.greeting_override) {
+            greeting = currentModalDestination.greeting_override;
+        } else {
+            greeting = `Hello! I'm LIV, your AI travel curator. I'd love to help you design an unforgettable journey to ${destinationName}. What kind of experience are you looking for?`;
+        }
+        addModalChatMessage('assistant', greeting);
 
         // Focus input
         setTimeout(() => {
@@ -3096,11 +3152,12 @@ function initializeHeroDestinationModal() {
         const typingIndicator = showTypingIndicator();
 
         try {
-            // Build context for LIV
+            // Build context for LIV - matching the format used by main LIV chat
             const destinationContext = currentModalDestination ? {
                 type: 'destination',
                 name: currentModalDestination.title,
-                liv_context: currentModalDestination.liv_context,
+                livContext: currentModalDestination.liv_context,
+                greetingOverride: currentModalDestination.greeting_override,
                 description: currentModalDestination.description
             } : null;
 

@@ -54,7 +54,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <!-- External Stylesheet -->
-    <link rel="stylesheet" href="styles.css?v=1733150013">
+    <link rel="stylesheet" href="styles.css?v=1733150020">
 
     <!-- Component Loader - Load shared header/footer -->
     <script src="component-loader.js?v=1732877000"></script>
@@ -184,6 +184,15 @@
         </video>
         <div class="hero-overlay"></div>
 
+        <!-- Skip intro button -->
+        <button type="button" class="hero-skip-btn" id="heroSkipBtn">
+            Skip Intro
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 4 15 12 5 20 5 4"/>
+                <line x1="19" y1="5" x2="19" y2="19"/>
+            </svg>
+        </button>
+
         <div class="hero-content" id="heroContent">
             <h1 class="hero-title hero-title--destination">
                 <span class="line" data-editable="hero.destination.prompt">Where do you want to go?</span>
@@ -235,6 +244,20 @@
             <h2 class="destination-modal-title" id="destinationModalTitle"></h2>
             <p class="destination-modal-subtitle" id="destinationModalSubtitle"></p>
         </div>
+
+        <!-- Sidebar toggle chevron (slides panel in/out) -->
+        <button class="destination-modal-panel-toggle" id="destinationModalPanelToggle" aria-label="Toggle panel">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9,6 15,12 9,18"/>
+            </svg>
+        </button>
+
+        <!-- Play button (visible when sidebar is collapsed) -->
+        <button class="destination-modal-play-btn" id="destinationModalPlayBtn" aria-label="Play video">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="5,3 19,12 5,21"/>
+            </svg>
+        </button>
 
         <!-- Right content panel (desktop) / Bottom sheet (mobile) -->
         <div class="destination-modal-panel" id="destinationModalPanel">
@@ -1125,10 +1148,10 @@ unique.</p>
     <script defer src="supabase-client.js?v=3"></script>
 
     <!-- LIV AI - AI-Powered Chat Concierge -->
-    <script defer src="liv-ai.js?v=9"></script>
+    <script defer src="liv-ai.js?v=10"></script>
 
     <!-- Main application scripts (uses data loaded by supabase-client.js) -->
-    <script defer src="scripts.js?v=1733150012"></script>
+    <script defer src="scripts.js?v=1733150021"></script>
 
     <!-- Menu Initialization - Simple, reliable menu system -->
     <script defer src="menu-init.js"></script>
