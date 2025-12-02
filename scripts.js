@@ -2414,8 +2414,10 @@ async function loadStorytellers() {
                         <div class="story-content">
                             <h3 class="story-title">${escapeHtml(story.title)}</h3>
                             <p class="story-excerpt">${escapeHtml(story.excerpt || '')}</p>
-                            <button type="button" class="read-more-btn">read more</button>
-                            <button type="button" class="story-cta" data-open-liv data-liv-context-type="storyteller" data-liv-context-name="${escapeHtml(story.title)}" data-storyteller-slug="${slug}">Design with LIV</button>
+                            <div class="card-buttons">
+                                <button type="button" class="read-more-btn"><i data-lucide="book-open"></i> Read More</button>
+                                <button type="button" class="story-cta" data-open-liv data-liv-context-type="storyteller" data-liv-context-name="${escapeHtml(story.title)}" data-storyteller-slug="${slug}"><i data-lucide="sparkles"></i> Design With LIV</button>
+                            </div>
                         </div>
                     </article>
                 `;
