@@ -9,8 +9,8 @@ interface ThemeCardProps {
 
 export function ThemeCard({ theme, size = "small" }: ThemeCardProps) {
   const sizeClasses = {
-    large: "col-span-2 row-span-2 min-h-[400px] md:min-h-[500px]",
-    medium: "col-span-1 row-span-2 min-h-[350px] md:min-h-[450px]",
+    large: "col-span-1 md:col-span-2 lg:col-span-3 row-span-2 min-h-[400px] md:min-h-[500px]",
+    medium: "col-span-1 md:col-span-1 row-span-2 min-h-[350px] md:min-h-[450px]",
     small: "col-span-1 row-span-1 min-h-[250px] md:min-h-[300px]",
   };
 
