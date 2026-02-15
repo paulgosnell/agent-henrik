@@ -137,11 +137,14 @@ h1, h2, h3, h4 {
   border-radius: 0;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
   padding: 0;
+  width: 480px;
+  max-width: 90vw;
 }
 
 .storyworld-popup .leaflet-popup-content {
   margin: 0;
   width: 100% !important;
+  max-width: none !important;
 }
 
 .storyworld-popup .leaflet-popup-tip {
@@ -206,7 +209,7 @@ h1, h2, h3, h4 {
 .storyworld-popup-zones {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   margin-bottom: 16px;
 }
 

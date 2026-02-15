@@ -19,7 +19,7 @@ export default async function ExplorePage() {
   const storyworlds = (data as Storyworld[]) || [];
 
   return (
-    <div className="fixed inset-0 pt-16">
+    <div className="h-[calc(100vh-4rem)] w-full" style={{ marginTop: '4rem' }}>
       <MapLoader storyworlds={storyworlds} />
     </div>
   );
