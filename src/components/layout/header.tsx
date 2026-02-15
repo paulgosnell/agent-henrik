@@ -43,7 +43,7 @@ export function Header() {
             src="/logo.png"
             alt="Agent Henrik"
             className="transition-all duration-500 invert-0 dark:invert"
-            style={{ height: scrolled ? 18 : 28, width: scrolled ? 49 : 76 }}
+            style={{ height: scrolled ? 36 : 56, width: scrolled ? 98 : 152 }}
           />
         </Link>
 
