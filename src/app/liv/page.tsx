@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 
 export default function LivPage() {
   return (
-    <div className="flex h-screen flex-col items-center pt-16">
-      <div className="flex w-full max-w-lg flex-1 flex-col border-x border-border">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+      <div className="flex h-[85vh] w-full max-w-lg flex-col border border-border bg-background shadow-2xl">
         <ChatWindow embedded />
       </div>
     </div>
