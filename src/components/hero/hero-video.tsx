@@ -11,7 +11,7 @@ interface HeroVideoProps {
 }
 
 export function HeroVideo({
-  videoSrc = "/hero-video.mp4",
+  videoSrc = "https://api.chilledsites.com/storage/v1/object/public/p0stman/agent-henrik_video_3.mp4",
   posterSrc = "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=1920&q=80",
   headline = "Your Insider Journey Begins Here",
   ctaText = "Start Exploring",

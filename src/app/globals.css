@@ -142,3 +142,16 @@ h1, h2, h3, h4 {
   background: var(--muted-foreground);
   border-radius: 3px;
 }
+
+/* Broken image fallback */
+img[src]:not([src=""]) {
+  min-height: 100px;
+}
+
+img::after {
+  content: "";
+  display: block;
+  position: absolute;
+  inset: 0;
+  background: var(--muted);
+}
