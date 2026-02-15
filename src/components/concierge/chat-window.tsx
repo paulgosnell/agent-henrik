@@ -79,7 +79,7 @@ export function ChatWindow({ onClose, initialContext, embedded = false }: ChatWi
 
   const containerClass = embedded
     ? "flex h-full flex-col bg-background"
-    : "fixed inset-0 z-50 flex flex-col bg-background md:inset-auto md:bottom-6 md:right-6 md:h-[600px] md:w-[420px] md:border md:border-border";
+    : "fixed bottom-0 right-0 z-50 flex h-[70vh] w-full max-w-sm flex-col border-l border-t border-border bg-background sm:bottom-6 sm:right-6 sm:h-[600px] sm:w-[400px] sm:border sm:border-border";
 
   return (
     <div className={containerClass}>
