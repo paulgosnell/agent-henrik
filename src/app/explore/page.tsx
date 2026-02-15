@@ -19,7 +19,7 @@ export default async function ExplorePage() {
   const storyworlds = (data as Storyworld[]) || [];
 
   return (
-    <div className="h-screen pt-16">
+    <div className="fixed inset-0 pt-16">
       <MapLoader storyworlds={storyworlds} />
     </div>
   );

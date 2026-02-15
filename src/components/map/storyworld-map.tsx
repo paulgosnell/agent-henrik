@@ -65,7 +65,7 @@ export function StoryworldMap({ storyworlds }: StoryworldMapProps) {
             position={[sw.latitude, sw.longitude]}
             icon={pinIcon}
           >
-            <Popup className="storyworld-popup" maxWidth={340} minWidth={280}>
+            <Popup className="storyworld-popup" maxWidth={520} minWidth={460}>
               <div className="storyworld-popup-inner">
                 {sw.hero_image_url && (
                   <div
