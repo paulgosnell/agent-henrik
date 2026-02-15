@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import Link from "next/link";
+import { ArrowRight, MapPin } from "lucide-react";
 import { MAP_CONFIG } from "@/lib/constants";
 import type { Storyworld } from "@/lib/supabase/types";
 import "leaflet/dist/leaflet.css";
@@ -64,18 +65,39 @@ export function StoryworldMap({ storyworlds }: StoryworldMapProps) {
             position={[sw.latitude, sw.longitude]}
             icon={pinIcon}
           >
-            <Popup className="storyworld-popup">
-              <div className="p-2 text-center">
-                <h4 className="mb-1 text-sm font-medium">{sw.name}</h4>
-                {sw.region && (
-                  <p className="mb-2 text-xs text-gray-500">{sw.region}</p>
+            <Popup className="storyworld-popup" maxWidth={340} minWidth={280}>
+              <div className="storyworld-popup-inner">
+                {sw.hero_image_url && (
+                  <div
+                    className="storyworld-popup-hero"
+                    style={{ backgroundImage: `url(${sw.hero_image_url})` }}
+                  />
                 )}
-                <Link
-                  href={`/explore/${sw.slug}`}
-                  className="text-xs underline"
-                >
-                  Explore Storyworld
-                </Link>
+                <div className="storyworld-popup-content">
+                  <div className="storyworld-popup-region">
+                    <MapPin size={11} />
+                    <span>{sw.region || "Destination"}</span>
+                  </div>
+                  <h4 className="storyworld-popup-title">{sw.name}</h4>
+                  {sw.atmosphere && (
+                    <p className="storyworld-popup-atmosphere">{sw.atmosphere}</p>
+                  )}
+                  {sw.immersion_zones && sw.immersion_zones.length > 0 && (
+                    <div className="storyworld-popup-zones">
+                      {sw.immersion_zones.slice(0, 3).map((zone, i) => (
+                        <span key={i} className="storyworld-popup-tag">{zone}</span>
+                      ))}
+                    </div>
+                  )}
+                  <div className="storyworld-popup-actions">
+                    <Link href={`/explore/${sw.slug}`} className="storyworld-popup-cta">
+                      Explore <ArrowRight size={12} />
+                    </Link>
+                    <Link href={`/liv?storyworld=${sw.slug}`} className="storyworld-popup-cta-secondary">
+                      Design with AH
+                    </Link>
+                  </div>
+                </div>
               </div>
             </Popup>
           </Marker>

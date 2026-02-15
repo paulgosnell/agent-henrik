@@ -129,6 +129,138 @@ h1, h2, h3, h4 {
   background: var(--background) !important;
 }
 
+/* Storyworld popup styling */
+.storyworld-popup .leaflet-popup-content-wrapper {
+  background: var(--background);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  padding: 0;
+}
+
+.storyworld-popup .leaflet-popup-content {
+  margin: 0;
+  width: 100% !important;
+}
+
+.storyworld-popup .leaflet-popup-tip {
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-left: none;
+}
+
+.storyworld-popup .leaflet-popup-close-button {
+  color: white !important;
+  font-size: 18px;
+  z-index: 10;
+  top: 6px !important;
+  right: 8px !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.storyworld-popup-inner {
+  width: 100%;
+}
+
+.storyworld-popup-hero {
+  width: 100%;
+  height: 160px;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--muted);
+}
+
+.storyworld-popup-content {
+  padding: 16px 20px 20px;
+}
+
+.storyworld-popup-region {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted-foreground);
+  margin-bottom: 6px;
+}
+
+.storyworld-popup-title {
+  font-family: var(--font-serif, 'Cormorant Garamond', Georgia, serif);
+  font-size: 1.5rem;
+  font-weight: 300;
+  line-height: 1.2;
+  margin: 0 0 8px;
+  color: var(--foreground);
+}
+
+.storyworld-popup-atmosphere {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+  margin: 0 0 12px;
+}
+
+.storyworld-popup-zones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.storyworld-popup-tag {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  color: var(--muted-foreground);
+}
+
+.storyworld-popup-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.storyworld-popup-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 8px 16px;
+  border: 1px solid var(--foreground);
+  color: var(--foreground);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.storyworld-popup-cta:hover {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.storyworld-popup-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 8px 16px;
+  background: var(--muted);
+  color: var(--muted-foreground);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.storyworld-popup-cta-secondary:hover {
+  background: var(--foreground);
+  color: var(--background);
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;
