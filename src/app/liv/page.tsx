@@ -8,8 +8,10 @@ export const metadata: Metadata = {
 
 export default function LivPage() {
   return (
-    <div className="flex h-screen flex-col pt-16">
-      <ChatWindow embedded />
+    <div className="flex h-screen flex-col items-center pt-16">
+      <div className="flex w-full max-w-lg flex-1 flex-col border-x border-border">
+        <ChatWindow embedded />
+      </div>
     </div>
   );
 }
