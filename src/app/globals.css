@@ -127,6 +127,17 @@ h1, h2, h3, h4 {
 /* Leaflet map overrides */
 .leaflet-container {
   background: var(--background) !important;
+  z-index: 0;
+}
+
+.leaflet-pane,
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 1 !important;
+}
+
+.leaflet-popup-pane {
+  z-index: 40 !important;
 }
 
 /* Storyworld popup styling */

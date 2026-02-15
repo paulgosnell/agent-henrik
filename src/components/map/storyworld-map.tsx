@@ -63,6 +63,7 @@ export function StoryworldMap({ storyworlds }: StoryworldMapProps) {
       maxZoom={MAP_CONFIG.maxZoom}
       className="h-full w-full"
       zoomControl={false}
+      scrollWheelZoom={false}
       attributionControl={false}
     >
       <InvalidateSizeOnMount />
