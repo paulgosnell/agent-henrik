@@ -278,16 +278,11 @@ h1, h2, h3, h4 {
   border-radius: 3px;
 }
 
-/* Broken image fallback (excludes header logo) */
-img[src]:not([src=""]):not([alt="Agent Henrik"]) {
+/* Broken image fallback (excludes logo and map tiles) */
+img[src]:not([src=""]):not([alt="Agent Henrik"]):not(.leaflet-tile) {
   min-height: 100px;
-  position: relative;
 }
 
-img[src]:not([src=""]):not([alt="Agent Henrik"])::after {
-  content: "";
-  display: block;
-  position: absolute;
-  inset: 0;
-  background: var(--muted);
+.leaflet-container img {
+  min-height: 0 !important;
 }
