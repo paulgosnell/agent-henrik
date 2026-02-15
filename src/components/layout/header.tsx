@@ -35,7 +35,9 @@ export function Header() {
           : "bg-transparent"
       }`}
     >
-      <div className="mx-auto flex max-w-[1440px] items-center justify-between px-6 py-4 md:px-12">
+      <div className={`mx-auto flex max-w-[1440px] items-center justify-between px-6 md:px-12 transition-all duration-500 ${
+        scrolled ? "py-2" : "py-4 md:py-6"
+      }`}>
         {/* Logo */}
         <Link href="/" className="relative z-50">
           <Image
@@ -43,7 +45,9 @@ export function Header() {
             alt="Agent Henrik"
             width={160}
             height={40}
-            className="h-8 w-auto invert-0 dark:invert"
+            className={`w-auto transition-all duration-500 invert-0 dark:invert ${
+              scrolled ? "h-6" : "h-8 md:h-10"
+            }`}
             priority
           />
         </Link>
