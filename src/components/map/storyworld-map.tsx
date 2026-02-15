@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import Link from "next/link";
 import { ArrowRight, MapPin } from "lucide-react";
@@ -24,6 +24,15 @@ const pinIcon = new L.DivIcon({
   iconAnchor: [6, 6],
   popupAnchor: [0, -10],
 });
+
+function InvalidateSizeOnMount() {
+  const map = useMap();
+  useEffect(() => {
+    const timer = setTimeout(() => map.invalidateSize(), 100);
+    return () => clearTimeout(timer);
+  }, [map]);
+  return null;
+}
 
 interface StoryworldMapProps {
   storyworlds: Storyworld[];
@@ -56,6 +65,7 @@ export function StoryworldMap({ storyworlds }: StoryworldMapProps) {
       zoomControl={false}
       attributionControl={false}
     >
+      <InvalidateSizeOnMount />
       <TileLayer url={tileUrl} attribution={MAP_CONFIG.attribution} />
       {storyworlds.map((sw) => {
         if (!sw.latitude || !sw.longitude) return null;
