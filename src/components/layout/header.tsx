@@ -42,8 +42,8 @@ export function Header() {
           <img
             src="/logo.png"
             alt="Agent Henrik"
-            className="w-auto transition-all duration-500 invert-0 dark:invert"
-            style={{ height: scrolled ? 18 : 28 }}
+            className="transition-all duration-500 invert-0 dark:invert"
+            style={{ height: scrolled ? 18 : 28, width: scrolled ? 49 : 76 }}
           />
         </Link>
 

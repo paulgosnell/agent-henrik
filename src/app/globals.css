@@ -143,12 +143,13 @@ h1, h2, h3, h4 {
   border-radius: 3px;
 }
 
-/* Broken image fallback */
-img[src]:not([src=""]) {
+/* Broken image fallback (excludes header logo) */
+img[src]:not([src=""]):not([alt="Agent Henrik"]) {
   min-height: 100px;
+  position: relative;
 }
 
-img::after {
+img[src]:not([src=""]):not([alt="Agent Henrik"])::after {
   content: "";
   display: block;
   position: absolute;
