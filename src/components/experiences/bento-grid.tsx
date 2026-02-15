@@ -5,10 +5,17 @@ interface BentoGridProps {
   themes: Theme[];
 }
 
-// Layout pattern: 2 large, 3 medium, 5 small across a 3-column grid
+// Layout: large(2col) + medium(1col) | medium(1col) + large(2col) | then small
+// This fills the 3-column grid with no gaps
 function getSize(index: number): "large" | "medium" | "small" {
-  if (index < 2) return "large";
-  if (index < 5) return "medium";
+  // Row 1: large + medium = 3 cols
+  if (index === 0) return "large";
+  if (index === 1) return "medium";
+  // Row 2: medium + large = 3 cols
+  if (index === 2) return "medium";
+  if (index === 3) return "large";
+  // Row 3: 3 medium = 3 cols
+  if (index <= 6) return "medium";
   return "small";
 }
 
