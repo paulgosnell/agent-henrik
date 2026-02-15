@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { NAV_ITEMS } from "@/lib/constants";
 
@@ -40,15 +39,12 @@ export function Header() {
       }`}>
         {/* Logo */}
         <Link href="/" className="relative z-50">
-          <Image
+          <img
             src="/logo.png"
             alt="Agent Henrik"
-            width={160}
-            height={40}
             className={`w-auto transition-all duration-500 invert-0 dark:invert ${
-              scrolled ? "h-6" : "h-8 md:h-10"
+              scrolled ? "h-5" : "h-6 md:h-7"
             }`}
-            priority
           />
         </Link>
 
