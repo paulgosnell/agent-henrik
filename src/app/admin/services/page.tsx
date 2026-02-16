@@ -6,6 +6,7 @@ import { DataTable, type Column } from "@/components/admin/data-table";
 import { FormModal } from "@/components/admin/form-modal";
 import { TextInput, TextArea, NumberInput, CheckboxInput, SelectInput } from "@/components/admin/form-fields";
 import { TagInput } from "@/components/admin/tag-input";
+import { ImageUpload } from "@/components/admin/image-upload";
 import type { Service } from "@/lib/supabase/types";
 
 const SERVICE_TYPES = [
@@ -114,10 +115,8 @@ export default function ServicesPage() {
         <TextArea label="Description" name="description" value={editing.description ?? ""} onChange={(v) => set("description", v)} rows={4} />
         <SelectInput label="Service Type" name="service_type" value={editing.service_type ?? ""} onChange={(v) => set("service_type", v)} options={SERVICE_TYPES} />
         <TagInput label="Region Availability" value={editing.region_availability ?? []} onChange={(v) => set("region_availability", v)} />
-        <div className="grid grid-cols-2 gap-4">
-          <TextInput label="Image URL" name="image_url" value={editing.image_url ?? ""} onChange={(v) => set("image_url", v)} type="url" />
-          <TextInput label="Video URL" name="video_url" value={editing.video_url ?? ""} onChange={(v) => set("video_url", v)} type="url" />
-        </div>
+        <ImageUpload label="Image" value={editing.image_url ?? ""} onChange={(v) => set("image_url", v)} />
+        <TextInput label="Video URL" name="video_url" value={editing.video_url ?? ""} onChange={(v) => set("video_url", v)} type="url" />
         <div className="grid grid-cols-2 gap-4">
           <NumberInput label="Display Order" name="display_order" value={editing.display_order ?? 0} onChange={(v) => set("display_order", v ?? 0)} />
           <CheckboxInput label="Published" name="published" checked={editing.published ?? true} onChange={(v) => set("published", v)} />

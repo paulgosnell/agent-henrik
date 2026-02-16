@@ -6,6 +6,7 @@ import { DataTable, type Column } from "@/components/admin/data-table";
 import { FormModal } from "@/components/admin/form-modal";
 import { TextInput, TextArea, NumberInput, CheckboxInput } from "@/components/admin/form-fields";
 import { TagInput } from "@/components/admin/tag-input";
+import { ImageUpload } from "@/components/admin/image-upload";
 import type { Storyworld } from "@/lib/supabase/types";
 
 const EMPTY: Partial<Storyworld> = {
@@ -116,10 +117,8 @@ export default function StoryworldsPage() {
         <TagInput label="Climax Moments" value={editing.climax_moments ?? []} onChange={(v) => set("climax_moments", v)} />
         <TagInput label="Reflection Moments" value={editing.reflection_moments ?? []} onChange={(v) => set("reflection_moments", v)} />
         <TagInput label="Suggested Theme IDs" value={editing.suggested_theme_ids ?? []} onChange={(v) => set("suggested_theme_ids", v)} />
-        <div className="grid grid-cols-2 gap-4">
-          <TextInput label="Hero Image URL" name="hero_image_url" value={editing.hero_image_url ?? ""} onChange={(v) => set("hero_image_url", v)} type="url" />
-          <TextInput label="Hero Video URL" name="hero_video_url" value={editing.hero_video_url ?? ""} onChange={(v) => set("hero_video_url", v)} type="url" />
-        </div>
+        <ImageUpload label="Hero Image" value={editing.hero_image_url ?? ""} onChange={(v) => set("hero_image_url", v)} />
+        <TextInput label="Hero Video URL" name="hero_video_url" value={editing.hero_video_url ?? ""} onChange={(v) => set("hero_video_url", v)} type="url" />
         <div className="grid grid-cols-2 gap-4">
           <NumberInput label="Latitude" name="latitude" value={editing.latitude ?? null} onChange={(v) => set("latitude", v)} />
           <NumberInput label="Longitude" name="longitude" value={editing.longitude ?? null} onChange={(v) => set("longitude", v)} />

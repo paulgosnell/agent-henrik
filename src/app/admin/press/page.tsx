@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { FormModal } from "@/components/admin/form-modal";
 import { TextInput, TextArea, NumberInput } from "@/components/admin/form-fields";
+import { ImageUpload } from "@/components/admin/image-upload";
 import type { PressItem } from "@/lib/supabase/types";
 
 const EMPTY: Partial<PressItem> = {
@@ -91,10 +92,8 @@ export default function PressPage() {
         <TextInput label="Source" name="source" value={editing.source ?? ""} onChange={(v) => set("source", v)} required />
         <TextArea label="Quote" name="quote" value={editing.quote ?? ""} onChange={(v) => set("quote", v)} rows={3} />
         <TextInput label="Published Date" name="published_at" value={editing.published_at ?? ""} onChange={(v) => set("published_at", v)} type="date" />
-        <div className="grid grid-cols-2 gap-4">
-          <TextInput label="PDF URL" name="pdf_url" value={editing.pdf_url ?? ""} onChange={(v) => set("pdf_url", v)} type="url" />
-          <TextInput label="Thumbnail URL" name="thumbnail_url" value={editing.thumbnail_url ?? ""} onChange={(v) => set("thumbnail_url", v)} type="url" />
-        </div>
+        <TextInput label="PDF URL" name="pdf_url" value={editing.pdf_url ?? ""} onChange={(v) => set("pdf_url", v)} type="url" />
+        <ImageUpload label="Thumbnail" value={editing.thumbnail_url ?? ""} onChange={(v) => set("thumbnail_url", v)} />
         <TextInput label="Video URL" name="video_url" value={editing.video_url ?? ""} onChange={(v) => set("video_url", v)} type="url" />
         <NumberInput label="Display Order" name="display_order" value={editing.display_order ?? 0} onChange={(v) => set("display_order", v ?? 0)} />
       </FormModal>

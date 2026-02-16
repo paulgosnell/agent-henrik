@@ -6,6 +6,7 @@ import { DataTable, type Column } from "@/components/admin/data-table";
 import { FormModal } from "@/components/admin/form-modal";
 import { TextInput, TextArea, CheckboxInput } from "@/components/admin/form-fields";
 import { TagInput } from "@/components/admin/tag-input";
+import { ImageUpload } from "@/components/admin/image-upload";
 import type { Storyteller } from "@/lib/supabase/types";
 
 const EMPTY: Partial<Storyteller> = {
@@ -102,7 +103,7 @@ export default function StorytellersPage() {
         </div>
         <TextInput label="Role" name="role" value={editing.role ?? ""} onChange={(v) => set("role", v)} />
         <TextArea label="Bio" name="bio" value={editing.bio ?? ""} onChange={(v) => set("bio", v)} rows={4} />
-        <TextInput label="Portrait URL" name="portrait_url" value={editing.portrait_url ?? ""} onChange={(v) => set("portrait_url", v)} type="url" />
+        <ImageUpload label="Portrait" value={editing.portrait_url ?? ""} onChange={(v) => set("portrait_url", v)} />
         <TagInput label="Signature Experiences" value={editing.signature_experiences ?? []} onChange={(v) => set("signature_experiences", v)} />
         <TagInput label="Linked Storyworld IDs" value={editing.linked_storyworld_ids ?? []} onChange={(v) => set("linked_storyworld_ids", v)} />
         <TagInput label="Linked Theme IDs" value={editing.linked_theme_ids ?? []} onChange={(v) => set("linked_theme_ids", v)} />

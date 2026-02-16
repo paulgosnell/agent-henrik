@@ -6,6 +6,7 @@ import { DataTable, type Column } from "@/components/admin/data-table";
 import { FormModal } from "@/components/admin/form-modal";
 import { TextInput, TextArea, CheckboxInput, SelectInput } from "@/components/admin/form-fields";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
+import { ImageUpload } from "@/components/admin/image-upload";
 import type { JournalArticle } from "@/lib/supabase/types";
 
 const CATEGORIES = [
@@ -115,7 +116,7 @@ export default function JournalPage() {
           <SelectInput label="Category" name="category" value={editing.category ?? ""} onChange={(v) => set("category", v)} options={CATEGORIES} />
           <TextInput label="Published Date" name="published_at" value={editing.published_at?.split("T")[0] ?? ""} onChange={(v) => set("published_at", v)} type="date" />
         </div>
-        <TextInput label="Hero Image URL" name="hero_image_url" value={editing.hero_image_url ?? ""} onChange={(v) => set("hero_image_url", v)} type="url" />
+        <ImageUpload label="Hero Image" value={editing.hero_image_url ?? ""} onChange={(v) => set("hero_image_url", v)} />
         <TextArea label="Excerpt" name="excerpt" value={editing.excerpt ?? ""} onChange={(v) => set("excerpt", v)} rows={2} />
         <RichTextEditor label="Content" value={editing.content ?? ""} onChange={(v) => set("content", v)} />
         <CheckboxInput label="Published" name="published" checked={editing.published ?? true} onChange={(v) => set("published", v)} />

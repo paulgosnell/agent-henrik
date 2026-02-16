@@ -6,6 +6,7 @@ import { DataTable, type Column } from "@/components/admin/data-table";
 import { FormModal } from "@/components/admin/form-modal";
 import { TextInput, TextArea, NumberInput, CheckboxInput } from "@/components/admin/form-fields";
 import { TagInput } from "@/components/admin/tag-input";
+import { ImageUpload } from "@/components/admin/image-upload";
 import type { Theme } from "@/lib/supabase/types";
 
 const EMPTY: Partial<Theme> = {
@@ -131,10 +132,8 @@ export default function ThemesPage() {
         <TagInput label="Tone Keywords" value={editing.tone_keywords ?? []} onChange={(v) => set("tone_keywords", v)} />
         <TagInput label="Emphasize" value={editing.emphasize ?? []} onChange={(v) => set("emphasize", v)} />
         <TagInput label="Avoid" value={editing.avoid ?? []} onChange={(v) => set("avoid", v)} />
-        <div className="grid grid-cols-2 gap-4">
-          <TextInput label="Image URL" name="image_url" value={editing.image_url ?? ""} onChange={(v) => set("image_url", v)} type="url" />
-          <TextInput label="Video URL" name="video_url" value={editing.video_url ?? ""} onChange={(v) => set("video_url", v)} type="url" />
-        </div>
+        <ImageUpload label="Image" value={editing.image_url ?? ""} onChange={(v) => set("image_url", v)} />
+        <TextInput label="Video URL" name="video_url" value={editing.video_url ?? ""} onChange={(v) => set("video_url", v)} type="url" />
         <div className="grid grid-cols-2 gap-4">
           <NumberInput label="Display Order" name="display_order" value={editing.display_order ?? 0} onChange={(v) => set("display_order", v ?? 0)} />
           <CheckboxInput label="Published" name="published" checked={editing.published ?? true} onChange={(v) => set("published", v)} />
