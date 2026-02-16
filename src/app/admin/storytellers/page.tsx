@@ -7,7 +7,12 @@ import { FormModal } from "@/components/admin/form-modal";
 import { TextInput, TextArea, CheckboxInput } from "@/components/admin/form-fields";
 import { TagInput } from "@/components/admin/tag-input";
 import { ImageUpload } from "@/components/admin/image-upload";
+import { AiGenerate } from "@/components/admin/ai-generate";
 import type { Storyteller } from "@/lib/supabase/types";
+
+const GENERATABLE_FIELDS: (keyof Storyteller)[] = [
+  "bio", "signature_experiences", "meta_title", "meta_description",
+];
 
 const EMPTY: Partial<Storyteller> = {
   slug: "",
@@ -110,6 +115,15 @@ export default function StorytellersPage() {
         <TagInput label="Linked Storyworld IDs" value={editing.linked_storyworld_ids ?? []} onChange={(v) => set("linked_storyworld_ids", v)} />
         <TagInput label="Linked Theme IDs" value={editing.linked_theme_ids ?? []} onChange={(v) => set("linked_theme_ids", v)} />
         <CheckboxInput label="Published" name="published" checked={editing.published ?? true} onChange={(v) => set("published", v)} />
+        <AiGenerate
+          contentType="storyteller"
+          existingData={editing as Record<string, unknown>}
+          emptyFields={GENERATABLE_FIELDS.filter((f) => {
+            const v = editing[f];
+            return !v || v === "" || (Array.isArray(v) && v.length === 0);
+          })}
+          onGenerated={(data) => setEditing((prev) => ({ ...prev, ...data }))}
+        />
         <div className="border-t border-[var(--border)] pt-4 mt-2">
           <p className="text-xs text-[var(--muted-foreground)] uppercase tracking-wider mb-3">SEO Metadata</p>
           <div className="flex flex-col gap-3">

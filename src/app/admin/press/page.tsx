@@ -6,7 +6,10 @@ import { DataTable, type Column } from "@/components/admin/data-table";
 import { FormModal } from "@/components/admin/form-modal";
 import { TextInput, TextArea, NumberInput } from "@/components/admin/form-fields";
 import { ImageUpload } from "@/components/admin/image-upload";
+import { AiGenerate } from "@/components/admin/ai-generate";
 import type { PressItem } from "@/lib/supabase/types";
+
+const GENERATABLE_FIELDS: (keyof PressItem)[] = ["quote"];
 
 const EMPTY: Partial<PressItem> = {
   title: "",
@@ -98,6 +101,15 @@ export default function PressPage() {
         <ImageUpload label="Thumbnail" value={editing.thumbnail_url ?? ""} onChange={(v) => set("thumbnail_url", v)} />
         <TextInput label="Video URL" name="video_url" value={editing.video_url ?? ""} onChange={(v) => set("video_url", v)} type="url" />
         <NumberInput label="Display Order" name="display_order" value={editing.display_order ?? 0} onChange={(v) => set("display_order", v ?? 0)} />
+        <AiGenerate
+          contentType="press"
+          existingData={editing as Record<string, unknown>}
+          emptyFields={GENERATABLE_FIELDS.filter((f) => {
+            const v = editing[f];
+            return !v || v === "" || (Array.isArray(v) && v.length === 0);
+          })}
+          onGenerated={(data) => setEditing((prev) => ({ ...prev, ...data }))}
+        />
         <div className="border-t border-[var(--border)] pt-4 mt-2">
           <p className="text-xs text-[var(--muted-foreground)] uppercase tracking-wider mb-3">SEO Metadata</p>
           <div className="flex flex-col gap-3">

@@ -7,7 +7,13 @@ import { FormModal } from "@/components/admin/form-modal";
 import { TextInput, TextArea, NumberInput, CheckboxInput } from "@/components/admin/form-fields";
 import { TagInput } from "@/components/admin/tag-input";
 import { ImageUpload } from "@/components/admin/image-upload";
+import { AiGenerate } from "@/components/admin/ai-generate";
 import type { Storyworld } from "@/lib/supabase/types";
+
+const GENERATABLE_FIELDS: (keyof Storyworld)[] = [
+  "atmosphere", "arrival_mood", "immersion_zones", "climax_moments",
+  "reflection_moments", "meta_title", "meta_description",
+];
 
 const EMPTY: Partial<Storyworld> = {
   slug: "",
@@ -129,6 +135,15 @@ export default function StoryworldsPage() {
           <NumberInput label="Display Order" name="display_order" value={editing.display_order ?? 0} onChange={(v) => set("display_order", v ?? 0)} />
           <CheckboxInput label="Published" name="published" checked={editing.published ?? true} onChange={(v) => set("published", v)} />
         </div>
+        <AiGenerate
+          contentType="storyworld"
+          existingData={editing as Record<string, unknown>}
+          emptyFields={GENERATABLE_FIELDS.filter((f) => {
+            const v = editing[f];
+            return !v || v === "" || (Array.isArray(v) && v.length === 0);
+          })}
+          onGenerated={(data) => setEditing((prev) => ({ ...prev, ...data }))}
+        />
         <div className="border-t border-[var(--border)] pt-4 mt-2">
           <p className="text-xs text-[var(--muted-foreground)] uppercase tracking-wider mb-3">SEO Metadata</p>
           <div className="flex flex-col gap-3">
