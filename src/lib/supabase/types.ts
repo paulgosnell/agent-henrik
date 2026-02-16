@@ -103,6 +103,14 @@ export interface Inquiry {
   ai_draft_itinerary: string | null;
   source_storyworld_id: string | null;
   source_theme_id: string | null;
+  status: "new" | "contacted" | "qualified" | "converted" | "closed";
+  created_at: string;
+}
+
+export interface InquiryNote {
+  id: string;
+  inquiry_id: string;
+  note: string;
   created_at: string;
 }
 
