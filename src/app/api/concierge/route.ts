@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No messages provided" }, { status: 400 });
     }
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
+    const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       return NextResponse.json({ error: "AI service not configured" }, { status: 500 });
     }
@@ -51,33 +51,34 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Call Claude API
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    // Call OpenAI API
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
+        "Authorization": `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-5-20250929",
+        model: "gpt-4o",
         max_tokens: 1024,
-        system: systemPrompt,
-        messages: messages.map((m) => ({
-          role: m.role,
-          content: m.content,
-        })),
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...messages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+        ],
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Claude API error:", errorText);
+      console.error("OpenAI API error:", errorText);
       return NextResponse.json({ error: "AI service error" }, { status: 502 });
     }
 
     const data = await response.json();
-    const content = data.content?.[0]?.text || "I apologize, I couldn't generate a response.";
+    const content = data.choices?.[0]?.message?.content || "I apologize, I couldn't generate a response.";
 
     return NextResponse.json({ content });
   } catch (error) {

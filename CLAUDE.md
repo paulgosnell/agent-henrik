@@ -14,7 +14,7 @@ Agent Henrik is a global luxury travel curation platform. Henrik is a real perso
 - **Framework:** Next.js 16 with App Router + TypeScript
 - **Styling:** Tailwind CSS v4 + CSS variables (dark/light theme)
 - **Database:** Supabase (PostgreSQL + Auth + Storage + Edge Functions)
-- **AI Concierge:** Claude API (Sonnet 4.5) via `/api/concierge` route
+- **AI Concierge:** OpenAI API (GPT-4o) via `/api/concierge` route
 - **Maps:** Leaflet.js + react-leaflet with CARTO B&W tiles
 - **Icons:** Lucide React
 - **Fonts:** Cormorant Garamond (serif) + Inter (sans) via next/font/google
