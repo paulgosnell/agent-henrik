@@ -118,3 +118,16 @@ export interface ConversationMessage {
   role: "user" | "assistant";
   content: string;
 }
+
+export interface ConciergeSession {
+  id: string;
+  session_id: string;
+  messages: ConversationMessage[];
+  message_count: number;
+  last_user_message: string | null;
+  source_theme_id: string | null;
+  source_storyworld_id: string | null;
+  source_storyteller_id: string | null;
+  created_at: string;
+  updated_at: string;
+}

@@ -11,6 +11,7 @@ import {
   Award,
   Briefcase,
   MessageSquare,
+  Bot,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -22,6 +23,7 @@ const NAV_ITEMS = [
   { label: "Press", href: "/admin/press", icon: Award },
   { label: "Services", href: "/admin/services", icon: Briefcase },
   { label: "Inquiries", href: "/admin/inquiries", icon: MessageSquare },
+  { label: "Conversations", href: "/admin/conversations", icon: Bot },
 ];
 
 export function AdminNav() {

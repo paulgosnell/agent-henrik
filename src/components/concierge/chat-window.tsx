@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Send, X } from "lucide-react";
 import { ChatMessage } from "./chat-message";
 import type { ConversationMessage } from "@/lib/supabase/types";
@@ -15,7 +15,12 @@ interface ChatWindowProps {
   embedded?: boolean;
 }
 
+function generateSessionId() {
+  return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+}
+
 export function ChatWindow({ onClose, initialContext, embedded = false }: ChatWindowProps) {
+  const sessionId = useMemo(() => generateSessionId(), []);
   const [messages, setMessages] = useState<ConversationMessage[]>([
     {
       role: "assistant",
@@ -47,6 +52,7 @@ export function ChatWindow({ onClose, initialContext, embedded = false }: ChatWi
         body: JSON.stringify({
           messages: [...messages, userMessage],
           context: initialContext,
+          sessionId,
         }),
       });
 

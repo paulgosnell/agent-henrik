@@ -8,6 +8,7 @@ import {
   Award,
   Briefcase,
   MessageSquare,
+  Bot,
 } from "lucide-react";
 
 async function getCount(table: string) {
@@ -26,7 +27,7 @@ async function getNewInquiriesCount() {
 }
 
 export default async function AdminDashboard() {
-  const [themes, storyworlds, storytellers, journal, press, services, inquiries, newInquiries] =
+  const [themes, storyworlds, storytellers, journal, press, services, inquiries, newInquiries, conversations] =
     await Promise.all([
       getCount("ah_themes"),
       getCount("ah_storyworlds"),
@@ -36,6 +37,7 @@ export default async function AdminDashboard() {
       getCount("ah_services"),
       getCount("ah_inquiries"),
       getNewInquiriesCount(),
+      getCount("ah_concierge_sessions"),
     ]);
 
   const cards = [
@@ -46,6 +48,7 @@ export default async function AdminDashboard() {
     { label: "Press", count: press, href: "/admin/press", icon: Award },
     { label: "Services", count: services, href: "/admin/services", icon: Briefcase },
     { label: "Inquiries", count: inquiries, href: "/admin/inquiries", icon: MessageSquare, badge: newInquiries > 0 ? `${newInquiries} new` : undefined },
+    { label: "Conversations", count: conversations, href: "/admin/conversations", icon: Bot },
   ];
 
   return (
