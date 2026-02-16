@@ -1,36 +1,46 @@
 # Agent Henrik - Project Summary
 
 ## Overview
-Agent Henrik is a global luxury travel curation platform built for a real person (Henrik) who offers bespoke, high-end travel experiences in cities around the world. The brand aesthetic is James Bond meets luxury concierge - underground culture, insider access, storytelling encounters.
+Agent Henrik is a global luxury travel curation platform built for a real person (Henrik Tidefjard) who offers bespoke, high-end travel experiences in cities around the world. The brand aesthetic is James Bond meets luxury concierge - underground culture, insider access, storytelling encounters.
 
 Sister site to **Luxury Travel Sweden** (same client, shared Supabase backend). Luxury Travel Sweden focuses on Sweden-only destinations; Agent Henrik is the global expansion covering cities like Berlin, Beirut, Tokyo, Rio, New York, and more.
 
-## Core Features
+**Live URL:** https://agenthenrik.com (currently points to old vanilla site on LiteSpeed)
+**Staging URL:** https://agent-henrik-alpha.vercel.app (Next.js rebuild)
+**Deadline:** ITB Berlin, 3 March 2026
 
-### Homepage Flow
-1. **Hero Section** - Full-screen showreel video of Henrik visiting cities (AI-generated avatar). Destination dropdown overlay: "Where do you want to go?"
-2. **Interactive Map** - Leaflet.js world map with destination markers, filterable by season, experience theme, and category
-3. **Six Pillars** - Experience categories (Nature, Design, Culture, Culinary, Nightlife, Legacy) loaded from CMS
-4. **Corporate Section** - 5 corporate experience types (Leadership, Innovation, Celebration, Culture, Wellness)
-5. **Storytellers** - Featured local guides and cultural insiders
-6. **LIV AI Concierge** - GPT-4 powered 6-step conversation that builds a draft itinerary
-7. **Journal** - Blog posts / editorial content
-8. **Press** - Media coverage and quotes
-9. **Contact Form** - Lead capture with itinerary draft pre-fill from LIV
+## Tech Stack (Next.js Rebuild)
+- **Framework:** Next.js (App Router) + TypeScript
+- **Styling:** Tailwind CSS v4 with CSS variables for dark/light theming
+- **Database:** Supabase (PostgreSQL + Auth + Storage + Edge Functions)
+- **AI Concierge:** Claude API via `/api/concierge` route (Story Arc Model)
+- **Maps:** Leaflet.js with CARTO tiles (dynamic import, no SSR)
+- **Icons:** Lucide React
+- **Fonts:** Cormorant Garamond (serif) + Inter (sans) via next/font
+- **Hosting:** Vercel (auto-deploys from GitHub push)
+- **Repo:** GitHub (private) - paulgosnell/agent-henrik
 
-### LIV AI Concierge
-Context-aware AI chat that guides users through trip planning:
-- Collects: trip type, themes, duration, group size, season, special wishes
-- Generates draft itinerary
-- Pre-fills contact form with conversation summary
-- Backend: OpenAI GPT-4 via Supabase Edge Function
+## Core Pages
+- **Homepage** - Hero video, themes bento grid, map teaser, press strip, corporate split, journal preview, newsletter signup
+- **/explore** - Full-viewport Leaflet world map with styled popups + /explore/[slug] storyworld detail
+- **/experiences** - Bento grid of 10 themes + /experiences/[slug] split-screen detail
+- **/storytellers** - Grid + detail pages
+- **/journal** - Editorial grid + article pages
+- **/press** - Press coverage grid
+- **/contact** - Lead capture form (submits to Supabase)
+- **/liv** - AI concierge overlay (floating panel with close/back)
+- **/about/*** - Story, team, services, booking process, pricing FAQ
+- **/legal/*** - Terms, data protection, imprint
 
-### Admin CMS
-Full content management at `/admin/` covering destinations, blog posts, storytellers, press, media uploads, team members, FAQs, pricing, services, booking process, and LIV AI settings.
+## AI Concierge (Agent Henrik)
+- Story Arc Model: Arrival, Immersion, Climax, Reflection structure
+- 10 theme behavior profiles with tone, emphasis, and guardrails
+- Intent detection and multi-theme blending
+- Context-aware (receives storyworld_id, theme_id from CTAs)
+- Floating button site-wide + dedicated /liv page as overlay panel
 
-## Architecture
-- Vanilla HTML/CSS/JS (no framework, no build step)
-- Supabase for everything backend (auth, DB, storage, edge functions)
-- Netlify hosting
-- Shared database with Luxury Travel Sweden (filtered by `site` field)
-- Dark/light theme support via CSS variables
+## Database
+- **Project ID:** fjnfsabvuiyzuzfhxzcc
+- All tables prefixed with `ah_` (ah_themes, ah_storyworlds, ah_storytellers, etc.)
+- Shared Supabase instance with Luxury Travel Sweden
+- Dark mode is default theme

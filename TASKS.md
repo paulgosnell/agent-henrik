@@ -1,31 +1,41 @@
 # Agent Henrik - Tasks
 
-## Build Status: Next.js Rebuild Complete (Phase 1-8)
+## Build Status: Next.js Rebuild — Visual Testing Phase
 All pages, components, database, and AI concierge rebuilt in Next.js.
-Ready for visual testing and content refinement.
+Deployed to staging. Currently fixing visual/UX issues from testing.
 
 ---
 
-## Ready for Testing
+## Completed
 - [x] Next.js scaffold + Tailwind v4 + Supabase
-- [x] Database migrations (ah_themes, ah_storyworlds, ah_storytellers, ah_journal_articles, ah_press_items, ah_services, ah_inquiries, ah_newsletter_subscribers)
+- [x] Database migrations (all ah_ tables)
 - [x] Seed data (10 themes, 10 storyworlds, 7 services, 3 articles, 5 press items, 3 storytellers)
 - [x] Layout (header, footer, theme toggle, dark/light mode)
-- [x] Homepage (hero video, themes bento grid, map teaser, press strip, corporate split, journal preview, newsletter)
-- [x] Experiences (/experiences bento grid + /experiences/[slug] split-screen detail)
+- [x] Homepage (hero video, themes bento, map teaser, press strip, corporate, journal, newsletter)
+- [x] Experiences (/experiences bento grid + /experiences/[slug] detail)
 - [x] Map Explorer (/explore Leaflet map + /explore/[slug] storyworld detail)
-- [x] Storytellers (/storytellers grid + /storytellers/[slug] detail)
-- [x] Journal (/journal grid + /journal/[slug] article)
-- [x] Press (/press grid)
-- [x] Contact (/contact form submits to Supabase)
-- [x] AI Concierge (Agent Henrik chat, floating button, /liv dedicated page)
-- [x] About pages (story, team, services, booking-process, pricing-faq)
-- [x] Legal pages (terms, data-protection, imprint)
-- [x] Newsletter signup (wired to Supabase)
-- [x] Custom 404 page
-- [x] Favicon + Apple Touch Icon
-- [x] SEO metadata (per-page titles, descriptions, OG tags)
+- [x] Storytellers, Journal, Press, Contact pages
+- [x] AI Concierge (Agent Henrik chat, floating button, /liv overlay page)
+- [x] About pages + Legal pages
+- [x] Newsletter signup, 404 page, favicon, SEO metadata
 - [x] Story Arc Model integrated into AI system prompt
+- [x] Vercel deployment (framework config, env vars)
+- [x] Fix broken Unsplash placeholder images
+- [x] Hero video (CDN-hosted mp4)
+- [x] Logo sizing (plain img tag, explicit dimensions, excluded from min-height CSS)
+- [x] Header: solid bg on inner pages, transparent on homepage hero only
+- [x] Header: shrink on scroll (logo + padding)
+- [x] Concierge /liv page: floating overlay panel with close/back button
+- [x] Bento grid: interleaved large+medium cards to fill 3-col grid
+- [x] Map popups: redesigned with hero image, atmosphere, tags, CTAs
+- [x] Map: popup widened to 480px via CSS override
+- [x] Map: Leaflet tiles fixed (excluded from global img CSS rules)
+- [x] Map: invalidateSize() on mount for tile loading
+- [x] Map: z-index below header, scroll-wheel zoom disabled
+
+## Active Issues
+- [ ] Map tiles still showing gaps on some viewport sizes (may need further invalidateSize tuning)
+- [ ] Concierge chat panel on mobile could use further responsive testing
 
 ## Before Launch (Pre-ITB Berlin, 3 March 2026)
 
@@ -41,17 +51,15 @@ Ready for visual testing and content refinement.
 
 ### Technical
 - [ ] Set ANTHROPIC_API_KEY in Vercel environment
-- [ ] Test AI concierge end-to-end
+- [ ] Test AI concierge end-to-end on staging
 - [ ] Verify contact form email notifications (Supabase webhook or Resend)
-- [ ] Verify RLS policies on all ah_ tables
 - [ ] Performance audit (Lighthouse)
-- [ ] Responsive testing across devices
-- [ ] Commit + push to GitHub
-- [ ] Vercel deployment
+- [ ] Responsive testing across devices (mobile, tablet, desktop)
+- [ ] Point agenthenrik.com DNS to Vercel (currently on LiteSpeed)
 
 ### Phase 2+ (Post-Launch)
 - [ ] Voice mode for AI concierge (TTS with Henrik's voice)
 - [ ] Instagram feed integration
 - [ ] User accounts + saved itineraries
 - [ ] Budget simulator
-- [ ] Analytics tracking (page views)
+- [ ] Analytics tracking (page views per global CLAUDE.md pattern)
