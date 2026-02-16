@@ -297,3 +297,55 @@ img[src]:not([src=""]):not([alt="Agent Henrik"]):not(.leaflet-tile) {
 .leaflet-container img {
   min-height: 0 !important;
 }
+
+/* StormLikes Instagram embed overrides */
+.instagram-feed > div:first-of-type {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.instagram-feed > div > div:first-child {
+  display: none !important;
+}
+
+.instagram-feed > div > div:nth-child(2) {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 0.75rem !important;
+}
+
+.instagram-feed > div > div:nth-child(2) > a {
+  aspect-ratio: 1 / 1 !important;
+  overflow: hidden !important;
+  display: block !important;
+}
+
+.instagram-feed > div > div:nth-child(2) > a img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  transition: transform 0.6s ease !important;
+  min-height: 0 !important;
+}
+
+.instagram-feed > div > div:nth-child(2) > a:hover img {
+  transform: scale(1.05) !important;
+}
+
+.instagram-feed > div > p:last-child {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .instagram-feed > div > div:nth-child(2) {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .instagram-feed > div > div:nth-child(2) {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
