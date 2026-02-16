@@ -18,6 +18,8 @@ export interface Theme {
   video_url: string | null;
   display_order: number;
   published: boolean;
+  meta_title: string | null;
+  meta_description: string | null;
 }
 
 export interface Storyworld {
@@ -37,6 +39,8 @@ export interface Storyworld {
   longitude: number | null;
   published: boolean;
   display_order: number;
+  meta_title: string | null;
+  meta_description: string | null;
 }
 
 export interface Storyteller {
@@ -50,6 +54,8 @@ export interface Storyteller {
   linked_storyworld_ids: string[] | null;
   linked_theme_ids: string[] | null;
   published: boolean;
+  meta_title: string | null;
+  meta_description: string | null;
 }
 
 export interface PressItem {
@@ -62,6 +68,8 @@ export interface PressItem {
   thumbnail_url: string | null;
   video_url: string | null;
   display_order: number;
+  meta_title: string | null;
+  meta_description: string | null;
 }
 
 export interface JournalArticle {
@@ -74,6 +82,8 @@ export interface JournalArticle {
   excerpt: string | null;
   published_at: string | null;
   published: boolean;
+  meta_title: string | null;
+  meta_description: string | null;
 }
 
 export interface Service {
@@ -87,6 +97,8 @@ export interface Service {
   video_url: string | null;
   display_order: number;
   published: boolean;
+  meta_title: string | null;
+  meta_description: string | null;
 }
 
 export interface Inquiry {
@@ -129,5 +141,13 @@ export interface ConciergeSession {
   source_storyworld_id: string | null;
   source_storyteller_id: string | null;
   created_at: string;
+  updated_at: string;
+}
+
+export interface PageMeta {
+  id: string;
+  page_path: string;
+  meta_title: string | null;
+  meta_description: string | null;
   updated_at: string;
 }

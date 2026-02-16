@@ -1,13 +1,15 @@
-import { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
+import { getPageMeta } from "@/lib/utils/page-meta";
 import { Section } from "@/components/ui/section";
 import { CTAButton } from "@/components/ui/cta-button";
 import type { Service } from "@/lib/supabase/types";
 
-export const metadata: Metadata = {
-  title: "Our Services",
-  description: "Agent Henrik's seven core service offerings for individuals, brands, and groups.",
-};
+export async function generateMetadata() {
+  return getPageMeta("/about/services", {
+    title: "Our Services",
+    description: "Agent Henrik's seven core service offerings for individuals, brands, and groups.",
+  });
+}
 
 export default async function ServicesPage() {
   const supabase = await createClient();

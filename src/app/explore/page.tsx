@@ -1,12 +1,14 @@
-import { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
+import { getPageMeta } from "@/lib/utils/page-meta";
 import { MapLoader } from "@/components/map/map-loader";
 import type { Storyworld } from "@/lib/supabase/types";
 
-export const metadata: Metadata = {
-  title: "Explore",
-  description: "Discover Agent Henrik's Storyworlds across the globe. Ten cities, ten narratives.",
-};
+export async function generateMetadata() {
+  return getPageMeta("/explore", {
+    title: "Explore",
+    description: "Discover Agent Henrik's Storyworlds across the globe. Ten cities, ten narratives.",
+  });
+}
 
 export default async function ExplorePage() {
   const supabase = await createClient();

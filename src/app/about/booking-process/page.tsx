@@ -1,11 +1,13 @@
-import { Metadata } from "next";
+import { getPageMeta } from "@/lib/utils/page-meta";
 import { Section } from "@/components/ui/section";
 import { CTAButton } from "@/components/ui/cta-button";
 
-export const metadata: Metadata = {
-  title: "Booking Process",
-  description: "How booking with Agent Henrik works — from first conversation to departure.",
-};
+export async function generateMetadata() {
+  return getPageMeta("/about/booking-process", {
+    title: "Booking Process",
+    description: "How booking with Agent Henrik works — from first conversation to departure.",
+  });
+}
 
 const steps = [
   {

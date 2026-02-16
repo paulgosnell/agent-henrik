@@ -12,11 +12,11 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const supabase = await createClient();
-  const { data } = await supabase.from("ah_journal_articles").select("title, excerpt").eq("slug", slug).single();
+  const { data } = await supabase.from("ah_journal_articles").select("title, excerpt, meta_title, meta_description").eq("slug", slug).single();
   if (!data) return { title: "Article" };
   return {
-    title: data.title,
-    description: data.excerpt || `Read ${data.title} on Agent Henrik's Insider Journal.`,
+    title: data.meta_title || data.title,
+    description: data.meta_description || data.excerpt || `Read ${data.title} on Agent Henrik's Insider Journal.`,
   };
 }
 

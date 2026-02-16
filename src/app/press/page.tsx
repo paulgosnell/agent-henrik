@@ -1,13 +1,15 @@
-import { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { PressCard } from "@/components/press/press-card";
 import { Section } from "@/components/ui/section";
+import { getPageMeta } from "@/lib/utils/page-meta";
 import type { PressItem } from "@/lib/supabase/types";
 
-export const metadata: Metadata = {
-  title: "Press & Media",
-  description: "Agent Henrik in the press. Features, interviews, and media coverage.",
-};
+export async function generateMetadata() {
+  return getPageMeta("/press", {
+    title: "Press & Media",
+    description: "Agent Henrik in the press. Features, interviews, and media coverage.",
+  });
+}
 
 export default async function PressPage() {
   const supabase = await createClient();

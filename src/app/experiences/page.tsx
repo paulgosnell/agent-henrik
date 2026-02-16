@@ -1,13 +1,15 @@
-import { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
+import { getPageMeta } from "@/lib/utils/page-meta";
 import { BentoGrid } from "@/components/experiences/bento-grid";
 import { Section } from "@/components/ui/section";
 import type { Theme } from "@/lib/supabase/types";
 
-export const metadata: Metadata = {
-  title: "Experiences",
-  description: "Ten curated experience themes. Culture, nightlife, adventure, culinary, and more.",
-};
+export async function generateMetadata() {
+  return getPageMeta("/experiences", {
+    title: "Experiences",
+    description: "Ten curated experience themes. Culture, nightlife, adventure, culinary, and more.",
+  });
+}
 
 export default async function ExperiencesPage() {
   const supabase = await createClient();

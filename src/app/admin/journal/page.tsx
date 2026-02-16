@@ -25,6 +25,8 @@ const EMPTY: Partial<JournalArticle> = {
   excerpt: "",
   published_at: "",
   published: true,
+  meta_title: "",
+  meta_description: "",
 };
 
 const columns: Column<JournalArticle>[] = [
@@ -120,6 +122,13 @@ export default function JournalPage() {
         <TextArea label="Excerpt" name="excerpt" value={editing.excerpt ?? ""} onChange={(v) => set("excerpt", v)} rows={2} />
         <RichTextEditor label="Content" value={editing.content ?? ""} onChange={(v) => set("content", v)} />
         <CheckboxInput label="Published" name="published" checked={editing.published ?? true} onChange={(v) => set("published", v)} />
+        <div className="border-t border-[var(--border)] pt-4 mt-2">
+          <p className="text-xs text-[var(--muted-foreground)] uppercase tracking-wider mb-3">SEO Metadata</p>
+          <div className="flex flex-col gap-3">
+            <TextInput label="Meta Title" name="meta_title" value={editing.meta_title ?? ""} onChange={(v) => set("meta_title", v)} placeholder="Override page title for search engines" />
+            <TextArea label="Meta Description" name="meta_description" value={editing.meta_description ?? ""} onChange={(v) => set("meta_description", v)} rows={2} placeholder="Override description for search engines" />
+          </div>
+        </div>
       </FormModal>
     </div>
   );

@@ -1,12 +1,14 @@
-import { Metadata } from "next";
+import { getPageMeta } from "@/lib/utils/page-meta";
 import { Section } from "@/components/ui/section";
 import { CTAButton } from "@/components/ui/cta-button";
 import { INVESTMENT_LEVELS } from "@/lib/constants";
 
-export const metadata: Metadata = {
-  title: "Pricing & FAQ",
-  description: "Investment levels and frequently asked questions about Agent Henrik journeys.",
-};
+export async function generateMetadata() {
+  return getPageMeta("/about/pricing-faq", {
+    title: "Pricing & FAQ",
+    description: "Investment levels and frequently asked questions about Agent Henrik journeys.",
+  });
+}
 
 const faqs = [
   {

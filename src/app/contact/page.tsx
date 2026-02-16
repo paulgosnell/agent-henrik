@@ -1,13 +1,15 @@
-import { Metadata } from "next";
 import { ContactForm } from "@/components/contact/contact-form";
 import { Section } from "@/components/ui/section";
 import { createClient } from "@/lib/supabase/server";
+import { getPageMeta } from "@/lib/utils/page-meta";
 import type { PressItem } from "@/lib/supabase/types";
 
-export const metadata: Metadata = {
-  title: "Contact",
-  description: "Begin your insider journey. Contact Agent Henrik for a bespoke consultation.",
-};
+export async function generateMetadata() {
+  return getPageMeta("/contact", {
+    title: "Contact",
+    description: "Begin your insider journey. Contact Agent Henrik for a bespoke consultation.",
+  });
+}
 
 export default async function ContactPage() {
   const supabase = await createClient();

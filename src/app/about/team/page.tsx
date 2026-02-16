@@ -1,10 +1,12 @@
-import { Metadata } from "next";
+import { getPageMeta } from "@/lib/utils/page-meta";
 import { Section } from "@/components/ui/section";
 
-export const metadata: Metadata = {
-  title: "Our Team",
-  description: "Meet the team behind Agent Henrik.",
-};
+export async function generateMetadata() {
+  return getPageMeta("/about/team", {
+    title: "Our Team",
+    description: "Meet the team behind Agent Henrik.",
+  });
+}
 
 export default function TeamPage() {
   return (

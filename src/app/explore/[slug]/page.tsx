@@ -15,11 +15,11 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const supabase = await createClient();
-  const { data } = await supabase.from("ah_storyworlds").select("name, atmosphere").eq("slug", slug).single();
+  const { data } = await supabase.from("ah_storyworlds").select("name, atmosphere, meta_title, meta_description").eq("slug", slug).single();
   if (!data) return { title: "Storyworld" };
   return {
-    title: data.name,
-    description: data.atmosphere || `Explore ${data.name} with Agent Henrik.`,
+    title: data.meta_title || data.name,
+    description: data.meta_description || data.atmosphere || `Explore ${data.name} with Agent Henrik.`,
   };
 }
 

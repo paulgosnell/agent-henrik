@@ -29,6 +29,8 @@ const EMPTY: Partial<Service> = {
   video_url: "",
   display_order: 0,
   published: true,
+  meta_title: "",
+  meta_description: "",
 };
 
 const columns: Column<Service>[] = [
@@ -120,6 +122,13 @@ export default function ServicesPage() {
         <div className="grid grid-cols-2 gap-4">
           <NumberInput label="Display Order" name="display_order" value={editing.display_order ?? 0} onChange={(v) => set("display_order", v ?? 0)} />
           <CheckboxInput label="Published" name="published" checked={editing.published ?? true} onChange={(v) => set("published", v)} />
+        </div>
+        <div className="border-t border-[var(--border)] pt-4 mt-2">
+          <p className="text-xs text-[var(--muted-foreground)] uppercase tracking-wider mb-3">SEO Metadata</p>
+          <div className="flex flex-col gap-3">
+            <TextInput label="Meta Title" name="meta_title" value={editing.meta_title ?? ""} onChange={(v) => set("meta_title", v)} placeholder="Override page title for search engines" />
+            <TextArea label="Meta Description" name="meta_description" value={editing.meta_description ?? ""} onChange={(v) => set("meta_description", v)} rows={2} placeholder="Override description for search engines" />
+          </div>
         </div>
       </FormModal>
     </div>

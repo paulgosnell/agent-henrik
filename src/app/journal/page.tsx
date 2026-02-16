@@ -1,15 +1,17 @@
-import { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
+import { getPageMeta } from "@/lib/utils/page-meta";
 import { ArticleCard } from "@/components/journal/article-card";
 import { Section } from "@/components/ui/section";
 import { JOURNAL_CATEGORIES } from "@/lib/constants";
 import type { JournalArticle } from "@/lib/supabase/types";
 import Link from "next/link";
 
-export const metadata: Metadata = {
-  title: "Journal",
-  description: "The Insider Journal. City spotlights, scene reports, and insider interviews.",
-};
+export async function generateMetadata() {
+  return getPageMeta("/journal", {
+    title: "Journal",
+    description: "The Insider Journal. City spotlights, scene reports, and insider interviews.",
+  });
+}
 
 export default async function JournalPage() {
   const supabase = await createClient();

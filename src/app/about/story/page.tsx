@@ -1,10 +1,12 @@
-import { Metadata } from "next";
+import { getPageMeta } from "@/lib/utils/page-meta";
 import { Section } from "@/components/ui/section";
 
-export const metadata: Metadata = {
-  title: "Our Story",
-  description: "The story behind Agent Henrik — from Berlin to the world.",
-};
+export async function generateMetadata() {
+  return getPageMeta("/about/story", {
+    title: "Our Story",
+    description: "The story behind Agent Henrik — from Berlin to the world.",
+  });
+}
 
 export default function StoryPage() {
   return (

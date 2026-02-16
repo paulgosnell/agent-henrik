@@ -1,13 +1,15 @@
-import { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getPageMeta } from "@/lib/utils/page-meta";
 import { Section } from "@/components/ui/section";
 import type { Storyteller } from "@/lib/supabase/types";
 
-export const metadata: Metadata = {
-  title: "Storytellers",
-  description: "Meet Agent Henrik's global network of cultural storytellers and local insiders.",
-};
+export async function generateMetadata() {
+  return getPageMeta("/storytellers", {
+    title: "Storytellers",
+    description: "Meet Agent Henrik's global network of cultural storytellers and local insiders.",
+  });
+}
 
 export default async function StorytellersPage() {
   const supabase = await createClient();

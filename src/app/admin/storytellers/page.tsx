@@ -19,6 +19,8 @@ const EMPTY: Partial<Storyteller> = {
   linked_storyworld_ids: [],
   linked_theme_ids: [],
   published: true,
+  meta_title: "",
+  meta_description: "",
 };
 
 const columns: Column<Storyteller>[] = [
@@ -108,6 +110,13 @@ export default function StorytellersPage() {
         <TagInput label="Linked Storyworld IDs" value={editing.linked_storyworld_ids ?? []} onChange={(v) => set("linked_storyworld_ids", v)} />
         <TagInput label="Linked Theme IDs" value={editing.linked_theme_ids ?? []} onChange={(v) => set("linked_theme_ids", v)} />
         <CheckboxInput label="Published" name="published" checked={editing.published ?? true} onChange={(v) => set("published", v)} />
+        <div className="border-t border-[var(--border)] pt-4 mt-2">
+          <p className="text-xs text-[var(--muted-foreground)] uppercase tracking-wider mb-3">SEO Metadata</p>
+          <div className="flex flex-col gap-3">
+            <TextInput label="Meta Title" name="meta_title" value={editing.meta_title ?? ""} onChange={(v) => set("meta_title", v)} placeholder="Override page title for search engines" />
+            <TextArea label="Meta Description" name="meta_description" value={editing.meta_description ?? ""} onChange={(v) => set("meta_description", v)} rows={2} placeholder="Override description for search engines" />
+          </div>
+        </div>
       </FormModal>
     </div>
   );

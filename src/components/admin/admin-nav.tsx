@@ -12,10 +12,12 @@ import {
   Briefcase,
   MessageSquare,
   Bot,
+  FileText,
 } from "lucide-react";
 
 const NAV_ITEMS = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { label: "Pages", href: "/admin/pages", icon: FileText },
   { label: "Themes", href: "/admin/themes", icon: Palette },
   { label: "Storyworlds", href: "/admin/storyworlds", icon: Globe },
   { label: "Storytellers", href: "/admin/storytellers", icon: Users },
