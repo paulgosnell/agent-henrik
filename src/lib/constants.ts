@@ -69,6 +69,13 @@ export const THEME_SLUGS = [
   "epic-moments",
 ] as const;
 
+export const JOURNAL_CATEGORIES = [
+  { slug: "city-spotlights", label: "City Spotlights" },
+  { slug: "scene-reports", label: "Scene Reports" },
+  { slug: "insider-interviews", label: "Insider Interviews" },
+  { slug: "trend-watch", label: "Trend Watch" },
+] as const;
+
 export const MAP_CONFIG = {
   center: [30, 0] as [number, number],
   zoom: 2,

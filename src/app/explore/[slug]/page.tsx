@@ -1,10 +1,12 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Section } from "@/components/ui/section";
 import { CTAButton } from "@/components/ui/cta-button";
 import { StoryArc } from "@/components/ui/story-arc";
-import type { Storyworld } from "@/lib/supabase/types";
+import { ArrowRight } from "lucide-react";
+import type { Storyworld, Theme } from "@/lib/supabase/types";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -29,6 +31,17 @@ export default async function StoryworldPage({ params }: PageProps) {
   if (!data) notFound();
 
   const storyworld = data as Storyworld;
+
+  // Fetch suggested themes if available
+  let suggestedThemes: Theme[] = [];
+  if (storyworld.suggested_theme_ids && storyworld.suggested_theme_ids.length > 0) {
+    const { data: themesData } = await supabase
+      .from("ah_themes")
+      .select("*")
+      .in("id", storyworld.suggested_theme_ids)
+      .eq("published", true);
+    suggestedThemes = (themesData as Theme[]) || [];
+  }
 
   return (
     <>
@@ -72,6 +85,35 @@ export default async function StoryworldPage({ params }: PageProps) {
           reflection={storyworld.reflection_moments}
         />
       </Section>
+
+      {/* Suggested Themes */}
+      {suggestedThemes.length > 0 && (
+        <Section>
+          <h2 className="mb-8 text-center font-serif text-3xl font-light md:text-4xl">
+            Suggested Themes
+          </h2>
+          <div className="mx-auto grid max-w-4xl gap-4 md:grid-cols-2">
+            {suggestedThemes.map((theme) => (
+              <Link
+                key={theme.id}
+                href={`/experiences/${theme.slug}`}
+                className="group flex items-center justify-between border border-border p-5 transition-colors duration-400 hover:bg-muted"
+              >
+                <div>
+                  <h3 className="font-serif text-lg font-light">{theme.title}</h3>
+                  {theme.tagline && (
+                    <p className="mt-1 text-sm text-muted-foreground">{theme.tagline}</p>
+                  )}
+                </div>
+                <ArrowRight
+                  size={16}
+                  className="shrink-0 text-muted-foreground transition-transform duration-300 group-hover:translate-x-1 group-hover:text-foreground"
+                />
+              </Link>
+            ))}
+          </div>
+        </Section>
+      )}
 
       {/* CTA */}
       <Section>
