@@ -9,8 +9,11 @@ interface ChatWindowProps {
   onClose?: () => void;
   initialContext?: {
     storyworld_id?: string;
+    storyworld_name?: string;
     theme_id?: string;
+    theme_name?: string;
     storyteller_id?: string;
+    storyteller_name?: string;
   };
   embedded?: boolean;
 }
@@ -19,14 +22,31 @@ function generateSessionId() {
   return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
 }
 
+function generateGreeting(context?: ChatWindowProps["initialContext"]): string {
+  if (!context) {
+    return "Welcome. I'm Agent Henrik — your insider to the world's most extraordinary cultural journeys. Where shall we begin?";
+  }
+
+  if (context.storyteller_name) {
+    return `Welcome. You're interested in ${context.storyteller_name} — a wonderful choice. I can help design an encounter that goes beyond the ordinary. What kind of experience are you imagining?`;
+  }
+
+  if (context.storyworld_name) {
+    return `${context.storyworld_name} — an excellent choice. I can help you compose a journey here that goes far beyond the guidebook. What draws you to ${context.storyworld_name}?`;
+  }
+
+  if (context.theme_name) {
+    return `${context.theme_name} — a superb choice. Let me help you design an experience that truly captures this essence. What aspect resonates most with you?`;
+  }
+
+  return "Welcome. I'm Agent Henrik — your insider to the world's most extraordinary cultural journeys. Where shall we begin?";
+}
+
 export function ChatWindow({ onClose, initialContext, embedded = false }: ChatWindowProps) {
   const sessionId = useMemo(() => generateSessionId(), []);
+  const greeting = useMemo(() => generateGreeting(initialContext), [initialContext]);
   const [messages, setMessages] = useState<ConversationMessage[]>([
-    {
-      role: "assistant",
-      content:
-        "Welcome. I'm Agent Henrik — your insider to the world's most extraordinary cultural journeys. Where shall we begin?",
-    },
+    { role: "assistant", content: greeting },
   ]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);

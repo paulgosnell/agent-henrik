@@ -4,8 +4,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Section } from "@/components/ui/section";
 import { CTAButton } from "@/components/ui/cta-button";
-import { StoryArc } from "@/components/ui/story-arc";
-import { ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ImageCarousel } from "@/components/ui/image-carousel";
 import type { Storyworld, Theme } from "@/lib/supabase/types";
 
 interface PageProps {
@@ -45,88 +45,102 @@ export default async function StoryworldPage({ params }: PageProps) {
 
   return (
     <>
-      {/* Hero */}
-      <section className="relative flex h-[70vh] items-end">
-        {storyworld.hero_image_url && (
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${storyworld.hero_image_url})` }}
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-        <div className="relative z-10 mx-auto max-w-[1200px] px-6 pb-16 md:px-12">
-          {storyworld.region && (
-            <p className="nav-text mb-2 text-white/60">{storyworld.region}</p>
-          )}
-          <h1 className="font-serif text-5xl font-light text-white md:text-7xl">
-            {storyworld.name}
-          </h1>
-        </div>
-      </section>
+      {/* Back navigation */}
+      <div className="mx-auto max-w-[1200px] px-6 pt-24 md:px-12">
+        <Link
+          href="/explore"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft size={14} />
+          Back to Storyworld Map
+        </Link>
+      </div>
 
-      {/* Atmosphere */}
-      {storyworld.atmosphere && (
-        <Section>
-          <p className="mx-auto max-w-2xl text-center text-lg leading-relaxed text-muted-foreground">
-            {storyworld.atmosphere}
-          </p>
-        </Section>
-      )}
-
-      {/* Story Arc */}
-      <Section className="bg-muted">
-        <h2 className="mb-8 text-center font-serif text-3xl font-light md:text-4xl">
-          How This Journey Unfolds
-        </h2>
-        <StoryArc
-          arrival={storyworld.arrival_mood ? [storyworld.arrival_mood] : null}
-          immersion={storyworld.immersion_zones}
-          climax={storyworld.climax_moments}
-          reflection={storyworld.reflection_moments}
-        />
-      </Section>
-
-      {/* Suggested Themes */}
-      {suggestedThemes.length > 0 && (
-        <Section>
-          <h2 className="mb-8 text-center font-serif text-3xl font-light md:text-4xl">
-            Suggested Themes
-          </h2>
-          <div className="mx-auto grid max-w-4xl gap-4 md:grid-cols-2">
-            {suggestedThemes.map((theme) => (
-              <Link
-                key={theme.id}
-                href={`/experiences/${theme.slug}`}
-                className="group flex items-center justify-between border border-border p-5 transition-colors duration-400 hover:bg-muted"
-              >
-                <div>
-                  <h3 className="font-serif text-lg font-light">{theme.title}</h3>
-                  {theme.tagline && (
-                    <p className="mt-1 text-sm text-muted-foreground">{theme.tagline}</p>
-                  )}
-                </div>
-                <ArrowRight
-                  size={16}
-                  className="shrink-0 text-muted-foreground transition-transform duration-300 group-hover:translate-x-1 group-hover:text-foreground"
-                />
-              </Link>
-            ))}
+      {/* Split Layout — matching theme detail pages */}
+      <div className="mx-auto max-w-[1200px] px-6 py-12 md:px-12">
+        <div className="grid gap-0 md:grid-cols-2 md:min-h-[70vh]">
+          {/* Left: Image */}
+          <div className="relative min-h-[400px] bg-muted md:min-h-0">
+            {storyworld.images && storyworld.images.length > 0 ? (
+              <ImageCarousel images={storyworld.images} alt={storyworld.name} />
+            ) : storyworld.hero_image_url ? (
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: `url(${storyworld.hero_image_url})` }}
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center">
+                <span className="font-serif text-6xl font-light text-muted-foreground/30">
+                  {storyworld.name}
+                </span>
+              </div>
+            )}
           </div>
-        </Section>
-      )}
 
-      {/* CTA */}
+          {/* Right: Info (scrollable) */}
+          <div className="flex flex-col border border-border p-8 md:max-h-[70vh] md:overflow-y-auto md:p-12">
+            {storyworld.region && (
+              <p className="nav-text mb-2 text-muted-foreground">{storyworld.region}</p>
+            )}
+            <h1 className="mb-6 font-serif text-4xl font-light md:text-5xl">
+              {storyworld.name}
+            </h1>
+
+            {storyworld.atmosphere && (
+              <div className="mb-8">
+                <p className="text-lg leading-relaxed text-muted-foreground">
+                  {storyworld.atmosphere}
+                </p>
+              </div>
+            )}
+
+            {/* Suggested Themes */}
+            {suggestedThemes.length > 0 && (
+              <div className="mb-8">
+                <h3 className="nav-text mb-3 text-foreground">Suggested Themes</h3>
+                <div className="space-y-2">
+                  {suggestedThemes.map((theme) => (
+                    <Link
+                      key={theme.id}
+                      href={`/experiences/${theme.slug}`}
+                      className="group flex items-center justify-between border border-border p-3 transition-colors duration-400 hover:bg-muted"
+                    >
+                      <div>
+                        <span className="font-serif text-sm font-light">{theme.title}</span>
+                        {theme.tagline && (
+                          <span className="ml-2 text-xs text-muted-foreground">{theme.tagline}</span>
+                        )}
+                      </div>
+                      <ArrowRight
+                        size={14}
+                        className="shrink-0 text-muted-foreground transition-transform duration-300 group-hover:translate-x-1 group-hover:text-foreground"
+                      />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* CTA */}
+            <div className="mt-auto pt-8">
+              <CTAButton href={`/liv?storyworld=${storyworld.slug}`}>
+                Design with Agent Henrik
+              </CTAButton>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom return */}
       <Section>
         <div className="text-center">
-          <h2 className="mb-4 font-serif text-3xl font-light md:text-4xl">
-            Create My Journey
-          </h2>
-          <p className="mx-auto mb-8 max-w-md text-muted-foreground">
-            Let Agent Henrik craft your bespoke {storyworld.name} experience.
-          </p>
-          <CTAButton href={`/liv?storyworld=${storyworld.slug}`}>
-            Design with Agent Henrik
-          </CTAButton>
+          <Link
+            href="/explore"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft size={14} />
+            Return to Storyworld Map
+          </Link>
         </div>
       </Section>
     </>

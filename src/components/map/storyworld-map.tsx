@@ -65,6 +65,7 @@ export function StoryworldMap({ storyworlds }: StoryworldMapProps) {
       zoomControl={false}
       scrollWheelZoom={false}
       attributionControl={false}
+      worldCopyJump={true}
     >
       <InvalidateSizeOnMount />
       <TileLayer url={tileUrl} attribution={MAP_CONFIG.attribution} />
@@ -76,7 +77,7 @@ export function StoryworldMap({ storyworlds }: StoryworldMapProps) {
             position={[sw.latitude, sw.longitude]}
             icon={pinIcon}
           >
-            <Popup className="storyworld-popup" maxWidth={520} minWidth={460}>
+            <Popup className="storyworld-popup" maxWidth={520} minWidth={460} autoPanPaddingTopLeft={L.point(50, 80)} autoPanPaddingBottomRight={L.point(50, 50)}>
               <div className="storyworld-popup-inner">
                 {sw.hero_image_url && (
                   <div

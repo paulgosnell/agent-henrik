@@ -5,14 +5,19 @@ import { useState, useEffect, Suspense } from "react";
 import { ChatWindow } from "@/components/concierge/chat-window";
 import { createClient } from "@/lib/supabase/client";
 
+type ChatContext = {
+  theme_id?: string;
+  theme_name?: string;
+  storyworld_id?: string;
+  storyworld_name?: string;
+  storyteller_id?: string;
+  storyteller_name?: string;
+};
+
 function LivChat() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [context, setContext] = useState<{
-    theme_id?: string;
-    storyworld_id?: string;
-    storyteller_id?: string;
-  } | undefined>(undefined);
+  const [context, setContext] = useState<ChatContext | undefined>(undefined);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -27,31 +32,40 @@ function LivChat() {
       }
 
       const supabase = createClient();
-      const resolved: typeof context = {};
+      const resolved: ChatContext = {};
 
       if (themeSlug) {
         const { data } = await supabase
           .from("ah_themes")
-          .select("id")
+          .select("id, title")
           .eq("slug", themeSlug)
           .single();
-        if (data) resolved.theme_id = data.id;
+        if (data) {
+          resolved.theme_id = data.id;
+          resolved.theme_name = data.title;
+        }
       }
       if (storyworldSlug) {
         const { data } = await supabase
           .from("ah_storyworlds")
-          .select("id")
+          .select("id, name")
           .eq("slug", storyworldSlug)
           .single();
-        if (data) resolved.storyworld_id = data.id;
+        if (data) {
+          resolved.storyworld_id = data.id;
+          resolved.storyworld_name = data.name;
+        }
       }
       if (storytellerSlug) {
         const { data } = await supabase
           .from("ah_storytellers")
-          .select("id")
+          .select("id, name")
           .eq("slug", storytellerSlug)
           .single();
-        if (data) resolved.storyteller_id = data.id;
+        if (data) {
+          resolved.storyteller_id = data.id;
+          resolved.storyteller_name = data.name;
+        }
       }
 
       if (Object.keys(resolved).length > 0) {

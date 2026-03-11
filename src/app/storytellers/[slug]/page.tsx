@@ -1,8 +1,10 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Section } from "@/components/ui/section";
 import { CTAButton } from "@/components/ui/cta-button";
+import { ArrowLeft } from "lucide-react";
 import type { Storyteller } from "@/lib/supabase/types";
 
 interface PageProps {
@@ -31,6 +33,17 @@ export default async function StorytellerDetailPage({ params }: PageProps) {
 
   return (
     <div className="pt-20">
+      {/* Back navigation */}
+      <div className="mx-auto max-w-[1200px] px-6 py-4 md:px-12">
+        <Link
+          href="/storytellers"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft size={14} />
+          Back to Storytellers
+        </Link>
+      </div>
+      <div className="mx-auto max-w-[1200px] px-6 md:px-12">
       <div className="grid min-h-[60vh] md:grid-cols-2">
         {/* Portrait */}
         <div className="relative bg-muted">
@@ -80,6 +93,20 @@ export default async function StorytellerDetailPage({ params }: PageProps) {
           </CTAButton>
         </div>
       </div>
+      </div>
+
+      {/* Bottom return */}
+      <Section>
+        <div className="text-center">
+          <Link
+            href="/storytellers"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft size={14} />
+            Return to Storytellers
+          </Link>
+        </div>
+      </Section>
     </div>
   );
 }

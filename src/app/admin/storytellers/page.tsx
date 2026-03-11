@@ -14,10 +14,15 @@ const GENERATABLE_FIELDS: (keyof Storyteller)[] = [
   "bio", "signature_experiences", "meta_title", "meta_description",
 ];
 
+const STORYTELLER_CATEGORIES = [
+  "Culture", "Art", "Culinary", "Adventure", "Health", "Entertainment", "Innovation",
+];
+
 const EMPTY: Partial<Storyteller> = {
   slug: "",
   name: "",
   role: "",
+  category: "",
   bio: "",
   portrait_url: "",
   signature_experiences: [],
@@ -109,6 +114,19 @@ export default function StorytellersPage() {
           <TextInput label="Slug" name="slug" value={editing.slug ?? ""} onChange={(v) => set("slug", v)} required />
         </div>
         <TextInput label="Role" name="role" value={editing.role ?? ""} onChange={(v) => set("role", v)} />
+        <div>
+          <label className="mb-1 block text-sm font-medium">Category</label>
+          <select
+            className="w-full rounded border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm"
+            value={editing.category ?? ""}
+            onChange={(e) => set("category", e.target.value || null)}
+          >
+            <option value="">No category</option>
+            {STORYTELLER_CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
+        </div>
         <TextArea label="Bio" name="bio" value={editing.bio ?? ""} onChange={(v) => set("bio", v)} rows={4} />
         <ImageUpload label="Portrait" value={editing.portrait_url ?? ""} onChange={(v) => set("portrait_url", v)} />
         <TagInput label="Signature Experiences" value={editing.signature_experiences ?? []} onChange={(v) => set("signature_experiences", v)} />

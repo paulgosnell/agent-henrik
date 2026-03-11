@@ -26,7 +26,6 @@ interface WebhookPayload {
 }
 
 Deno.serve(async (req) => {
-  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
@@ -34,272 +33,145 @@ Deno.serve(async (req) => {
   try {
     const payload: WebhookPayload = await req.json();
 
-    // Only process INSERT events for leads table
+    // Only process INSERT events on the leads table
     if (payload.type !== 'INSERT' || payload.table !== 'leads') {
-      return new Response('Skipped - not a lead insert', {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+      return new Response('Skipped', { status: 200, headers: corsHeaders });
     }
 
     const lead = payload.record;
 
-    // Skip contact_form leads - they get booking inquiry email instead
-    if (lead.source === 'contact_form') {
-      return new Response('Skipped - contact form leads get booking inquiry email', {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+    // Newsletter signups get a different confirmation — skip here
+    if (lead.source === 'newsletter') {
+      return new Response('Skipped - newsletter handled separately', { status: 200, headers: corsHeaders });
     }
-    const resendApiKey = Deno.env.get('RESEND_API_KEY');
-    const adminEmail = Deno.env.get('ADMIN_EMAIL');
 
+    // Contact form and LIV chat leads always create a booking_inquiry too —
+    // notify-booking-inquiry handles emails for those. Skip to avoid duplicates.
+    if (lead.source === 'contact-form' || lead.source === 'liv_chat') {
+      return new Response('Skipped - handled by notify-booking-inquiry', { status: 200, headers: corsHeaders });
+    }
+
+    // Belt-and-suspenders: also check the preferences flag
+    // (may not survive the row_to_json → jsonb_build_object → http_post pipeline)
+    if (lead.preferences?.created_from_booking_inquiry) {
+      return new Response('Skipped - booking inquiry lead', { status: 200, headers: corsHeaders });
+    }
+
+    const resendApiKey = Deno.env.get('RESEND_API_KEY');
     if (!resendApiKey) {
       console.error('RESEND_API_KEY not configured');
       return new Response('Email service not configured', { status: 500 });
     }
 
-    if (!adminEmail) {
-      console.error('ADMIN_EMAIL not configured');
-      return new Response('Admin email not configured', { status: 500 });
-    }
+    const isSweden = lead.site === 'sweden';
+    const brandName = isSweden ? 'Luxury Travel Sweden' : 'Agent Henrik';
+    const fromAddress = isSweden
+      ? 'LIV Concierge <liv@luxurytravelsweden.com>'
+      : 'Agent Henrik <hello@agenthenrik.com>';
+    const whatsapp = isSweden
+      ? { href: 'https://wa.me/46703872264', label: '+46 (0)70 387 2264' }
+      : { href: 'https://wa.me/491603872264', label: '+49 160 387 2264' };
+    const website = isSweden ? 'luxurytravelsweden.com' : 'agenthenrik.com';
+    const siteUrl = isSweden ? 'https://luxurytravelsweden.com' : 'https://agenthenrik.com';
 
-    // Format preferences for email
-    let preferencesText = 'No preferences captured';
-    if (lead.preferences) {
-      const prefs = lead.preferences;
-      preferencesText = `
-Interest: ${prefs.interest_summary || 'General inquiry'}
+    const firstName = lead.name?.split(' ')[0] || null;
+    const greeting = firstName ? `Dear ${firstName},` : 'Dear traveller,';
 
-${prefs.travel_details ? `Travel Details:
-- Number of people: ${prefs.travel_details.people || 'N/A'}
-- Budget: ${prefs.travel_details.budget || 'N/A'}
-- Ideal Dates & Duration: ${prefs.travel_details.dates || 'N/A'}
-
-` : ''}${prefs.chat_context ? `Context:
-- Type: ${prefs.chat_context.type}
-- ${prefs.chat_context.name ? `Name: ${prefs.chat_context.name}` : ''}
-- ${prefs.chat_context.category ? `Category: ${prefs.chat_context.category}` : ''}
-- ${prefs.chat_context.themes?.length ? `Themes: ${prefs.chat_context.themes.join(', ')}` : ''}
-- ${prefs.chat_context.location ? `Location: ${prefs.chat_context.location}` : ''}
-` : ''}
-
-${prefs.storyteller_inquiry ? `Storyteller Inquiry:
-- Topic: ${prefs.storyteller_inquiry.topic || 'N/A'}
-- Activity: ${prefs.storyteller_inquiry.activity_type || 'N/A'}
-- Type: ${prefs.storyteller_inquiry.inquiry_type || 'N/A'}
-- Group Size: ${prefs.storyteller_inquiry.group_size || 'N/A'}
-- Dates: ${prefs.storyteller_inquiry.preferred_dates || 'N/A'}
-- Budget: ${prefs.storyteller_inquiry.budget_range || 'N/A'}
-` : ''}`;
-    }
-
-    // Create email subject based on site and source
-    const siteLabel = lead.site === 'sweden' ? 'Luxury Travel Sweden' : 'Agent Henrik';
-    const subject = `🆕 New Lead from ${siteLabel} - ${lead.name || lead.email}`;
-
-    // Send email via Resend
-    // TODO: For production, verify luxurytravelsweden.com domain in Resend and update to:
-    // from: 'LIV Notifications <notifications@luxurytravelsweden.com>'
-    const emailResponse = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${resendApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: 'LIV Notifications <onboarding@resend.dev>',
-        to: [adminEmail],
-        subject: subject,
-        html: `
-<!DOCTYPE html>
-<html>
+    // On-brand visitor confirmation email
+    const visitorHtml = `<!DOCTYPE html>
+<html lang="en">
 <head>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
-    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 8px 8px 0 0; }
-    .header h1 { margin: 0; font-size: 24px; }
-    .content { background: #f8f9fa; padding: 30px; border-radius: 0 0 8px 8px; }
-    .info-box { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea; }
-    .info-row { display: flex; margin-bottom: 12px; }
-    .info-label { font-weight: 600; min-width: 120px; color: #666; }
-    .info-value { color: #333; }
-    .preferences { background: #fff3cd; padding: 15px; border-radius: 6px; margin-top: 15px; border-left: 4px solid #ffc107; }
-    .preferences pre { margin: 0; white-space: pre-wrap; font-size: 13px; }
-    .footer { text-align: center; color: #666; font-size: 13px; margin-top: 20px; }
-    .cta-button { display: inline-block; background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 15px; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${brandName}</title>
 </head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>🆕 New Lead Captured</h1>
-      <p style="margin: 5px 0 0 0; opacity: 0.9;">From ${siteLabel}</p>
-    </div>
-    <div class="content">
-      <div class="info-box">
-        <h2 style="margin-top: 0; color: #667eea;">Contact Information</h2>
-        <div class="info-row">
-          <div class="info-label">Name:</div>
-          <div class="info-value">${lead.name || 'Not provided'}</div>
-        </div>
-        <div class="info-row">
-          <div class="info-label">Email:</div>
-          <div class="info-value"><a href="mailto:${lead.email}">${lead.email}</a></div>
-        </div>
-        <div class="info-row">
-          <div class="info-label">Phone:</div>
-          <div class="info-value">${lead.phone || 'Not provided'}</div>
-        </div>
-        <div class="info-row">
-          <div class="info-label">Country:</div>
-          <div class="info-value">${lead.country || 'Not provided'}</div>
-        </div>
-        <div class="info-row">
-          <div class="info-label">Source:</div>
-          <div class="info-value">${lead.source}</div>
-        </div>
-        <div class="info-row">
-          <div class="info-label">Lead ID:</div>
-          <div class="info-value" style="font-family: monospace; font-size: 12px;">${lead.id}</div>
-        </div>
-        <div class="info-row">
-          <div class="info-label">Created:</div>
-          <div class="info-value">${new Date(lead.created_at).toLocaleString('en-US', { timeZone: 'Europe/Stockholm', dateStyle: 'medium', timeStyle: 'short' })} CET</div>
-        </div>
-      </div>
+<body style="margin:0;padding:0;background:#0f1114;font-family:Georgia,'Times New Roman',serif;color:#f3f5f6;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f1114;padding:48px 20px;">
+    <tr>
+      <td align="center">
+        <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
 
-      <div class="preferences">
-        <h3 style="margin-top: 0; color: #856404;">Travel Preferences & Context</h3>
-        <pre>${preferencesText}</pre>
-      </div>
+          <!-- Logo -->
+          <tr>
+            <td style="padding:0 0 40px 0;text-align:center;border-bottom:1px solid rgba(255,255,255,0.08);">
+              <a href="${siteUrl}" style="text-decoration:none;">
+                <p style="margin:0;font-family:Georgia,serif;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:rgba(243,245,246,0.45);">
+                  ${brandName.toUpperCase()}
+                </p>
+              </a>
+            </td>
+          </tr>
 
-      <div style="text-align: center;">
-        <a href="https://luxurytravelsweden.com/admin/leads.html" class="cta-button">
-          View in CMS Dashboard →
-        </a>
-      </div>
-    </div>
-    <div class="footer">
-      <p>This is an automated notification from ${siteLabel} CRM.</p>
-      <p style="color: #999; font-size: 11px;">Lead notifications are sent in real-time when visitors provide their contact information.</p>
-    </div>
-  </div>
+          <!-- Body -->
+          <tr>
+            <td style="padding:48px 0 40px 0;">
+              <p style="margin:0 0 24px 0;font-size:15px;line-height:1.9;color:rgba(243,245,246,0.9);">${greeting}</p>
+              <p style="margin:0 0 24px 0;font-size:15px;line-height:1.9;color:rgba(243,245,246,0.9);">
+                Thank you for reaching out. Your enquiry has been received and one of our curators will be in touch within 24 hours with next steps.
+              </p>
+              <p style="margin:0 0 24px 0;font-size:15px;line-height:1.9;color:rgba(243,245,246,0.9);">
+                For anything urgent, you are welcome to reach us directly on WhatsApp:
+              </p>
+              <p style="margin:0 0 40px 0;">
+                <a href="${whatsapp.href}" style="font-family:Georgia,serif;font-size:15px;color:#f3f5f6;text-decoration:underline;">${whatsapp.label}</a>
+              </p>
+              <p style="margin:0;font-size:15px;line-height:1.9;color:rgba(243,245,246,0.9);font-style:italic;">
+                With warmth,<br />LIV
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:32px 0 0 0;border-top:1px solid rgba(255,255,255,0.08);text-align:center;">
+              <p style="margin:0 0 6px 0;font-family:Georgia,serif;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(243,245,246,0.25);">
+                ${brandName}
+              </p>
+              <p style="margin:0;font-size:11px;color:rgba(243,245,246,0.2);">
+                <a href="${siteUrl}" style="color:rgba(243,245,246,0.25);text-decoration:none;">${website}</a>
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
-</html>
-        `,
-      }),
-    });
+</html>`;
 
-    if (!emailResponse.ok) {
-      const errorText = await emailResponse.text();
-      console.error('Resend API error:', errorText);
-      throw new Error(`Failed to send email: ${errorText}`);
-    }
-
-    const emailResult = await emailResponse.json();
-    console.log('✅ Admin email sent successfully:', emailResult);
-
-    // Send confirmation email to the visitor
-    // TODO: For production, update to: from: 'LIV <noreply@luxurytravelsweden.com>'
-    const visitorEmailResponse = await fetch('https://api.resend.com/emails', {
+    const visitorRes = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${resendApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'LIV <onboarding@resend.dev>',
+        from: fromAddress,
         to: [lead.email],
-        subject: 'Thank you for your message',
-        html: `
-<!DOCTYPE html>
-<html>
-<head>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      line-height: 1.8;
-      color: #333;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 40px 20px;
-    }
-    .content {
-      background: #ffffff;
-      padding: 0;
-    }
-    .content p {
-      margin: 0 0 20px 0;
-      font-size: 16px;
-      line-height: 1.8;
-      color: #333;
-    }
-    .whatsapp {
-      color: #1a1a1a;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    .signature {
-      margin-top: 30px;
-      font-style: italic;
-      color: #666;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="content">
-      <p>We truly appreciate you reaching out. Your request has been received, and one of our curators will respond within 24 hours.</p>
-
-      <p>For urgent matters, please contact us on WhatsApp at <a href="https://wa.me/46703872264" class="whatsapp">+46 (0)70 387 2264</a>.</p>
-
-      <p class="signature">Kind regards,<br>LIV</p>
-    </div>
-  </div>
-</body>
-</html>
-        `,
+        subject: `Your enquiry — ${brandName}`,
+        html: visitorHtml,
       }),
     });
 
-    if (!visitorEmailResponse.ok) {
-      const errorText = await visitorEmailResponse.text();
-      console.error('Visitor email error:', errorText);
-      // Don't throw - admin email was successful, just log the visitor email error
+    if (!visitorRes.ok) {
+      const err = await visitorRes.text();
+      console.error('Visitor email error:', err);
     } else {
-      const visitorEmailResult = await visitorEmailResponse.json();
-      console.log('✅ Visitor confirmation email sent:', visitorEmailResult);
+      const result = await visitorRes.json();
+      console.log('✅ Visitor confirmation sent:', result.id, '→', lead.email);
     }
 
     return new Response(
-      JSON.stringify({
-        success: true,
-        adminEmailId: emailResult.id,
-        lead: lead.email
-      }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      }
+      JSON.stringify({ success: true, lead: lead.email }),
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
-    console.error('Error in notify-new-lead function:', error);
+    console.error('Error in notify-new-lead:', error);
     return new Response(
-      JSON.stringify({
-        error: error.message,
-        timestamp: new Date().toISOString()
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
+      JSON.stringify({ error: error.message }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });

@@ -4,9 +4,12 @@ export const SITE_URL = "https://agenthenrik.com";
 
 export const NAV_ITEMS = [
   { label: "Explore", href: "/explore" },
-  { label: "Journeys", href: "/experiences" },
+  { label: "Experiences", href: "/experiences" },
+  { label: "Storytellers", href: "/storytellers" },
+  { label: "AH Concierge", href: "/liv" },
   { label: "Journal", href: "/journal" },
-  { label: "Press", href: "/press" },
+  { label: "Press & Media", href: "/press" },
+  { label: "Our Story", href: "/about/story" },
   { label: "Contact", href: "/contact" },
 ] as const;
 
@@ -24,9 +27,10 @@ export const FOOTER_COLUMNS = {
     { label: "Our Services", href: "/about/services" },
     { label: "Booking Process", href: "/about/booking-process" },
     { label: "Pricing & FAQ", href: "/about/pricing-faq" },
+    { label: "Press & Media", href: "/press" },
   ],
   legal: [
-    { label: "Terms", href: "/legal/terms" },
+    { label: "Terms & Conditions", href: "/legal/terms" },
     { label: "Data Protection", href: "/legal/data-protection" },
     { label: "Imprint", href: "/legal/imprint" },
   ],
@@ -34,14 +38,14 @@ export const FOOTER_COLUMNS = {
 
 export const SOCIAL_LINKS = {
   instagram: "https://instagram.com/agenthenrik",
-  youtube: "https://youtube.com/@agenthenrik",
+  youtube: "https://youtube.com/@berlinagenten",
   linkedin: "https://linkedin.com/company/agenthenrik",
 } as const;
 
 export const INVESTMENT_LEVELS = [
   {
-    value: "boutique",
-    label: "Boutique",
+    value: "comfort",
+    label: "Comfort",
     description: "Unique, stylish insider journeys",
   },
   {
@@ -50,8 +54,8 @@ export const INVESTMENT_LEVELS = [
     description: "Luxury, private access, tailored refinement",
   },
   {
-    value: "ultra-exclusive",
-    label: "Ultra-Exclusive",
+    value: "ultra",
+    label: "Ultra",
     description: "Rare encounters, yachts, money-can't-buy access",
   },
 ] as const;
@@ -70,10 +74,10 @@ export const THEME_SLUGS = [
 ] as const;
 
 export const JOURNAL_CATEGORIES = [
-  { slug: "city-spotlights", label: "City Spotlights" },
-  { slug: "scene-reports", label: "Scene Reports" },
+  { slug: "client-journeys", label: "Client Journeys" },
+  { slug: "destination-reports", label: "Destination Reports" },
+  { slug: "travel-trends", label: "Travel Trends" },
   { slug: "insider-interviews", label: "Insider Interviews" },
-  { slug: "trend-watch", label: "Trend Watch" },
 ] as const;
 
 export const MAP_CONFIG = {

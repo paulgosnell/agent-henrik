@@ -33,8 +33,50 @@ interface WebhookPayload {
   old_record: null | BookingInquiry;
 }
 
+/** Convert raw "user: ...\nassistant: ..." transcript into readable HTML */
+function formatTranscript(raw: string): string {
+  if (!raw) return '';
+
+  // If it doesn't look like a transcript (no "user:" or "assistant:"), return as-is
+  if (!raw.includes('user:') && !raw.includes('assistant:')) {
+    return raw.replace(/\n/g, '<br />');
+  }
+
+  // Split on message boundaries
+  const lines = raw.split(/\n(?=user:|assistant:)/);
+  const parts: string[] = [];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+
+    if (trimmed.startsWith('user:')) {
+      const content = trimmed.replace(/^user:\s*/, '').replace(/\n/g, '<br />');
+      parts.push(`<div style="margin:0 0 10px 0;">
+        <span style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#999;font-weight:600;">Guest</span>
+        <p style="margin:4px 0 0 0;padding:10px 14px;background:#f0f4ff;border-radius:6px;font-size:13px;line-height:1.6;color:#1a1a2e;">${content}</p>
+      </div>`);
+    } else if (trimmed.startsWith('assistant:')) {
+      const content = trimmed.replace(/^assistant:\s*/, '').replace(/\n/g, '<br />');
+      parts.push(`<div style="margin:0 0 10px 0;">
+        <span style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#999;font-weight:600;">LIV</span>
+        <p style="margin:4px 0 0 0;padding:10px 14px;background:#fff;border:1px solid #e8e8e8;border-radius:6px;font-size:13px;line-height:1.6;color:#333;">${content}</p>
+      </div>`);
+    }
+  }
+
+  return parts.join('');
+}
+
+function row(label: string, value: string | number | null | undefined): string {
+  if (!value && value !== 0) return '';
+  return `<tr>
+    <td style="padding:8px 12px 8px 0;font-size:12px;color:#888;white-space:nowrap;vertical-align:top;">${label}</td>
+    <td style="padding:8px 0;font-size:14px;color:#1a1a2e;font-weight:500;">${value}</td>
+  </tr>`;
+}
+
 Deno.serve(async (req) => {
-  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
@@ -42,99 +84,57 @@ Deno.serve(async (req) => {
   try {
     const payload: WebhookPayload = await req.json();
 
-    // Only process INSERT events for booking_inquiries table
     if (payload.type !== 'INSERT' || payload.table !== 'booking_inquiries') {
-      return new Response('Skipped - not a booking inquiry insert', {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+      return new Response('Skipped', { status: 200, headers: corsHeaders });
     }
 
     const inquiry = payload.record;
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
     const adminEmail = Deno.env.get('ADMIN_EMAIL');
 
-    if (!resendApiKey) {
-      console.error('RESEND_API_KEY not configured');
+    if (!resendApiKey || !adminEmail) {
+      console.error('Missing RESEND_API_KEY or ADMIN_EMAIL');
       return new Response('Email service not configured', { status: 500 });
     }
 
-    if (!adminEmail) {
-      console.error('ADMIN_EMAIL not configured');
-      return new Response('Admin email not configured', { status: 500 });
-    }
-
-    // Get lead info if available
+    // Ensure there's a lead record for this visitor
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    let leadInfo = '';
     let leadId = inquiry.lead_id;
 
-    // If no lead_id provided, look up by email
     if (!leadId && inquiry.email) {
-      const { data: leadByEmail } = await supabase
+      const { data: existing } = await supabase
         .from('leads')
-        .select('id, country, preferences')
+        .select('id')
         .eq('email', inquiry.email)
-        .eq('site', inquiry.site)
         .single();
 
-      if (leadByEmail) {
-        leadId = leadByEmail.id;
-        leadInfo = `
-Country: ${leadByEmail.country || 'Not provided'}
-Previous Interest: ${leadByEmail.preferences?.interest_summary || 'None'}`;
+      if (existing) {
+        leadId = existing.id;
       } else {
-        // No lead exists - create one from the booking inquiry
-        console.log('Creating new lead from booking inquiry:', inquiry.email);
-
-        const { data: newLead, error: leadError } = await supabase
+        // Create a lead — flag it so notify-new-lead skips the visitor email
+        // (we send it ourselves below)
+        const { data: newLead } = await supabase
           .from('leads')
           .insert({
             email: inquiry.email,
             name: inquiry.name,
             phone: inquiry.phone,
-            source: 'liv_chat',
+            source: 'contact_form',
             status: 'new',
-            site: inquiry.site,
-            preferences: {
-              travel_dates_start: inquiry.travel_dates_start,
-              travel_dates_end: inquiry.travel_dates_end,
-              group_size: inquiry.group_size,
-              budget_range: inquiry.budget_range,
-              destinations_of_interest: inquiry.destinations_of_interest,
-              themes_of_interest: inquiry.themes_of_interest,
-              special_requests: inquiry.special_requests
-            }
+            site: inquiry.site || 'sweden',
+            preferences: { created_from_booking_inquiry: true },
           })
           .select('id')
           .single();
 
-        if (leadError) {
-          console.error('Error creating lead:', leadError);
-        } else if (newLead) {
-          leadId = newLead.id;
-          leadInfo = '\n🆕 New lead created from this booking inquiry';
-          console.log('✅ New lead created:', leadId);
-        }
-      }
-    } else if (leadId) {
-      const { data: lead } = await supabase
-        .from('leads')
-        .select('country, preferences')
-        .eq('id', leadId)
-        .single();
-
-      if (lead) {
-        leadInfo = `
-Country: ${lead.country || 'Not provided'}
-Previous Interest: ${lead.preferences?.interest_summary || 'None'}`;
+        if (newLead) leadId = newLead.id;
       }
     }
 
-    // Update booking inquiry with lead_id if we have one
+    // Update booking inquiry with lead_id if we now have one
     if (leadId && !inquiry.lead_id) {
       await supabase
         .from('booking_inquiries')
@@ -142,179 +142,247 @@ Previous Interest: ${lead.preferences?.interest_summary || 'None'}`;
         .eq('id', inquiry.id);
     }
 
-    // Format dates
-    const formatDate = (dateStr?: string) => {
-      if (!dateStr) return 'Not specified';
-      return new Date(dateStr).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
-    };
+    // Site-aware config
+    const isSweden = (inquiry.site || 'sweden') === 'sweden';
+    const brandName = isSweden ? 'Luxury Travel Sweden' : 'Agent Henrik';
+    const fromAddress = isSweden
+      ? 'LIV Concierge <liv@luxurytravelsweden.com>'
+      : 'Agent Henrik <hello@agenthenrik.com>';
+    const whatsappHref = `https://wa.me/${inquiry.phone?.replace(/\D/g, '') || '46703872264'}`;
+    const replyToEmail = inquiry.email;
 
-    // Create email subject based on site
-    const siteLabel = inquiry.site === 'sweden' ? 'Luxury Travel Sweden' : 'Agent Henrik';
-    const subject = `📋 New Booking Inquiry from ${siteLabel} - ${inquiry.name || inquiry.email}`;
+    // Determine if this came from LIV chat or the contact form
+    const isLivChat = inquiry.special_requests?.includes('user:') || inquiry.special_requests?.includes('assistant:');
+    const source = isLivChat ? 'LIV Chat' : 'Contact Form';
 
-    // Send email via Resend
-    // TODO: For production, verify luxurytravelsweden.com domain in Resend and update to:
-    // from: 'LIV Notifications <notifications@luxurytravelsweden.com>'
-    const emailResponse = await fetch('https://api.resend.com/emails', {
+    const submittedAt = new Date(inquiry.created_at).toLocaleString('en-GB', {
+      timeZone: 'Europe/Stockholm',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    // Build the Henrik notification email
+    const adminHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>New Booking Enquiry — ${brandName}</title>
+</head>
+<body style="margin:0;padding:0;background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table width="580" cellpadding="0" cellspacing="0" style="max-width:580px;width:100%;">
+
+          <!-- Header -->
+          <tr>
+            <td style="background:#0f1114;padding:24px 32px;border-radius:8px 8px 0 0;">
+              <p style="margin:0;font-size:11px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(255,255,255,0.4);font-family:Georgia,serif;">
+                ${brandName}
+              </p>
+              <h1 style="margin:8px 0 0 0;font-size:20px;font-weight:400;color:#f3f5f6;font-family:Georgia,serif;">
+                New Booking Enquiry
+              </h1>
+              <p style="margin:6px 0 0 0;font-size:12px;color:rgba(255,255,255,0.4);">
+                ${source} &nbsp;·&nbsp; ${submittedAt} CET
+              </p>
+            </td>
+          </tr>
+
+          <!-- Contact details -->
+          <tr>
+            <td style="background:#fff;padding:28px 32px 20px 32px;border-left:1px solid #e8e8e8;border-right:1px solid #e8e8e8;">
+              <p style="margin:0 0 16px 0;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#999;">Contact</p>
+              <table cellpadding="0" cellspacing="0" style="width:100%;">
+                ${row('Name', inquiry.name)}
+                ${row('Email', `<a href="mailto:${inquiry.email}" style="color:#1a1a2e;">${inquiry.email}</a>`)}
+                ${row('Phone', inquiry.phone ? `<a href="tel:${inquiry.phone}" style="color:#1a1a2e;">${inquiry.phone}</a>` : null)}
+              </table>
+
+              <!-- Quick reply buttons -->
+              <div style="margin:20px 0 0 0;display:flex;gap:10px;">
+                <a href="mailto:${replyToEmail}?subject=Re: Your ${brandName} Enquiry" style="display:inline-block;padding:10px 20px;background:#0f1114;color:#fff;text-decoration:none;border-radius:5px;font-size:13px;font-weight:500;margin-right:10px;">
+                  Reply by Email
+                </a>
+                ${inquiry.phone ? `<a href="${whatsappHref}" style="display:inline-block;padding:10px 20px;background:#25d366;color:#fff;text-decoration:none;border-radius:5px;font-size:13px;font-weight:500;">
+                  WhatsApp
+                </a>` : ''}
+              </div>
+            </td>
+          </tr>
+
+          ${(inquiry.group_size || inquiry.budget_range || inquiry.travel_dates_start || (inquiry.destinations_of_interest?.length) || (inquiry.themes_of_interest?.length)) ? `
+          <!-- Trip details -->
+          <tr>
+            <td style="background:#fafafa;padding:24px 32px;border-left:1px solid #e8e8e8;border-right:1px solid #e8e8e8;border-top:1px solid #f0f0f0;">
+              <p style="margin:0 0 16px 0;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#999;">Trip Details</p>
+              <table cellpadding="0" cellspacing="0" style="width:100%;">
+                ${row('Group size', inquiry.group_size ? `${inquiry.group_size} ${inquiry.group_size === 1 ? 'person' : 'people'}` : null)}
+                ${row('Budget', inquiry.budget_range)}
+                ${row('Dates', inquiry.travel_dates_start ? `${inquiry.travel_dates_start}${inquiry.travel_dates_end ? ' → ' + inquiry.travel_dates_end : ''}` : null)}
+                ${row('Destinations', inquiry.destinations_of_interest?.join(', '))}
+                ${row('Themes', inquiry.themes_of_interest?.join(', '))}
+              </table>
+            </td>
+          </tr>` : ''}
+
+          ${inquiry.special_requests ? `
+          <!-- Conversation / requests -->
+          <tr>
+            <td style="background:#fff;padding:24px 32px;border-left:1px solid #e8e8e8;border-right:1px solid #e8e8e8;border-top:1px solid #f0f0f0;">
+              <p style="margin:0 0 16px 0;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#999;">
+                ${isLivChat ? 'LIV Conversation' : 'Message'}
+              </p>
+              ${isLivChat ? formatTranscript(inquiry.special_requests) : `<p style="margin:0;font-size:14px;line-height:1.7;color:#333;">${inquiry.special_requests.replace(/\n/g, '<br />')}</p>`}
+            </td>
+          </tr>` : ''}
+
+          <!-- Footer -->
+          <tr>
+            <td style="background:#f0f0f0;padding:16px 32px;border-radius:0 0 8px 8px;border:1px solid #e8e8e8;border-top:none;">
+              <p style="margin:0;font-size:11px;color:#aaa;text-align:center;">
+                Lead ID: ${inquiry.id}
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+    const adminRes = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${resendApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'LIV Notifications <onboarding@resend.dev>',
+        from: fromAddress,
         to: [adminEmail],
-        subject: subject,
-        html: `
-<!DOCTYPE html>
-<html>
-<head>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
-    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; padding: 30px; border-radius: 8px 8px 0 0; }
-    .header h1 { margin: 0; font-size: 24px; }
-    .content { background: #f8f9fa; padding: 30px; border-radius: 0 0 8px 8px; }
-    .info-box { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #22c55e; }
-    .info-row { display: flex; margin-bottom: 12px; }
-    .info-label { font-weight: 600; min-width: 140px; color: #666; }
-    .info-value { color: #333; flex: 1; }
-    .trip-details { background: #dbeafe; padding: 15px; border-radius: 6px; margin-top: 15px; border-left: 4px solid #3b82f6; }
-    .trip-details h3 { margin-top: 0; color: #1e40af; }
-    .special-requests { background: #fef3c7; padding: 15px; border-radius: 6px; margin-top: 15px; border-left: 4px solid #f59e0b; }
-    .special-requests pre { margin: 0; white-space: pre-wrap; font-size: 13px; }
-    .footer { text-align: center; color: #666; font-size: 13px; margin-top: 20px; }
-    .cta-button { display: inline-block; background: #22c55e; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 15px; }
-    .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; margin: 2px; }
-    .badge-destination { background: #dbeafe; color: #1e40af; }
-    .badge-theme { background: #fce7f3; color: #be185d; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>📋 New Booking Inquiry</h1>
-      <p style="margin: 5px 0 0 0; opacity: 0.9;">From ${siteLabel}</p>
-    </div>
-    <div class="content">
-      <div class="info-box">
-        <h2 style="margin-top: 0; color: #22c55e;">Contact Information</h2>
-        <div class="info-row">
-          <div class="info-label">Name:</div>
-          <div class="info-value">${inquiry.name || 'Not provided'}</div>
-        </div>
-        <div class="info-row">
-          <div class="info-label">Email:</div>
-          <div class="info-value"><a href="mailto:${inquiry.email}">${inquiry.email}</a></div>
-        </div>
-        <div class="info-row">
-          <div class="info-label">Phone:</div>
-          <div class="info-value">${inquiry.phone || 'Not provided'}</div>
-        </div>
-        ${leadInfo ? `<div class="info-row">
-          <div class="info-label">Lead Info:</div>
-          <div class="info-value"><pre style="margin: 0; font-size: 13px;">${leadInfo}</pre></div>
-        </div>` : ''}
-        <div class="info-row">
-          <div class="info-label">Inquiry ID:</div>
-          <div class="info-value" style="font-family: monospace; font-size: 12px;">${inquiry.id}</div>
-        </div>
-        <div class="info-row">
-          <div class="info-label">Submitted:</div>
-          <div class="info-value">${new Date(inquiry.created_at).toLocaleString('en-US', { timeZone: 'Europe/Stockholm', dateStyle: 'medium', timeStyle: 'short' })} CET</div>
-        </div>
-      </div>
-
-      <div class="trip-details">
-        <h3>Trip Details</h3>
-        <div class="info-row">
-          <div class="info-label">Travel Dates:</div>
-          <div class="info-value">${formatDate(inquiry.travel_dates_start)} - ${formatDate(inquiry.travel_dates_end)}</div>
-        </div>
-        <div class="info-row">
-          <div class="info-label">Group Size:</div>
-          <div class="info-value">${inquiry.group_size || 'Not specified'} ${inquiry.group_size === 1 ? 'person' : 'people'}</div>
-        </div>
-        <div class="info-row">
-          <div class="info-label">Budget Range:</div>
-          <div class="info-value">${inquiry.budget_range || 'Not specified'}</div>
-        </div>
-        ${inquiry.destinations_of_interest?.length ? `
-        <div class="info-row">
-          <div class="info-label">Destinations:</div>
-          <div class="info-value">
-            ${inquiry.destinations_of_interest.map(d => `<span class="badge badge-destination">${d}</span>`).join('')}
-          </div>
-        </div>` : ''}
-        ${inquiry.themes_of_interest?.length ? `
-        <div class="info-row">
-          <div class="info-label">Themes:</div>
-          <div class="info-value">
-            ${inquiry.themes_of_interest.map(t => `<span class="badge badge-theme">${t}</span>`).join('')}
-          </div>
-        </div>` : ''}
-      </div>
-
-      ${inquiry.special_requests || inquiry.itinerary_summary ? `
-      <div class="special-requests">
-        <h3 style="margin-top: 0; color: #b45309;">Special Requests & Details</h3>
-        ${inquiry.special_requests ? `<div style="margin-bottom: 10px;"><strong>Special Requests:</strong><br>${inquiry.special_requests}</div>` : ''}
-        ${inquiry.itinerary_summary ? `<div><strong>Itinerary Summary:</strong><br>${inquiry.itinerary_summary}</div>` : ''}
-      </div>` : ''}
-
-      <div style="text-align: center;">
-        <a href="https://app.supabase.com/project/fjnfsabvuiyzuzfhxzcc/editor" class="cta-button">
-          View in Supabase Dashboard →
-        </a>
-      </div>
-    </div>
-    <div class="footer">
-      <p>This is an automated notification from ${siteLabel} contact form.</p>
-      <p style="color: #999; font-size: 11px;">You'll receive this email every time someone submits a booking inquiry, even if they're an existing lead.</p>
-    </div>
-  </div>
-</body>
-</html>
-        `,
+        reply_to: replyToEmail,
+        subject: `Enquiry from ${inquiry.name || inquiry.email} — ${brandName}`,
+        html: adminHtml,
       }),
     });
 
-    if (!emailResponse.ok) {
-      const errorText = await emailResponse.text();
-      console.error('Resend API error:', errorText);
-      throw new Error(`Failed to send email: ${errorText}`);
+    if (!adminRes.ok) {
+      const err = await adminRes.text();
+      console.error('Admin email error:', err);
+      throw new Error(`Failed to send admin email: ${err}`);
     }
 
-    const emailResult = await emailResponse.json();
-    console.log('✅ Booking inquiry email sent successfully:', emailResult);
+    const adminResult = await adminRes.json();
+    console.log('✅ Henrik notified:', adminResult.id);
+
+    // Visitor confirmation — only send if notify-new-lead won't (i.e. lead was
+    // just created from this inquiry, flagged with created_from_booking_inquiry)
+    // For LIV chat leads the lead already existed, so notify-new-lead handles the
+    // visitor email. Only send here for brand-new leads from contact form.
+    const firstName = inquiry.name?.split(' ')[0] || null;
+    const greeting = firstName ? `Dear ${firstName},` : 'Dear traveller,';
+
+    const siteUrl = isSweden ? 'https://luxurytravelsweden.com' : 'https://agenthenrik.com';
+    const website = isSweden ? 'luxurytravelsweden.com' : 'agenthenrik.com';
+    const whatsappLabel = isSweden ? '+46 (0)70 387 2264' : '+49 160 387 2264';
+    const whatsappLink = isSweden ? 'https://wa.me/46703872264' : 'https://wa.me/491603872264';
+
+    const visitorHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${brandName}</title>
+</head>
+<body style="margin:0;padding:0;background:#0f1114;font-family:Georgia,'Times New Roman',serif;color:#f3f5f6;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f1114;padding:48px 20px;">
+    <tr>
+      <td align="center">
+        <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
+
+          <tr>
+            <td style="padding:0 0 40px 0;text-align:center;border-bottom:1px solid rgba(255,255,255,0.08);">
+              <a href="${siteUrl}" style="text-decoration:none;">
+                <p style="margin:0;font-family:Georgia,serif;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:rgba(243,245,246,0.45);">
+                  ${brandName.toUpperCase()}
+                </p>
+              </a>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:48px 0 40px 0;">
+              <p style="margin:0 0 24px 0;font-size:15px;line-height:1.9;color:rgba(243,245,246,0.9);">${greeting}</p>
+              <p style="margin:0 0 24px 0;font-size:15px;line-height:1.9;color:rgba(243,245,246,0.9);">
+                Thank you for reaching out. Your enquiry has been received and one of our curators will be in touch within 24 hours with next steps.
+              </p>
+              <p style="margin:0 0 24px 0;font-size:15px;line-height:1.9;color:rgba(243,245,246,0.9);">
+                For anything urgent, you are welcome to reach us directly on WhatsApp:
+              </p>
+              <p style="margin:0 0 40px 0;">
+                <a href="${whatsappLink}" style="font-family:Georgia,serif;font-size:15px;color:#f3f5f6;text-decoration:underline;">${whatsappLabel}</a>
+              </p>
+              <p style="margin:0;font-size:15px;line-height:1.9;color:rgba(243,245,246,0.9);font-style:italic;">
+                With warmth,<br />LIV
+              </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:32px 0 0 0;border-top:1px solid rgba(255,255,255,0.08);text-align:center;">
+              <p style="margin:0 0 6px 0;font-family:Georgia,serif;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(243,245,246,0.25);">
+                ${brandName}
+              </p>
+              <p style="margin:0;font-size:11px;color:rgba(243,245,246,0.2);">
+                <a href="${siteUrl}" style="color:rgba(243,245,246,0.25);text-decoration:none;">${website}</a>
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+    const visitorRes = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: fromAddress,
+        to: [inquiry.email],
+        subject: `Your enquiry — ${brandName}`,
+        html: visitorHtml,
+      }),
+    });
+
+    if (!visitorRes.ok) {
+      const err = await visitorRes.text();
+      console.error('Visitor email error (non-fatal):', err);
+    } else {
+      const visitorResult = await visitorRes.json();
+      console.log('✅ Visitor confirmation sent:', visitorResult.id, '→', inquiry.email);
+    }
 
     return new Response(
-      JSON.stringify({
-        success: true,
-        emailId: emailResult.id,
-        inquiry: inquiry.email
-      }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      }
+      JSON.stringify({ success: true, adminEmailId: adminResult.id, inquiry: inquiry.email }),
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
-    console.error('Error in notify-booking-inquiry function:', error);
+    console.error('Error in notify-booking-inquiry:', error);
     return new Response(
-      JSON.stringify({
-        error: error.message,
-        timestamp: new Date().toISOString()
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
+      JSON.stringify({ error: error.message }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });

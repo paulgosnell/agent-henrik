@@ -32,6 +32,7 @@ const EMPTY: Partial<Theme> = {
   emphasize: [],
   avoid: [],
   image_url: "",
+  images: [],
   video_url: "",
   display_order: 0,
   published: true,
@@ -142,6 +143,7 @@ export default function ThemesPage() {
         <TagInput label="Emphasize" value={editing.emphasize ?? []} onChange={(v) => set("emphasize", v)} />
         <TagInput label="Avoid" value={editing.avoid ?? []} onChange={(v) => set("avoid", v)} />
         <ImageUpload label="Image" value={editing.image_url ?? ""} onChange={(v) => set("image_url", v)} />
+        <TagInput label="Gallery Images (URLs)" value={editing.images ?? []} onChange={(v) => set("images", v)} />
         <TextInput label="Video URL" name="video_url" value={editing.video_url ?? ""} onChange={(v) => set("video_url", v)} type="url" />
         <div className="grid grid-cols-2 gap-4">
           <NumberInput label="Display Order" name="display_order" value={editing.display_order ?? 0} onChange={(v) => set("display_order", v ?? 0)} />

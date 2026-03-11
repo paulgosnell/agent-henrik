@@ -15,6 +15,7 @@ export interface Theme {
   emphasize: string[] | null;
   avoid: string[] | null;
   image_url: string | null;
+  images: string[] | null;
   video_url: string | null;
   display_order: number;
   published: boolean;
@@ -34,6 +35,7 @@ export interface Storyworld {
   reflection_moments: string[] | null;
   suggested_theme_ids: string[] | null;
   hero_image_url: string | null;
+  images: string[] | null;
   hero_video_url: string | null;
   latitude: number | null;
   longitude: number | null;
@@ -49,6 +51,7 @@ export interface Storyteller {
   name: string;
   role: string | null;
   bio: string | null;
+  category: string | null;
   portrait_url: string | null;
   signature_experiences: string[] | null;
   linked_storyworld_ids: string[] | null;

@@ -1,20 +1,21 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { HeroVideo } from "@/components/hero/hero-video";
 import { BentoGrid } from "@/components/experiences/bento-grid";
-import { LogoStrip } from "@/components/press/logo-strip";
 import { ArticleCard } from "@/components/journal/article-card";
 import { NewsletterForm } from "@/components/newsletter/newsletter-form";
+import { ContactForm } from "@/components/contact/contact-form";
 import { Section } from "@/components/ui/section";
 import { CTAButton } from "@/components/ui/cta-button";
-import { InstagramFeed } from "@/components/instagram/instagram-feed";
-import { Instagram, MapPin, Users } from "lucide-react";
+import { Instagram, MapPin, MessageCircle, ArrowRight } from "lucide-react";
 import type { Theme } from "@/lib/supabase/types";
 import type { JournalArticle } from "@/lib/supabase/types";
+import type { Storyteller } from "@/lib/supabase/types";
 
 export default async function HomePage() {
   const supabase = await createClient();
 
-  const [themesResult, articlesResult] = await Promise.all([
+  const [themesResult, articlesResult, storytellersResult, pressResult] = await Promise.all([
     supabase
       .from("ah_themes")
       .select("*")
@@ -26,17 +27,58 @@ export default async function HomePage() {
       .eq("published", true)
       .order("published_at", { ascending: false })
       .limit(3),
+    supabase
+      .from("ah_storytellers")
+      .select("*")
+      .eq("published", true)
+      .limit(6),
+    supabase
+      .from("ah_press_items")
+      .select("*")
+      .eq("published", true)
+      .order("published_at", { ascending: false })
+      .limit(6),
   ]);
 
   const themes = (themesResult.data as Theme[]) || [];
   const articles = (articlesResult.data as JournalArticle[]) || [];
+  const storytellers = (storytellersResult.data as Storyteller[]) || [];
+  const pressItems = pressResult.data || [];
 
   return (
     <>
-      {/* Hero */}
-      <HeroVideo />
+      {/* 1. Hero Video with 3 Entry Paths */}
+      <HeroVideo
+        headline="Your Insider Journey Begins Here"
+        ctaHref="#explore"
+      />
 
-      {/* Experience Themes Teaser */}
+      {/* 2. Storyworld Map Teaser */}
+      <Section id="explore" className="bg-muted">
+        <div className="flex flex-col items-center gap-8 md:flex-row md:gap-16">
+          <div className="flex-1">
+            <h2 className="mb-4 font-serif text-4xl font-light md:text-5xl">
+              Explore the Storyworld
+            </h2>
+            <p className="mb-6 max-w-md text-muted-foreground">
+              Each destination is a chapter in a story only you can live.
+            </p>
+            <CTAButton href="/explore">
+              <MapPin size={14} />
+              Open Map
+            </CTAButton>
+          </div>
+          <div className="relative aspect-video w-full flex-1 overflow-hidden">
+            <div
+              className="absolute inset-0 bg-cover bg-center opacity-80 transition-opacity hover:opacity-100"
+              style={{ backgroundImage: "url(https://images.unsplash.com/photo-1524661135-423995f22d0b?w=1200&q=80)" }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-muted via-transparent to-transparent" />
+          </div>
+        </div>
+      </Section>
+
+      {/* 3. Experience Themes */}
       <Section id="experiences">
         <div className="mb-12 text-center">
           <h2 className="mb-4 font-serif text-4xl font-light md:text-5xl">
@@ -58,91 +100,108 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      {/* Map Explorer Teaser */}
-      <Section className="bg-muted">
-        <div className="flex flex-col items-center gap-8 md:flex-row md:gap-16">
+      {/* 4. Storytellers */}
+      <Section id="storytellers" className="bg-muted">
+        <div className="mb-12 text-center">
+          <h2 className="mb-4 font-serif text-4xl font-light md:text-5xl">
+            Our Storytellers
+          </h2>
+          <p className="mx-auto max-w-xl text-muted-foreground">
+            Local insiders, cultural curators, and scene makers who bring each destination to life.
+          </p>
+        </div>
+        {storytellers.length > 0 ? (
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {storytellers.map((st) => (
+              <Link
+                key={st.id}
+                href={`/storytellers/${st.slug}`}
+                className="group"
+              >
+                <div className="relative mb-4 aspect-[3/4] overflow-hidden bg-background">
+                  {st.portrait_url ? (
+                    <div
+                      className="h-full w-full bg-cover bg-center cinematic-hover"
+                      style={{ backgroundImage: `url(${st.portrait_url})` }}
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center bg-background">
+                      <span className="font-serif text-4xl font-light text-muted-foreground">
+                        {st.name[0]}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <h3 className="font-serif text-xl font-light transition-opacity group-hover:opacity-80">
+                  {st.name}
+                </h3>
+                {st.role && (
+                  <p className="text-sm text-muted-foreground">{st.role}</p>
+                )}
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="py-16 text-center text-muted-foreground">
+            <p>Storyteller profiles coming soon.</p>
+          </div>
+        )}
+        <div className="mt-8 text-center">
+          <CTAButton href="/storytellers" variant="outline">View All Storytellers</CTAButton>
+        </div>
+      </Section>
+
+      {/* 5. AH Concierge Teaser */}
+      <Section id="concierge">
+        <div className="flex flex-col items-center gap-12 md:flex-row md:gap-16">
           <div className="flex-1">
             <h2 className="mb-4 font-serif text-4xl font-light md:text-5xl">
-              Explore the Storyworld
+              Design Your Journey
             </h2>
-            <p className="mb-6 max-w-md text-muted-foreground">
-              Ten cities. Ten narratives. Each destination is a chapter in a
-              story only you can live.
+            <p className="mb-4 text-muted-foreground">
+              Agent Henrik is your AI-powered luxury travel architect. Share your vision — destinations, themes, pace — and receive a bespoke itinerary crafted around your story.
             </p>
-            <CTAButton href="/explore">
-              <MapPin size={14} />
-              Open Map
+            <ul className="mb-8 space-y-2 text-sm text-muted-foreground">
+              <li className="flex items-center gap-2">
+                <ArrowRight size={12} className="shrink-0" />
+                Understands 10 global destinations and 10 experience themes
+              </li>
+              <li className="flex items-center gap-2">
+                <ArrowRight size={12} className="shrink-0" />
+                Blends multiple themes into one coherent journey
+              </li>
+              <li className="flex items-center gap-2">
+                <ArrowRight size={12} className="shrink-0" />
+                Generates day-by-day itineraries with curated venues
+              </li>
+            </ul>
+            <CTAButton href="/liv">
+              <MessageCircle size={14} />
+              Start a Conversation
             </CTAButton>
           </div>
-          <div className="relative aspect-video w-full flex-1 overflow-hidden">
-            <div
-              className="absolute inset-0 bg-cover bg-center opacity-80 transition-opacity hover:opacity-100"
-              style={{ backgroundImage: "url(https://images.unsplash.com/photo-1524661135-423995f22d0b?w=1200&q=80)" }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-muted via-transparent to-transparent" />
-          </div>
-        </div>
-      </Section>
-
-      {/* Press Strip */}
-      <LogoStrip />
-
-      {/* Corporate & Groups Teaser */}
-      <Section>
-        <div className="grid gap-0 md:grid-cols-2">
-          <div className="relative flex flex-col items-start justify-end p-8 md:p-12 min-h-[400px]">
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: "url(https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200&q=80)" }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-            <div className="relative z-10 text-white">
-              <h3 className="mb-3 font-serif text-3xl font-light">
-                For Individuals
-              </h3>
-              <p className="mb-6 max-w-sm text-sm text-white/70">
-                Bespoke journeys crafted around your story. Underground culture,
-                insider access, and cinematic moments designed for the discerning
-                traveler.
+          <div className="relative flex-1">
+            <div className="border border-border bg-muted p-8">
+              <p className="mb-4 font-serif text-lg font-light italic text-muted-foreground">
+                &ldquo;Create a 4-day journey in Beirut blending Culinary Journeys with Celebration &amp; Nightlife. Elegant, curated, not chaotic.&rdquo;
               </p>
-              <CTAButton href="/experiences" variant="outline">
-                Explore Journeys
-              </CTAButton>
-            </div>
-          </div>
-          <div className="relative flex flex-col items-start justify-end p-8 md:p-12 min-h-[400px]">
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: "url(https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=1200&q=80)" }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-            <div className="relative z-10 text-white">
-              <h3 className="mb-3 font-serif text-3xl font-light">
-                For Brands & Groups
-              </h3>
-              <p className="mb-6 max-w-sm text-sm text-white/70">
-                Innovation retreats, trend-scouting expeditions, and brand
-                activations in the world&apos;s most extraordinary spaces.
+              <p className="text-xs uppercase tracking-wider text-muted-foreground">
+                Try a prompt like this
               </p>
-              <CTAButton href="/contact" variant="outline">
-                <Users size={14} />
-                Get in Touch
-              </CTAButton>
             </div>
           </div>
         </div>
       </Section>
 
-      {/* Journal Preview */}
+      {/* 6. Journal Preview */}
       {articles.length > 0 && (
-        <Section className="bg-muted">
+        <Section id="journal" className="bg-muted">
           <div className="mb-12 text-center">
             <h2 className="mb-4 font-serif text-4xl font-light md:text-5xl">
               The Insider Journal
             </h2>
             <p className="mx-auto max-w-xl text-muted-foreground">
-              City spotlights, scene reports, and insider interviews from the
-              underground.
+              City spotlights, scene reports, and insider interviews from the underground.
             </p>
           </div>
           <div className="grid gap-8 md:grid-cols-3">
@@ -158,7 +217,7 @@ export default async function HomePage() {
         </Section>
       )}
 
-      {/* Newsletter Signup */}
+      {/* 7. Newsletter Signup */}
       <Section>
         <div className="mx-auto max-w-lg text-center">
           <h2 className="mb-4 font-serif text-4xl font-light">
@@ -171,8 +230,38 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      {/* Instagram */}
-      <Section className="bg-muted">
+      {/* 8. Press & Media */}
+      {pressItems.length > 0 && (
+        <Section id="press" className="bg-muted">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 font-serif text-4xl font-light md:text-5xl">
+              Press & Media
+            </h2>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {pressItems.map((item: { id: string; title: string; publication?: string; thumbnail_url?: string; slug?: string }) => (
+              <div key={item.id} className="border border-border p-6 transition-colors hover:bg-background">
+                {item.thumbnail_url && (
+                  <div
+                    className="mb-4 aspect-video bg-cover bg-center"
+                    style={{ backgroundImage: `url(${item.thumbnail_url})` }}
+                  />
+                )}
+                <h3 className="font-serif text-lg font-light">{item.title}</h3>
+                {item.publication && (
+                  <p className="mt-1 text-sm text-muted-foreground">{item.publication}</p>
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="mt-8 text-center">
+            <CTAButton href="/press" variant="outline">View All Press</CTAButton>
+          </div>
+        </Section>
+      )}
+
+      {/* 9. Instagram */}
+      <Section>
         <div className="text-center">
           <h2 className="mb-4 font-serif text-4xl font-light md:text-5xl">
             Follow the Journey
@@ -180,7 +269,6 @@ export default async function HomePage() {
           <p className="mx-auto mb-8 max-w-xl text-muted-foreground">
             Behind-the-scenes moments, underground discoveries, and cinematic glimpses from the field.
           </p>
-          {/* TODO: @agenthenrik Instagram is currently private. Switch to <InstagramFeed username="agenthenrik" limit={8} /> once public. */}
           <div className="mx-auto mb-8 grid max-w-4xl grid-cols-2 gap-3 md:grid-cols-4">
             {[
               "photo-1507003211169-0a1dd7228f2d",
@@ -211,6 +299,29 @@ export default async function HomePage() {
               <Instagram size={14} />
               @agenthenrik
             </a>
+          </div>
+        </div>
+      </Section>
+
+      {/* 10. Contact */}
+      <Section id="contact" className="bg-muted">
+        <div className="flex flex-col gap-12 md:flex-row md:gap-16">
+          <div className="flex-1">
+            <h2 className="mb-4 font-serif text-4xl font-light md:text-5xl">
+              Start Your Journey
+            </h2>
+            <p className="mb-6 text-muted-foreground">
+              Share your vision and let Agent Henrik craft your bespoke luxury experience.
+            </p>
+            <div className="space-y-3 text-sm text-muted-foreground">
+              <p className="font-medium text-foreground">Henrik Tidefjard</p>
+              <p>Founder & Creative Director</p>
+              <p>+46 (0)70 38 722 64</p>
+              <p>henrik@agenthenrik.com</p>
+            </div>
+          </div>
+          <div className="flex-1">
+            <ContactForm />
           </div>
         </div>
       </Section>

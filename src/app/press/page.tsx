@@ -20,6 +20,10 @@ export default async function PressPage() {
 
   const pressItems = (data as PressItem[]) || [];
 
+  // Split into press clippings and YouTube videos
+  const videoItems = pressItems.filter((item) => item.video_url);
+  const clippingItems = pressItems.filter((item) => !item.video_url);
+
   return (
     <div className="pt-20">
       <Section>
@@ -53,14 +57,37 @@ export default async function PressPage() {
           );
         })()}
 
-        {/* Press Grid */}
-        {pressItems.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {pressItems.map((item) => (
-              <PressCard key={item.id} item={item} />
-            ))}
+        {/* YouTube Videos */}
+        {videoItems.length > 0 && (
+          <div className="mb-16">
+            <h2 className="mb-8 text-center font-serif text-3xl font-light md:text-4xl">
+              Videos
+            </h2>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {videoItems.map((item) => (
+                <PressCard key={item.id} item={item} />
+              ))}
+            </div>
           </div>
-        ) : (
+        )}
+
+        {/* Press Clippings */}
+        {clippingItems.length > 0 && (
+          <div>
+            {videoItems.length > 0 && (
+              <h2 className="mb-8 text-center font-serif text-3xl font-light md:text-4xl">
+                Press Clippings
+              </h2>
+            )}
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {clippingItems.map((item) => (
+                <PressCard key={item.id} item={item} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {pressItems.length === 0 && (
           <div className="py-16 text-center text-muted-foreground">
             <p>Press coverage coming soon.</p>
           </div>

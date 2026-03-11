@@ -26,6 +26,7 @@ const EMPTY: Partial<Storyworld> = {
   reflection_moments: [],
   suggested_theme_ids: [],
   hero_image_url: "",
+  images: [],
   hero_video_url: "",
   latitude: null,
   longitude: null,
@@ -126,6 +127,7 @@ export default function StoryworldsPage() {
         <TagInput label="Reflection Moments" value={editing.reflection_moments ?? []} onChange={(v) => set("reflection_moments", v)} />
         <TagInput label="Suggested Theme IDs" value={editing.suggested_theme_ids ?? []} onChange={(v) => set("suggested_theme_ids", v)} />
         <ImageUpload label="Hero Image" value={editing.hero_image_url ?? ""} onChange={(v) => set("hero_image_url", v)} />
+        <TagInput label="Gallery Images (URLs)" value={editing.images ?? []} onChange={(v) => set("images", v)} />
         <TextInput label="Hero Video URL" name="hero_video_url" value={editing.hero_video_url ?? ""} onChange={(v) => set("hero_video_url", v)} type="url" />
         <div className="grid grid-cols-2 gap-4">
           <NumberInput label="Latitude" name="latitude" value={editing.latitude ?? null} onChange={(v) => set("latitude", v)} />

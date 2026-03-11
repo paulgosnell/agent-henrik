@@ -236,6 +236,7 @@ Deno.serve(async (req) => {
             phone: leadInfo.phone || null,
             country: leadInfo.country || null,
             source: 'liv_chat',
+            site: 'sweden',
             first_conversation_id: conversationId,
             preferences: preferences
           })

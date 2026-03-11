@@ -25,6 +25,7 @@
 - **Tailwind v4 utility classes may not override** Next.js Image component inline styles. When in doubt, use inline `style={{}}` props for guaranteed sizing.
 - Dark mode is default (`:root` defines dark colors). Light mode via `[data-theme="light"]` selector.
 - Tailwind `dark:` variant uses `prefers-color-scheme`, NOT the `data-theme` attribute. Be careful mixing them.
+- **StormLikes embed needs CSS overrides** to match site design — hide branding, force grid layout, square aspect ratio. Scoped under `.instagram-feed` class.
 
 ## Leaflet Map
 - **Dynamic import required** — `next/dynamic` with `ssr: false` (Leaflet uses `window`).
@@ -34,6 +35,7 @@
 - Tile URLs: CARTO dark/light variants (`basemaps.cartocdn.com`).
 - Popup styling requires CSS overrides (not Tailwind classes) because Leaflet injects its own DOM. Use `.storyworld-popup .leaflet-popup-content-wrapper` etc.
 - Set `width` on `.leaflet-popup-content-wrapper` in CSS to control popup width — the React `maxWidth` prop is unreliable.
+- **Popup edge cutoff fix** — Add `autoPanPaddingTopLeft` and `autoPanPaddingBottomRight` props to `<Popup>` to prevent popups at map edges (e.g. Abisko) from being clipped.
 
 ## Header
 - Transparent on homepage hero only. Solid `bg-background/95` with backdrop blur on all inner pages.
@@ -41,21 +43,77 @@
 - Uses `usePathname()` to detect homepage vs inner pages.
 
 ## AI Concierge
-- `/api/concierge/route.ts` calls Claude API server-side.
-- **ANTHROPIC_API_KEY not yet set in Vercel** — concierge won't work on staging until added.
+- `/api/concierge/route.ts` calls OpenAI GPT-4o server-side (switched from Claude).
+- OPENAI_API_KEY is set in Vercel (all environments).
 - System prompt at `src/lib/concierge/system-prompt.ts` includes Story Arc Model, 10 theme profiles, intent detection, response templates.
 - `/liv` page renders as a fixed overlay (z-50) with close/back button. Not embedded in page flow.
 - Context passed via URL params: `/liv?theme=authentic-stories` or `/liv?storyworld=berlin`.
+- Conversations saved to `ah_concierge_sessions` table via fire-and-forget upsert.
+- Floating button infers context from current pathname (e.g. on `/experiences/culinary-journeys` it passes theme context).
 
 ## Hero Video
 - Current hero video: `agent-henrik_video_3.mp4` hosted on `api.chilledsites.com` (p0stman Supabase storage).
 - Poster image fallback for mobile/slow connections.
 - Autoplay, muted, loop, playsInline.
+- Replacing video is a single file swap — no code changes needed.
 
 ## Bento Grid
 - 10 theme cards in a 3-column grid.
 - Layout must interleave large (col-span-2) and medium (col-span-1) cards to avoid gaps.
 - Pattern: large + medium | medium + large | then remaining fill.
+
+## Admin CMS
+- **LayoutShell pattern** — Client component at `src/components/layout/layout-shell.tsx` checks `usePathname()` for `/admin` prefix. Admin routes get no public chrome (header/footer/concierge). Public routes get the full site layout.
+- **Admin layout** — Client component that checks pathname === "/admin/login" to bypass sidebar for the login page.
+- **Auth** — Cookie-based via Supabase. Middleware at `middleware.ts` protects `/admin/*` routes, redirects to `/admin/login`.
+- **Shared Supabase auth** — LTS and Agent Henrik share the same auth. Client's existing LTS login works for the Agent Henrik CMS.
+- **Image upload** — Client-side optimization via Canvas API: resize to max 1920x1080, convert to WebP at 82% quality. Uploads to `media` bucket under `henrik/` prefix with `site='henrik'` in media table.
+- **AI content generator** — `/api/admin/generate-content` route with per-content-type context and per-field instructions. Uses OpenAI GPT-4o. Component is `AiGenerate` — expandable panel in each form, generates only empty fields, preserves existing content.
+- **Tiptap rich text** — Only used for journal article `content` field. Minimal toolbar: bold, italic, headings, lists.
+
+## Instagram Feed
+- **StormLikes embed** (`stormlikes.com/js/embed.min.js`) — free third-party service, same as LTS.
+- Component at `src/components/instagram/instagram-feed.tsx`, theme-aware (reloads on `data-theme` attribute change).
+- **Currently using placeholders** — @agenthenrik Instagram account is private, so StormLikes returns nothing. Swap comment in `src/app/page.tsx` when account goes public.
+- CSS overrides in `globals.css` under `.instagram-feed` — grid layout, hidden branding, square aspect ratio, hover scale.
+
+## Client Management
+- **Henrik is prone to scope creep.** Voice mode (TTS, microphone, waveform) is explicitly Phase 2 in his own spec (Sections 9.2 and 18) but he asked about it as if it were Phase 1. Always reference spec section numbers when pushing back.
+- **Delivery emails should map directly to spec sections** to leave no room for ambiguity.
+- **The masterbrief spec is at `AGENTHENRIK_MASTER_SPEC_v2.md`** — this is the single source of truth for what's in scope.
+
+## AI Concierge Output
+- **Story Arc Model must be HIDDEN from AI output.** Henrik wants it used internally for reasoning/structure but the output should be Day-based format like LTS (Day 1: Title, bullet points). Terms like "Arrival", "Immersion", "Climax", "Reflection" must never appear in user-facing itineraries. Users don't care about the psychological framework — they want clean, readable travel plans.
+- **Dynamic greeting required.** Chat must reference the destination/theme/storyteller the user was viewing. Currently greeting is static.
+
+## Client Feedback Management
+- **Use Google Sheets tracker** for all client amends — not MD files. Henrik gets frustrated when items are missed.
+- Tracker: https://docs.google.com/spreadsheets/d/1GndxpfXhmqE37IhCIoBZMa-jXUx8VXAEYmeQqrzGGjY/edit
+- 45 items captured from 3 docs (March 2026 feedback round)
+- Categories: CAN DO, PUSHBACK, ALREADY DONE, ACKNOWLEDGED, RESPOND
+
+## Image Carousel
+- Client component with `useState` for current index, absolute positioning for layered images with opacity transitions.
+- Handles single image (no controls) and multiple images (arrows + dots) gracefully.
+- Component at `src/components/ui/image-carousel.tsx`.
+- Both `ah_themes` and `ah_storyworlds` have `images text[]` columns for gallery photos.
+
+## Google Sheets API (via gws)
+- `gws sheets spreadsheets values batchUpdate` requires `--params '{"spreadsheetId":"..."}' --json '...'` — NOT `--spreadsheet` flag.
+- For complex JSON with quotes, write to a temp file and use `$(cat /tmp/file.json)`.
+
+## ChilledSites MCP
+- Must be in `~/.claude/settings.json` under `mcpServers` for Claude Code access (separate from Claude Desktop config).
+- Requires session restart after adding — MCP servers initialize at session start.
+- Has video generation capability via VO3.
+
+## Video Generation (VO3 via ChilledSites)
+- **Landscape/atmosphere-only prompts** work better than avatar-centric — VO3 can't maintain consistent characters across clips.
+- **Sequential clip playback with crossfades** is better than one stitched video — allows independent regeneration, lighter initial load, and more premium transitions.
+- 10 destination clips at ~6s each = ~60s total loop for hero section.
+- Prompts are in Google Sheet "Video Prompts" tab.
+- **VO3 prompt best practices:** 150-300 chars optimal. Use pro cinematography terms (slow dolly, crane shot, tracking). Add "anamorphic lens", "film grain texture", ambient audio description. End with "(no text overlays) (no subtitles)". One dominant action per clip. Start test renders at 4s/720p before scaling up.
+- **Output is 720p** — upscale to 4K with Topaz Video AI after generation.
 
 ## Common Pitfalls
 - Always hard refresh (Cmd+Shift+R) after deploys — Vercel CDN caching can show stale content.
