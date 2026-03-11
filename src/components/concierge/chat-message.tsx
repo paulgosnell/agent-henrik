@@ -1,5 +1,16 @@
 import type { ConversationMessage } from "@/lib/supabase/types";
 
+function markdownToHtml(text: string): string {
+  let html = text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  html = html.replace(/\*(.+?)\*/g, "<em>$1</em>");
+  html = html.replace(/\n/g, "<br>");
+  return html;
+}
+
 interface ChatMessageProps {
   message: ConversationMessage;
 }
@@ -17,13 +28,8 @@ export function ChatMessage({ message }: ChatMessageProps) {
             ? "bg-foreground text-background"
             : "bg-muted text-foreground"
         }`}
-      >
-        {message.content.split("\n").map((line, i) => (
-          <p key={i} className={i > 0 ? "mt-2" : ""}>
-            {line}
-          </p>
-        ))}
-      </div>
+        dangerouslySetInnerHTML={{ __html: markdownToHtml(message.content) }}
+      />
     </div>
   );
 }

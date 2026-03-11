@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         model: "gpt-4o",
-        max_tokens: 1024,
+        max_tokens: 1500,
         messages: [
           { role: "system", content: systemPrompt },
           ...messages.map((m) => ({

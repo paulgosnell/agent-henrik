@@ -112,8 +112,23 @@
 - **Sequential clip playback with crossfades** is better than one stitched video — allows independent regeneration, lighter initial load, and more premium transitions.
 - 10 destination clips at ~6s each = ~60s total loop for hero section.
 - Prompts are in Google Sheet "Video Prompts" tab.
-- **VO3 prompt best practices:** 150-300 chars optimal. Use pro cinematography terms (slow dolly, crane shot, tracking). Add "anamorphic lens", "film grain texture", ambient audio description. End with "(no text overlays) (no subtitles)". One dominant action per clip. Start test renders at 4s/720p before scaling up.
+- **VO3 prompt best practices:** 150-300 chars optimal. Use pro cinematography terms (slow dolly, crane shot, tracking). End with "(no text overlays) (no subtitles) (no music) (no sound)". One dominant action per clip.
+- **DO NOT use** "anamorphic lens", "35mm film texture", "film grain", or vintage film aesthetics — causes unwanted border vignette and grainy artifacts.
+- **DO NOT include** ambient audio descriptions (city hum, waves, music) — videos autoplay muted on website. Wasted prompt space.
+- **Use clean language:** "sharp crystal clear digital cinematography" instead of film-style descriptors.
+- **Keep camera motion simple and linear** — avoid "accelerates", "dramatic reveal", or complex multi-phase movements. VO3 interprets these as reverse/rewind effects. Use "continuous steady forward movement" or "slow dolly" with one direction only.
+- **Hero video structure** per spec section 5.1: Opening (aerial cityscape montage, 2-3s per clip), Middle (luxury experience moments — nightlife, dining, champagne, cultural immersion, 4-5s per clip), Closing (fade to black with text overlay, done in code). Pure cityscapes alone feel static — need the energy/experience clips in the middle.
+- **VO3 minimum duration is 6s** — for shorter playback, generate at 6s and trim via hero component playback duration (not file trimming).
 - **Output is 720p** — upscale to 4K with Topaz Video AI after generation.
+- **NEVER pipe base64 image data through Bash stdout** — it gets injected into conversation context and causes persistent `"Could not process image"` API errors that crash the session. Save to disk or pass URLs directly to MCP tools.
+- **ChilledSites MCP reference images NOW WORK** — was broken because Gemini API needed images uploaded via Files API (fileUri), not inline base64. Fixed March 2026 — edge function now uploads to Gemini Files API first. Base64 data URLs passed via MCP are handled server-side.
+- **Base64 data URL workaround for MCP tools:** Resize image with sharp, save data URL to a `.json` file, read via Read tool (not Bash cat — that triggers image interpretation and crashes the session).
+
+## AI Concierge — Prompt & Rendering
+- **Markdown must be rendered** — LTS uses `markdownToHtml()` (converts `**bold**` and `*italic*` to HTML). AH was showing raw asterisks. Fixed in `chat-message.tsx` with `dangerouslySetInnerHTML`.
+- **Brevity is luxury** — Henrik hates walls of text. System prompt must enforce: 2-4 sentences for conversational replies, max 2-3 lines per day in itineraries, ONE question at a time.
+- **Booking flow must match LTS** — Chat → ask email → collect name/dates/group/budget → "You'll hear back within 24 hours" → clean end. Do NOT say "forwarded to concierge" until you have their email.
+- **max_tokens raised to 1500** from 1024 to avoid itinerary truncation.
 
 ## Common Pitfalls
 - Always hard refresh (Cmd+Shift+R) after deploys — Vercel CDN caching can show stale content.
