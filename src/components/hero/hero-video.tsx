@@ -4,37 +4,73 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ChevronDown, MapPin, Compass, Users } from "lucide-react";
 
+const HERO_CLIPS = [
+  "https://api.chilledsites.com/storage/v1/object/public/videos/cd53f831-1864-47fd-97af-23f2aa3b9feb/1773236222852-192481d7-299f-433c-a1f5-b0e4984aa85e.mp4",
+  "https://api.chilledsites.com/storage/v1/object/public/videos/cd53f831-1864-47fd-97af-23f2aa3b9feb/1773236296571-298e2e08-8405-42df-8aba-613553771fff.mp4",
+  "https://api.chilledsites.com/storage/v1/object/public/videos/cd53f831-1864-47fd-97af-23f2aa3b9feb/1773236372012-10978d0e-864d-4b04-9fbe-93928666db41.mp4",
+  "https://api.chilledsites.com/storage/v1/object/public/videos/cd53f831-1864-47fd-97af-23f2aa3b9feb/1773236442538-69aa5116-7539-45ee-8c2a-8efcf592990e.mp4",
+  "https://api.chilledsites.com/storage/v1/object/public/videos/cd53f831-1864-47fd-97af-23f2aa3b9feb/1773236857420-cc91a8da-a253-4459-89ff-dd479fe73f84.mp4",
+  "https://api.chilledsites.com/storage/v1/object/public/videos/cd53f831-1864-47fd-97af-23f2aa3b9feb/1773237338313-936232e2-827a-436f-8b40-485867350b31.mp4",
+];
+
 interface HeroVideoProps {
-  videoSrc?: string;
   posterSrc?: string;
   headline?: string;
   ctaHref?: string;
-  textAppearAt?: number;
 }
 
 export function HeroVideo({
-  videoSrc = "https://api.chilledsites.com/storage/v1/object/public/p0stman/agent-henrik_video_3.mp4",
   posterSrc = "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=1920&q=80",
   headline = "Your Insider Journey Begins Here",
   ctaHref = "#explore",
-  textAppearAt = 7,
 }: HeroVideoProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoARef = useRef<HTMLVideoElement>(null);
+  const videoBRef = useRef<HTMLVideoElement>(null);
+  const [activePlayer, setActivePlayer] = useState<"A" | "B">("A");
   const [showText, setShowText] = useState(false);
+  const clipIndexRef = useRef(0);
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
+    const videoA = videoARef.current;
+    if (!videoA) return;
+    videoA.src = HERO_CLIPS[0];
+    videoA.load();
+    videoA.play().catch(() => {});
+    const timer = setTimeout(() => setShowText(true), 4000);
+    return () => clearTimeout(timer);
+  }, []);
 
-    function handleTimeUpdate() {
-      if (video!.currentTime >= textAppearAt && !showText) {
-        setShowText(true);
-      }
+  useEffect(() => {
+    const videoA = videoARef.current;
+    const videoB = videoBRef.current;
+    if (!videoA || !videoB) return;
+
+    function advance() {
+      clipIndexRef.current = (clipIndexRef.current + 1) % HERO_CLIPS.length;
+      const nextSrc = HERO_CLIPS[clipIndexRef.current];
+
+      setActivePlayer((prev) => {
+        if (prev === "A") {
+          videoB!.src = nextSrc;
+          videoB!.load();
+          videoB!.play().catch(() => {});
+          return "B";
+        } else {
+          videoA!.src = nextSrc;
+          videoA!.load();
+          videoA!.play().catch(() => {});
+          return "A";
+        }
+      });
     }
 
-    video.addEventListener("timeupdate", handleTimeUpdate);
-    return () => video.removeEventListener("timeupdate", handleTimeUpdate);
-  }, [textAppearAt, showText]);
+    videoA.addEventListener("ended", advance);
+    videoB.addEventListener("ended", advance);
+    return () => {
+      videoA.removeEventListener("ended", advance);
+      videoB.removeEventListener("ended", advance);
+    };
+  }, []);
 
   function scrollToNext() {
     const target = document.querySelector(ctaHref);
@@ -45,28 +81,31 @@ export function HeroVideo({
 
   return (
     <section className="relative h-screen w-full overflow-hidden">
-      {/* Poster Image Fallback */}
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${posterSrc})` }}
       />
 
-      {/* Video Background */}
       <video
-        ref={videoRef}
-        autoPlay
+        ref={videoARef}
         muted
         playsInline
-        poster={posterSrc}
-        className="absolute inset-0 h-full w-full object-cover"
-      >
-        <source src={videoSrc} type="video/mp4" />
-      </video>
+        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
+          activePlayer === "A" ? "opacity-100" : "opacity-0"
+        }`}
+      />
 
-      {/* Dark Gradient Overlay */}
+      <video
+        ref={videoBRef}
+        muted
+        playsInline
+        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
+          activePlayer === "B" ? "opacity-100" : "opacity-0"
+        }`}
+      />
+
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60" />
 
-      {/* Content */}
       <div
         className={`relative z-10 flex h-full flex-col items-center justify-end pb-16 text-center text-white transition-opacity duration-1000 ${
           showText ? "opacity-100" : "opacity-0"
@@ -76,7 +115,6 @@ export function HeroVideo({
           {headline}
         </h1>
 
-        {/* Three Entry Paths */}
         <div className="mb-8 flex flex-col gap-3 px-6 sm:flex-row sm:gap-4">
           <Link
             href="/explore"
@@ -101,7 +139,6 @@ export function HeroVideo({
           </Link>
         </div>
 
-        {/* Scroll indicator */}
         <button
           onClick={scrollToNext}
           className="animate-bounce-subtle cursor-pointer text-white/60 transition-opacity hover:text-white"
