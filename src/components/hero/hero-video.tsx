@@ -7,23 +7,23 @@ import { ChevronDown, MapPin, Compass, Users } from "lucide-react";
 const STORAGE_BASE = "https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object/public/videos/henrik";
 const CHILLEDSITES_BASE = "https://api.chilledsites.com/storage/v1/object/public/videos/cd53f831-1864-47fd-97af-23f2aa3b9feb";
 
-const HERO_CLIPS = [
-  // --- Opening: aerial cityscape montage ---
-  `${CHILLEDSITES_BASE}/1773236222852-192481d7-299f-433c-a1f5-b0e4984aa85e.mp4`, // Hong Kong skyline
-  `${CHILLEDSITES_BASE}/1773236296571-298e2e08-8405-42df-8aba-613553771fff.mp4`, // Bucharest architecture
-  // --- Middle: luxury experience moments ---
-  `${STORAGE_BASE}/champagne-toast.mp4`,        // Champagne glasses clinking
-  `${STORAGE_BASE}/rooftop-pool-party.mp4`,      // Rooftop pool party sunset
-  `${STORAGE_BASE}/nightclub-dancing.mp4`,       // Nightclub crowd with lasers
-  `${STORAGE_BASE}/sushi-chef.mp4`,              // Sushi chef preparing food
-  `${STORAGE_BASE}/bartender-mixing.mp4`,        // Bartender mixing cocktails
-  `${STORAGE_BASE}/candlelit-dinner.mp4`,        // Candlelit outdoor dinner
-  `${STORAGE_BASE}/live-music.mp4`,              // Live music performance
-  `${STORAGE_BASE}/driving-city-night.mp4`,      // Driving through city at night
-  `${STORAGE_BASE}/couple-european-street.mp4`,  // Couple walking European street
-  // --- Closing: return to cityscapes ---
-  `${CHILLEDSITES_BASE}/1773236372012-10978d0e-864d-4b04-9fbe-93928666db41.mp4`, // Abisko northern lights
-  `${CHILLEDSITES_BASE}/1773236442538-69aa5116-7539-45ee-8c2a-8efcf592990e.mp4`, // Rio de Janeiro sunset
+const HERO_CLIPS: { url: string; duration: number }[] = [
+  // --- Opening: aerial cityscape montage (3s each) ---
+  { url: `${CHILLEDSITES_BASE}/1773236222852-192481d7-299f-433c-a1f5-b0e4984aa85e.mp4`, duration: 3 }, // Hong Kong skyline
+  { url: `${CHILLEDSITES_BASE}/1773236296571-298e2e08-8405-42df-8aba-613553771fff.mp4`, duration: 3 }, // Bucharest architecture
+  // --- Middle: luxury experience moments (1.5s each) ---
+  { url: `${STORAGE_BASE}/champagne-toast.mp4`, duration: 1.5 },
+  { url: `${STORAGE_BASE}/rooftop-pool-party.mp4`, duration: 1.5 },
+  { url: `${STORAGE_BASE}/nightclub-dancing.mp4`, duration: 1.5 },
+  { url: `${STORAGE_BASE}/sushi-chef.mp4`, duration: 1.5 },
+  { url: `${STORAGE_BASE}/bartender-mixing.mp4`, duration: 1.5 },
+  { url: `${STORAGE_BASE}/candlelit-dinner.mp4`, duration: 1.5 },
+  { url: `${STORAGE_BASE}/live-music.mp4`, duration: 1.5 },
+  { url: `${STORAGE_BASE}/driving-city-night.mp4`, duration: 1.5 },
+  { url: `${STORAGE_BASE}/couple-european-street.mp4`, duration: 1.5 },
+  // --- Closing: return to cityscapes (3s each) ---
+  { url: `${CHILLEDSITES_BASE}/1773236372012-10978d0e-864d-4b04-9fbe-93928666db41.mp4`, duration: 3 }, // Abisko northern lights
+  { url: `${CHILLEDSITES_BASE}/1773236442538-69aa5116-7539-45ee-8c2a-8efcf592990e.mp4`, duration: 3 }, // Rio de Janeiro sunset
 ];
 
 interface HeroVideoProps {
@@ -45,43 +45,48 @@ export function HeroVideo({
 
   useEffect(() => {
     const videoA = videoARef.current;
-    if (!videoA) return;
-    videoA.src = HERO_CLIPS[0];
-    videoA.load();
-    videoA.play().catch(() => {});
-    const timer = setTimeout(() => setShowText(true), 4000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    const videoA = videoARef.current;
     const videoB = videoBRef.current;
     if (!videoA || !videoB) return;
 
+    videoA.src = HERO_CLIPS[0].url;
+    videoA.load();
+    videoA.play().catch(() => {});
+
+    const textTimer = setTimeout(() => setShowText(true), 4000);
+
+    let advanceTimer: ReturnType<typeof setTimeout>;
+
+    function scheduleAdvance() {
+      const clip = HERO_CLIPS[clipIndexRef.current];
+      advanceTimer = setTimeout(advance, clip.duration * 1000);
+    }
+
     function advance() {
       clipIndexRef.current = (clipIndexRef.current + 1) % HERO_CLIPS.length;
-      const nextSrc = HERO_CLIPS[clipIndexRef.current];
+      const nextClip = HERO_CLIPS[clipIndexRef.current];
 
       setActivePlayer((prev) => {
         if (prev === "A") {
-          videoB!.src = nextSrc;
+          videoB!.src = nextClip.url;
           videoB!.load();
           videoB!.play().catch(() => {});
           return "B";
         } else {
-          videoA!.src = nextSrc;
+          videoA!.src = nextClip.url;
           videoA!.load();
           videoA!.play().catch(() => {});
           return "A";
         }
       });
+
+      scheduleAdvance();
     }
 
-    videoA.addEventListener("ended", advance);
-    videoB.addEventListener("ended", advance);
+    scheduleAdvance();
+
     return () => {
-      videoA.removeEventListener("ended", advance);
-      videoB.removeEventListener("ended", advance);
+      clearTimeout(textTimer);
+      clearTimeout(advanceTimer);
     };
   }, []);
 
