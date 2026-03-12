@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Search, Download, Eye } from "lucide-react";
+import { useSite } from "@/components/admin/site-context";
+import { Search, Download, ChevronDown, ChevronRight, Trash2, MessageSquare, Mail, Phone } from "lucide-react";
 import { exportCSV } from "@/lib/utils/export-csv";
-import Link from "next/link";
-import type { Inquiry } from "@/lib/supabase/types";
+import type { Lead, BookingInquiry } from "@/lib/supabase/types";
 
 const STATUSES = ["all", "new", "contacted", "qualified", "converted", "closed"] as const;
 
@@ -17,54 +17,107 @@ const STATUS_COLORS: Record<string, string> = {
   closed: "text-[var(--muted-foreground)]",
 };
 
-export default function InquiriesPage() {
-  const [data, setData] = useState<Inquiry[]>([]);
+const SOURCE_BADGES: Record<string, string> = {
+  "contact-form": "bg-blue-500/20 text-blue-400",
+  "concierge_chat": "bg-purple-500/20 text-purple-400",
+  "liv_chat": "bg-purple-500/20 text-purple-400",
+};
+
+export default function LeadsPage() {
+  const { site } = useSite();
+  const [leads, setLeads] = useState<Lead[]>([]);
   const [filter, setFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [bookingInquiries, setBookingInquiries] = useState<BookingInquiry[]>([]);
+  const [conversations, setConversations] = useState<Array<{ session_id: string; messages: Array<{ role: string; content: string }>; updated_at: string }>>([]);
   const supabase = createClient();
 
-  async function load() {
-    const { data } = await supabase
-      .from("ah_inquiries")
+  const load = useCallback(async () => {
+    let query = supabase
+      .from("leads")
       .select("*")
       .order("created_at", { ascending: false });
-    setData(data ?? []);
+
+    if (site !== "all") {
+      query = query.eq("site", site);
+    }
+
+    const { data } = await query;
+    setLeads((data as Lead[]) ?? []);
+  }, [site]);
+
+  useEffect(() => { load(); }, [load]);
+
+  async function expandLead(lead: Lead) {
+    if (expandedId === lead.id) {
+      setExpandedId(null);
+      return;
+    }
+    setExpandedId(lead.id);
+
+    // Load booking inquiries for this email
+    const { data: inquiries } = await supabase
+      .from("booking_inquiries")
+      .select("*")
+      .eq("email", lead.email)
+      .order("created_at", { ascending: false });
+    setBookingInquiries((inquiries as BookingInquiry[]) ?? []);
+
+    // Load conversations
+    const { data: convos } = await supabase
+      .from("ah_concierge_sessions")
+      .select("session_id, messages, updated_at")
+      .order("updated_at", { ascending: false })
+      .limit(5);
+    // Filter by checking if any message contains the email
+    const matched = (convos ?? []).filter((c: { messages: Array<{ content: string }> }) =>
+      c.messages?.some((m: { content: string }) => m.content?.includes(lead.email))
+    );
+    setConversations(matched);
   }
 
-  useEffect(() => { load(); }, []);
+  async function updateLeadStatus(leadId: string, status: string) {
+    await supabase.from("leads").update({ status }).eq("id", leadId);
+    setLeads((prev) => prev.map((l) => l.id === leadId ? { ...l, status } : l));
+  }
 
-  const filtered = data
-    .filter((row) => filter === "all" || row.status === filter || (filter === "new" && !row.status))
+  async function deleteLead(leadId: string) {
+    await supabase.from("leads").delete().eq("id", leadId);
+    setLeads((prev) => prev.filter((l) => l.id !== leadId));
+    if (expandedId === leadId) setExpandedId(null);
+  }
+
+  const filtered = leads
+    .filter((row) => filter === "all" || row.status === filter)
     .filter((row) => {
       if (!search) return true;
       const q = search.toLowerCase();
       return (
-        row.name.toLowerCase().includes(q) ||
+        (row.name?.toLowerCase().includes(q) ?? false) ||
         row.email.toLowerCase().includes(q) ||
-        (row.destination?.toLowerCase().includes(q) ?? false)
+        (row.notes?.toLowerCase().includes(q) ?? false)
       );
     });
 
   function handleExport() {
     const rows = filtered.map((row) => ({
-      Name: row.name,
+      Name: row.name ?? "",
       Email: row.email,
       Phone: row.phone ?? "",
-      Destination: row.destination ?? "",
-      "Travel Dates": row.travel_dates ?? "",
-      "Group Size": row.group_size ?? "",
-      "Investment Level": row.investment_level ?? "",
-      Preferences: row.preferences ?? "",
-      Status: row.status ?? "new",
+      Source: row.source,
+      Status: row.status,
+      Notes: row.notes ?? "",
+      Site: row.site,
       "Created At": row.created_at,
     }));
-    exportCSV(rows as Record<string, unknown>[], `inquiries-${new Date().toISOString().split("T")[0]}`);
+    exportCSV(rows as Record<string, unknown>[], `leads-${new Date().toISOString().split("T")[0]}`);
   }
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-light font-serif">Inquiries</h1>
+        <h1 className="text-2xl font-light font-serif">Leads</h1>
         <button
           onClick={handleExport}
           className="flex items-center gap-2 px-4 py-2 text-sm border border-[var(--border)] rounded hover:bg-[var(--muted)] transition-colors cursor-pointer"
@@ -96,64 +149,120 @@ export default function InquiriesPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search name, email, destination..."
+            placeholder="Search name, email..."
             className="w-full pl-9 pr-3 py-2 text-sm bg-[var(--muted)] border border-[var(--border)] rounded text-[var(--foreground)] focus:outline-none focus:border-[var(--foreground)] transition-colors"
           />
         </div>
       </div>
 
-      <div className="border border-[var(--border)] rounded overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-[var(--muted)]">
-              <th className="text-left px-4 py-3 text-xs text-[var(--muted-foreground)] uppercase tracking-wider font-normal">Name</th>
-              <th className="text-left px-4 py-3 text-xs text-[var(--muted-foreground)] uppercase tracking-wider font-normal">Email</th>
-              <th className="text-left px-4 py-3 text-xs text-[var(--muted-foreground)] uppercase tracking-wider font-normal">Destination</th>
-              <th className="text-left px-4 py-3 text-xs text-[var(--muted-foreground)] uppercase tracking-wider font-normal">Status</th>
-              <th className="text-left px-4 py-3 text-xs text-[var(--muted-foreground)] uppercase tracking-wider font-normal">Date</th>
-              <th className="w-16 px-4 py-3"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-[var(--muted-foreground)]">
-                  No inquiries found
-                </td>
-              </tr>
-            ) : (
-              filtered.map((row) => (
-                <tr
-                  key={row.id}
-                  className="border-t border-[var(--border)] hover:bg-[var(--muted)]/50 transition-colors"
-                >
-                  <td className="px-4 py-3 font-medium">{row.name}</td>
-                  <td className="px-4 py-3 text-[var(--muted-foreground)]">{row.email}</td>
-                  <td className="px-4 py-3">{row.destination ?? "-"}</td>
-                  <td className="px-4 py-3">
-                    <span className={`text-xs uppercase tracking-wider ${STATUS_COLORS[row.status ?? "new"] ?? ""}`}>
-                      {row.status ?? "new"}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-[var(--muted-foreground)]">
-                    {new Date(row.created_at).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Link
-                      href={`/admin/inquiries/${row.id}`}
-                      className="p-1 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+      <div className="space-y-2">
+        {filtered.length === 0 ? (
+          <div className="text-center py-8 text-[var(--muted-foreground)]">No leads found</div>
+        ) : (
+          filtered.map((lead) => (
+            <div key={lead.id} className="border border-[var(--border)] rounded overflow-hidden">
+              <button
+                onClick={() => expandLead(lead)}
+                className="w-full flex items-center gap-4 px-4 py-3 text-sm hover:bg-[var(--muted)]/50 transition-colors cursor-pointer"
+              >
+                {expandedId === lead.id ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                <span className="font-medium flex-shrink-0 w-40 text-left">{lead.name || "—"}</span>
+                <span className="text-[var(--muted-foreground)] flex-shrink-0 w-56 text-left">{lead.email}</span>
+                <span className={`text-xs uppercase tracking-wider flex-shrink-0 w-20 text-left ${SOURCE_BADGES[lead.source] || "bg-gray-500/20 text-gray-400"} px-2 py-0.5 rounded`}>
+                  {lead.source.replace(/[-_]/g, " ")}
+                </span>
+                <span className={`text-xs uppercase tracking-wider flex-shrink-0 w-20 text-left ${STATUS_COLORS[lead.status] || ""}`}>
+                  {lead.status}
+                </span>
+                {lead.site !== "henrik" && (
+                  <span className="text-xs text-[var(--muted-foreground)] flex-shrink-0 w-16 text-left">{lead.site}</span>
+                )}
+                <span className="text-[var(--muted-foreground)] ml-auto text-xs">
+                  {new Date(lead.created_at).toLocaleDateString()}
+                </span>
+              </button>
+
+              {expandedId === lead.id && (
+                <div className="border-t border-[var(--border)] px-4 py-4 bg-[var(--muted)]/30 space-y-4">
+                  {/* Status + Actions */}
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-[var(--muted-foreground)] uppercase tracking-wider">Status:</span>
+                      <select
+                        value={lead.status}
+                        onChange={(e) => updateLeadStatus(lead.id, e.target.value)}
+                        className="text-sm bg-[var(--background)] border border-[var(--border)] rounded px-2 py-1 text-[var(--foreground)]"
+                      >
+                        {STATUSES.filter((s) => s !== "all").map((s) => (
+                          <option key={s} value={s}>{s}</option>
+                        ))}
+                      </select>
+                    </div>
+                    {lead.phone && (
+                      <a href={`tel:${lead.phone}`} className="flex items-center gap-1 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
+                        <Phone size={12} /> {lead.phone}
+                      </a>
+                    )}
+                    <a href={`mailto:${lead.email}`} className="flex items-center gap-1 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
+                      <Mail size={12} /> Email
+                    </a>
+                    <button
+                      onClick={() => { if (confirm("Delete this lead?")) deleteLead(lead.id); }}
+                      className="ml-auto flex items-center gap-1 text-sm text-red-400 hover:text-red-300 cursor-pointer"
                     >
-                      <Eye size={14} />
-                    </Link>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                      <Trash2 size={12} /> Delete
+                    </button>
+                  </div>
+
+                  {/* Notes */}
+                  {lead.notes && (
+                    <div>
+                      <p className="text-xs text-[var(--muted-foreground)] uppercase tracking-wider mb-1">Notes</p>
+                      <p className="text-sm whitespace-pre-wrap">{lead.notes}</p>
+                    </div>
+                  )}
+
+                  {/* Booking Inquiries */}
+                  {bookingInquiries.length > 0 && (
+                    <div>
+                      <p className="text-xs text-[var(--muted-foreground)] uppercase tracking-wider mb-2">Booking Inquiries</p>
+                      {bookingInquiries.map((bi) => (
+                        <div key={bi.id} className="border border-[var(--border)] rounded p-3 text-sm space-y-1 mb-2">
+                          {bi.group_size && <p><span className="text-[var(--muted-foreground)]">Group:</span> {bi.group_size}</p>}
+                          {bi.budget_range && <p><span className="text-[var(--muted-foreground)]">Budget:</span> {bi.budget_range}</p>}
+                          {bi.special_requests && <p className="whitespace-pre-wrap text-xs mt-2">{bi.special_requests}</p>}
+                          <p className="text-xs text-[var(--muted-foreground)]">{new Date(bi.created_at).toLocaleString()}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Conversations */}
+                  {conversations.length > 0 && (
+                    <div>
+                      <p className="text-xs text-[var(--muted-foreground)] uppercase tracking-wider mb-2 flex items-center gap-1">
+                        <MessageSquare size={12} /> Conversations
+                      </p>
+                      {conversations.map((convo) => (
+                        <div key={convo.session_id} className="border border-[var(--border)] rounded p-3 text-sm space-y-2 mb-2 max-h-60 overflow-y-auto">
+                          {convo.messages?.map((msg: { role: string; content: string }, i: number) => (
+                            <div key={i} className={`text-xs ${msg.role === "user" ? "text-blue-400" : "text-[var(--muted-foreground)]"}`}>
+                              <span className="uppercase tracking-wider font-medium">{msg.role === "user" ? "Guest" : "Henrik"}:</span>{" "}
+                              {msg.content}
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ))
+        )}
       </div>
       <p className="text-xs text-[var(--muted-foreground)] mt-2">
-        {filtered.length} inquiry{filtered.length !== 1 ? "ies" : ""}
+        {filtered.length} lead{filtered.length !== 1 ? "s" : ""}
       </p>
     </div>
   );

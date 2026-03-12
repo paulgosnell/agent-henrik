@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect, useMemo } from "react";
-import { Send, X } from "lucide-react";
+import { Send, X, Mic } from "lucide-react";
 import { ChatMessage } from "./chat-message";
-import type { ConversationMessage } from "@/lib/supabase/types";
+import { VoiceMode } from "./voice-mode";
+import type { ConversationMessage, LeadInfo } from "@/lib/supabase/types";
 
 interface ChatWindowProps {
   onClose?: () => void;
@@ -50,6 +51,10 @@ export function ChatWindow({ onClose, initialContext, embedded = false }: ChatWi
   ]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
+  const [showLeadForm, setShowLeadForm] = useState(false);
+  const [leadSubmitted, setLeadSubmitted] = useState(false);
+  const [leadInfo, setLeadInfo] = useState<Partial<LeadInfo>>({});
+  const [voiceMode, setVoiceMode] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -63,6 +68,13 @@ export function ChatWindow({ onClose, initialContext, embedded = false }: ChatWi
     const userMessage: ConversationMessage = { role: "user", content: text };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
+
+    const emailMatch = text.match(/\b[^\s@]+@[^\s@]+\.[^\s@]+\b/);
+    if (emailMatch && !leadSubmitted && !showLeadForm) {
+      setLeadInfo((prev) => ({ ...prev, email: emailMatch[0] }));
+      setTimeout(() => setShowLeadForm(true), 2500);
+    }
+
     setIsStreaming(true);
 
     try {
@@ -96,6 +108,40 @@ export function ChatWindow({ onClose, initialContext, embedded = false }: ChatWi
     }
   }
 
+  async function submitLead() {
+    if (!leadInfo.email) return;
+    try {
+      await fetch("/api/concierge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages,
+          context: initialContext,
+          sessionId,
+          leadInfo,
+        }),
+      });
+    } catch {
+      // Silent fail
+    }
+    setLeadSubmitted(true);
+    setShowLeadForm(false);
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "assistant",
+        content: `Thank you${leadInfo.name ? ", " + leadInfo.name : ""}! I've passed your details to our concierge team. You'll hear back within 24 hours with a personalised itinerary.`,
+      },
+    ]);
+  }
+
+  function handleVoiceEnd(voiceTranscript: ConversationMessage[]) {
+    setVoiceMode(false);
+    if (voiceTranscript.length > 0) {
+      setMessages((prev) => [...prev, ...voiceTranscript]);
+    }
+  }
+
   function handleKeyDown(e: React.KeyboardEvent) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -123,8 +169,16 @@ export function ChatWindow({ onClose, initialContext, embedded = false }: ChatWi
         )}
       </div>
 
-      {/* Messages */}
+      {/* Messages / Voice */}
       <div className="flex-1 space-y-4 overflow-y-auto p-4">
+        {voiceMode ? (
+          <VoiceMode
+            onEnd={handleVoiceEnd}
+            sessionId={sessionId}
+            context={initialContext}
+          />
+        ) : (
+        <>
         {messages.map((msg, i) => (
           <ChatMessage key={i} message={msg} />
         ))}
@@ -135,7 +189,65 @@ export function ChatWindow({ onClose, initialContext, embedded = false }: ChatWi
             </div>
           </div>
         )}
+        {showLeadForm && !leadSubmitted && (
+          <div className="mx-4 my-3 space-y-2 border border-border bg-muted p-4">
+            <p className="text-sm text-foreground">I'd love to send you a detailed itinerary. May I have a few details?</p>
+            <input
+              type="text"
+              placeholder="Your name"
+              className="w-full border border-border bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground focus:outline-none"
+              onChange={(e) => setLeadInfo((p) => ({ ...p, name: e.target.value }))}
+            />
+            <input
+              type="email"
+              placeholder="Email address *"
+              value={leadInfo.email || ""}
+              className="w-full border border-border bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground focus:outline-none"
+              onChange={(e) => setLeadInfo((p) => ({ ...p, email: e.target.value }))}
+            />
+            <input
+              type="tel"
+              placeholder="Phone / WhatsApp (optional)"
+              className="w-full border border-border bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground focus:outline-none"
+              onChange={(e) => setLeadInfo((p) => ({ ...p, phone: e.target.value }))}
+            />
+            <input
+              type="text"
+              placeholder="Ideal dates (optional)"
+              className="w-full border border-border bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground focus:outline-none"
+              onChange={(e) => setLeadInfo((p) => ({ ...p, dates: e.target.value }))}
+            />
+            <input
+              type="text"
+              placeholder="Number of guests (optional)"
+              className="w-full border border-border bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground focus:outline-none"
+              onChange={(e) => setLeadInfo((p) => ({ ...p, groupSize: e.target.value }))}
+            />
+            <input
+              type="text"
+              placeholder="Budget range (optional)"
+              className="w-full border border-border bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground focus:outline-none"
+              onChange={(e) => setLeadInfo((p) => ({ ...p, budget: e.target.value }))}
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={submitLead}
+                className="nav-text bg-foreground px-4 py-2 text-sm text-background transition-opacity hover:opacity-90"
+              >
+                Send my details
+              </button>
+              <button
+                onClick={() => setShowLeadForm(false)}
+                className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground"
+              >
+                Maybe later
+              </button>
+            </div>
+          </div>
+        )}
         <div ref={messagesEndRef} />
+        </>
+        )}
       </div>
 
       {/* Input */}
@@ -151,8 +263,19 @@ export function ChatWindow({ onClose, initialContext, embedded = false }: ChatWi
             disabled={isStreaming}
           />
           <button
+            onClick={() => setVoiceMode(!voiceMode)}
+            className={`p-2 transition-opacity hover:opacity-90 ${
+              voiceMode
+                ? "bg-red-500 text-white"
+                : "bg-muted text-muted-foreground hover:text-foreground"
+            }`}
+            aria-label={voiceMode ? "Switch to text" : "Switch to voice"}
+          >
+            <Mic size={16} />
+          </button>
+          <button
             onClick={handleSend}
-            disabled={isStreaming || !input.trim()}
+            disabled={isStreaming || !input.trim() || voiceMode}
             className="bg-foreground p-2 text-background transition-opacity hover:opacity-90 disabled:opacity-50"
             aria-label="Send message"
           >

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Pencil, Trash2, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, ExternalLink } from "lucide-react";
 
 export interface Column<T> {
   key: keyof T | string;
@@ -17,6 +17,7 @@ interface DataTableProps<T extends { id: string }> {
   onEdit: (row: T) => void;
   onDelete: (id: string) => void;
   searchField?: keyof T;
+  previewUrl?: (row: T) => string | null;
 }
 
 export function DataTable<T extends { id: string }>({
@@ -27,6 +28,7 @@ export function DataTable<T extends { id: string }>({
   onEdit,
   onDelete,
   searchField,
+  previewUrl,
 }: DataTableProps<T>) {
   const [search, setSearch] = useState("");
 
@@ -105,6 +107,17 @@ export function DataTable<T extends { id: string }>({
                   ))}
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-2">
+                      {previewUrl && previewUrl(row) && (
+                        <a
+                          href={previewUrl(row)!}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-1 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+                          title="Preview"
+                        >
+                          <ExternalLink size={14} />
+                        </a>
+                      )}
                       <button
                         onClick={() => onEdit(row)}
                         className="p-1 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors cursor-pointer"

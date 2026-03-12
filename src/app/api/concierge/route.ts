@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { buildSystemPrompt } from "@/lib/concierge/system-prompt";
+import { SITE_KEY } from "@/lib/constants";
 import type { Theme, Storyworld, Storyteller, ConversationMessage } from "@/lib/supabase/types";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { messages, context, sessionId } = body as {
+    const { messages, context, sessionId, leadInfo, saveOnly } = body as {
       messages: ConversationMessage[];
       context?: {
         storyworld_id?: string;
@@ -14,10 +15,89 @@ export async function POST(req: NextRequest) {
         storyteller_id?: string;
       };
       sessionId?: string;
+      leadInfo?: { name?: string; email: string; phone?: string; dates?: string; groupSize?: string; budget?: string };
+      saveOnly?: boolean;
     };
 
     if (!messages || messages.length === 0) {
       return NextResponse.json({ error: "No messages provided" }, { status: 400 });
+    }
+
+    // Handle lead capture from chat
+    if (leadInfo?.email) {
+      const adminSupabase = createAdminClient();
+      const notesParts: string[] = [];
+      if (leadInfo.dates) notesParts.push(`Dates: ${leadInfo.dates}`);
+      if (leadInfo.groupSize) notesParts.push(`Group size: ${leadInfo.groupSize}`);
+      if (leadInfo.budget) notesParts.push(`Budget: ${leadInfo.budget}`);
+
+      const transcript = messages
+        .map((m) => `${m.role}: ${m.content}`)
+        .join("\n");
+
+      // Insert lead
+      const { error: leadError } = await adminSupabase.from("leads").insert({
+        site: SITE_KEY,
+        name: leadInfo.name || null,
+        email: leadInfo.email,
+        phone: leadInfo.phone || null,
+        notes: notesParts.length > 0 ? notesParts.join("\n") : null,
+        source: "concierge_chat",
+        status: "new",
+        preferences: {
+          chat_context: { type: context?.theme_id ? "theme" : context?.storyworld_id ? "storyworld" : "general" },
+          created_from_booking_inquiry: true,
+        },
+      });
+
+      if (leadError && !leadError.message.includes("duplicate")) {
+        console.error("Lead insert error:", leadError);
+      }
+
+      // Insert booking inquiry
+      const specialParts: string[] = [];
+      if (leadInfo.dates) specialParts.push(`Dates: ${leadInfo.dates}`);
+      if (leadInfo.groupSize) specialParts.push(`Group size: ${leadInfo.groupSize}`);
+      if (leadInfo.budget) specialParts.push(`Budget: ${leadInfo.budget}`);
+      if (transcript) specialParts.push(`\n--- Concierge Conversation ---\n${transcript}`);
+
+      await adminSupabase.from("booking_inquiries").insert({
+        lead_id: null,
+        email: leadInfo.email,
+        name: leadInfo.name || null,
+        phone: leadInfo.phone || null,
+        travel_dates_start: null,
+        travel_dates_end: null,
+        group_size: leadInfo.groupSize ? parseInt(leadInfo.groupSize) || null : null,
+        budget_range: leadInfo.budget || null,
+        special_requests: specialParts.join("\n").trim() || null,
+        itinerary_summary: transcript || null,
+        status: "pending",
+        site: SITE_KEY,
+      });
+    }
+
+    // Handle save-only mode (for voice transcripts)
+    if (saveOnly) {
+      if (sessionId) {
+        const supabase = await createClient();
+        await supabase
+          .from("ah_concierge_sessions")
+          .upsert(
+            {
+              session_id: sessionId,
+              messages,
+              message_count: messages.length,
+              last_user_message: messages.filter((m) => m.role === "user").pop()?.content ?? null,
+              source_theme_id: context?.theme_id ?? null,
+              source_storyworld_id: context?.storyworld_id ?? null,
+              source_storyteller_id: context?.storyteller_id ?? null,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: "session_id" }
+          );
+      }
+      return NextResponse.json({ ok: true });
     }
 
     const apiKey = process.env.OPENAI_API_KEY;

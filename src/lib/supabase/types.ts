@@ -39,6 +39,8 @@ export interface Storyworld {
   hero_video_url: string | null;
   latitude: number | null;
   longitude: number | null;
+  seasons: string[];
+  category: string;
   published: boolean;
   display_order: number;
   meta_title: string | null;
@@ -56,6 +58,9 @@ export interface Storyteller {
   signature_experiences: string[] | null;
   linked_storyworld_ids: string[] | null;
   linked_theme_ids: string[] | null;
+  latitude: number | null;
+  longitude: number | null;
+  show_on_map: boolean;
   published: boolean;
   meta_title: string | null;
   meta_description: string | null;
@@ -145,6 +150,47 @@ export interface ConciergeSession {
   source_storyteller_id: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface Lead {
+  id: string;
+  site: string;
+  name: string | null;
+  email: string;
+  phone: string | null;
+  notes: string | null;
+  source: string;
+  status: string;
+  preferences: Record<string, unknown> | null;
+  created_at: string;
+}
+
+export interface BookingInquiry {
+  id: string;
+  lead_id: string | null;
+  email: string;
+  name: string | null;
+  phone: string | null;
+  travel_dates_start: string | null;
+  travel_dates_end: string | null;
+  group_size: number | null;
+  budget_range: string | null;
+  destinations_of_interest: string[] | null;
+  themes_of_interest: string[] | null;
+  special_requests: string | null;
+  itinerary_summary: string | null;
+  status: string;
+  site: string;
+  created_at: string;
+}
+
+export interface LeadInfo {
+  name?: string;
+  email: string;
+  phone?: string;
+  dates?: string;
+  groupSize?: string;
+  budget?: string;
 }
 
 export interface PageMeta {

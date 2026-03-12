@@ -117,6 +117,7 @@ export default function ThemesPage() {
         onEdit={openEdit}
         onDelete={handleDelete}
         searchField="title"
+        previewUrl={(row) => `/experiences/${row.slug}`}
       />
 
       <FormModal

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { FormModal } from "@/components/admin/form-modal";
 import { TextInput, TextArea } from "@/components/admin/form-fields";
-import { Pencil } from "lucide-react";
+import { Pencil, ExternalLink } from "lucide-react";
 import type { PageMeta } from "@/lib/supabase/types";
 
 export default function PagesPage() {
@@ -85,12 +85,24 @@ export default function PagesPage() {
                 <td className="px-4 py-3 max-w-[200px] truncate">{page.meta_title || "-"}</td>
                 <td className="px-4 py-3 max-w-[300px] truncate text-[var(--muted-foreground)]">{page.meta_description || "-"}</td>
                 <td className="px-4 py-3">
-                  <button
-                    onClick={() => openEdit(page)}
-                    className="p-1 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors cursor-pointer"
-                  >
-                    <Pencil size={14} />
-                  </button>
+                  <div className="flex items-center justify-end gap-2">
+                    <a
+                      href={page.page_path}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-1 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+                      title="Preview"
+                    >
+                      <ExternalLink size={14} />
+                    </a>
+                    <button
+                      onClick={() => openEdit(page)}
+                      className="p-1 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors cursor-pointer"
+                      title="Edit"
+                    >
+                      <Pencil size={14} />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

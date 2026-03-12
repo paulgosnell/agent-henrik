@@ -106,6 +106,7 @@ export default function JournalPage() {
         onEdit={openEdit}
         onDelete={handleDelete}
         searchField="title"
+        previewUrl={(row) => `/journal/${row.slug}`}
       />
 
       <FormModal

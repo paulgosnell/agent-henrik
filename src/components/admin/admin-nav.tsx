@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -13,7 +14,9 @@ import {
   MessageSquare,
   Bot,
   FileText,
+  ChevronDown,
 } from "lucide-react";
+import { useSite } from "./site-context";
 
 const NAV_ITEMS = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -28,17 +31,53 @@ const NAV_ITEMS = [
   { label: "Conversations", href: "/admin/conversations", icon: Bot },
 ];
 
+const SITE_OPTIONS = [
+  { value: "henrik" as const, label: "Agent Henrik" },
+  { value: "sweden" as const, label: "Luxury Travel Sweden" },
+  { value: "all" as const, label: "All Sites" },
+];
+
 export function AdminNav() {
   const pathname = usePathname();
+  const { site, setSite } = useSite();
+  const [siteOpen, setSiteOpen] = useState(false);
+
+  const currentSiteLabel = SITE_OPTIONS.find((s) => s.value === site)?.label || "Agent Henrik";
 
   return (
     <nav className="w-56 shrink-0 border-r border-[var(--border)] bg-[var(--muted)] min-h-screen p-4 flex flex-col gap-1">
       <Link
         href="/admin"
-        className="font-serif text-lg font-light tracking-tight mb-6 px-3 py-2"
+        className="font-serif text-lg font-light tracking-tight mb-2 px-3 py-2"
       >
         Agent Henrik
       </Link>
+      <div className="relative mb-4">
+        <button
+          onClick={() => setSiteOpen(!siteOpen)}
+          className="flex w-full items-center justify-between rounded px-3 py-2 text-xs uppercase tracking-wider text-[var(--muted-foreground)] hover:bg-[var(--background)]/50 transition-colors cursor-pointer"
+        >
+          {currentSiteLabel}
+          <ChevronDown size={14} className={`transition-transform ${siteOpen ? "rotate-180" : ""}`} />
+        </button>
+        {siteOpen && (
+          <div className="absolute left-0 right-0 z-10 mt-1 rounded border border-[var(--border)] bg-[var(--background)] shadow-lg">
+            {SITE_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => { setSite(option.value); setSiteOpen(false); }}
+                className={`w-full px-3 py-2 text-left text-sm transition-colors cursor-pointer ${
+                  site === option.value
+                    ? "bg-[var(--muted)] text-[var(--foreground)]"
+                    : "text-[var(--muted-foreground)] hover:bg-[var(--muted)]/50 hover:text-[var(--foreground)]"
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
       {NAV_ITEMS.map((item) => {
         const isActive =
           pathname === item.href ||

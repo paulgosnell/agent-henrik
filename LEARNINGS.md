@@ -105,6 +105,7 @@
 ## ChilledSites MCP
 - Must be in `~/.claude/settings.json` under `mcpServers` for Claude Code access (separate from Claude Desktop config).
 - Requires session restart after adding — MCP servers initialize at session start.
+- **Tool schema changes require full session restart** — rebuilding the MCP server code is not enough; the running MCP process must be reloaded for Claude to see new/changed tool parameters.
 - Has video generation capability via VO3.
 
 ## Video Generation (VO3 via ChilledSites)
@@ -121,14 +122,21 @@
 - **VO3 minimum duration is 6s** — for shorter playback, generate at 6s and trim via hero component playback duration (not file trimming).
 - **Output is 720p** — upscale to 4K with Topaz Video AI after generation.
 - **NEVER pipe base64 image data through Bash stdout** — it gets injected into conversation context and causes persistent `"Could not process image"` API errors that crash the session. Save to disk or pass URLs directly to MCP tools.
-- **ChilledSites MCP reference images NOW WORK** — was broken because Gemini API needed images uploaded via Files API (fileUri), not inline base64. Fixed March 2026 — edge function now uploads to Gemini Files API first. Base64 data URLs passed via MCP are handled server-side.
-- **Base64 data URL workaround for MCP tools:** Resize image with sharp, save data URL to a `.json` file, read via Read tool (not Bash cat — that triggers image interpretation and crashes the session).
+- **Veo 3.1 does NOT preserve real person's face from reference images.** Reference images get uploaded and processed (referenceImageCount: 1, status: processing), but Veo generates a generic face matching the text description, not the reference photo. Character-consistent video with a real person's likeness is NOT achievable via VO3/Veo. For Henrik avatar videos, alternatives: (1) real footage filmed by Henrik, (2) post-generation face-swap via Akool/DeepSwap/Runway, (3) image-to-video with Henrik photo as start frame (face morphs after 2-3s), (4) skip avatar entirely.
+- **Reference image video pipeline status (March 2026):** The full chain works — MCP sends base64 to api-v1 gateway, which forwards to generate-video edge function, which uploads to Gemini Files API and submits to Vertex AI. But two blockers remain: (a) Supabase edge function timeout (~150s) kills synchronous polling before Vertex completes (2-5 min), and (b) no `/v1/generate/video/status` route exists in api-v1 for external polling. `asyncMode: true` in the request body gets a 202 back with operationName, but nobody polls for the result. Fix needed: add status polling route to ChilledSites api-v1.
+- **MCP base64 transport corruption fixed** — `referenceImagePaths` param added to MCP generate_video tool (reads local files server-side). Requires session restart to pick up new schema. Built at `/Users/paulgosnell/Sites/chilledsites-lite/mcp-server/dist/index.js`.
 
 ## AI Concierge — Prompt & Rendering
 - **Markdown must be rendered** — LTS uses `markdownToHtml()` (converts `**bold**` and `*italic*` to HTML). AH was showing raw asterisks. Fixed in `chat-message.tsx` with `dangerouslySetInnerHTML`.
 - **Brevity is luxury** — Henrik hates walls of text. System prompt must enforce: 2-4 sentences for conversational replies, max 2-3 lines per day in itineraries, ONE question at a time.
 - **Booking flow must match LTS** — Chat → ask email → collect name/dates/group/budget → "You'll hear back within 24 hours" → clean end. Do NOT say "forwarded to concierge" until you have their email.
 - **max_tokens raised to 1500** from 1024 to avoid itinerary truncation.
+
+## TypeScript + Web Audio API
+- **Float32Array<ArrayBufferLike> vs Float32Array<ArrayBuffer>** — `copyToChannel()` expects `Float32Array<ArrayBuffer>` but typed array operations produce `Float32Array<ArrayBufferLike>`. Fix: wrap in `new Float32Array(float32.buffer.slice(0)) as Float32Array<ArrayBuffer>` to create a concrete ArrayBuffer copy.
+
+## Header Clearance
+- **Detail pages need `pt-32` (128px) minimum** to clear the fixed header. The unscrolled header is ~104px (logo 56px + py-6 padding 48px). `pt-24` (96px) is NOT enough — the back link gets tucked behind the header.
 
 ## Common Pitfalls
 - Always hard refresh (Cmd+Shift+R) after deploys — Vercel CDN caching can show stale content.

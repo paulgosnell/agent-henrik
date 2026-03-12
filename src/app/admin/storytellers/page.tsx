@@ -100,6 +100,7 @@ export default function StorytellersPage() {
         onEdit={openEdit}
         onDelete={handleDelete}
         searchField="name"
+        previewUrl={(row) => `/storytellers/${row.slug}`}
       />
 
       <FormModal

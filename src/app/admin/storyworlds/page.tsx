@@ -15,6 +15,14 @@ const GENERATABLE_FIELDS: (keyof Storyworld)[] = [
   "reflection_moments", "meta_title", "meta_description",
 ];
 
+const SEASON_OPTIONS = ["spring", "summer", "autumn", "winter"] as const;
+const CATEGORY_OPTIONS = [
+  { value: "city", label: "City" },
+  { value: "island", label: "Island" },
+  { value: "arctic", label: "Arctic" },
+  { value: "coastal", label: "Coastal" },
+] as const;
+
 const EMPTY: Partial<Storyworld> = {
   slug: "",
   name: "",
@@ -30,6 +38,8 @@ const EMPTY: Partial<Storyworld> = {
   hero_video_url: "",
   latitude: null,
   longitude: null,
+  seasons: [],
+  category: "city",
   published: true,
   display_order: 0,
   meta_title: "",
@@ -39,6 +49,16 @@ const EMPTY: Partial<Storyworld> = {
 const columns: Column<Storyworld>[] = [
   { key: "name", label: "Name" },
   { key: "region", label: "Region" },
+  { key: "category", label: "Category" },
+  {
+    key: "seasons",
+    label: "Seasons",
+    render: (row) => (
+      <span className="text-xs text-[var(--muted-foreground)]">
+        {row.seasons?.map((s) => s.charAt(0).toUpperCase() + s.slice(1, 3)).join(", ") || "---"}
+      </span>
+    ),
+  },
   { key: "display_order", label: "Order" },
   {
     key: "published",
@@ -104,6 +124,7 @@ export default function StoryworldsPage() {
         onEdit={openEdit}
         onDelete={handleDelete}
         searchField="name"
+        previewUrl={(row) => `/explore/${row.slug}`}
       />
 
       <FormModal
@@ -120,6 +141,43 @@ export default function StoryworldsPage() {
         <div className="grid grid-cols-2 gap-4">
           <TextInput label="Region" name="region" value={editing.region ?? ""} onChange={(v) => set("region", v)} />
           <TextArea label="Atmosphere" name="atmosphere" value={editing.atmosphere ?? ""} onChange={(v) => set("atmosphere", v)} rows={2} />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1.5">Category</label>
+            <select
+              value={editing.category ?? "city"}
+              onChange={(e) => set("category", e.target.value)}
+              className="w-full rounded border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)]"
+            >
+              {CATEGORY_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1.5">Seasons</label>
+            <div className="flex flex-wrap gap-2 pt-1">
+              {SEASON_OPTIONS.map((season) => (
+                <label key={season} className="flex items-center gap-1.5 text-sm text-[var(--foreground)] cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={editing.seasons?.includes(season) ?? false}
+                    onChange={(e) => {
+                      const current = editing.seasons ?? [];
+                      if (e.target.checked) {
+                        set("seasons", [...current, season] as string[]);
+                      } else {
+                        set("seasons", current.filter((s) => s !== season) as string[]);
+                      }
+                    }}
+                    className="rounded border-[var(--border)]"
+                  />
+                  <span className="capitalize">{season}</span>
+                </label>
+              ))}
+            </div>
+          </div>
         </div>
         <TextArea label="Arrival Mood" name="arrival_mood" value={editing.arrival_mood ?? ""} onChange={(v) => set("arrival_mood", v)} rows={2} />
         <TagInput label="Immersion Zones" value={editing.immersion_zones ?? []} onChange={(v) => set("immersion_zones", v)} />

@@ -84,6 +84,7 @@ export default function PressPage() {
         onEdit={openEdit}
         onDelete={handleDelete}
         searchField="title"
+        previewUrl={() => "/press"}
       />
 
       <FormModal

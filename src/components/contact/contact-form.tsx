@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Send, Check } from "lucide-react";
 import { INVESTMENT_LEVELS } from "@/lib/constants";
-import { createClient } from "@/lib/supabase/client";
 
 interface ContactFormProps {
   prefillDestination?: string;
@@ -31,25 +30,29 @@ export function ContactForm({
     const form = e.currentTarget;
     const data = new FormData(form);
 
-    const supabase = createClient();
-    const { error } = await supabase.from("ah_inquiries").insert({
-      name: data.get("name") as string,
-      email: data.get("email") as string,
-      phone: (data.get("phone") as string) || null,
-      destination: (data.get("destination") as string) || null,
-      travel_dates: (data.get("travel_dates") as string) || null,
-      group_size: data.get("group_size") ? Number(data.get("group_size")) : null,
-      investment_level: (data.get("investment_level") as string) || null,
-      preferences: (data.get("preferences") as string) || null,
-      ai_draft_itinerary: aiDraft || null,
-      source_storyworld_id: prefillStoryworldId || null,
-      source_theme_id: prefillThemeId || null,
-    });
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.get("name") as string,
+          email: data.get("email") as string,
+          phone: (data.get("phone") as string) || null,
+          destination: (data.get("destination") as string) || null,
+          travel_dates: (data.get("travel_dates") as string) || null,
+          group_size: data.get("group_size") ? Number(data.get("group_size")) : null,
+          investment_level: (data.get("investment_level") as string) || null,
+          preferences: (data.get("preferences") as string) || null,
+          ai_draft_itinerary: aiDraft || null,
+          source_storyworld_id: prefillStoryworldId || null,
+          source_theme_id: prefillThemeId || null,
+        }),
+      });
 
-    if (error) {
-      setError(true);
-    } else {
+      if (!res.ok) throw new Error("Failed");
       setSubmitted(true);
+    } catch {
+      setError(true);
     }
     setSubmitting(false);
   }

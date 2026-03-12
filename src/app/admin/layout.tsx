@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { AdminNav } from "@/components/admin/admin-nav";
 import { AdminHeader } from "@/components/admin/admin-header";
+import { SiteProvider } from "@/components/admin/site-context";
 
 export default function AdminLayout({
   children,
@@ -16,12 +17,14 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-[var(--background)]">
-      <AdminNav />
-      <div className="flex-1 flex flex-col">
-        <AdminHeader />
-        <div className="flex-1 p-6">{children}</div>
+    <SiteProvider>
+      <div className="flex min-h-screen bg-[var(--background)]">
+        <AdminNav />
+        <div className="flex-1 flex flex-col">
+          <AdminHeader />
+          <div className="flex-1 p-6">{children}</div>
+        </div>
       </div>
-    </div>
+    </SiteProvider>
   );
 }

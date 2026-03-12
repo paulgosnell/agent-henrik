@@ -46,7 +46,7 @@ export default async function StoryworldPage({ params }: PageProps) {
   return (
     <>
       {/* Back navigation */}
-      <div className="mx-auto max-w-[1200px] px-6 pt-24 md:px-12">
+      <div className="mx-auto max-w-[1200px] px-6 pt-32 md:px-12">
         <Link
           href="/explore"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"

@@ -106,6 +106,7 @@ export default function ServicesPage() {
         onEdit={openEdit}
         onDelete={handleDelete}
         searchField="title"
+        previewUrl={() => "/about/services"}
       />
 
       <FormModal

@@ -1,3 +1,4 @@
+export const SITE_KEY = "henrik";
 export const SITE_NAME = "Agent Henrik";
 export const SITE_DESCRIPTION = "Global luxury underground travel curation. Bespoke journeys blending hidden culture, insider access, and storytelling.";
 export const SITE_URL = "https://agenthenrik.com";
@@ -79,6 +80,22 @@ export const JOURNAL_CATEGORIES = [
   { slug: "travel-trends", label: "Travel Trends" },
   { slug: "insider-interviews", label: "Insider Interviews" },
 ] as const;
+
+export const CATEGORY_CONFIG = [
+  { slug: "city", label: "City" },
+  { slug: "island", label: "Island" },
+  { slug: "arctic", label: "Arctic" },
+  { slug: "coastal", label: "Coastal" },
+  { slug: "storyteller", label: "Storyteller" },
+] as const;
+
+export const CATEGORY_COLORS: Record<string, string> = {
+  city: "#ffffff",
+  island: "#38bdf8",
+  arctic: "#a5f3fc",
+  coastal: "#2dd4bf",
+  storyteller: "#fbbf24",
+};
 
 export const MAP_CONFIG = {
   center: [30, 0] as [number, number],

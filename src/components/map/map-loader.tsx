@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import type { Storyworld } from "@/lib/supabase/types";
+import type { Storyworld, Theme, Storyteller } from "@/lib/supabase/types";
 
 const StoryworldMap = dynamic(
   () => import("@/components/map/storyworld-map").then((mod) => mod.StoryworldMap),
@@ -15,6 +15,12 @@ const StoryworldMap = dynamic(
   }
 );
 
-export function MapLoader({ storyworlds }: { storyworlds: Storyworld[] }) {
-  return <StoryworldMap storyworlds={storyworlds} />;
+interface MapLoaderProps {
+  storyworlds: Storyworld[];
+  themes?: Theme[];
+  storytellers?: Storyteller[];
+}
+
+export function MapLoader({ storyworlds, themes, storytellers }: MapLoaderProps) {
+  return <StoryworldMap storyworlds={storyworlds} themes={themes} storytellers={storytellers} />;
 }
