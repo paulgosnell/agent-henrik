@@ -32,9 +32,8 @@ const NAV_ITEMS = [
 ];
 
 const SITE_OPTIONS = [
-  { value: "henrik" as const, label: "Agent Henrik" },
-  { value: "sweden" as const, label: "Luxury Travel Sweden" },
-  { value: "all" as const, label: "All Sites" },
+  { value: "henrik" as const, label: "Agent Henrik", url: null },
+  { value: "sweden" as const, label: "Luxury Travel Sweden", url: "https://luxurytravelsweden.com/admin" },
 ];
 
 export function AdminNav() {
@@ -65,7 +64,14 @@ export function AdminNav() {
             {SITE_OPTIONS.map((option) => (
               <button
                 key={option.value}
-                onClick={() => { setSite(option.value); setSiteOpen(false); }}
+                onClick={() => {
+                  if (option.url) {
+                    window.open(option.url, "_blank");
+                  } else {
+                    setSite(option.value);
+                  }
+                  setSiteOpen(false);
+                }}
                 className={`w-full px-3 py-2 text-left text-sm transition-colors cursor-pointer ${
                   site === option.value
                     ? "bg-[var(--muted)] text-[var(--foreground)]"
