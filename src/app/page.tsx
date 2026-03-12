@@ -7,15 +7,14 @@ import { NewsletterForm } from "@/components/newsletter/newsletter-form";
 import { ContactForm } from "@/components/contact/contact-form";
 import { Section } from "@/components/ui/section";
 import { CTAButton } from "@/components/ui/cta-button";
+import { MiniMapLoader } from "@/components/map/mini-map-loader";
 import { Instagram, MapPin, MessageCircle, ArrowRight } from "lucide-react";
-import type { Theme } from "@/lib/supabase/types";
-import type { JournalArticle } from "@/lib/supabase/types";
-import type { Storyteller } from "@/lib/supabase/types";
+import type { Theme, Storyworld, JournalArticle, Storyteller } from "@/lib/supabase/types";
 
 export default async function HomePage() {
   const supabase = await createClient();
 
-  const [themesResult, articlesResult, storytellersResult, pressResult] = await Promise.all([
+  const [themesResult, articlesResult, storytellersResult, pressResult, storyworldsResult] = await Promise.all([
     supabase
       .from("ah_themes")
       .select("*")
@@ -38,12 +37,18 @@ export default async function HomePage() {
       .eq("published", true)
       .order("published_at", { ascending: false })
       .limit(6),
+    supabase
+      .from("ah_storyworlds")
+      .select("*")
+      .eq("published", true)
+      .order("display_order"),
   ]);
 
   const themes = (themesResult.data as Theme[]) || [];
   const articles = (articlesResult.data as JournalArticle[]) || [];
   const storytellers = (storytellersResult.data as Storyteller[]) || [];
   const pressItems = pressResult.data || [];
+  const storyworlds = (storyworldsResult.data as Storyworld[]) || [];
 
   return (
     <>
@@ -68,12 +73,8 @@ export default async function HomePage() {
               Open Map
             </CTAButton>
           </div>
-          <div className="relative aspect-video w-full flex-1 overflow-hidden">
-            <div
-              className="absolute inset-0 bg-cover bg-center opacity-80 transition-opacity hover:opacity-100"
-              style={{ backgroundImage: "url(https://images.unsplash.com/photo-1524661135-423995f22d0b?w=1200&q=80)" }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-muted via-transparent to-transparent" />
+          <div className="relative aspect-video w-full flex-1 overflow-hidden rounded-lg border border-border">
+            <MiniMapLoader storyworlds={storyworlds} />
           </div>
         </div>
       </Section>
