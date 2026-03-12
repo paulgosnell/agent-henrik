@@ -19,8 +19,10 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Header />
-      <main className="min-h-screen">{children}</main>
-      {!isHomepage && !isLiv && <BackLink />}
+      <main>
+        {children}
+        {!isHomepage && !isLiv && <BackLink />}
+      </main>
       <Footer />
       <ConciergeButton />
     </>

@@ -66,7 +66,7 @@ export default async function StoryworldPage({ params }: PageProps) {
           </div>
 
           {/* Right: Info (scrollable) */}
-          <div className="flex flex-col border border-border p-8 md:max-h-[70vh] md:overflow-y-auto md:p-12">
+          <div className="flex flex-col border border-border p-8 md:p-12">
             {storyworld.region && (
               <p className="nav-text mb-2 text-muted-foreground">{storyworld.region}</p>
             )}

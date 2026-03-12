@@ -61,8 +61,8 @@ export default async function ThemeDetailPage({ params }: PageProps) {
             )}
           </div>
 
-          {/* Right — Info Panel (scrollable) */}
-          <div className="flex flex-col border border-border px-8 py-12 md:max-h-[70vh] md:overflow-y-auto md:px-12">
+          {/* Right — Info Panel */}
+          <div className="flex flex-col border border-border px-8 py-12 md:px-12">
             <h1 className="mb-4 font-serif text-4xl font-light md:text-5xl">
               {theme.title}
             </h1>
