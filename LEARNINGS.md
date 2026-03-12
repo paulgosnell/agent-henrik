@@ -135,8 +135,12 @@
 ## TypeScript + Web Audio API
 - **Float32Array<ArrayBufferLike> vs Float32Array<ArrayBuffer>** — `copyToChannel()` expects `Float32Array<ArrayBuffer>` but typed array operations produce `Float32Array<ArrayBufferLike>`. Fix: wrap in `new Float32Array(float32.buffer.slice(0)) as Float32Array<ArrayBuffer>` to create a concrete ArrayBuffer copy.
 
+## Back Navigation
+- **Global BackLink component** in `layout-shell.tsx` — uses `router.back()` for browser-native navigation, appears at bottom of every non-homepage page automatically. Excluded from homepage and `/liv` (fullscreen overlay).
+- **No top back links** — Henrik doesn't want them. Only bottom. Centralised via layout, not per-page.
+
 ## Header Clearance
-- **Detail pages need `pt-32` (128px) minimum** to clear the fixed header. The unscrolled header is ~104px (logo 56px + py-6 padding 48px). `pt-24` (96px) is NOT enough — the back link gets tucked behind the header.
+- **Detail pages need `pt-28` (112px) minimum** to clear the fixed header. The unscrolled header is ~104px (logo 56px + py-6 padding 48px).
 
 ## Common Pitfalls
 - Always hard refresh (Cmd+Shift+R) after deploys — Vercel CDN caching can show stale content.
