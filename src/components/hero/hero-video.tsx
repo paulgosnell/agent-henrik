@@ -5,12 +5,14 @@ import Link from "next/link";
 import { ChevronDown, MapPin, Compass, Users } from "lucide-react";
 
 const HERO_CLIPS = [
+  // Hong Kong — Victoria Peak skyline, neon towers, harbor, drifting fog
   "https://api.chilledsites.com/storage/v1/object/public/videos/cd53f831-1864-47fd-97af-23f2aa3b9feb/1773236222852-192481d7-299f-433c-a1f5-b0e4984aa85e.mp4",
+  // Bucharest — Palace of Parliament, monumental architecture, wide plaza
   "https://api.chilledsites.com/storage/v1/object/public/videos/cd53f831-1864-47fd-97af-23f2aa3b9feb/1773236296571-298e2e08-8405-42df-8aba-613553771fff.mp4",
+  // Abisko — Northern Lights, aurora, snow, cosmic silence
   "https://api.chilledsites.com/storage/v1/object/public/videos/cd53f831-1864-47fd-97af-23f2aa3b9feb/1773236372012-10978d0e-864d-4b04-9fbe-93928666db41.mp4",
+  // Rio de Janeiro — Fasano Pool to Ipanema, golden sunset, tropical luxury
   "https://api.chilledsites.com/storage/v1/object/public/videos/cd53f831-1864-47fd-97af-23f2aa3b9feb/1773236442538-69aa5116-7539-45ee-8c2a-8efcf592990e.mp4",
-  "https://api.chilledsites.com/storage/v1/object/public/videos/cd53f831-1864-47fd-97af-23f2aa3b9feb/1773236857420-cc91a8da-a253-4459-89ff-dd479fe73f84.mp4",
-  "https://api.chilledsites.com/storage/v1/object/public/videos/cd53f831-1864-47fd-97af-23f2aa3b9feb/1773237338313-936232e2-827a-436f-8b40-485867350b31.mp4",
 ];
 
 interface HeroVideoProps {
