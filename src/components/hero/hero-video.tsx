@@ -4,15 +4,26 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ChevronDown, MapPin, Compass, Users } from "lucide-react";
 
+const STORAGE_BASE = "https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object/public/videos/henrik";
+const CHILLEDSITES_BASE = "https://api.chilledsites.com/storage/v1/object/public/videos/cd53f831-1864-47fd-97af-23f2aa3b9feb";
+
 const HERO_CLIPS = [
-  // Hong Kong — Victoria Peak skyline, neon towers, harbor, drifting fog
-  "https://api.chilledsites.com/storage/v1/object/public/videos/cd53f831-1864-47fd-97af-23f2aa3b9feb/1773236222852-192481d7-299f-433c-a1f5-b0e4984aa85e.mp4",
-  // Bucharest — Palace of Parliament, monumental architecture, wide plaza
-  "https://api.chilledsites.com/storage/v1/object/public/videos/cd53f831-1864-47fd-97af-23f2aa3b9feb/1773236296571-298e2e08-8405-42df-8aba-613553771fff.mp4",
-  // Abisko — Northern Lights, aurora, snow, cosmic silence
-  "https://api.chilledsites.com/storage/v1/object/public/videos/cd53f831-1864-47fd-97af-23f2aa3b9feb/1773236372012-10978d0e-864d-4b04-9fbe-93928666db41.mp4",
-  // Rio de Janeiro — Fasano Pool to Ipanema, golden sunset, tropical luxury
-  "https://api.chilledsites.com/storage/v1/object/public/videos/cd53f831-1864-47fd-97af-23f2aa3b9feb/1773236442538-69aa5116-7539-45ee-8c2a-8efcf592990e.mp4",
+  // --- Opening: aerial cityscape montage ---
+  `${CHILLEDSITES_BASE}/1773236222852-192481d7-299f-433c-a1f5-b0e4984aa85e.mp4`, // Hong Kong skyline
+  `${CHILLEDSITES_BASE}/1773236296571-298e2e08-8405-42df-8aba-613553771fff.mp4`, // Bucharest architecture
+  // --- Middle: luxury experience moments ---
+  `${STORAGE_BASE}/champagne-toast.mp4`,        // Champagne glasses clinking
+  `${STORAGE_BASE}/rooftop-pool-party.mp4`,      // Rooftop pool party sunset
+  `${STORAGE_BASE}/nightclub-dancing.mp4`,       // Nightclub crowd with lasers
+  `${STORAGE_BASE}/sushi-chef.mp4`,              // Sushi chef preparing food
+  `${STORAGE_BASE}/bartender-mixing.mp4`,        // Bartender mixing cocktails
+  `${STORAGE_BASE}/candlelit-dinner.mp4`,        // Candlelit outdoor dinner
+  `${STORAGE_BASE}/live-music.mp4`,              // Live music performance
+  `${STORAGE_BASE}/driving-city-night.mp4`,      // Driving through city at night
+  `${STORAGE_BASE}/couple-european-street.mp4`,  // Couple walking European street
+  // --- Closing: return to cityscapes ---
+  `${CHILLEDSITES_BASE}/1773236372012-10978d0e-864d-4b04-9fbe-93928666db41.mp4`, // Abisko northern lights
+  `${CHILLEDSITES_BASE}/1773236442538-69aa5116-7539-45ee-8c2a-8efcf592990e.mp4`, // Rio de Janeiro sunset
 ];
 
 interface HeroVideoProps {
