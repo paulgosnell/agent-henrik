@@ -140,7 +140,7 @@
 - **No top back links** — Henrik doesn't want them. Only bottom. Centralised via layout, not per-page.
 
 ## Header Clearance
-- **Detail pages need `pt-28` (112px) minimum** to clear the fixed header. The unscrolled header is ~104px (logo 56px + py-6 padding 48px).
+- **Detail pages need `pt-36` (144px)** to clear the fixed header with breathing room. The unscrolled header is ~104px (logo 56px + py-6 padding 48px). `pt-28` clears but looks cramped. Index/content pages use `pt-20` which works because they have headings that provide visual spacing.
 
 ## Common Pitfalls
 - Always hard refresh (Cmd+Shift+R) after deploys — Vercel CDN caching can show stale content.
