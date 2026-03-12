@@ -1,106 +1,127 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
 import { NAV_ITEMS } from "@/lib/constants";
 
+type NavState = "pinned" | "show" | "hidden";
+
 export function Header() {
-  const [scrolled, setScrolled] = useState(false);
-  const [hidden, setHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const pathname = usePathname();
-  const isHomepage = pathname === "/";
-  const isMapPage = pathname === "/explore";
+  const [navState, setNavState] = useState<NavState>("pinned");
+  const lastScrollYRef = useRef(0);
+
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
+
+  const closeMenuOnNav = useCallback(() => {
+    setMenuOpen(false);
+    setNavState("hidden");
+    lastScrollYRef.current = window.scrollY;
+  }, []);
 
   useEffect(() => {
-    let lastY = window.scrollY;
-    function onScroll() {
-      const y = window.scrollY;
-      setScrolled(y > 50);
-      // Auto-hide on map page: hide on scroll down, show on scroll up
-      if (isMapPage) {
-        setHidden(y > 80 && y > lastY);
+    const heroEl = document.getElementById("hero");
+    let heroVisible = false;
+
+    const updateFromScroll = () => {
+      const current = window.scrollY;
+      const last = lastScrollYRef.current;
+
+      if (heroVisible) {
+        setNavState("pinned");
+      } else if (current > last && current > 80) {
+        setNavState("hidden");
+      } else {
+        setNavState("show");
       }
-      lastY = y;
+
+      lastScrollYRef.current = current;
+    };
+
+    if (heroEl) {
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          heroVisible = entry.isIntersecting;
+          if (heroVisible) {
+            setNavState("pinned");
+          } else {
+            setNavState("show");
+          }
+        },
+        { threshold: 0.05 }
+      );
+      observer.observe(heroEl);
+      window.addEventListener("scroll", updateFromScroll, { passive: true });
+      updateFromScroll();
+
+      return () => {
+        observer.disconnect();
+        window.removeEventListener("scroll", updateFromScroll);
+      };
+    } else {
+      setNavState("show");
+      window.addEventListener("scroll", updateFromScroll, { passive: true });
+      return () => window.removeEventListener("scroll", updateFromScroll);
     }
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [isMapPage]);
+  }, []);
 
   useEffect(() => {
-    if (menuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
+    if (!menuOpen) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") closeMenu();
     }
-    return () => { document.body.style.overflow = ""; };
-  }, [menuOpen]);
+    document.addEventListener("keydown", onKey);
+    document.body.classList.add("nav-open");
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.classList.remove("nav-open");
+    };
+  }, [menuOpen, closeMenu]);
 
-  const showSolidBg = !isHomepage || scrolled;
+  const isCompact = navState !== "pinned";
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        hidden ? "-translate-y-full" : "translate-y-0"
-      } ${
-        showSolidBg
-          ? "bg-background/95 backdrop-blur-md border-b border-border"
-          : "bg-transparent"
-      }`}
-    >
-      <div className={`mx-auto flex max-w-[1440px] items-center justify-between px-6 md:px-12 transition-all duration-500 ${
-        scrolled ? "py-2" : "py-4 md:py-6"
-      }`}>
-        {/* Logo */}
-        <Link href="/" className="relative z-50">
-          <img
-            src="/logo.png"
-            alt="Agent Henrik"
-            className="transition-all duration-500 invert-0 dark:invert"
-            style={{ height: scrolled ? 36 : 56, width: scrolled ? 98 : 152 }}
-          />
-        </Link>
+    <>
+      {/* Background bar */}
+      <header className={`nav-header ${navState}`} aria-hidden="true" />
 
-        {/* Desktop Nav */}
-        <nav className="hidden items-center gap-8 md:flex">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="nav-text text-foreground/80 transition-opacity hover:opacity-100"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+      {/* Logo */}
+      <Link
+        href="/"
+        className={`site-logo${isCompact ? " compact" : ""}`}
+        onClick={menuOpen ? closeMenu : undefined}
+      >
+        <img
+          src="/logo.png"
+          alt="Agent Henrik"
+          className="site-logo-img"
+        />
+      </Link>
 
-        {/* Mobile Menu Button */}
-        <button
-          className="relative z-50 md:hidden"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
-        >
-          {menuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
+      {/* MENU / CLOSE button */}
+      <button
+        className={`menu-toggle${menuOpen ? " is-open" : ""}${isCompact ? " compact" : ""}`}
+        onClick={() => setMenuOpen((v) => !v)}
+        aria-label={menuOpen ? "Close menu" : "Open menu"}
+        aria-expanded={menuOpen}
+      >
+        {menuOpen ? "CLOSE" : "MENU"}
+      </button>
 
-      {/* Mobile Menu Overlay */}
-      {menuOpen && (
-        <div className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-8 bg-background md:hidden">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="font-serif text-3xl font-light tracking-wide"
-              onClick={() => setMenuOpen(false)}
-            >
-              {item.label}
-            </Link>
-          ))}
+      {/* Full-screen nav overlay */}
+      <nav className={`nav-menu${menuOpen ? " open" : ""}`} aria-hidden={!menuOpen}>
+        <div className="nav-main">
+          <ul className="nav-links">
+            {NAV_ITEMS.map((item) => (
+              <li key={item.href}>
+                <Link href={item.href} className="nav-link" onClick={closeMenuOnNav}>
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
-      )}
-    </header>
+      </nav>
+    </>
   );
 }

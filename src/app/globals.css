@@ -124,6 +124,203 @@ h1, h2, h3, h4 {
   font-weight: 400;
 }
 
+/* ============================================
+   Navigation (LTS pattern)
+   ============================================ */
+
+.nav-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  min-height: 100px;
+  z-index: 950;
+  background: transparent;
+  pointer-events: none;
+  transition: background 0.3s ease, backdrop-filter 0.3s ease,
+    transform 0.4s ease, opacity 0.4s ease, min-height 0.3s ease;
+}
+
+.nav-header.show {
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(12px);
+  min-height: 72px;
+  pointer-events: auto;
+}
+
+.nav-header.hidden {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+
+.nav-header.pinned {
+  background: transparent;
+  opacity: 1;
+  transform: translateY(0);
+  min-height: 120px;
+}
+
+.nav-header.hidden ~ .site-logo {
+  opacity: 0;
+  transform: translateY(-16px);
+  pointer-events: none;
+}
+
+.nav-header.hidden ~ .menu-toggle {
+  opacity: 0;
+  transform: translateY(-16px);
+  pointer-events: none;
+}
+
+.site-logo {
+  position: fixed;
+  left: clamp(1.5rem, 4vw, 3rem);
+  top: clamp(1.5rem, 4vw, 2.5rem);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  pointer-events: auto;
+  transition: top 0.3s ease, opacity 0.4s ease, transform 0.4s ease;
+}
+
+.site-logo.compact {
+  top: clamp(1rem, 2vw, 1.25rem);
+}
+
+.site-logo-img {
+  height: 56px;
+  width: auto;
+  filter: invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+  transition: all 0.3s ease;
+}
+
+.site-logo.compact .site-logo-img {
+  height: 36px;
+}
+
+.menu-toggle {
+  display: block;
+  position: fixed;
+  right: clamp(1.5rem, 4vw, 3rem);
+  top: clamp(1.5rem, 3vw, 2rem);
+  z-index: 99999;
+  background: none;
+  border: none;
+  color: white;
+  font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+  transition: all 0.3s ease;
+  pointer-events: auto;
+}
+
+.menu-toggle:hover {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.menu-toggle.is-open {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+[data-theme="light"] .nav-header.show {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+}
+
+[data-theme="light"] .nav-header.show ~ .site-logo .site-logo-img {
+  filter: invert(0) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.1));
+}
+
+[data-theme="light"] .nav-header.show ~ .menu-toggle {
+  color: rgba(0, 0, 0, 0.8);
+  filter: none;
+}
+
+[data-theme="light"] .nav-header.show ~ .menu-toggle:hover {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.nav-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s 0.6s;
+  z-index: 9999;
+}
+
+.nav-menu.open {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+  transition: opacity 0.5s ease;
+}
+
+.nav-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(3rem, 8vw, 6rem);
+  overflow-y: auto;
+}
+
+.nav-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.5rem, 1.2vw, 0.8rem);
+  width: 100%;
+  max-width: 500px;
+}
+
+.nav-links > li {
+  width: 100%;
+}
+
+.nav-link {
+  font-family: var(--font-sans, Inter, system-ui, sans-serif);
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  display: block;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid transparent;
+  white-space: nowrap;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-link:hover {
+  color: rgba(255, 255, 255, 1);
+  border-bottom-color: rgba(255, 255, 255, 0.95);
+  transform: translateX(8px);
+  letter-spacing: 0.08em;
+}
+
+body.nav-open {
+  overflow: hidden;
+}
+
 /* Leaflet map overrides */
 .leaflet-container {
   background: var(--background) !important;
