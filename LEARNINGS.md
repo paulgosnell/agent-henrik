@@ -37,12 +37,14 @@
 - Set `width` on `.leaflet-popup-content-wrapper` in CSS to control popup width — the React `maxWidth` prop is unreliable.
 - **Popup edge cutoff fix** — Add `autoPanPaddingTopLeft` and `autoPanPaddingBottomRight` props to `<Popup>` to prevent popups at map edges (e.g. Abisko) from being clipped.
 
-## Header
-- Transparent on homepage hero only. Solid `bg-background/95` with backdrop blur on all inner pages.
-- Shrinks on scroll: logo 56px -> 36px, padding py-6 -> py-2.
-- **Auto-hides on explore/map page** — hides on scroll down, shows on scroll up. Gives map full viewport.
-- Uses `usePathname()` to detect homepage vs inner pages vs map page.
-- Header height: ~104px unscrolled (logo 56px + py-6), ~52px scrolled (logo 36px + py-2).
+## Header (LTS Nav Pattern)
+- **Text "MENU" / "CLOSE" button** + fullscreen dark overlay with large uppercase nav links (not hamburger icon).
+- **Three-state header** via IntersectionObserver on `#hero`: `pinned` (transparent over hero), `show` (solid blur on scroll), `hidden` (slides off on scroll down).
+- **CSS sibling combinators** hide logo + MENU button when header is hidden (`.nav-header.hidden ~ .site-logo`).
+- **Light mode** via `[data-theme="light"] .nav-header.show` selectors — inverts logo, darkens MENU text.
+- **Logo filter gotcha:** AH logo is white on transparent. No `filter: invert()` in dark mode. Only `invert(1)` in light mode when header scrolls solid.
+- **Luxury hover effect** on nav links: `translateX(8px)` + `letter-spacing: 0.08em` on hover.
+- Escape key closes menu, `body.nav-open` locks scroll.
 
 ## Back Navigation
 - **Global BackLink component** in `layout-shell.tsx` — uses `router.back()` for browser-native navigation, appears at bottom of every non-homepage page automatically. Excluded from homepage and `/liv` (fullscreen overlay).
@@ -66,10 +68,14 @@
 - Floating button infers context from current pathname (e.g. on `/experiences/culinary-journeys` it passes theme context).
 
 ## Hero Video
-- Current hero video: `agent-henrik_video_3.mp4` hosted on `api.chilledsites.com` (p0stman Supabase storage).
-- Poster image fallback for mobile/slow connections.
-- Autoplay, muted, loop, playsInline.
-- Replacing video is a single file swap — no code changes needed.
+- **Multi-clip sequential playback** with dual video elements and crossfade transitions.
+- **Timer-based advancement** with per-clip durations (not `ended` events). Cityscapes: 3s. Experience shots: 1.5s.
+- **Structure per spec 5.1:** Opening (9 VO3 destination cityscapes at 3s) → Middle (5 VO3 luxury scenes + 9 Pexels experience clips at 1.5s).
+- **VO3 cityscapes** hosted on `api.chilledsites.com` — all 9 destinations (Hong Kong, Berlin, Bucharest, Mykonos, Beirut, Rio, Abisko, Lofoten, Salalah).
+- **VO3 luxury scenes** also on ChilledSites — cocktail bar, nightclub, spa, yacht deck, fine dining.
+- **Pexels clips** on AH Supabase `videos` bucket (`fjnfsabvuiyzuzfhxzcc.supabase.co`, `henrik/` prefix).
+- **Reference-image VO3 videos show Henrik's figure** — never use `reference-images` for hero clips.
+- Poster image fallback for mobile/slow connections. Autoplay, muted, playsInline.
 
 ## Bento Grid
 - 10 theme cards in a 3-column grid.
