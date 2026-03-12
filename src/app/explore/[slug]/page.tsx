@@ -45,7 +45,7 @@ export default async function StoryworldPage({ params }: PageProps) {
   return (
     <>
       {/* Split Layout — matching theme detail pages */}
-      <div className="mx-auto max-w-[1200px] px-6 pt-28 pb-12 md:px-12">
+      <div className="mx-auto max-w-[1200px] px-6 pt-36 pb-12 md:px-12">
         <div className="grid gap-0 md:grid-cols-2 md:min-h-[70vh]">
           {/* Left: Image */}
           <div className="relative min-h-[400px] bg-muted md:min-h-0">

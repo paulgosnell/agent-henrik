@@ -30,7 +30,7 @@ export default async function StorytellerDetailPage({ params }: PageProps) {
   const storyteller = data as Storyteller;
 
   return (
-    <div className="pt-28">
+    <div className="pt-36">
       <div className="mx-auto max-w-[1200px] px-6 md:px-12">
       <div className="grid min-h-[60vh] md:grid-cols-2">
         {/* Portrait */}

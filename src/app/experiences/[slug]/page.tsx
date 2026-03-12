@@ -41,7 +41,7 @@ export default async function ThemeDetailPage({ params }: PageProps) {
   suggestedStoryworlds = (storyworldsData as Storyworld[]) || [];
 
   return (
-    <div className="pt-28">
+    <div className="pt-36">
       {/* Split Screen Layout */}
       <div className="mx-auto max-w-[1200px] px-6 md:px-12">
         <div className="grid min-h-[70vh] md:grid-cols-2">
