@@ -2,9 +2,8 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { Section } from "@/components/ui/section";
 import { CTAButton } from "@/components/ui/cta-button";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { ImageCarousel } from "@/components/ui/image-carousel";
 import type { Storyworld, Theme } from "@/lib/supabase/types";
 
@@ -45,19 +44,8 @@ export default async function StoryworldPage({ params }: PageProps) {
 
   return (
     <>
-      {/* Back navigation */}
-      <div className="mx-auto max-w-[1200px] px-6 pt-32 md:px-12">
-        <Link
-          href="/explore"
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeft size={14} />
-          Back to Storyworld Map
-        </Link>
-      </div>
-
       {/* Split Layout — matching theme detail pages */}
-      <div className="mx-auto max-w-[1200px] px-6 py-12 md:px-12">
+      <div className="mx-auto max-w-[1200px] px-6 pt-28 pb-12 md:px-12">
         <div className="grid gap-0 md:grid-cols-2 md:min-h-[70vh]">
           {/* Left: Image */}
           <div className="relative min-h-[400px] bg-muted md:min-h-0">
@@ -131,18 +119,6 @@ export default async function StoryworldPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Bottom return */}
-      <Section>
-        <div className="text-center">
-          <Link
-            href="/explore"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <ArrowLeft size={14} />
-            Return to Storyworld Map
-          </Link>
-        </div>
-      </Section>
     </>
   );
 }
