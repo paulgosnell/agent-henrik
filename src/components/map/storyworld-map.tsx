@@ -118,7 +118,7 @@ export function StoryworldMap({ storyworlds, themes = [], storytellers = [] }: S
 
         {/* Filter Panel */}
         <div className="leaflet-top leaflet-left" style={{ pointerEvents: "none" }}>
-          <div className="leaflet-control" style={{ pointerEvents: "auto", marginTop: "10px", marginLeft: "10px" }}>
+          <div className="leaflet-control" style={{ pointerEvents: "auto", marginTop: "70px", marginLeft: "10px" }}>
             <button
               onClick={() => setFiltersOpen(!filtersOpen)}
               className="flex items-center gap-1.5 rounded bg-[var(--background)]/90 px-3 py-2 text-xs font-medium text-[var(--foreground)] shadow-lg backdrop-blur-sm border border-[var(--border)] cursor-pointer"
