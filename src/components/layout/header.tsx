@@ -8,17 +8,26 @@ import { NAV_ITEMS } from "@/lib/constants";
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const isHomepage = pathname === "/";
+  const isMapPage = pathname === "/explore";
 
   useEffect(() => {
+    let lastY = window.scrollY;
     function onScroll() {
-      setScrolled(window.scrollY > 50);
+      const y = window.scrollY;
+      setScrolled(y > 50);
+      // Auto-hide on map page: hide on scroll down, show on scroll up
+      if (isMapPage) {
+        setHidden(y > 80 && y > lastY);
+      }
+      lastY = y;
     }
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [isMapPage]);
 
   useEffect(() => {
     if (menuOpen) {
@@ -34,6 +43,8 @@ export function Header() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        hidden ? "-translate-y-full" : "translate-y-0"
+      } ${
         showSolidBg
           ? "bg-background/95 backdrop-blur-md border-b border-border"
           : "bg-transparent"

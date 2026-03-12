@@ -143,10 +143,10 @@ h1, h2, h3, h4 {
 /* Map side drawer (replaces Leaflet popups — matches LTS pattern) */
 .map-overlay-card {
   position: absolute;
-  top: 20px;
+  top: 80px;
   right: 20px;
   width: 380px;
-  max-height: calc(100% - 40px);
+  max-height: calc(100% - 100px);
   z-index: 9998;
   animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 16px;

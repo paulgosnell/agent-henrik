@@ -40,7 +40,21 @@
 ## Header
 - Transparent on homepage hero only. Solid `bg-background/95` with backdrop blur on all inner pages.
 - Shrinks on scroll: logo 56px -> 36px, padding py-6 -> py-2.
-- Uses `usePathname()` to detect homepage vs inner pages.
+- **Auto-hides on explore/map page** — hides on scroll down, shows on scroll up. Gives map full viewport.
+- Uses `usePathname()` to detect homepage vs inner pages vs map page.
+- Header height: ~104px unscrolled (logo 56px + py-6), ~52px scrolled (logo 36px + py-2).
+
+## Back Navigation
+- **Global BackLink component** in `layout-shell.tsx` — uses `router.back()` for browser-native navigation, appears at bottom of every non-homepage page automatically. Excluded from homepage and `/liv` (fullscreen overlay).
+- **No top back links** — Henrik doesn't want them. Only bottom. Centralised via layout, not per-page.
+- **BackLink must be inside `<main>`** not after it — otherwise `min-h-screen` on main creates a viewport-height gap above the back button.
+
+## Map Side Drawer
+- **Use React state + absolute overlay** instead of Leaflet popups — matches LTS pattern, better UX.
+- Desktop: slides in from right (`slideInRight` animation), `width: 380px`, `top: 80px` to clear header.
+- Mobile: becomes bottom sheet (full width, snaps to bottom, 70% max-height).
+- Drawer is a sibling to `MapContainer` inside a relative wrapper (not inside Leaflet's DOM).
+- **Don't use `max-h-[70vh] overflow-y-auto`** on detail page content panels — creates an iframe-like scroll. Let content flow naturally.
 
 ## AI Concierge
 - `/api/concierge/route.ts` calls OpenAI GPT-4o server-side (switched from Claude).

@@ -23,7 +23,7 @@ export default async function ExplorePage() {
   const storytellers = (storytellersResult.data as Storyteller[]) || [];
 
   return (
-    <div className="relative z-0 h-[calc(100vh-4rem)] w-full" style={{ marginTop: '4rem' }}>
+    <div className="relative z-0 h-[calc(100vh-5rem)] w-full" style={{ marginTop: '5rem' }}>
       <MapLoader storyworlds={storyworlds} themes={themes} storytellers={storytellers} />
     </div>
   );
