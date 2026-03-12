@@ -52,31 +52,22 @@ Feature complete. Client (Henrik) submitted 3 feedback documents on 9 March 2026
 ## Next Up: Hero Video Generation (VO3 via ChilledSites MCP)
 
 ### Context
-Henrik wants 10 destination vignette videos (4-6s each) playing as the hero. His storyboard doc specifies cinematic scenes for all 10 destinations. We're generating landscape-only versions via VO3 (no avatar — VO3 can't maintain consistent characters across clips).
+Henrik wants 10 destination vignette videos (4-6s each) playing as the hero. 6 clips already generated and live (Berlin, Hong Kong, Rio, Mykonos, Beirut, Bucharest). Hero component updated to multi-clip sequential playback with crossfade transitions.
 
-### Setup Required
-1. **ChilledSites MCP is now configured** in `~/.claude/settings.json` — restart session to load it
-2. VO3 prompts are ready in Google Sheet "Video Prompts" tab (10 prompts, research-optimized)
-3. VO3 best practices documented in "VO3 Best Practices" tab
+### Remaining
+- [ ] Generate 4 remaining destination clips (Abisko, Lofoten, Salalah, Vancouver Island)
+- [ ] Henrik avatar video — VO3 can't do face matching from reference images; needs alternative approach (real footage, face-swap tool, or skip)
 
-### Video Generation Workflow
-1. Restart Claude Code session (loads ChilledSites MCP)
-2. Test one video first (Hong Kong) at 4s/720p to validate quality
-3. If good, generate all 10 at 6s each
-4. Upload videos to ChilledSites/Supabase storage
-5. Update hero component to play clips sequentially with crossfade transitions
-6. Each clip ~6s = ~60s total loop, individual files (not stitched)
+### Henrik Avatar Options (decided: needs discussion with client)
+1. **Real footage** — Henrik films 2-3 short clips on phone (most authentic)
+2. **AI face swap** — Generate VO3 video of generic man, swap face via Akool/DeepSwap/Runway
+3. **Skip avatar** — Keep pure destination atmosphere clips (hero works well without his face)
 
-### Hero Component Changes Needed
-- Current: single `<video>` tag with one MP4 file
-- Target: array of video sources, sequential playback with CSS crossfade transitions
-- Preload clip 2+ while clip 1 plays for seamless experience
-- File: `src/components/hero/hero-video.tsx`
-
-### Google Sheet (3 tabs)
-- **Feedback Items** — 45 rows, all tracked with status
-- **Video Prompts** — 10 destination prompts, VO3-optimized
-- **VO3 Best Practices** — prompt engineering reference from research
+### ChilledSites MCP Status
+- MCP configured with local build at `/Users/paulgosnell/Sites/chilledsites-lite/mcp-server/dist/index.js`
+- `referenceImagePaths` param added but needs session restart to pick up new tool schema
+- Reference image pipeline works end-to-end via curl, but Supabase edge function 504s on sync polling (~150s timeout vs 2-5 min generation)
+- Needs: `/v1/generate/video/status` route in api-v1 for external polling (ChilledSites platform fix)
 
 ---
 
@@ -94,9 +85,10 @@ Henrik wants 10 destination vignette videos (4-6s each) playing as the hero. His
 - [x] Vercel deployment + staging at agent-henrik-alpha.vercel.app
 
 ## Before Launch
-- [ ] Generate 10 hero videos via VO3 (ChilledSites MCP)
-- [ ] Update hero component for sequential video playback
-- [ ] Push all feedback changes to staging
+- [x] Update hero component for sequential video playback (6 clips live with crossfade)
+- [x] Push all feedback changes to staging
+- [ ] Generate 4 remaining hero videos (Abisko, Lofoten, Salalah, Vancouver Island)
+- [ ] Decide on Henrik avatar approach (real footage vs face-swap vs skip)
 - [ ] Point agenthenrik.com DNS to Vercel
 - [ ] New OG image for social sharing
 - [ ] Client content population via CMS
