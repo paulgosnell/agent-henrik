@@ -8,7 +8,9 @@ const STORAGE_BASE = "https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object
 const CHILLEDSITES_BASE = "https://api.chilledsites.com/storage/v1/object/public/videos/cd53f831-1864-47fd-97af-23f2aa3b9feb";
 
 const HERO_CLIPS: { url: string; duration: number }[] = [
-  // --- Opening: aerial cityscape montage (3s each) ---
+  // --- Opening: Henrik arrival ---
+  { url: `${STORAGE_BASE}/henrik-arrival.mp4`, duration: 4 },
+  // --- Aerial cityscape montage (3s each) ---
   { url: `${CHILLEDSITES_BASE}/1773236222852-192481d7-299f-433c-a1f5-b0e4984aa85e.mp4`, duration: 3 }, // Hong Kong
   { url: `${CHILLEDSITES_BASE}/1773222970074-7d714630-9c29-47c1-b36e-c24e6b163930.mp4`, duration: 3 }, // Berlin
   { url: `${CHILLEDSITES_BASE}/1773236296571-298e2e08-8405-42df-8aba-613553771fff.mp4`, duration: 3 }, // Bucharest
@@ -18,7 +20,9 @@ const HERO_CLIPS: { url: string; duration: number }[] = [
   { url: `${CHILLEDSITES_BASE}/1773236372012-10978d0e-864d-4b04-9fbe-93928666db41.mp4`, duration: 3 }, // Abisko
   { url: `${CHILLEDSITES_BASE}/1773229205544-22b919d6-0e81-4cfe-9e4f-7e6c6f6bd383.mp4`, duration: 3 }, // Lofoten
   { url: `${CHILLEDSITES_BASE}/1773229280946-c5b6947d-4518-4f6b-96cb-03798b32f0fc.mp4`, duration: 3 }, // Salalah
-  // --- Middle: luxury experience moments (1.5s each) ---
+  // --- Henrik rooftop bar ---
+  { url: `${STORAGE_BASE}/henrik-rooftop.mp4`, duration: 3 },
+  // --- Luxury experience moments (1.5s each) ---
   { url: `${CHILLEDSITES_BASE}/1773223097010-c46a0273-f557-4b06-a6bd-474be8421420.mp4`, duration: 1.5 }, // Rooftop cocktail bar (VO3)
   { url: `${CHILLEDSITES_BASE}/1773223167422-d6c27c23-010d-4975-8533-acc4a90cb62d.mp4`, duration: 1.5 }, // Nightclub (VO3)
   { url: `${CHILLEDSITES_BASE}/1773228703970-16655588-a719-4393-860a-26ddf52f24e7.mp4`, duration: 1.5 }, // Luxury spa (VO3)
@@ -33,6 +37,8 @@ const HERO_CLIPS: { url: string; duration: number }[] = [
   { url: `${STORAGE_BASE}/live-music.mp4`, duration: 1.5 },
   { url: `${STORAGE_BASE}/driving-city-night.mp4`, duration: 1.5 },
   { url: `${STORAGE_BASE}/couple-european-street.mp4`, duration: 1.5 },
+  // --- Closing: Henrik corridor "follow me" ---
+  { url: `${STORAGE_BASE}/henrik-corridor.mp4`, duration: 4 },
 ];
 
 interface HeroVideoProps {
