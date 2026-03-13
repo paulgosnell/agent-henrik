@@ -1,105 +1,68 @@
 # Agent Henrik - Tasks
 
-## Build Status: Client Feedback Round 1 — In Progress
-Feature complete. Client (Henrik) submitted 3 feedback documents on 9 March 2026.
-45 feedback items tracked in Google Sheet: https://docs.google.com/spreadsheets/d/1GndxpfXhmqE37IhCIoBZMa-jXUx8VXAEYmeQqrzGGjY/edit
-
-**Current score: 33 Done / 7 PUSHBACK / 5 ALREADY DONE**
+## Build Status: Feature Parity with LTS — Complete
+All 5 phases implemented: DB migrations, contact/lead capture, admin CRM with site switcher, map filters, voice mode.
+Client feedback round 1 (45 items) fully addressed.
 
 ---
 
-## Active: Feedback Round 1 Implementation
+## Done (Recent Sessions)
 
-### Done (this round)
-- [x] System prompt rewrite — Story Arc hidden from output, Day-based format, intent detection, theme profiles, blending, conversion hooks
-- [x] Dynamic greeting — chat references destination/theme/storyteller by name
-- [x] 3 hero CTAs — Explore Storyworld / Find Experience / Meet Storytellers
-- [x] Homepage reorder — Hero > Map > Experiences > Storytellers > Concierge > Journal > Newsletter > Press > Instagram > Contact
-- [x] Removed "As Seen In" logo strip and "For Individuals and Corporates" section
-- [x] Added Storytellers section to homepage (up to 6)
-- [x] Added AH Concierge teaser section to homepage
-- [x] Added Press & Media section to homepage
-- [x] Added Contact section to homepage with Henrik's details
-- [x] Storyworld detail — split layout (photo left, scrollable info right), removed Story Arc
-- [x] Theme detail — removed Story Arc section
-- [x] Footer restructured to match LTS (4 columns, Henrik contact, social icons)
-- [x] Back/Return navigation on all detail pages (explicit href, not router.back)
-- [x] Journal categories updated (Client Journeys, Destination Reports, Travel Trends, Insider Interviews)
-- [x] Map popup cutoff fix — autoPanPadding for edge pins like Abisko
-- [x] Image carousel component — works on theme + storyworld detail pages, up to 5 images
-- [x] `images[]` column added to ah_themes and ah_storyworlds + admin CMS fields
-- [x] Suggested destinations on theme detail pages (reverse lookup from storyworld suggested_theme_ids)
-- [x] Storyteller categories — category column, filter UI on index page, admin CMS dropdown
-- [x] Press page split into Videos and Press Clippings sections
-- [x] YouTube embed support via PressCard modal
-- [x] Constants updated (nav items, footer links, YouTube URL, investment levels, journal categories)
-- [x] Updated map teaser text
-- [x] Talk to us link in concierge
+### LTS Feature Parity
+- [x] Database migrations (seasons, category on storyworlds; lat/long/show_on_map on storytellers)
+- [x] Contact form → shared `leads` + `booking_inquiries` tables with `site='henrik'`
+- [x] In-chat lead capture (email detection, lead form overlay, dual INSERT)
+- [x] Admin CRM with site switcher (Henrik / Sweden redirect)
+- [x] Map filters (seasons, categories, themes) with color-coded pins
+- [x] Storyteller pins on map
+- [x] Voice mode (OpenAI Realtime API, echo male voice, ephemeral token, PCM16 audio)
+- [x] Admin preview buttons on all DataTable pages
 
-### PUSHBACK items (documented in sheet with reasons)
-- A1/A2: Hero video production — not web dev scope, player is ready
-- G1: Voice mode — Phase 2 per spec sections 9.2 + 18
-- J2: Chat-to-contact integration — complex, Phase 2
-- M1: Cinematic avatar storyboards — production scope
-- N3: Map filter description text — filters not built yet
-- C3: Season/Category/Type filter system on map — would need new data model
+### UI Overhaul
+- [x] LTS-style fullscreen nav overlay (text MENU/CLOSE, three-state header, luxury hover effects)
+- [x] Global back link at bottom of all pages (router.back, centralised in layout-shell)
+- [x] Removed all top back links (Henrik's preference)
+- [x] Map side drawer replaces Leaflet popups (slide-in card, mobile bottom sheet)
+- [x] Header auto-hide on scroll down (IntersectionObserver on #hero)
+- [x] Header flash fix (removed premature updateFromScroll before IntersectionObserver fires)
+- [x] Detail page header clearance fixed (pt-36)
+- [x] Experience detail scroll fix (removed iframe-like overflow)
 
-### Respond to Henrik
-- K5: CMS credentials — his LTS login works at agenthenrik.com/admin
+### Hero Video
+- [x] Multi-clip sequential playback with crossfade transitions (26 clips total)
+- [x] All 9 VO3 destination cityscapes in opening (3s each)
+- [x] 5 VO3 luxury experience clips + 9 Pexels clips in middle section (1.5s each)
+- [x] 3 Henrik avatar clips via Grok Imagine (arrival 6s, rooftop 6s, corridor 6s)
+- [x] Plays once then fades to black with text overlay (no looping)
+- [x] Solid black crossfade background (no poster image flash)
+- [x] Timer-based clip advancement with per-clip durations
 
----
+### Voice Mode
+- [x] Echo (male) voice — matches Henrik's brand
+- [x] Removed realtime streaming text display during voice chat
+- [x] Transcript history shows after each exchange
 
-## Next Up: Hero Video Generation (VO3 via ChilledSites MCP)
+### Homepage
+- [x] Mini interactive Leaflet map in "Explore the Storyworld" section (replaces static image)
+- [x] CMS site switcher — Henrik/Sweden redirect (opens LTS admin in new tab)
 
-### Context
-Henrik wants 10 destination vignette videos (4-6s each) playing as the hero. 6 clips already generated and live (Berlin, Hong Kong, Rio, Mykonos, Beirut, Bucharest). Hero component updated to multi-clip sequential playback with crossfade transitions.
-
-### Remaining
-- [ ] Generate 4 remaining destination clips (Abisko, Lofoten, Salalah, Vancouver Island)
-- [ ] Henrik avatar video — VO3 can't do face matching from reference images; needs alternative approach (real footage, face-swap tool, or skip)
-
-### Henrik Avatar Options (decided: needs discussion with client)
-1. **Real footage** — Henrik films 2-3 short clips on phone (most authentic)
-2. **AI face swap** — Generate VO3 video of generic man, swap face via Akool/DeepSwap/Runway
-3. **Skip avatar** — Keep pure destination atmosphere clips (hero works well without his face)
-
-### ChilledSites MCP Status
-- MCP configured with local build at `/Users/paulgosnell/Sites/chilledsites-lite/mcp-server/dist/index.js`
-- `referenceImagePaths` param added but needs session restart to pick up new tool schema
-- Reference image pipeline works end-to-end via curl, but Supabase edge function 504s on sync polling (~150s timeout vs 2-5 min generation)
-- Needs: `/v1/generate/video/status` route in api-v1 for external polling (ChilledSites platform fix)
+### Henrik Avatar (Solved)
+- [x] Grok Imagine via grok.com web UI preserves real faces from reference photos
+- [x] 3 clips generated: arrival, rooftop bar, corridor "follow me"
+- [x] Integrated into hero montage (opening, midpoint, closing)
 
 ---
-
-## Completed (Pre-Feedback)
-- [x] Next.js scaffold + Tailwind v4 + Supabase
-- [x] All database migrations (ah_ tables, inquiry notes, concierge sessions, page meta)
-- [x] Seed data (10 themes, 10 storyworlds, 7 services, 3 articles, 5 press, 3 storytellers)
-- [x] Full layout (header, footer, theme toggle, dark/light)
-- [x] All pages (homepage, experiences, explore, storytellers, journal, press, contact, about, legal, liv)
-- [x] AI Concierge (OpenAI GPT-4o, floating button, /liv overlay, context passing)
-- [x] Admin CMS (auth, CRUD for all 6 types, rich text, image upload, AI generator, SEO meta)
-- [x] Admin CRM (inquiries pipeline, notes, CSV export, conversation viewer)
-- [x] Leaflet map with styled popups
-- [x] Instagram module (placeholder mode while @agenthenrik is private)
-- [x] Vercel deployment + staging at agent-henrik-alpha.vercel.app
 
 ## Before Launch
-- [x] Update hero component for sequential video playback (6 clips live with crossfade)
-- [x] Push all feedback changes to staging
-- [ ] Generate 4 remaining hero videos (Abisko, Lofoten, Salalah, Vancouver Island)
-- [ ] Decide on Henrik avatar approach (real footage vs face-swap vs skip)
 - [ ] Point agenthenrik.com DNS to Vercel
 - [ ] New OG image for social sharing
 - [ ] Client content population via CMS
-- [ ] Make @agenthenrik Instagram public
+- [ ] Make @agenthenrik Instagram public + swap to StormLikes feed
 
 ## Phase 2+ (Post-Launch)
-- [ ] Voice mode for AI concierge (TTS with Henrik's voice)
-- [ ] Map filter system (Season/Category/Type toggles)
-- [ ] Chat-to-contact form integration
 - [ ] Live Instagram feed (swap to StormLikes when public)
 - [ ] User accounts + saved itineraries
 - [ ] Budget simulator
 - [ ] Analytics tracking
-- [ ] Email notifications on new inquiry
+- [ ] Email notifications on new inquiry (notify-booking-inquiry edge function AH branding)
+- [ ] Grok Imagine API multi-reference support (when available — currently UI-only)

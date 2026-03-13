@@ -68,14 +68,16 @@
 - Floating button infers context from current pathname (e.g. on `/experiences/culinary-journeys` it passes theme context).
 
 ## Hero Video
-- **Multi-clip sequential playback** with dual video elements and crossfade transitions.
-- **Timer-based advancement** with per-clip durations (not `ended` events). Cityscapes: 3s. Experience shots: 1.5s.
-- **Structure per spec 5.1:** Opening (9 VO3 destination cityscapes at 3s) → Middle (5 VO3 luxury scenes + 9 Pexels experience clips at 1.5s).
-- **VO3 cityscapes** hosted on `api.chilledsites.com` — all 9 destinations (Hong Kong, Berlin, Bucharest, Mykonos, Beirut, Rio, Abisko, Lofoten, Salalah).
+- **Multi-clip sequential playback** with dual video elements and crossfade transitions. **Plays once, then fades to black with text overlay** (no looping).
+- **26 clips total:** Henrik arrival (6s) → 9 cityscapes (3s each) → Henrik rooftop (6s) → 14 experience shots (1.5s each) → Henrik corridor (6s). Total: ~66s.
+- **Timer-based advancement** with per-clip durations (not `ended` events).
+- **Henrik avatar clips** generated via Grok Imagine (grok.com web UI) — preserves his real face. Hosted on AH Supabase `videos` bucket.
+- **VO3 cityscapes** hosted on `api.chilledsites.com` — all 9 destinations.
 - **VO3 luxury scenes** also on ChilledSites — cocktail bar, nightclub, spa, yacht deck, fine dining.
 - **Pexels clips** on AH Supabase `videos` bucket (`fjnfsabvuiyzuzfhxzcc.supabase.co`, `henrik/` prefix).
-- **Reference-image VO3 videos show Henrik's figure** — never use `reference-images` for hero clips.
-- Poster image fallback for mobile/slow connections. Autoplay, muted, playsInline.
+- **Crossfade background must be solid black** (not a poster image) — otherwise the poster flashes between clip transitions during the opacity crossfade.
+- **Text overlay appears after last clip** with 2s fade-in transition for cinematic feel.
+- Autoplay, muted, playsInline.
 
 ## Bento Grid
 - 10 theme cards in a 3-column grid.
@@ -127,6 +129,21 @@
 - Requires session restart after adding — MCP servers initialize at session start.
 - **Tool schema changes require full session restart** — rebuilding the MCP server code is not enough; the running MCP process must be reloaded for Claude to see new/changed tool parameters.
 - Has video generation capability via VO3.
+
+## Grok Imagine (Henrik Avatar Video)
+- **grok.com/imagine web UI preserves real faces** from reference photos — the API (`image_url` single param) does NOT. Face-locking is a UI-only feature as of March 2026.
+- **Key prompt technique:** Start with `"Use the reference image for face and appearance only. Do not recreate the reference photo as a scene."` — prevents the reference being used as the opening frame.
+- **Avoid "rim lighting" / "halo"** in prompts — creates unwanted glowing aura around the subject. Use `"soft overhead downlights"` or `"natural ambient lighting"` instead.
+- **Use "natural pace"** instead of "slow motion" — slow-mo Henrik clips feel jarring when intercut with fast-paced 1.5s experience montage shots.
+- **10-second max duration** at grok.com — use simplified single-sequence prompts, not multi-shot timelines with timestamps (compresses too much action).
+- **Upload clearest face shot** as primary reference (well-lit, direct gaze, no phone/selfie). Multiple face angles help lock likeness.
+- **Two-step pipeline possible via API:** (1) compose still with `grok-imagine-image` + `images` array (up to 3 refs), (2) animate with `grok-imagine-video` + single `image_url`. But web UI is simpler and better for face preservation.
+- **xAI API key** available in p0stman-next `.env.production` (shared across projects). Has literal `\n"` corruption from Vercel env pull — strip with `sed 's/\\n//g' | tr -d '"'`.
+- **Cost:** ~$0.105 per 15s video generation, ~$0.02 per image generation.
+
+## OpenAI Realtime API (Voice Mode)
+- **Voice options:** alloy (neutral), echo/ash/ballad/verse (male), coral/sage/shimmer (female). **Echo** chosen for refined male voice matching Henrik's brand.
+- **currentText state** can remain for internal transcript building but should NOT be rendered — remove JSX display of live streaming text during voice chat to avoid UI clutter while user is speaking. Completed transcript history stays visible.
 
 ## Video Generation (VO3 via ChilledSites)
 - **Landscape/atmosphere-only prompts** work better than avatar-centric — VO3 can't maintain consistent characters across clips.
