@@ -9,7 +9,7 @@ const CHILLEDSITES_BASE = "https://api.chilledsites.com/storage/v1/object/public
 
 const HERO_CLIPS: { url: string; duration: number }[] = [
   // --- Opening: Henrik arrival ---
-  { url: `${STORAGE_BASE}/henrik-arrival.mp4`, duration: 4 },
+  { url: `${STORAGE_BASE}/henrik-arrival.mp4`, duration: 6 },
   // --- Aerial cityscape montage (3s each) ---
   { url: `${CHILLEDSITES_BASE}/1773236222852-192481d7-299f-433c-a1f5-b0e4984aa85e.mp4`, duration: 3 }, // Hong Kong
   { url: `${CHILLEDSITES_BASE}/1773222970074-7d714630-9c29-47c1-b36e-c24e6b163930.mp4`, duration: 3 }, // Berlin
@@ -21,7 +21,7 @@ const HERO_CLIPS: { url: string; duration: number }[] = [
   { url: `${CHILLEDSITES_BASE}/1773229205544-22b919d6-0e81-4cfe-9e4f-7e6c6f6bd383.mp4`, duration: 3 }, // Lofoten
   { url: `${CHILLEDSITES_BASE}/1773229280946-c5b6947d-4518-4f6b-96cb-03798b32f0fc.mp4`, duration: 3 }, // Salalah
   // --- Henrik rooftop bar ---
-  { url: `${STORAGE_BASE}/henrik-rooftop.mp4`, duration: 3 },
+  { url: `${STORAGE_BASE}/henrik-rooftop.mp4`, duration: 6 },
   // --- Luxury experience moments (1.5s each) ---
   { url: `${CHILLEDSITES_BASE}/1773223097010-c46a0273-f557-4b06-a6bd-474be8421420.mp4`, duration: 1.5 }, // Rooftop cocktail bar (VO3)
   { url: `${CHILLEDSITES_BASE}/1773223167422-d6c27c23-010d-4975-8533-acc4a90cb62d.mp4`, duration: 1.5 }, // Nightclub (VO3)
@@ -38,7 +38,7 @@ const HERO_CLIPS: { url: string; duration: number }[] = [
   { url: `${STORAGE_BASE}/driving-city-night.mp4`, duration: 1.5 },
   { url: `${STORAGE_BASE}/couple-european-street.mp4`, duration: 1.5 },
   // --- Closing: Henrik corridor "follow me" ---
-  { url: `${STORAGE_BASE}/henrik-corridor.mp4`, duration: 4 },
+  { url: `${STORAGE_BASE}/henrik-corridor.mp4`, duration: 6 },
 ];
 
 interface HeroVideoProps {
@@ -65,7 +65,9 @@ export function HeroVideo({
     videoA.load();
     videoA.play().catch(() => {});
 
-    const textTimer = setTimeout(() => setShowText(true), 4000);
+    // Show text after first full loop completes
+    const totalLoopMs = HERO_CLIPS.reduce((sum, c) => sum + c.duration * 1000, 0);
+    const textTimer = setTimeout(() => setShowText(true), totalLoopMs - 2000);
 
     let advanceTimer: ReturnType<typeof setTimeout>;
 
