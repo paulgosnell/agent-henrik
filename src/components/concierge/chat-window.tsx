@@ -151,12 +151,12 @@ export function ChatWindow({ onClose, initialContext, embedded = false }: ChatWi
 
   const containerClass = embedded
     ? "flex h-full flex-col bg-background"
-    : "fixed bottom-0 right-0 z-50 flex h-[70vh] w-full max-w-sm flex-col border-l border-t border-border bg-background sm:bottom-6 sm:right-6 sm:h-[600px] sm:w-[400px] sm:border sm:border-border";
+    : "fixed bottom-0 right-0 z-[60] flex h-[70vh] w-full max-w-sm flex-col border-l border-t border-border bg-background/80 backdrop-blur-xl sm:bottom-6 sm:right-6 sm:h-[600px] sm:w-[400px] sm:border sm:border-border";
 
   return (
     <div className={containerClass}>
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-border px-4 py-3">
+      <div className="flex items-center justify-between border-b border-border/50 px-4 py-3">
         <span className="nav-text">Agent Henrik</span>
         {onClose && (
           <button
@@ -251,7 +251,7 @@ export function ChatWindow({ onClose, initialContext, embedded = false }: ChatWi
       </div>
 
       {/* Input */}
-      <div className="border-t border-border p-4">
+      <div className="border-t border-border/50 p-4">
         <div className="flex gap-2">
           <input
             type="text"
