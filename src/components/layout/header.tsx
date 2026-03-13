@@ -52,7 +52,6 @@ export function Header() {
       );
       observer.observe(heroEl);
       window.addEventListener("scroll", updateFromScroll, { passive: true });
-      updateFromScroll();
 
       return () => {
         observer.disconnect();
