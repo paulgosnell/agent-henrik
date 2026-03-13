@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 
 export function NewsletterForm() {
   const [email, setEmail] = useState("");
@@ -12,21 +11,14 @@ export function NewsletterForm() {
     if (status === "submitting" || !email) return;
 
     setStatus("submitting");
-    const supabase = createClient();
-    const { error } = await supabase.from("ah_newsletter_subscribers").insert({
-      email: email.toLowerCase().trim(),
+
+    const res = await fetch("/api/subscribe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
     });
 
-    if (error) {
-      // Duplicate email constraint will return error - treat as success
-      if (error.code === "23505") {
-        setStatus("success");
-      } else {
-        setStatus("error");
-      }
-    } else {
-      setStatus("success");
-    }
+    setStatus(res.ok ? "success" : "error");
   }
 
   if (status === "success") {
