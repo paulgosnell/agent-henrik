@@ -54,6 +54,7 @@ export function HeroVideo({
   const videoBRef = useRef<HTMLVideoElement>(null);
   const [activePlayer, setActivePlayer] = useState<"A" | "B">("A");
   const [showText, setShowText] = useState(false);
+  const [ended, setEnded] = useState(false);
   const clipIndexRef = useRef(0);
 
   useEffect(() => {
@@ -65,10 +66,6 @@ export function HeroVideo({
     videoA.load();
     videoA.play().catch(() => {});
 
-    // Show text after first full loop completes
-    const totalLoopMs = HERO_CLIPS.reduce((sum, c) => sum + c.duration * 1000, 0);
-    const textTimer = setTimeout(() => setShowText(true), totalLoopMs - 2000);
-
     let advanceTimer: ReturnType<typeof setTimeout>;
 
     function scheduleAdvance() {
@@ -77,8 +74,17 @@ export function HeroVideo({
     }
 
     function advance() {
-      clipIndexRef.current = (clipIndexRef.current + 1) % HERO_CLIPS.length;
-      const nextClip = HERO_CLIPS[clipIndexRef.current];
+      const nextIndex = clipIndexRef.current + 1;
+
+      // Last clip finished — fade to black with text
+      if (nextIndex >= HERO_CLIPS.length) {
+        setEnded(true);
+        setShowText(true);
+        return;
+      }
+
+      clipIndexRef.current = nextIndex;
+      const nextClip = HERO_CLIPS[nextIndex];
 
       setActivePlayer((prev) => {
         if (prev === "A") {
@@ -100,7 +106,6 @@ export function HeroVideo({
     scheduleAdvance();
 
     return () => {
-      clearTimeout(textTimer);
       clearTimeout(advanceTimer);
     };
   }, []);
@@ -121,7 +126,7 @@ export function HeroVideo({
         muted
         playsInline
         className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
-          activePlayer === "A" ? "opacity-100" : "opacity-0"
+          ended ? "opacity-0" : activePlayer === "A" ? "opacity-100" : "opacity-0"
         }`}
       />
 
@@ -130,14 +135,14 @@ export function HeroVideo({
         muted
         playsInline
         className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
-          activePlayer === "B" ? "opacity-100" : "opacity-0"
+          ended ? "opacity-0" : activePlayer === "B" ? "opacity-100" : "opacity-0"
         }`}
       />
 
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60" />
 
       <div
-        className={`relative z-10 flex h-full flex-col items-center justify-end pb-16 text-center text-white transition-opacity duration-1000 ${
+        className={`relative z-10 flex h-full flex-col items-center justify-end pb-16 text-center text-white transition-opacity duration-2000 ${
           showText ? "opacity-100" : "opacity-0"
         }`}
       >
