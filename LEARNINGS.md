@@ -66,6 +66,8 @@
 - Context passed via URL params: `/liv?theme=authentic-stories` or `/liv?storyworld=berlin`.
 - Conversations saved to `ah_concierge_sessions` table via fire-and-forget upsert.
 - Floating button infers context from current pathname (e.g. on `/experiences/culinary-journeys` it passes theme context).
+- **Chat z-index layering:** Floating chat needs `z-[60]` to render above header (`z-50`). Concierge button at `z-[55]`.
+- **Blurred glass overlay:** Use `backdrop-blur-xl` + `bg-background/80` for blurred transparent effect on chat and overlays. Border opacity at `/50` for subtlety.
 
 ## Hero Video
 - **Multi-clip sequential playback** with dual video elements and crossfade transitions. **Plays once, then fades to black with text overlay** (no looping).
@@ -183,6 +185,17 @@
 - **Newsletter signups** go to shared `leads` table with `site='henrik'`, `source='newsletter'` via `/api/subscribe` route using `createAdminClient()`.
 - **Contact form emails** — dual insert to `leads` + `booking_inquiries` already triggers `notify-booking-inquiry` Supabase edge function via database webhook.
 - **No additional Resend/email infrastructure needed** — piggybacks on shared LTS Supabase webhooks + Resend setup. Both edge functions (`notify-new-lead`, `notify-booking-inquiry`) already handle `site === 'henrik'` with Agent Henrik branding.
+
+## Legal Pages
+- **Content adapted from LTS `static_content` table** — LTS stores legal content as JSON blobs with `parseContent()`. AH hardcodes the adapted text directly in page components (simpler, legal text rarely changes).
+- **Legal entity is Luxury Travel Sweden AB** — Agent Henrik is a brand, not a separate company. Imprint references "Agent Henrik, a brand of Luxury Travel Sweden AB" with same org number (556856-7837) and VAT.
+- **Contact email:** henrik@agenthenrik.com (not info@luxurytravelsweden.com)
+
+## OG Image (Next.js Convention)
+- **`opengraph-image.tsx`** in `src/app/` — Next.js auto-generates OG image at build time using `ImageResponse` from `next/og`.
+- **Edge runtime required** (`export const runtime = "edge"`).
+- **Custom fonts via fetch** — load from Google Fonts CDN (`fonts.gstatic.com`), get `.ttf` as `arrayBuffer()`, pass to `fonts` array in `ImageResponse` options.
+- **Twitter image** — separate `twitter-image.tsx` file (same pattern). Next.js serves both at `/opengraph-image` and `/twitter-image`.
 
 ## Common Pitfalls
 - Always hard refresh (Cmd+Shift+R) after deploys — Vercel CDN caching can show stale content.

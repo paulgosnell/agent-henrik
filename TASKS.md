@@ -53,9 +53,22 @@ Client feedback round 1 (45 items) fully addressed.
 
 ---
 
+### Legal & SEO
+- [x] Legal pages (terms, data-protection, imprint) — adapted from LTS, full content
+- [x] OG image for social sharing (opengraph-image.tsx + twitter-image.tsx)
+- [x] robots.ts with AI crawler rules
+- [x] sitemap.ts (dynamic from CMS content)
+- [x] Homepage metadata (title + description)
+- [x] Newsletter capture → shared `leads` table via `/api/subscribe`
+
+### Chat Overlay
+- [x] Chat z-index fix (z-[60] renders above header z-50)
+- [x] Blurred transparent glass effect on floating chat (backdrop-blur-xl + bg-background/80)
+
+---
+
 ## Before Launch
 - [ ] Point agenthenrik.com DNS to Vercel
-- [ ] New OG image for social sharing
 - [ ] Client content population via CMS
 - [ ] Make @agenthenrik Instagram public + swap to StormLikes feed
 
@@ -64,5 +77,4 @@ Client feedback round 1 (45 items) fully addressed.
 - [ ] User accounts + saved itineraries
 - [ ] Budget simulator
 - [ ] Analytics tracking
-- [ ] Email notifications on new inquiry (notify-booking-inquiry edge function AH branding)
 - [ ] Grok Imagine API multi-reference support (when available — currently UI-only)
