@@ -29,7 +29,7 @@ export async function POST() {
       },
       body: JSON.stringify({
         model: "gpt-4o-realtime-preview",
-        voice: "alloy",
+        voice: "echo",
         instructions,
         input_audio_transcription: {
           model: "whisper-1",
