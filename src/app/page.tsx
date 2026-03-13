@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { HeroVideo } from "@/components/hero/hero-video";
+
+export const metadata: Metadata = {
+  title: "Agent Henrik — Luxury Underground Travel Curation",
+  description:
+    "Bespoke cultural experiences across ten extraordinary destinations. AI-powered concierge, insider access, and journeys crafted around your story.",
+};
 import { BentoGrid } from "@/components/experiences/bento-grid";
 import { ArticleCard } from "@/components/journal/article-card";
 import { NewsletterForm } from "@/components/newsletter/newsletter-form";

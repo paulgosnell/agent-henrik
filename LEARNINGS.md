@@ -179,6 +179,11 @@
 ## Header Clearance
 - **Detail pages need `pt-36` (144px)** to clear the fixed header with breathing room. The unscrolled header is ~104px (logo 56px + py-6 padding 48px). `pt-28` clears but looks cramped. Index/content pages use `pt-20` which works because they have headings that provide visual spacing.
 
+## Newsletter & Email Notifications
+- **Newsletter signups** go to shared `leads` table with `site='henrik'`, `source='newsletter'` via `/api/subscribe` route using `createAdminClient()`.
+- **Contact form emails** — dual insert to `leads` + `booking_inquiries` already triggers `notify-booking-inquiry` Supabase edge function via database webhook.
+- **No additional Resend/email infrastructure needed** — piggybacks on shared LTS Supabase webhooks + Resend setup. Both edge functions (`notify-new-lead`, `notify-booking-inquiry`) already handle `site === 'henrik'` with Agent Henrik branding.
+
 ## Common Pitfalls
 - Always hard refresh (Cmd+Shift+R) after deploys — Vercel CDN caching can show stale content.
 - The `agenthenrik.com` domain does NOT point to Vercel. It's still on LiteSpeed (old site). Staging is at `agent-henrik-alpha.vercel.app`.
