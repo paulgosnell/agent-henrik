@@ -42,13 +42,11 @@ const HERO_CLIPS: { url: string; duration: number }[] = [
 ];
 
 interface HeroVideoProps {
-  posterSrc?: string;
   headline?: string;
   ctaHref?: string;
 }
 
 export function HeroVideo({
-  posterSrc = "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=1920&q=80",
   headline = "Your Insider Journey Begins Here",
   ctaHref = "#explore",
 }: HeroVideoProps) {
@@ -114,10 +112,7 @@ export function HeroVideo({
 
   return (
     <section id="hero" className="relative h-screen w-full overflow-hidden">
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${posterSrc})` }}
-      />
+      <div className="absolute inset-0 bg-black" />
 
       <video
         ref={videoARef}
