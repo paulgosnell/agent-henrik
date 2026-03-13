@@ -302,13 +302,6 @@ export function VoiceMode({ onEnd, sessionId, context }: VoiceModeProps) {
         </button>
       )}
 
-      {/* Live transcript */}
-      {currentText && (
-        <p className="max-w-xs text-center text-sm text-muted-foreground italic">
-          {currentText}
-        </p>
-      )}
-
       {/* Transcript history */}
       {transcript.length > 0 && (
         <div className="w-full max-w-xs space-y-2 max-h-40 overflow-y-auto">
