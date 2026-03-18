@@ -27,12 +27,9 @@ export function StorytellerFilter({ storytellers }: StorytellerFilterProps) {
       ? storytellers
       : storytellers.filter((st) => st.category === active);
 
-  // Only show filter if any storyteller has a category set
-  const hasCategories = storytellers.some((st) => st.category);
-
   return (
     <>
-      {hasCategories && (
+      {storytellers.length > 0 && (
         <div className="mb-12 flex flex-wrap justify-center gap-2">
           {CATEGORIES.map((cat) => (
             <button

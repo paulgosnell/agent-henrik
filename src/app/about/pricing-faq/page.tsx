@@ -1,6 +1,8 @@
 import { getPageMeta } from "@/lib/utils/page-meta";
+import { getPageContent } from "@/lib/utils/page-content";
 import { Section } from "@/components/ui/section";
 import { CTAButton } from "@/components/ui/cta-button";
+import { PageContent } from "@/components/ui/page-content";
 import { INVESTMENT_LEVELS } from "@/lib/constants";
 
 export async function generateMetadata() {
@@ -10,30 +12,17 @@ export async function generateMetadata() {
   });
 }
 
-const faqs = [
-  {
-    q: "How far in advance should I book?",
-    a: "We recommend 4-8 weeks for most destinations. Peak seasons and exclusive experiences may require longer lead times.",
-  },
-  {
-    q: "Can you plan for groups?",
-    a: "Absolutely. We curate experiences for corporate retreats, celebrations, brand activations, and private groups of any size.",
-  },
-  {
-    q: "What destinations do you cover?",
-    a: "Our current Storyworld network spans 10 global destinations. We're continuously expanding our insider network.",
-  },
-  {
-    q: "Can I combine multiple themes?",
-    a: "Yes. Our AI concierge and journey curators specialize in blending themes into a single cohesive Story Arc.",
-  },
-  {
-    q: "What's included in the price?",
-    a: "Every journey is bespoke. Your quote includes curation, insider access, local coordination, and on-the-ground support. Travel and accommodation are quoted separately.",
-  },
+const DEFAULT_FAQS = [
+  { q: "How far in advance should I book?", a: "We recommend 4-8 weeks for most destinations. Peak seasons and exclusive experiences may require longer lead times." },
+  { q: "Can you plan for groups?", a: "Absolutely. We curate experiences for corporate retreats, celebrations, brand activations, and private groups of any size." },
+  { q: "What destinations do you cover?", a: "Our current Storyworld network spans 10 global destinations. We're continuously expanding our insider network." },
+  { q: "Can I combine multiple themes?", a: "Yes. Our AI concierge and journey curators specialize in blending themes into a single cohesive Story Arc." },
+  { q: "What's included in the price?", a: "Every journey is bespoke. Your quote includes curation, insider access, local coordination, and on-the-ground support. Travel and accommodation are quoted separately." },
 ];
 
-export default function PricingFaqPage() {
+export default async function PricingFaqPage() {
+  const page = await getPageContent("/about/pricing-faq");
+
   return (
     <div className="pt-20">
       <Section>
@@ -43,44 +32,43 @@ export default function PricingFaqPage() {
           </h1>
         </div>
 
-        {/* Investment Levels */}
-        <div className="mb-20">
-          <h2 className="mb-8 text-center font-serif text-3xl font-light">
-            Investment Levels
-          </h2>
-          <div className="grid gap-6 md:grid-cols-3">
-            {INVESTMENT_LEVELS.map((level) => (
-              <div
-                key={level.value}
-                className="border border-border p-8 text-center"
-              >
-                <h3 className="mb-3 font-serif text-2xl font-light">
-                  {level.label}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {level.description}
-                </p>
-              </div>
-            ))}
+        {page?.body ? (
+          <div className="mx-auto max-w-2xl">
+            <PageContent html={page.body} />
           </div>
-        </div>
+        ) : (
+          <>
+            {/* Investment Levels */}
+            <div className="mb-20">
+              <h2 className="mb-8 text-center font-serif text-3xl font-light">
+                Investment Levels
+              </h2>
+              <div className="grid gap-6 md:grid-cols-3">
+                {INVESTMENT_LEVELS.map((level) => (
+                  <div key={level.value} className="border border-border p-8 text-center">
+                    <h3 className="mb-3 font-serif text-2xl font-light">{level.label}</h3>
+                    <p className="text-sm text-muted-foreground">{level.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-        {/* FAQ */}
-        <div className="mx-auto max-w-2xl">
-          <h2 className="mb-8 text-center font-serif text-3xl font-light">
-            Frequently Asked Questions
-          </h2>
-          <div className="divide-y divide-border">
-            {faqs.map((faq, i) => (
-              <div key={i} className="py-6">
-                <h3 className="mb-2 text-sm font-medium">{faq.q}</h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  {faq.a}
-                </p>
+            {/* FAQ */}
+            <div className="mx-auto max-w-2xl">
+              <h2 className="mb-8 text-center font-serif text-3xl font-light">
+                Frequently Asked Questions
+              </h2>
+              <div className="divide-y divide-border">
+                {DEFAULT_FAQS.map((faq, i) => (
+                  <div key={i} className="py-6">
+                    <h3 className="mb-2 text-sm font-medium">{faq.q}</h3>
+                    <p className="text-sm leading-relaxed text-muted-foreground">{faq.a}</p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          </>
+        )}
 
         <div className="mt-12 text-center">
           <CTAButton href="/contact">Get Your Quote</CTAButton>

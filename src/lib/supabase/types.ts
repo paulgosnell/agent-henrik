@@ -198,5 +198,8 @@ export interface PageMeta {
   page_path: string;
   meta_title: string | null;
   meta_description: string | null;
+  subtitle: string | null;
+  body: string | null;
+  image_url: string | null;
   updated_at: string;
 }
