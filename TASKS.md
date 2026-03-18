@@ -65,6 +65,23 @@ Client feedback round 1 (45 items) fully addressed.
 - [x] Chat z-index fix (z-[60] renders above header z-50)
 - [x] Blurred transparent glass effect on floating chat (backdrop-blur-xl + bg-background/80)
 
+### Adjustment 2 (33 items from Henrik's 10-hour review)
+- [x] All homepage reordering, section removal, spacing fixes (R2-B1 through R2-B9)
+- [x] Map blown up full section, new filter categories (R2-C1, R2-C2)
+- [x] Photo carousel on detail pages (R2-D1 — already done)
+- [x] Storyteller category filter always visible (R2-D2)
+- [x] Full AI concierge prompt overhaul — sales triggers, trust phrases, closing style (R2-E1 through R2-E6)
+- [x] Story Arc visible in CMS (R2-E7 — already done)
+- [x] About pages CMS-driven via ah_page_meta (R2-G1 through R2-G5)
+- [x] Legal pages CMS-driven with HTML paste support (R2-G6, R2-G7)
+- [x] YouTube channel link on press page (R2-B5b)
+- [x] Concierge Instructions CMS — Henrik can fine-tune AI behavior (promote/avoid/knowledge/tone/general)
+- [x] Per-item concierge_context on storyworlds, themes, storytellers
+
+### Remaining from Adjustment 2
+- [ ] R2-F1: Voice alternatives — test ash/onyx/fable for smoother male voice
+- [ ] J2: Contact form integrated with AI chat as final step
+
 ---
 
 ## Before Launch
