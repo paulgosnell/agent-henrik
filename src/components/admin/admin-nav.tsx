@@ -14,6 +14,7 @@ import {
   MessageSquare,
   Bot,
   FileText,
+  Settings,
   ChevronDown,
 } from "lucide-react";
 import { useSite } from "./site-context";
@@ -29,6 +30,7 @@ const NAV_ITEMS = [
   { label: "Services", href: "/admin/services", icon: Briefcase },
   { label: "Inquiries", href: "/admin/inquiries", icon: MessageSquare },
   { label: "Conversations", href: "/admin/conversations", icon: Bot },
+  { label: "Concierge", href: "/admin/concierge", icon: Settings },
 ];
 
 const SITE_OPTIONS = [

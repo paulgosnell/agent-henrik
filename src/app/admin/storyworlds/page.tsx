@@ -205,6 +205,17 @@ export default function StoryworldsPage() {
           onGenerated={(data) => setEditing((prev) => ({ ...prev, ...data }))}
         />
         <div className="border-t border-[var(--border)] pt-4 mt-2">
+          <p className="text-xs text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Concierge Settings</p>
+          <TextArea
+            label="Concierge Context"
+            name="concierge_context"
+            value={(editing as Record<string, unknown>).concierge_context as string ?? ""}
+            onChange={(v) => setEditing((prev) => ({ ...prev, concierge_context: v }))}
+            rows={4}
+            placeholder="Extra instructions for Agent Henrik when discussing this destination. E.g. seasonal tips, price ranges, unique selling points, things to avoid mentioning..."
+          />
+        </div>
+        <div className="border-t border-[var(--border)] pt-4 mt-2">
           <p className="text-xs text-[var(--muted-foreground)] uppercase tracking-wider mb-3">SEO Metadata</p>
           <div className="flex flex-col gap-3">
             <TextInput label="Meta Title" name="meta_title" value={editing.meta_title ?? ""} onChange={(v) => set("meta_title", v)} placeholder="Override page title for search engines" />

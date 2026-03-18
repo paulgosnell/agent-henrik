@@ -21,6 +21,7 @@ export interface Theme {
   published: boolean;
   meta_title: string | null;
   meta_description: string | null;
+  concierge_context: string | null;
 }
 
 export interface Storyworld {
@@ -45,6 +46,7 @@ export interface Storyworld {
   display_order: number;
   meta_title: string | null;
   meta_description: string | null;
+  concierge_context: string | null;
 }
 
 export interface Storyteller {
@@ -64,6 +66,7 @@ export interface Storyteller {
   published: boolean;
   meta_title: string | null;
   meta_description: string | null;
+  concierge_context: string | null;
 }
 
 export interface PressItem {
@@ -191,6 +194,17 @@ export interface LeadInfo {
   dates?: string;
   groupSize?: string;
   budget?: string;
+}
+
+export interface ConciergeInstruction {
+  id: string;
+  title: string;
+  category: "promote" | "avoid" | "knowledge" | "tone" | "general";
+  instruction: string;
+  is_active: boolean;
+  priority: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface PageMeta {

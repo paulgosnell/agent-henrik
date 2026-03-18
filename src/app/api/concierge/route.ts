@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { buildSystemPrompt } from "@/lib/concierge/system-prompt";
 import { SITE_KEY } from "@/lib/constants";
-import type { Theme, Storyworld, Storyteller, ConversationMessage } from "@/lib/supabase/types";
+import type { Theme, Storyworld, Storyteller, ConciergeInstruction, ConversationMessage } from "@/lib/supabase/types";
 
 export async function POST(req: NextRequest) {
   try {
@@ -105,30 +105,34 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "AI service not configured" }, { status: 500 });
     }
 
-    // Load themes, storyworlds, and optionally storyteller for system prompt context
+    // Load themes, storyworlds, instructions, and optionally storyteller
     const supabase = await createClient();
-    const [themesResult, storyworldsResult] = await Promise.all([
+    const [themesResult, storyworldsResult, instructionsResult] = await Promise.all([
       supabase.from("ah_themes").select("*").eq("published", true).order("display_order"),
       supabase.from("ah_storyworlds").select("*").eq("published", true).order("display_order"),
+      supabase.from("ah_concierge_instructions").select("*").eq("is_active", true).order("priority", { ascending: false }),
     ]);
 
     const themes = (themesResult.data as Theme[]) || [];
     const storyworlds = (storyworldsResult.data as Storyworld[]) || [];
+    const instructions = (instructionsResult.data as ConciergeInstruction[]) || [];
 
-    // Build contextual system prompt
-    let systemPrompt = buildSystemPrompt(themes, storyworlds);
+    // Build item-specific context and contextual greeting
+    let itemContext: string | null = null;
+    let contextGreeting = "";
 
-    // Add specific context if provided
     if (context?.theme_id) {
       const theme = themes.find((t) => t.id === context.theme_id);
       if (theme) {
-        systemPrompt += `\n\nThe user arrived from the "${theme.title}" theme page. Open with a contextual greeting about this theme.`;
+        itemContext = theme.concierge_context || null;
+        contextGreeting = `\n\nThe user arrived from the "${theme.title}" theme page. Open with a contextual greeting about this theme.`;
       }
     }
     if (context?.storyworld_id) {
       const sw = storyworlds.find((s) => s.id === context.storyworld_id);
       if (sw) {
-        systemPrompt += `\n\nThe user arrived from the "${sw.name}" storyworld page. Open with a contextual greeting about this destination.`;
+        itemContext = sw.concierge_context || null;
+        contextGreeting = `\n\nThe user arrived from the "${sw.name}" storyworld page. Open with a contextual greeting about this destination.`;
       }
     }
     if (context?.storyteller_id) {
@@ -139,8 +143,15 @@ export async function POST(req: NextRequest) {
         .single();
       if (storyteller) {
         const st = storyteller as Storyteller;
-        systemPrompt += `\n\nThe user arrived from ${st.name}'s storyteller profile (${st.role || "Storyteller"}). ${st.bio ? `About them: ${st.bio}` : ""} ${st.signature_experiences?.length ? `Their signature experiences: ${st.signature_experiences.join(", ")}.` : ""} Open with a contextual greeting referencing this storyteller.`;
+        itemContext = st.concierge_context || null;
+        contextGreeting = `\n\nThe user arrived from ${st.name}'s storyteller profile (${st.role || "Storyteller"}). ${st.bio ? `About them: ${st.bio}` : ""} ${st.signature_experiences?.length ? `Their signature experiences: ${st.signature_experiences.join(", ")}.` : ""} Open with a contextual greeting referencing this storyteller.`;
       }
+    }
+
+    // Build system prompt with instructions and item context
+    let systemPrompt = buildSystemPrompt(themes, storyworlds, instructions, itemContext);
+    if (contextGreeting) {
+      systemPrompt += contextGreeting;
     }
 
     // Call OpenAI API

@@ -1,6 +1,54 @@
-import type { Theme, Storyworld } from "@/lib/supabase/types";
+import type { Theme, Storyworld, ConciergeInstruction } from "@/lib/supabase/types";
 
-export function buildSystemPrompt(themes: Theme[], storyworlds: Storyworld[]): string {
+interface InstructionsByCategory {
+  promote: ConciergeInstruction[];
+  avoid: ConciergeInstruction[];
+  knowledge: ConciergeInstruction[];
+  tone: ConciergeInstruction[];
+  general: ConciergeInstruction[];
+}
+
+function groupByCategory(instructions: ConciergeInstruction[]): InstructionsByCategory {
+  const grouped: InstructionsByCategory = { promote: [], avoid: [], knowledge: [], tone: [], general: [] };
+  for (const i of instructions) {
+    if (i.category in grouped) {
+      grouped[i.category].push(i);
+    }
+  }
+  return grouped;
+}
+
+function buildAdminInstructions(instructions: ConciergeInstruction[]): string {
+  if (instructions.length === 0) return "";
+
+  const grouped = groupByCategory(instructions);
+  const sections: string[] = [];
+
+  if (grouped.promote.length > 0) {
+    sections.push(`### Things to Promote:\n${grouped.promote.map((i) => `- **${i.title}**: ${i.instruction}`).join("\n")}`);
+  }
+  if (grouped.avoid.length > 0) {
+    sections.push(`### Things to Avoid:\n${grouped.avoid.map((i) => `- **${i.title}**: ${i.instruction}`).join("\n")}`);
+  }
+  if (grouped.knowledge.length > 0) {
+    sections.push(`### Knowledge:\n${grouped.knowledge.map((i) => `- **${i.title}**: ${i.instruction}`).join("\n")}`);
+  }
+  if (grouped.tone.length > 0) {
+    sections.push(`### Tone Guidelines:\n${grouped.tone.map((i) => `- **${i.title}**: ${i.instruction}`).join("\n")}`);
+  }
+  if (grouped.general.length > 0) {
+    sections.push(`### General:\n${grouped.general.map((i) => `- **${i.title}**: ${i.instruction}`).join("\n")}`);
+  }
+
+  return `\n## ADMIN INSTRUCTIONS (FOLLOW THESE CLOSELY)\n${sections.join("\n\n")}`;
+}
+
+export function buildSystemPrompt(
+  themes: Theme[],
+  storyworlds: Storyworld[],
+  instructions?: ConciergeInstruction[],
+  itemContext?: string | null,
+): string {
   const themeContext = themes.map((t) => {
     return `**${t.title}** (${t.slug})
 Definition: ${t.definition || "N/A"}
@@ -18,8 +66,13 @@ Atmosphere: ${sw.atmosphere || "N/A"}
 Core Zones: ${sw.immersion_zones?.join(", ") || "N/A"}`;
   }).join("\n\n");
 
-  // Build destination name list for constraint checking
   const destinationNames = storyworlds.map((sw) => sw.name);
+
+  const adminSection = instructions ? buildAdminInstructions(instructions) : "";
+
+  const itemContextSection = itemContext
+    ? `\n\n## SPECIFIC CONTEXT FOR THIS ITEM\n${itemContext}\n\n**IMPORTANT:** Follow these item-specific instructions closely as they provide critical details about this destination, experience, or storyteller.`
+    : "";
 
   return `You are Agent Henrik — a luxury travel concierge and professional travel designer. You guide travelers in discovering exceptional destinations through curated private tours and excursions.
 
@@ -117,12 +170,17 @@ ${themeContext || "No themes loaded."}
 
 ## DESTINATIONS
 ${storyworldContext || "No storyworlds loaded."}
-`;
+${adminSection}${itemContextSection}`;
 }
 
-export function buildVoiceSystemPrompt(themes: Theme[], storyworlds: Storyworld[]): string {
+export function buildVoiceSystemPrompt(
+  themes: Theme[],
+  storyworlds: Storyworld[],
+  instructions?: ConciergeInstruction[],
+): string {
   const destinations = storyworlds.map((sw) => sw.name).join(", ");
   const themeList = themes.map((t) => t.title).join(", ");
+  const adminSection = instructions ? buildAdminInstructions(instructions) : "";
 
   return `You are Agent Henrik — a luxury travel curator speaking in a live voice conversation. You are confident, editorial, and culturally authoritative.
 
@@ -149,5 +207,6 @@ TONE:
 - Never invent prices or confirm availability
 
 DESTINATIONS: ${destinations}
-THEMES: ${themeList}`;
+THEMES: ${themeList}
+${adminSection}`;
 }

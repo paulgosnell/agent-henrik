@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { buildVoiceSystemPrompt } from "@/lib/concierge/system-prompt";
-import type { Theme, Storyworld } from "@/lib/supabase/types";
+import type { Theme, Storyworld, ConciergeInstruction } from "@/lib/supabase/types";
 
 export async function POST() {
   try {
@@ -12,14 +12,16 @@ export async function POST() {
 
     // Load context for system prompt
     const supabase = await createClient();
-    const [themesResult, storyworldsResult] = await Promise.all([
+    const [themesResult, storyworldsResult, instructionsResult] = await Promise.all([
       supabase.from("ah_themes").select("*").eq("published", true).order("display_order"),
       supabase.from("ah_storyworlds").select("*").eq("published", true).order("display_order"),
+      supabase.from("ah_concierge_instructions").select("*").eq("is_active", true).order("priority", { ascending: false }),
     ]);
 
     const themes = (themesResult.data as Theme[]) || [];
     const storyworlds = (storyworldsResult.data as Storyworld[]) || [];
-    const instructions = buildVoiceSystemPrompt(themes, storyworlds);
+    const adminInstructions = (instructionsResult.data as ConciergeInstruction[]) || [];
+    const instructions = buildVoiceSystemPrompt(themes, storyworlds, adminInstructions);
 
     const response = await fetch("https://api.openai.com/v1/realtime/sessions", {
       method: "POST",
