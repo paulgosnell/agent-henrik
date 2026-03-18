@@ -15,7 +15,7 @@ import { ContactForm } from "@/components/contact/contact-form";
 import { Section } from "@/components/ui/section";
 import { CTAButton } from "@/components/ui/cta-button";
 import { MiniMapLoader } from "@/components/map/mini-map-loader";
-import { Instagram, MapPin, MessageCircle, ArrowRight } from "lucide-react";
+import { Instagram, MapPin } from "lucide-react";
 import type { Theme, Storyworld, JournalArticle, Storyteller } from "@/lib/supabase/types";
 
 export default async function HomePage() {
@@ -159,48 +159,6 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      {/* 5. AH Concierge Teaser */}
-      <Section id="concierge">
-        <div className="flex flex-col items-center gap-12 md:flex-row md:gap-16">
-          <div className="flex-1">
-            <h2 className="mb-4 font-serif text-4xl font-light md:text-5xl">
-              Design Your Journey
-            </h2>
-            <p className="mb-4 text-muted-foreground">
-              Agent Henrik is your AI-powered luxury travel architect. Share your vision — destinations, themes, pace — and receive a bespoke itinerary crafted around your story.
-            </p>
-            <ul className="mb-8 space-y-2 text-sm text-muted-foreground">
-              <li className="flex items-center gap-2">
-                <ArrowRight size={12} className="shrink-0" />
-                Understands 10 global destinations and 10 experience themes
-              </li>
-              <li className="flex items-center gap-2">
-                <ArrowRight size={12} className="shrink-0" />
-                Blends multiple themes into one coherent journey
-              </li>
-              <li className="flex items-center gap-2">
-                <ArrowRight size={12} className="shrink-0" />
-                Generates day-by-day itineraries with curated venues
-              </li>
-            </ul>
-            <CTAButton href="/liv">
-              <MessageCircle size={14} />
-              Start a Conversation
-            </CTAButton>
-          </div>
-          <div className="relative flex-1">
-            <div className="border border-border bg-muted p-8">
-              <p className="mb-4 font-serif text-lg font-light italic text-muted-foreground">
-                &ldquo;Create a 4-day journey in Beirut blending Culinary Journeys with Celebration &amp; Nightlife. Elegant, curated, not chaotic.&rdquo;
-              </p>
-              <p className="text-xs uppercase tracking-wider text-muted-foreground">
-                Try a prompt like this
-              </p>
-            </div>
-          </div>
-        </div>
-      </Section>
-
       {/* 6. Journal Preview */}
       {articles.length > 0 && (
         <Section id="journal" className="bg-muted">
@@ -231,7 +189,7 @@ export default async function HomePage() {
           <h2 className="mb-4 font-serif text-4xl font-light">
             Join the Insider Circle
           </h2>
-          <p className="mb-8 text-muted-foreground">
+          <p className="mb-4 text-muted-foreground">
             Receive curated dispatches from the world&apos;s hidden cultural scenes.
           </p>
           <NewsletterForm />
@@ -324,8 +282,16 @@ export default async function HomePage() {
             <div className="space-y-3 text-sm text-muted-foreground">
               <p className="font-medium text-foreground">Henrik Tidefjard</p>
               <p>Founder & Creative Director</p>
-              <p>+46 (0)70 38 722 64</p>
-              <p>henrik@agenthenrik.com</p>
+              <p>
+                <a href="tel:+46703872264" className="transition-colors hover:text-foreground">
+                  +46 (0)70 38 722 64
+                </a>
+              </p>
+              <p>
+                <a href="mailto:henrik@agenthenrik.com" className="transition-colors hover:text-foreground">
+                  henrik@agenthenrik.com
+                </a>
+              </p>
             </div>
           </div>
           <div className="flex-1">

@@ -36,27 +36,6 @@ export default async function PressPage() {
           </p>
         </div>
 
-        {/* Editorial Pull Quotes */}
-        {(() => {
-          const quoted = pressItems.filter((item) => item.quote);
-          if (quoted.length === 0) return null;
-          const featured = quoted.slice(0, 3);
-          return (
-            <div className="mb-16 space-y-12">
-              {featured.map((item) => (
-                <blockquote key={item.id} className="mx-auto max-w-3xl text-center">
-                  <p className="font-serif text-2xl font-light leading-relaxed md:text-3xl">
-                    &ldquo;{item.quote}&rdquo;
-                  </p>
-                  <cite className="nav-text mt-4 block text-sm not-italic text-muted-foreground">
-                    {item.source}
-                  </cite>
-                </blockquote>
-              ))}
-            </div>
-          );
-        })()}
-
         {/* YouTube Videos */}
         {videoItems.length > 0 && (
           <div className="mb-16">

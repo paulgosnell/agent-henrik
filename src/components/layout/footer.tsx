@@ -102,7 +102,36 @@ export function Footer() {
           {/* Extras */}
           <div>
             <h4 className="nav-text mb-4 text-foreground">Stay Inspired</h4>
-            <div className="mb-4">
+            <div className="flex items-center gap-4 mb-4">
+              <a
+                href={SOCIAL_LINKS.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <Instagram size={18} />
+              </a>
+              <a
+                href={SOCIAL_LINKS.youtube}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="YouTube"
+                className="text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <Youtube size={18} />
+              </a>
+              <a
+                href={SOCIAL_LINKS.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                className="text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <Linkedin size={18} />
+              </a>
+            </div>
+            <div>
               <ThemeToggle />
             </div>
           </div>

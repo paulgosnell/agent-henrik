@@ -1,8 +1,10 @@
 import { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Section } from "@/components/ui/section";
 import { CTAButton } from "@/components/ui/cta-button";
+import { ArrowLeft } from "lucide-react";
 import type { JournalArticle } from "@/lib/supabase/types";
 
 interface PageProps {
@@ -73,6 +75,19 @@ export default async function ArticlePage({ params }: PageProps) {
             Want to Live This Story?
           </h2>
           <CTAButton href="/liv">Design My Journey with Agent Henrik</CTAButton>
+        </div>
+      </Section>
+
+      {/* Back to Journal */}
+      <Section>
+        <div className="text-center">
+          <Link
+            href="/"
+            className="nav-text inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft size={14} />
+            Back to Home
+          </Link>
         </div>
       </Section>
     </article>
