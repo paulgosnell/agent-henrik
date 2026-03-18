@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { PressCard } from "@/components/press/press-card";
 import { Section } from "@/components/ui/section";
 import { getPageMeta } from "@/lib/utils/page-meta";
+import { Youtube } from "lucide-react";
 import type { PressItem } from "@/lib/supabase/types";
 
 export async function generateMetadata() {
@@ -65,6 +66,19 @@ export default async function PressPage() {
             </div>
           </div>
         )}
+
+        {/* YouTube Channel */}
+        <div className="mt-16 text-center">
+          <a
+            href="https://www.youtube.com/@berlinagenten/videos"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nav-text inline-flex items-center gap-2 border border-border px-8 py-3 transition-all duration-400 hover:bg-foreground hover:text-background"
+          >
+            <Youtube size={16} />
+            Watch on YouTube
+          </a>
+        </div>
 
         {pressItems.length === 0 && (
           <div className="py-16 text-center text-muted-foreground">

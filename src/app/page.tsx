@@ -43,7 +43,7 @@ export default async function HomePage() {
       .select("*")
       .eq("published", true)
       .order("published_at", { ascending: false })
-      .limit(6),
+      .limit(3),
     supabase
       .from("ah_storyworlds")
       .select("*")
