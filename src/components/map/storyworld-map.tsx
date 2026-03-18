@@ -84,11 +84,23 @@ export function StoryworldMap({ storyworlds, themes = [], storytellers = [] }: S
     return new Set(allValues);
   }
 
+  // Map legacy category values to new slugs
+  const normCategory = (cat: string | null | undefined): string => {
+    const legacy: Record<string, string> = {
+      city: "city-town",
+      island: "beach-island",
+      arctic: "nature-mountain",
+      coastal: "beach-island",
+    };
+    const val = cat || "city-town";
+    return legacy[val] || val;
+  };
+
   const filteredStoryworlds = useMemo(() => {
     return storyworlds.filter((sw) => {
       if (!sw.latitude || !sw.longitude) return false;
       const seasonMatch = sw.seasons?.some((s) => activeSeasons.has(s)) ?? true;
-      const categoryMatch = activeCategories.has(sw.category || "city");
+      const categoryMatch = activeCategories.has(normCategory(sw.category));
       return seasonMatch && categoryMatch;
     });
   }, [storyworlds, activeSeasons, activeCategories]);
@@ -229,7 +241,7 @@ export function StoryworldMap({ storyworlds, themes = [], storytellers = [] }: S
           <Marker
             key={sw.id}
             position={[sw.latitude!, sw.longitude!]}
-            icon={createPinIcon(CATEGORY_COLORS[sw.category || "city"] || "#ffffff")}
+            icon={createPinIcon(CATEGORY_COLORS[normCategory(sw.category)] || "#ffffff")}
             eventHandlers={{ click: () => setSelected({ type: "storyworld", data: sw }) }}
           />
         ))}

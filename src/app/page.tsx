@@ -66,25 +66,26 @@ export default async function HomePage() {
       />
 
       {/* 2. Storyworld Map Teaser */}
-      <Section id="explore" className="bg-muted">
-        <div className="flex flex-col items-center gap-8 md:flex-row md:gap-16">
-          <div className="flex-1">
-            <h2 className="mb-4 font-serif text-4xl font-light md:text-5xl">
-              Explore the Storyworld
-            </h2>
-            <p className="mb-6 max-w-md text-muted-foreground">
-              Each destination is a chapter in a story only you can live.
-            </p>
-            <CTAButton href="/explore">
-              <MapPin size={14} />
-              Open Map
-            </CTAButton>
-          </div>
-          <div className="relative aspect-video w-full flex-1 overflow-hidden rounded-lg border border-border">
-            <MiniMapLoader storyworlds={storyworlds} />
+      <section id="explore" className="relative">
+        <div className="relative aspect-[16/9] md:aspect-[21/9] w-full overflow-hidden border-y border-border">
+          <MiniMapLoader storyworlds={storyworlds} />
+          {/* Overlapping text panel */}
+          <div className="absolute inset-0 pointer-events-none z-[400]">
+            <div className="pointer-events-auto absolute bottom-6 left-6 md:bottom-10 md:left-10 max-w-sm rounded-lg bg-background/80 backdrop-blur-md p-6 border border-border">
+              <h2 className="mb-3 font-serif text-3xl font-light md:text-4xl">
+                Explore the Storyworld
+              </h2>
+              <p className="mb-4 text-sm text-muted-foreground">
+                Each destination is a chapter in a story only you can live.
+              </p>
+              <CTAButton href="/explore">
+                <MapPin size={14} />
+                Open Map
+              </CTAButton>
+            </div>
           </div>
         </div>
-      </Section>
+      </section>
 
       {/* 3. Experience Themes */}
       <Section id="experiences">

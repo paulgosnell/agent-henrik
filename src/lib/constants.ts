@@ -82,18 +82,24 @@ export const JOURNAL_CATEGORIES = [
 ] as const;
 
 export const CATEGORY_CONFIG = [
-  { slug: "city", label: "City" },
-  { slug: "island", label: "Island" },
-  { slug: "arctic", label: "Arctic" },
-  { slug: "coastal", label: "Coastal" },
-  { slug: "storyteller", label: "Storyteller" },
+  { slug: "city-town", label: "City & Town" },
+  { slug: "village-rural", label: "Village & Rural" },
+  { slug: "beach-island", label: "Beach & Island" },
+  { slug: "nature-mountain", label: "Nature & Mountain" },
+  { slug: "desert-wilderness", label: "Desert & Wilderness" },
+  { slug: "cultural-hotspot", label: "Cultural Hotspot" },
+  { slug: "hidden-gem", label: "Hidden Gem" },
+  { slug: "storyteller", label: "Storytellers" },
 ] as const;
 
 export const CATEGORY_COLORS: Record<string, string> = {
-  city: "#ffffff",
-  island: "#38bdf8",
-  arctic: "#a5f3fc",
-  coastal: "#2dd4bf",
+  "city-town": "#ffffff",
+  "village-rural": "#86efac",
+  "beach-island": "#38bdf8",
+  "nature-mountain": "#a5f3fc",
+  "desert-wilderness": "#fcd34d",
+  "cultural-hotspot": "#f472b6",
+  "hidden-gem": "#c084fc",
   storyteller: "#fbbf24",
 };
 
