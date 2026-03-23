@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { Send, Check } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { Send, Check, MessageSquare } from "lucide-react";
 import { INVESTMENT_LEVELS } from "@/lib/constants";
 
 interface ContactFormProps {
@@ -15,11 +16,31 @@ export function ContactForm({
   prefillDestination,
   prefillThemeId,
   prefillStoryworldId,
-  aiDraft,
+  aiDraft: aiDraftProp,
 }: ContactFormProps) {
+  const searchParams = useSearchParams();
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(false);
+  const [fromChat, setFromChat] = useState(false);
+  const [chatTranscript, setChatTranscript] = useState<string | null>(aiDraftProp || null);
+
+  // Read prefill values from URL params (set by chat handoff)
+  const paramName = searchParams?.get("name") || "";
+  const paramEmail = searchParams?.get("email") || "";
+  const paramDates = searchParams?.get("travel_dates") || "";
+  const paramGroupSize = searchParams?.get("group_size") || "";
+  const paramDestination = searchParams?.get("destination") || prefillDestination || "";
+  const paramStoryworldId = searchParams?.get("storyworld_id") || prefillStoryworldId || "";
+  const paramThemeId = searchParams?.get("theme_id") || prefillThemeId || "";
+
+  useEffect(() => {
+    if (searchParams?.get("from_chat") === "1") {
+      setFromChat(true);
+      const transcript = sessionStorage.getItem("ah_chat_transcript");
+      if (transcript) setChatTranscript(transcript);
+    }
+  }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -43,9 +64,9 @@ export function ContactForm({
           group_size: data.get("group_size") ? Number(data.get("group_size")) : null,
           investment_level: (data.get("investment_level") as string) || null,
           preferences: (data.get("preferences") as string) || null,
-          ai_draft_itinerary: aiDraft || null,
-          source_storyworld_id: prefillStoryworldId || null,
-          source_theme_id: prefillThemeId || null,
+          ai_draft_itinerary: chatTranscript || null,
+          source_storyworld_id: paramStoryworldId || null,
+          source_theme_id: paramThemeId || null,
         }),
       });
 
@@ -74,6 +95,15 @@ export function ContactForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {fromChat && (
+        <div className="flex items-start gap-3 border border-border bg-muted p-4">
+          <MessageSquare size={16} className="mt-0.5 shrink-0 text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">
+            Details from your concierge conversation have been filled in below. Review and submit to complete your booking.
+          </p>
+        </div>
+      )}
+
       {/* Name & Email */}
       <div className="grid gap-4 md:grid-cols-2">
         <div>
@@ -85,6 +115,7 @@ export function ContactForm({
             name="name"
             type="text"
             required
+            defaultValue={paramName}
             className="w-full border border-border bg-transparent px-4 py-3 text-sm text-foreground focus:border-foreground focus:outline-none"
           />
         </div>
@@ -97,6 +128,7 @@ export function ContactForm({
             name="email"
             type="email"
             required
+            defaultValue={paramEmail}
             className="w-full border border-border bg-transparent px-4 py-3 text-sm text-foreground focus:border-foreground focus:outline-none"
           />
         </div>
@@ -123,7 +155,7 @@ export function ContactForm({
             id="destination"
             name="destination"
             type="text"
-            defaultValue={prefillDestination}
+            defaultValue={paramDestination}
             className="w-full border border-border bg-transparent px-4 py-3 text-sm text-foreground focus:border-foreground focus:outline-none"
           />
         </div>
@@ -140,6 +172,7 @@ export function ContactForm({
             name="travel_dates"
             type="text"
             placeholder="e.g. March 15-22, 2026"
+            defaultValue={paramDates}
             className="w-full border border-border bg-transparent px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground focus:outline-none"
           />
         </div>
@@ -152,6 +185,7 @@ export function ContactForm({
             name="group_size"
             type="number"
             min="1"
+            defaultValue={paramGroupSize}
             className="w-full border border-border bg-transparent px-4 py-3 text-sm text-foreground focus:border-foreground focus:outline-none"
           />
         </div>
