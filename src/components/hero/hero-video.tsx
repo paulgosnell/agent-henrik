@@ -8,12 +8,12 @@ const STORAGE_BASE = "https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object
 const CHILLEDSITES_BASE = "https://api.chilledsites.com/storage/v1/object/public/videos/cd53f831-1864-47fd-97af-23f2aa3b9feb";
 
 const HERO_CLIPS: { url: string; duration: number }[] = [
-  // --- Opening: Henrik arrival ---
-  { url: `${STORAGE_BASE}/henrik-arrival.mp4`, duration: 6 },
-  // --- Aerial cityscape montage (3s each) ---
-  { url: `${CHILLEDSITES_BASE}/1773236222852-192481d7-299f-433c-a1f5-b0e4984aa85e.mp4`, duration: 3 }, // Hong Kong
-  { url: `${CHILLEDSITES_BASE}/1773222970074-7d714630-9c29-47c1-b36e-c24e6b163930.mp4`, duration: 3 }, // Berlin
-  { url: `${CHILLEDSITES_BASE}/1773236296571-298e2e08-8405-42df-8aba-613553771fff.mp4`, duration: 3 }, // Bucharest
+  // --- Opening: Henrik in Kraftwerk factory (Grok Imagine) ---
+  { url: `${STORAGE_BASE}/grok-opening-kraftwerk.mp4`, duration: 6 },
+  // --- Aerial cityscape montage ---
+  { url: `${STORAGE_BASE}/grok-hongkong-victoria-peak.mp4`, duration: 5 }, // Hong Kong (Grok Imagine)
+  { url: `${STORAGE_BASE}/grok-berlin-tvtower.mp4`, duration: 5 }, // Berlin (Grok Imagine)
+  { url: `${STORAGE_BASE}/grok-bucharest-parliament.mp4`, duration: 5 }, // Bucharest (Grok Imagine)
   { url: `${CHILLEDSITES_BASE}/1773228568542-37d01a15-36ef-4d15-8967-a10a2e8d33ae.mp4`, duration: 3 }, // Mykonos
   { url: `${CHILLEDSITES_BASE}/1773228628779-7132e6d8-f424-457f-8177-73b48ee318e6.mp4`, duration: 3 }, // Beirut
   { url: `${CHILLEDSITES_BASE}/1773236442538-69aa5116-7539-45ee-8c2a-8efcf592990e.mp4`, duration: 3 }, // Rio de Janeiro
