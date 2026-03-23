@@ -8,37 +8,13 @@ const STORAGE_BASE = "https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object
 const CHILLEDSITES_BASE = "https://api.chilledsites.com/storage/v1/object/public/videos/cd53f831-1864-47fd-97af-23f2aa3b9feb";
 
 const HERO_CLIPS: { url: string; duration: number }[] = [
-  // --- Opening: Henrik in Kraftwerk factory (Grok Imagine) ---
-  { url: `${STORAGE_BASE}/grok-opening-kraftwerk.mp4`, duration: 6 },
-  // --- Aerial cityscape montage ---
-  { url: `${STORAGE_BASE}/grok-hongkong-victoria-peak.mp4`, duration: 5 }, // Hong Kong (Grok Imagine)
-  { url: `${STORAGE_BASE}/grok-berlin-tvtower.mp4`, duration: 5 }, // Berlin (Grok Imagine)
-  { url: `${STORAGE_BASE}/grok-bucharest-parliament.mp4`, duration: 5 }, // Bucharest (Grok Imagine)
-  { url: `${CHILLEDSITES_BASE}/1773228568542-37d01a15-36ef-4d15-8967-a10a2e8d33ae.mp4`, duration: 3 }, // Mykonos
-  { url: `${CHILLEDSITES_BASE}/1773228628779-7132e6d8-f424-457f-8177-73b48ee318e6.mp4`, duration: 3 }, // Beirut
-  { url: `${CHILLEDSITES_BASE}/1773236442538-69aa5116-7539-45ee-8c2a-8efcf592990e.mp4`, duration: 3 }, // Rio de Janeiro
-  { url: `${CHILLEDSITES_BASE}/1773236372012-10978d0e-864d-4b04-9fbe-93928666db41.mp4`, duration: 3 }, // Abisko
-  { url: `${CHILLEDSITES_BASE}/1773229205544-22b919d6-0e81-4cfe-9e4f-7e6c6f6bd383.mp4`, duration: 3 }, // Lofoten
-  { url: `${CHILLEDSITES_BASE}/1773229280946-c5b6947d-4518-4f6b-96cb-03798b32f0fc.mp4`, duration: 3 }, // Salalah
-  // --- Henrik rooftop bar ---
-  { url: `${STORAGE_BASE}/henrik-rooftop.mp4`, duration: 6 },
-  // --- Luxury experience moments (1.5s each) ---
-  { url: `${CHILLEDSITES_BASE}/1773223097010-c46a0273-f557-4b06-a6bd-474be8421420.mp4`, duration: 1.5 }, // Rooftop cocktail bar (VO3)
-  { url: `${CHILLEDSITES_BASE}/1773223167422-d6c27c23-010d-4975-8533-acc4a90cb62d.mp4`, duration: 1.5 }, // Nightclub (VO3)
-  { url: `${CHILLEDSITES_BASE}/1773228703970-16655588-a719-4393-860a-26ddf52f24e7.mp4`, duration: 1.5 }, // Luxury spa (VO3)
-  { url: `${CHILLEDSITES_BASE}/1773228770658-9c3a5ce3-2c77-435a-a91d-8f052ed2e374.mp4`, duration: 1.5 }, // Yacht deck (VO3)
-  { url: `${CHILLEDSITES_BASE}/1773228840753-29d851d1-e4b0-4652-92b4-0bdac78ae788.mp4`, duration: 1.5 }, // Fine dining (VO3)
-  { url: `${STORAGE_BASE}/champagne-toast.mp4`, duration: 1.5 },
-  { url: `${STORAGE_BASE}/rooftop-pool-party.mp4`, duration: 1.5 },
-  { url: `${STORAGE_BASE}/nightclub-dancing.mp4`, duration: 1.5 },
-  { url: `${STORAGE_BASE}/sushi-chef.mp4`, duration: 1.5 },
-  { url: `${STORAGE_BASE}/bartender-mixing.mp4`, duration: 1.5 },
-  { url: `${STORAGE_BASE}/candlelit-dinner.mp4`, duration: 1.5 },
-  { url: `${STORAGE_BASE}/live-music.mp4`, duration: 1.5 },
-  { url: `${STORAGE_BASE}/driving-city-night.mp4`, duration: 1.5 },
-  { url: `${STORAGE_BASE}/couple-european-street.mp4`, duration: 1.5 },
-  // --- Closing: Henrik corridor "follow me" ---
-  { url: `${STORAGE_BASE}/henrik-corridor.mp4`, duration: 6 },
+  // --- Grok Imagine avatar clips only (Henrik in scene) ---
+  { url: `${STORAGE_BASE}/grok-opening-kraftwerk.mp4`, duration: 6 }, // Opening: Kraftwerk factory
+  { url: `${STORAGE_BASE}/grok-hongkong-victoria-peak.mp4`, duration: 5 }, // Hong Kong
+  { url: `${STORAGE_BASE}/grok-berlin-tvtower.mp4`, duration: 5 }, // Berlin
+  { url: `${STORAGE_BASE}/grok-bucharest-parliament.mp4`, duration: 5 }, // Bucharest
+  // TODO: Add remaining Grok clips as they're produced
+  { url: `${STORAGE_BASE}/henrik-corridor.mp4`, duration: 6 }, // Closing
 ];
 
 interface HeroVideoProps {
