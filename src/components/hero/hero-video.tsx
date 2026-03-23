@@ -13,6 +13,8 @@ const HERO_CLIPS: { url: string; duration: number }[] = [
   { url: `${STORAGE_BASE}/grok-hongkong-victoria-peak.mp4`, duration: 5 }, // Hong Kong
   { url: `${STORAGE_BASE}/grok-berlin-tvtower.mp4`, duration: 5 }, // Berlin
   { url: `${STORAGE_BASE}/grok-bucharest-parliament.mp4`, duration: 5 }, // Bucharest
+  { url: `${STORAGE_BASE}/grok-abisko-aurora.mp4`, duration: 5 }, // Abisko
+  { url: `${STORAGE_BASE}/grok-rio-fasano.mp4`, duration: 5 }, // Rio
   // TODO: Add remaining Grok clips as they're produced
   { url: `${STORAGE_BASE}/henrik-corridor.mp4`, duration: 6 }, // Closing
 ];
