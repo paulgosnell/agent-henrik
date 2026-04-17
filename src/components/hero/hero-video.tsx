@@ -5,18 +5,22 @@ import Link from "next/link";
 import { ChevronDown, MapPin, Compass, Users } from "lucide-react";
 
 const STORAGE_BASE = "https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object/public/videos/henrik";
-const CHILLEDSITES_BASE = "https://api.chilledsites.com/storage/v1/object/public/videos/cd53f831-1864-47fd-97af-23f2aa3b9feb";
 
 const HERO_CLIPS: { url: string; duration: number }[] = [
-  // --- Grok Imagine avatar clips only (Henrik in scene) ---
-  { url: `${STORAGE_BASE}/grok-opening-kraftwerk.mp4`, duration: 6 }, // Opening: Kraftwerk factory
-  { url: `${STORAGE_BASE}/grok-hongkong-victoria-peak.mp4`, duration: 5 }, // Hong Kong
-  { url: `${STORAGE_BASE}/grok-berlin-tvtower.mp4`, duration: 5 }, // Berlin
-  { url: `${STORAGE_BASE}/grok-bucharest-parliament.mp4`, duration: 5 }, // Bucharest
-  { url: `${STORAGE_BASE}/grok-abisko-aurora.mp4`, duration: 5 }, // Abisko
-  { url: `${STORAGE_BASE}/grok-rio-fasano.mp4`, duration: 5 }, // Rio
-  // TODO: Add remaining Grok clips as they're produced
-  { url: `${STORAGE_BASE}/henrik-corridor.mp4`, duration: 6 }, // Closing
+  { url: `${STORAGE_BASE}/grok-v2-0.mp4`, duration: 6 },   // Opening: Kraftwerk Berlin
+  { url: `${STORAGE_BASE}/grok-v2-1.mp4`, duration: 5 },   // Victoria Peak, Hong Kong
+  { url: `${STORAGE_BASE}/grok-v2-2.mp4`, duration: 5 },   // Palace of the Parliament, Bucharest
+  { url: `${STORAGE_BASE}/grok-v2-2b.mp4`, duration: 5 },  // Fernsehturm, Berlin
+  { url: `${STORAGE_BASE}/grok-v2-3.mp4`, duration: 6 },   // Abisko Northern Lights
+  { url: `${STORAGE_BASE}/grok-v2-4.mp4`, duration: 5 },   // Hotel Fasano, Rio de Janeiro
+  { url: `${STORAGE_BASE}/grok-v2-5.mp4`, duration: 6 },   // Cox Bay, Vancouver Island
+  { url: `${STORAGE_BASE}/grok-v2-6.mp4`, duration: 5 },   // Beirut Arrival
+  { url: `${STORAGE_BASE}/grok-v2-7.mp4`, duration: 5 },   // Zuma Mykonos
+  { url: `${STORAGE_BASE}/grok-v2-8.mp4`, duration: 6 },   // Reinebringen, Lofoten
+  { url: `${STORAGE_BASE}/grok-v2-10.mp4`, duration: 5 },  // Kraftwerk Berlin Nightclub
+  { url: `${STORAGE_BASE}/grok-v2-12.mp4`, duration: 5 },  // Burj Khalifa, Dubai
+  { url: `${STORAGE_BASE}/grok-v2-13.mp4`, duration: 4 },  // Tom of Finland, Berlin Underground
+  { url: `${STORAGE_BASE}/grok-v2-11.mp4`, duration: 5 },  // Closing: Kraftwerk Berlin
 ];
 
 interface HeroVideoProps {
