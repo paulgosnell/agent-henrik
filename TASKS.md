@@ -86,22 +86,13 @@ Client feedback round 1 (45 items) fully addressed.
 - [x] Reviewed Henrik's detailed per-clip feedback email (24 Mar)
 - [x] Researched Grok Imagine latest prompting best practices
 - [x] Created "Grok Prompts v2" tab in Google Sheet with 14 refined prompts
-- [ ] Generate #0 OPENING — Kraftwerk Berlin (CRITICAL)
-- [ ] Generate #1 — Victoria Peak, Hong Kong (redo)
-- [ ] Generate #2 — Palace of the Parliament, Bucharest (redo)
-- [ ] Generate #2b — Fernsehturm, Berlin (redo)
-- [ ] Generate #3 — Abisko Northern Lights, from behind (redo)
-- [ ] Generate #4 — Hotel Fasano, Rio de Janeiro (redo — summer outfit)
-- [ ] Generate #5 — Cox Bay, Vancouver Island (NEW — missing)
-- [ ] Generate #6 — Beirut Arrival, airplane window (redo)
-- [ ] Generate #7 — Zuma Mykonos (redo)
-- [ ] Generate #8 — Reinebringen, Lofoten (needs avatar)
-- [ ] Generate #10 — Kraftwerk Berlin Nightclub (new — doors opening)
-- [ ] Generate #11 CLOSING — Kraftwerk Berlin (CRITICAL)
-- [ ] Generate #12 — Burj Khalifa, Dubai (NEW)
-- [ ] Generate #13 — Tom of Finland, Berlin Underground (NEW — Henrik's bold request)
-- [ ] Integrate new clips into hero-video.tsx and upload to ChilledSites storage
-- [ ] Remove clips Henrik flagged (Santorini, Monaco yacht, concert, random cities)
+- [x] Generate all 14 clips via Grok Imagine (0, 1, 2, 2b, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13)
+- [x] Upload all clips to Supabase storage (grok-v2-*.mp4)
+- [x] Integrate new clips into hero-video.tsx
+- [x] Remove clips Henrik flagged (Santorini, Monaco yacht, concert, random cities)
+- [x] Created "FINAL - Video Prompts" tab in Google Sheet (single source of truth)
+- [x] Emailed Henrik for review (17 Apr 2026)
+- [ ] Henrik feedback and iteration (awaiting response)
 
 ---
 
