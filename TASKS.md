@@ -96,9 +96,32 @@ Client feedback round 1 (45 items) fully addressed.
 
 ---
 
-## Before Launch
-- [ ] Point agenthenrik.com DNS to Vercel
-- [ ] Client content population via CMS
+## Pre-Launch Sweep (25 Apr 2026)
+- [x] Full code + content readiness audit (all routes 200, build clean, no placeholders)
+- [x] Refactored /about/services and /about/team to read CMS subtitle/body/image with fallback
+- [x] Seeded ah_page_meta rows for /about/services and /about/team (Henrik can now edit founder bio + services intro from admin)
+- [x] Seeded ah_concierge_instructions with 15 baseline rows across all 5 categories — rebranded for global Agent Henrik (no Liv name, no Sweden defaults, no lorem ipsum)
+- [x] Confirmed sitemap, robots, OG all reference agenthenrik.com (production domain)
+- [x] Confirmed Vercel env vars all present in production
+- [x] Sent firm sign-off email to Henrik with 30 Apr 2026 deadline
+
+## Awaiting Client Sign-Off (Hard Deadline 30 Apr 2026)
+- [ ] Henrik to confirm yes/no on the 14 Grok v2 video clips
+- [ ] Henrik can flag specific clip numbers needing re-render via Grok Imagine
+
+## On Sign-Off (Launch Day Actions)
+- [ ] `npx vercel domains add agenthenrik.com --scope p0stman`
+- [ ] `npx vercel domains inspect agenthenrik.com --scope p0stman` to get DNS records
+- [ ] Update DNS at Miss Hosting → Vercel
+- [ ] Confirm/add OneUptime monitor for agenthenrik.com
+- [ ] Issue final invoice (£1,500 balance)
+
+## Light Content (Henrik to populate post-launch via CMS)
+- [ ] Add 4–7 more storytellers (currently 3 of 10 destinations covered)
+- [ ] Set storyteller lat/long + show_on_map=true to populate map filter
+- [ ] Add more journal articles (currently 3)
+- [ ] Add published_at dates to ah_press_items
+- [ ] Lengthen theme `definition` fields (currently 31–51 chars, may look thin)
 - [ ] Make @agenthenrik Instagram public + swap to StormLikes feed
 
 ## Phase 2+ (Post-Launch)
