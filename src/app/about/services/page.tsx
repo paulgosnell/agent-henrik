@@ -1,7 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { getPageMeta } from "@/lib/utils/page-meta";
+import { getPageContent } from "@/lib/utils/page-content";
 import { Section } from "@/components/ui/section";
 import { CTAButton } from "@/components/ui/cta-button";
+import { PageContent } from "@/components/ui/page-content";
 import type { Service } from "@/lib/supabase/types";
 
 export async function generateMetadata() {
@@ -20,6 +22,7 @@ export default async function ServicesPage() {
     .order("display_order");
 
   const services = (data as Service[]) || [];
+  const page = await getPageContent("/about/services");
 
   return (
     <div className="pt-20">
@@ -29,9 +32,15 @@ export default async function ServicesPage() {
             Our Services
           </h1>
           <p className="mx-auto max-w-xl text-lg text-muted-foreground">
-            Seven ways we craft your insider journey.
+            {page?.subtitle || "Seven ways we craft your insider journey."}
           </p>
         </div>
+
+        {page?.body && (
+          <div className="mx-auto mb-12 max-w-2xl">
+            <PageContent html={page.body} />
+          </div>
+        )}
 
         {services.length > 0 ? (
           <div className="grid gap-8 md:grid-cols-2">

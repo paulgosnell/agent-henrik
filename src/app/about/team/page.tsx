@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getPageMeta } from "@/lib/utils/page-meta";
+import { getPageContent } from "@/lib/utils/page-content";
 import { Section } from "@/components/ui/section";
 import { CTAButton } from "@/components/ui/cta-button";
+import { PageContent } from "@/components/ui/page-content";
 import type { Storyteller } from "@/lib/supabase/types";
 
 export async function generateMetadata() {
@@ -22,6 +24,7 @@ export default async function TeamPage() {
     .limit(6);
 
   const storytellers = (data as Storyteller[]) || [];
+  const page = await getPageContent("/about/team");
 
   return (
     <div className="pt-20">
@@ -32,37 +35,40 @@ export default async function TeamPage() {
             <div
               className="h-full w-full bg-cover bg-center"
               style={{
-                backgroundImage:
-                  "url(https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object/public/media/henrik/henrik-portrait.jpg)",
+                backgroundImage: `url(${page?.image_url || "https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object/public/media/henrik/henrik-portrait.jpg"})`,
               }}
             />
           </div>
           <div className="flex-1">
             <p className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">
-              Founder & Creative Director
+              {page?.subtitle || "Founder & Creative Director"}
             </p>
             <h1 className="mb-6 font-serif text-5xl font-light md:text-6xl">
               Henrik Tidefjard
             </h1>
-            <div className="space-y-4 text-muted-foreground">
-              <p>
-                Henrik founded BerlinAgenten as a way to share the city he
-                loved with people who wanted more than a guidebook could
-                offer — the hidden speakeasies, the industrial lofts
-                turned art galleries, the restaurants known only to locals.
-              </p>
-              <p>
-                That vision has grown into Agent Henrik: a global luxury
-                travel curation platform spanning ten destinations across
-                four continents. Henrik personally curates every journey,
-                drawing on a decade of relationships with local insiders,
-                cultural gatekeepers, and scene makers worldwide.
-              </p>
-              <p>
-                His approach is simple — every trip should feel like a
-                chapter in a story only you can live.
-              </p>
-            </div>
+            {page?.body ? (
+              <PageContent html={page.body} />
+            ) : (
+              <div className="space-y-4 text-muted-foreground">
+                <p>
+                  Henrik founded BerlinAgenten as a way to share the city he
+                  loved with people who wanted more than a guidebook could
+                  offer — the hidden speakeasies, the industrial lofts
+                  turned art galleries, the restaurants known only to locals.
+                </p>
+                <p>
+                  That vision has grown into Agent Henrik: a global luxury
+                  travel curation platform spanning ten destinations across
+                  four continents. Henrik personally curates every journey,
+                  drawing on a decade of relationships with local insiders,
+                  cultural gatekeepers, and scene makers worldwide.
+                </p>
+                <p>
+                  His approach is simple — every trip should feel like a
+                  chapter in a story only you can live.
+                </p>
+              </div>
+            )}
             <div className="mt-8">
               <CTAButton href="/contact">Start a Conversation</CTAButton>
             </div>
