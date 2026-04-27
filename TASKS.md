@@ -92,7 +92,25 @@ Client feedback round 1 (45 items) fully addressed.
 - [x] Remove clips Henrik flagged (Santorini, Monaco yacht, concert, random cities)
 - [x] Created "FINAL - Video Prompts" tab in Google Sheet (single source of truth)
 - [x] Emailed Henrik for review (17 Apr 2026)
-- [ ] Henrik feedback and iteration (awaiting response)
+- [x] Henrik feedback received (27 Apr 2026) — clip-by-clip review
+
+### Hero Video v3 — xAI API Batch (27 Apr 2026, addressing Henrik's 27 Apr feedback)
+- [x] Analysed Henrik's clip-by-clip email (3 flips, 4 tweaks, 2 major redos, 3 concept changes, 2 killed)
+- [x] Cross-referenced all v2 prompts against feedback in Google Sheet
+- [x] Researched Grok Imagine best practices (3 parallel research agents)
+- [x] Created v3 prompt formula (shot type first, architecture descriptions, gaze direction, hands occupied)
+- [x] Added "V3 Prompts (27 Apr)" tab to Google Sheet with all 11 new prompts
+- [x] Discovered xAI direct video API — no browser automation needed
+- [x] Built batch generation script (scripts/generate-hero-videos.sh)
+- [x] Generated all 12 clips via xAI API ($3.60 total, ~12 min)
+- [x] Redid clip 0 (factory) x2 — fixed hand gesture, then fixed background architecture
+- [x] Redid clip 10 (club closing) — simplified to behind-shot walking through open doorway
+- [x] Uploaded all clips to Supabase videos/hero-v3/ bucket
+- [x] Updated hero-video.tsx with 15-clip v3 running order
+- [x] Deployed to staging
+- [x] Emailed Henrik for review (27 Apr 2026)
+- [x] Saved reusable Grok video gen tool to ~/.claude/rules/grok-video-gen.md
+- [ ] Henrik v3 feedback and sign-off (awaiting response)
 
 ---
 
@@ -106,8 +124,8 @@ Client feedback round 1 (45 items) fully addressed.
 - [x] Sent firm sign-off email to Henrik with 30 Apr 2026 deadline
 
 ## Awaiting Client Sign-Off (Hard Deadline 30 Apr 2026)
-- [ ] Henrik to confirm yes/no on the 14 Grok v2 video clips
-- [ ] Henrik can flag specific clip numbers needing re-render via Grok Imagine
+- [ ] Henrik to confirm yes/no on the 15-clip v3 hero video (email sent 27 Apr)
+- [ ] If specific clips need re-render: run scripts/generate-hero-videos.sh (edit prompt, re-run single clip)
 
 ## On Sign-Off (Launch Day Actions)
 - [ ] `npx vercel domains add agenthenrik.com --scope p0stman`
@@ -129,4 +147,4 @@ Client feedback round 1 (45 items) fully addressed.
 - [ ] User accounts + saved itineraries
 - [ ] Budget simulator
 - [ ] Analytics tracking
-- [ ] Grok Imagine API multi-reference support (when available — currently UI-only)
+- [x] Grok Imagine API multi-reference support — now available and in use (reference_images array, up to 7)
