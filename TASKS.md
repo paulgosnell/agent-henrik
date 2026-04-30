@@ -123,16 +123,21 @@ Client feedback round 1 (45 items) fully addressed.
 - [x] Confirmed Vercel env vars all present in production
 - [x] Sent firm sign-off email to Henrik with 30 Apr 2026 deadline
 
-## Awaiting Client Sign-Off (Hard Deadline 30 Apr 2026)
-- [ ] Henrik to confirm yes/no on the 15-clip v3 hero video (email sent 27 Apr)
-- [ ] If specific clips need re-render: run scripts/generate-hero-videos.sh (edit prompt, re-run single clip)
+## HARD STOP (30 Apr 2026)
+No further work until £1,500 balance is paid. Final delivery email sent 30 Apr 2026 to all 3 of Henrik's email addresses. Any further amends (including video revisions) to be quoted and paid separately.
 
-## On Sign-Off (Launch Day Actions)
+**Project stats:** 29 working days, 295 commits, 6 months. £20k+ at market rates, delivered for £3,000.
+
+## Blocked Until Payment
+- [ ] Henrik to pay £1,500 outstanding balance
+- [ ] Henrik to confirm yes/no on the 15-clip v3 hero video
+- [ ] Any video re-renders to be quoted separately
+
+## On Payment + Sign-Off (Launch Day Actions)
 - [ ] `npx vercel domains add agenthenrik.com --scope p0stman`
 - [ ] `npx vercel domains inspect agenthenrik.com --scope p0stman` to get DNS records
 - [ ] Update DNS at Miss Hosting → Vercel
 - [ ] Confirm/add OneUptime monitor for agenthenrik.com
-- [ ] Issue final invoice (£1,500 balance)
 
 ## Light Content (Henrik to populate post-launch via CMS)
 - [ ] Add 4–7 more storytellers (currently 3 of 10 destinations covered)
