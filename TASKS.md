@@ -124,14 +124,26 @@ Client feedback round 1 (45 items) fully addressed.
 - [x] Sent firm sign-off email to Henrik with 30 Apr 2026 deadline
 
 ## HARD STOP (30 Apr 2026)
-No further work until £1,500 balance is paid. Final delivery email sent 30 Apr 2026 to all 3 of Henrik's email addresses. Any further amends (including video revisions) to be quoted and paid separately.
+No further work until €1,750 invoice is paid. Final delivery email sent 30 Apr 2026 to all 3 of Henrik's email addresses. Any further amends (including video revisions) to be quoted and paid separately.
 
 **Project stats:** 29 working days, 295 commits, 6 months. £20k+ at market rates, delivered for £3,000.
 
 ## Blocked Until Payment
-- [ ] Henrik to pay £1,500 outstanding balance
+- [ ] Henrik to pay €1,750 outstanding balance (Revolut invoice sent, PDF attached in follow-up 7 May)
 - [ ] Henrik to confirm yes/no on the 15-clip v3 hero video
 - [ ] Any video re-renders to be quoted separately
+
+### Chase Log
+- 30 Apr 2026: Final delivery email with hard stop (all 3 addresses)
+- 7 May 2026: Friendly follow-up with invoice PDF attached (all 3 addresses, reply to 30 Apr thread)
+- 14 May 2026: Final notice email + WhatsApp nudge. Deadline: Fri 16 May EOD. If no reply, project closes.
+- 16 May 2026: Henrik replied overnight (4 emails). Disputed payment terms with quasi-legal language, sent round 5 video feedback + Pexels clips via WeTransfer, added new LTS scope (gallery, meta CMS). Reply sent citing Clause 1.2 (Delivery defined as "deliver and give access"), Clause 8.1 (contract expired 30 Mar), industry standard 2-3 revision rounds, and "merely technical implementation" clause. Hard stop maintained. LTS quick wins (Nazraana CMS access, meta descriptions) to be done as goodwill. Photo gallery quoted separately.
+- 16 May 2026 (later): Henrik doubled down on every point. Claimed staging ≠ delivery, 30 Mar was not a release, corrections are "completing specification not revisions", pre-announced further CMS testing/warranty claims. Formal termination notice sent under Clause 8.2. Deadline: 30 May 2026. Pay EUR 1,750 = get everything + one final video round included. Don't pay = platform taken offline, no IP transfer, both walk away.
+- 20 May 2026 (AM): Re-sent termination email to berlinagenten.com (no reply to earlier sends).
+- 20 May 2026 (PM): Henrik replied (luxurytravelsweden.com). Agreed to pay EUR 1,750 but attached conditions: full clip-by-clip re-brief of nearly every hero video (new AI generations, drone movements, landmark reworks, new clips), CMS warranty claims, LTS gallery request. Misread "integrate Pexels clips" as green light for all amends. Reply sent quoting his own words back, clarifying: Pexels swaps only, no AI regen, additional amends quoted after payment. CMS bugs yes, new features no. LTS separate. Hard stop maintained.
+- 20 May 2026 (later): Henrik sent "final compromise" list: 7 items including AI regens (factory door fix, HK replace, clock removal, bowtie removal, club camera movement), Pexels swaps (Lofoten, Sao Paulo), plus CMS warranty confirmation request and LTS gallery quote. Tone much softer, wants to pay and launch. Confirmed all other clips accepted.
+- 21 May 2026: Reply sent explaining AI video technical limitations (generates impressions not copies, every regen is a dice roll, best clip Beirut still doesn't look like Beirut). Offer unchanged: pay EUR 1,750, Pexels/Dropbox integration + clip removal included, further AI work quoted separately. Hard stop maintained.
+- 20 May 2026 (17:06): Henrik's final email of the day. 5 rapid-fire emails in one afternoon. Built strongest paper trail yet: quoted Paul's pre-project pitch ("AI Builder expert", "replace 30-man agency", "we can do that within the budget"), argued video was always the central deliverable, framed all revisions as "completing spec not changing brief", acknowledged project grew beyond estimate but said that's Paul's miscalculation not his. Tone notably softer than 16 May: wants to avoid legal, wants "realistic final completion plan." Still hasn't paid. Decision: no reply. Position stated 4x, ball is in his court. Next action is a bank transfer or 30 May passes.
 
 ## On Payment + Sign-Off (Launch Day Actions)
 - [ ] `npx vercel domains add agenthenrik.com --scope p0stman`
