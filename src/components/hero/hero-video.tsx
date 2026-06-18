@@ -10,7 +10,7 @@ const V4_BASE = "https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object/publ
 
 const HERO_CLIPS: { url: string; duration: number }[] = [
   { url: `${V4_BASE}/clip-00-factory-opening.mp4`, duration: 6 },     // Opening: Kraftwerk Berlin (v4 Veo)
-  { url: `${V3_BASE}/clip-01-hong-kong.mp4`, duration: 6 },           // Victoria Peak, Hong Kong (v3)
+  { url: `${V4_BASE}/clip-01-hong-kong.mp4`, duration: 6 },           // Victoria Peak, Hong Kong (real Pexels footage per Henrik)
   { url: `${V3_BASE}/insert-a-hk-drone.mp4`, duration: 6 },           // HK Drone Panorama insert (v3)
   { url: `${V3_BASE}/clip-02-bucharest.mp4`, duration: 6 },           // Palace of Parliament, Bucharest (v3)
   { url: `${V4_BASE}/clip-2b-berlin-tv-tower.mp4`, duration: 6 },     // Fernsehturm, Berlin (v4 Veo, clock removed)
