@@ -6,23 +6,23 @@ import { ChevronDown, MapPin, Compass, Users } from "lucide-react";
 
 const V2_BASE = "https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object/public/videos/henrik";
 const V3_BASE = "https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object/public/videos/hero-v3";
+const V4_BASE = "https://fjnfsabvuiyzuzfhxzcc.supabase.co/storage/v1/object/public/videos/hero-v4";
 
 const HERO_CLIPS: { url: string; duration: number }[] = [
-  { url: `${V3_BASE}/clip-00-factory-opening.mp4`, duration: 6 },     // Opening: Kraftwerk Berlin (v3)
+  { url: `${V4_BASE}/clip-00-factory-opening.mp4`, duration: 6 },     // Opening: Kraftwerk Berlin (v4 Veo)
   { url: `${V3_BASE}/clip-01-hong-kong.mp4`, duration: 6 },           // Victoria Peak, Hong Kong (v3)
   { url: `${V3_BASE}/insert-a-hk-drone.mp4`, duration: 6 },           // HK Drone Panorama insert (v3)
   { url: `${V3_BASE}/clip-02-bucharest.mp4`, duration: 6 },           // Palace of Parliament, Bucharest (v3)
-  { url: `${V3_BASE}/clip-2b-berlin-tv-tower.mp4`, duration: 6 },     // Fernsehturm, Berlin (v3)
+  { url: `${V4_BASE}/clip-2b-berlin-tv-tower.mp4`, duration: 6 },     // Fernsehturm, Berlin (v4 Veo, clock removed)
   { url: `${V2_BASE}/grok-v2-3.mp4`, duration: 6 },                   // Abisko Northern Lights (KEEP v2)
   { url: `${V2_BASE}/grok-v2-4.mp4`, duration: 5 },                   // Hotel Fasano, Rio de Janeiro (KEEP v2)
-  { url: `${V2_BASE}/grok-v2-5.mp4`, duration: 6 },                   // Cox Bay, Vancouver Island (KEEP v2)
+  { url: `${V4_BASE}/clip-05-cox-bay.mp4`, duration: 6 },             // Cox Bay, Vancouver Island (v4 Veo, bowtie removed)
   { url: `${V3_BASE}/clip-06-beirut.mp4`, duration: 6 },              // Beirut Airplane Arrival (v3)
   { url: `${V3_BASE}/clip-07-mykonos-woman.mp4`, duration: 6 },       // Mykonos Woman at Pool (v3)
   { url: `${V3_BASE}/clip-08-lofoten-drone.mp4`, duration: 6 },       // Lofoten Drone Scenery (v3)
   { url: `${V3_BASE}/clip-12-dubai.mp4`, duration: 6 },               // Burj Khalifa, Dubai (v3)
-  { url: `${V3_BASE}/insert-b-private-dining.mp4`, duration: 6 },     // Private Dining insert (v3)
   { url: `${V3_BASE}/insert-c-rooftop-bar.mp4`, duration: 6 },        // Rooftop Bar insert (v3)
-  { url: `${V3_BASE}/clip-10-berlin-club-closing.mp4`, duration: 6 }, // CLOSING: Berlin Club door (v3)
+  { url: `${V4_BASE}/clip-10-berlin-club-closing.mp4`, duration: 6 }, // CLOSING: Berlin Club door (v4 Veo)
 ];
 
 interface HeroVideoProps {
