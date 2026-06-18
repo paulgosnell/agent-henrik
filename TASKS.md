@@ -112,6 +112,17 @@ Client feedback round 1 (45 items) fully addressed.
 - [x] Saved reusable Grok video gen tool to ~/.claude/rules/grok-video-gen.md
 - [ ] Henrik v3 feedback and sign-off (awaiting response)
 
+### Hero Video v4 — Veo 3.1 final round (18 Jun 2026, Henrik's 20 May final list)
+Switched pipeline xAI Grok -> Google Veo 3.1 (reference_images asset preservation = far better Henrik likeness). New script `scripts/generate-veo-videos.mjs` (ports AccountsOS Veo client). Finals in `videos/hero-v4/`, backups in `videos/hero-v4/backups/`. Deployed to staging.
+- [x] clip-00 factory opening — door artefact removed + camera movement added
+- [x] clip-2b TV tower — Weltzeituhr clock removed (used clock-free take; Veo re-adds clocks)
+- [x] clip-05 Cox Bay — bowtie removed (open-collar linen)
+- [x] clip-10 club closing — camera movement + corrected avatar (turn-to-camera). Take E primary, Take D backup
+- [x] Removed Dinner Toast (insert-b-private-dining) clip per request — hero now 14 clips
+- [x] Hong Kong stock swap — real Victoria Peak Pexels footage (his link), 4K->720p
+- [ ] Lofoten + São Paulo stock swaps — BLOCKED: his WeTransfer ("Cinematic Clips", 16 May) expired 19 May. Needs re-send.
+- [ ] Henrik to review staging + pick between primary/backup options, then sign off
+
 ---
 
 ## Pre-Launch Sweep (25 Apr 2026)
