@@ -180,15 +180,18 @@ const CLIPS = [
   },
   {
     name: "clip-2b-berlin-tv-tower",
-    useRefs: true,
-    // Henrik: "remove the clock" (no Weltzeituhr world clock)
+    useRefs: false,
+    // Henrik 25 Jun: avatar no longer reads as him (long hair). Replace with two
+    // mature Berlin hipster men walking happy. Still clock-free (no Weltzeituhr).
     prompt:
-      "Smooth tracking shot at waist height following a man walking toward camera across a " +
-      "rain-slicked stone plaza at Alexanderplatz Berlin at blue hour. The man from the " +
-      "reference image wears a white suit, one hand in his trouser pocket. Behind him the " +
-      "Fernsehturm television tower rises against deep twilight, its mirrored sphere and " +
-      "red-and-white antenna glowing, city lights reflecting in puddles. Empty plaza with no " +
-      "clock and no monuments. Cinematic colour grade, shallow depth of field.",
+      "Smooth cinematic tracking shot following two stylish mature men strolling side by side " +
+      "across a rain-slicked plaza at Alexanderplatz Berlin at blue hour. Behind them the " +
+      "Fernsehturm television tower rises against deep twilight, plain mirrored sphere and " +
+      "red-and-white antenna, no clock anywhere. One man has dark hair, a full beard, a black " +
+      "leather jacket and black trousers; the other is blond and handsome in a long wool coat, " +
+      "pullover and wide jeans. They walk and chat, laughing warmly, relaxed and confident. " +
+      "City lights reflecting in puddles, cinematic colour grade, shallow depth of field, " +
+      "showcasing Berlin's iconic skyline at dusk.",
   },
   {
     name: "clip-05-cox-bay",
