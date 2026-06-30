@@ -1,8 +1,91 @@
 # Agent Henrik - Tasks
 
+> **STAND BY (30 Jun 2026):** Awaiting Henrik payment (EUR 2,000). Offer accepted, fixes scoped below. **Do not implement until payment confirmed.** Start at → [Payment Fix Sprint](#payment-fix-sprint-30-jun-2026--awaiting-eur-2000).
+
 ## Build Status: Feature Parity with LTS — Complete
 All 5 phases implemented: DB migrations, contact/lead capture, admin CRM with site switcher, map filters, voice mode.
 Client feedback round 1 (45 items) fully addressed.
+
+---
+
+## Payment Fix Sprint (30 Jun 2026) — AWAITING EUR 2,000
+
+**Trigger:** Henrik accepted offer (email sent 30 Jun). Pay EUR 1,750 + EUR 250 → we fix → launch.
+**Repos:** Agent Henrik (`agent-henrik`) + LTS (`luxury-travel-sweden-nextjs`)
+**Timeline:** Start on payment receipt. Target: fixes live on staging same day + next day.
+
+### Fix 1 — Berlin TV Tower clip (video regen)
+**Henrik ask:** "Dark" meant dark-haired European man, not a Black man. Match his reference look.
+**Refs:** Pinterest inspirations from 25 Jun email — https://pin.it/7eszgMSGD (bearded, leather jacket) + https://pin.it/6k5bp1hce (blond, long coat)
+**Prep done:** Veo script + prompt exist in `scripts/generate-veo-videos.mjs` (`clip-2b-berlin-tv-tower`, `useRefs: false`)
+
+- [ ] Update prompt — explicitly "two European/Caucasian men", "dark-haired bearded man (not Black)", blond man per refs. Keep: Alexanderplatz, Fernsehturm, no clock.
+- [ ] Backup current clip → `videos/hero-v4/backups/clip-2b-berlin-tv-tower-v1.mp4`
+- [ ] Regen: `GEMINI_API_KEY=... node scripts/generate-veo-videos.mjs clip-2b-berlin-tv-tower`
+- [ ] Upload to Supabase `videos/hero-v4/clip-2b-berlin-tv-tower.mp4` (same filename — no code change)
+- [ ] Review take; regen again if AI still mis-casts (~2 min / ~$0.30 per attempt)
+
+**Est:** 30–45 min (mostly generation + review)
+
+### Fix 2 — Opening voice + music + loop (EUR 250 scope)
+**Henrik ask:** Voice on opening clip, then music. Muted by default. Visible "Sound On" button. Preference in localStorage. Hero loops continuously.
+**Music:** https://pixabay.com/music/synthwave-electronic-114952/ — hard beats from **7.5s** when phrase "there is something I need to show you" ends (~5s into `clip-00`, 6s duration)
+**Primary file:** `src/components/hero/hero-video.tsx`
+
+- [ ] Download Pixabay MP3 → `public/audio/hero-music.mp3` (or Supabase `videos/` bucket)
+- [ ] Remove end-of-montage behaviour — loop back to clip 0 instead of `setEnded(true)` / fade-to-black
+- [ ] Keep headline CTAs visible throughout OR show only after first full loop (decide on implementation — Henrik didn't specify; default: hide overlay during montage, show after first loop)
+- [ ] Add hidden `<audio ref>` for background track
+- [ ] On clip 0: video carries embedded Veo voice — unmute video element when sound enabled
+- [ ] Sync music: when opening phrase ends (~5s mark), set `audio.currentTime = 7.5` and play
+- [ ] Add `Sound On` / `Sound Off` toggle (Lucide `Volume2` / `VolumeX`), fixed bottom-left of hero, z-20
+- [ ] localStorage key: `ah-hero-sound` (`"on"` | `"off"`, default `"off"`)
+- [ ] Respect autoplay policy: always start muted; only unmute after user clicks Sound On OR restored preference from localStorage on subsequent visits
+- [ ] Music continues across montage loop (don't restart each loop unless clip 0 restarts — fade music in at phrase end, loop music track independently)
+
+**Est:** 2–3 hours
+
+### Fix 3 — Agent Henrik mobile hero responsiveness
+**Henrik ask:** Hero must fill mobile viewport; face visible without scrolling. Standard responsive, not optional.
+**Root cause (likely):** `h-screen` = `100vh` ignores mobile browser chrome. Legacy site used `100dvh`. Opening clip may crop face with `object-cover` centre framing.
+**Files:** `src/components/hero/hero-video.tsx`, possibly `src/app/globals.css`
+
+- [ ] Replace `h-screen` with `h-[100dvh] min-h-[100svh]` (fallback `min-h-screen`)
+- [ ] Mobile video framing: `object-cover object-[center_25%] sm:object-center` (tune after watching clip-00 on iPhone)
+- [ ] Ensure hero section is not inside a scrollable container; verify `overflow-hidden` on section
+- [ ] Test: iPhone Safari, Chrome Android, DevTools responsive mode
+- [ ] Also apply Fix 3 to AH if menu visibility issue found (AH header missing `updateFromScroll()` on mount — LTS has it at `header.tsx:63`)
+
+**Est:** 1 hour
+
+### Fix 4 — LTS mobile menu + footer links
+**Henrik ask:** Menu icon and footer links missing on LTS landing page (mobile). Flagged 18 Jun + 30 Jun.
+**Repo:** `/Users/paulgosnell/Sites/luxury-travel-sweden-nextjs` — deploy to `luxurytravelsweden.com`
+**Files to check:** `components/layout/header.tsx`, `components/layout/footer.tsx`, `app/globals.css`, `app/page.tsx`
+
+**Investigation checklist (do first on real mobile / DevTools):**
+- [ ] Confirm MENU button visible on homepage hero (white text on light video = invisible?)
+- [ ] Check `nav-header.hidden` not stuck on initial load (add `updateFromScroll()` on mount like LTS already has)
+- [ ] Check footer Explore/About/Legal links render in `grid-cols-2` mobile layout
+- [ ] Check `whiteSpace: nowrap` on map h2 (`app/page.tsx:89`) causing horizontal overflow / layout break
+- [ ] z-index stack: menu-toggle 99999, nav-menu 9999, LIV 10000 — menu should win when closed; verify nothing covers MENU on mobile
+- [ ] Compare against working desktop; git diff recent header/footer changes
+
+**Est:** 1–2 hours (depends on root cause)
+
+### Launch checklist (after fixes on staging)
+- [ ] Email Henrik: staging links (AH + LTS), point-by-point confirmation
+- [ ] Henrik final sign-off
+- [ ] `npx vercel domains add agenthenrik.com --scope p0stman`
+- [ ] DNS at Miss Hosting → Vercel
+- [ ] OneUptime monitor for agenthenrik.com
+
+### Execution order on payment
+1. Acknowledge payment receipt (email)
+2. **Day 1 (today):** Fix 2 code + Fix 3 mobile + download music (parallel with Fix 1 Veo regen)
+3. **Day 1:** Upload TV tower clip, deploy AH staging
+4. **Day 2:** Fix 4 LTS mobile, deploy LTS, full QA both sites
+5. Email Henrik for sign-off → DNS cutover
 
 ---
 
@@ -145,11 +228,14 @@ No further work until €1,750 invoice is paid. Final delivery email sent 30 Apr
 **Project stats:** 29 working days, 295 commits, 6 months. £20k+ at market rates, delivered for £3,000.
 
 ## Blocked Until Payment
-- [ ] Henrik to pay €1,750 outstanding balance (Revolut invoice sent, PDF attached in follow-up 7 May)
-- [ ] Henrik to confirm yes/no on the 15-clip v3 hero video
-- [ ] Any video re-renders to be quoted separately
+- [ ] Henrik to pay EUR 2,000 (EUR 1,750 balance + EUR 250 voice/music) — offer accepted 30 Jun, awaiting transfer
+- [ ] Fixes prepped in Payment Fix Sprint section above — execute on receipt
 
 ### Chase Log
+- 30 Jun 2026 (09:49): Henrik replied positively on hero ("wow factor", Rio/São Paulo/Lofoten fantastic) but 4 items remain: TV tower casting, voice+music (+EUR 250), AH mobile hero, LTS mobile menu/footer.
+- 30 Jun 2026 (10:00): Paul hard stop — no more amends without payment, server switch-off threatened.
+- 30 Jun 2026 (10:15): Henrik counter — don't switch off server, mobile + voice are delivery requirements not amends. Offers EUR 2,000 same-day if Paul confirms in writing.
+- 30 Jun 2026 (10:51): Paul accepted offer in writing. Confirmed all 4 fixes on payment. Work starts today/tomorrow.
 - 30 Apr 2026: Final delivery email with hard stop (all 3 addresses)
 - 7 May 2026: Friendly follow-up with invoice PDF attached (all 3 addresses, reply to 30 Apr thread)
 - 14 May 2026: Final notice email + WhatsApp nudge. Deadline: Fri 16 May EOD. If no reply, project closes.
