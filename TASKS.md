@@ -91,6 +91,13 @@ Client feedback round 1 (45 items) fully addressed.
 
 ## Done (Recent Sessions)
 
+### Session 30 Jun 2026
+- [x] Onboarded project context (SUMMARY.md, TASKS.md, CLAUDE.md)
+- [x] Read Henrik email thread via `gog gmail` (hello@p0stman.com, thread `19f1781659317c92`)
+- [x] Drafted + sent acceptance email (EUR 2,000 offer, 4 fixes confirmed in writing)
+- [x] Payment Fix Sprint plan documented (4 fixes, files, execution order)
+- [x] SUMMARY.md + MEMORY.md updated for stand-by state
+
 ### LTS Feature Parity
 - [x] Database migrations (seasons, category on storyworlds; lat/long/show_on_map on storytellers)
 - [x] Contact form → shared `leads` + `booking_inquiries` tables with `site='henrik'`
@@ -208,8 +215,8 @@ Switched pipeline xAI Grok -> Google Veo 3.1 (reference_images asset preservatio
 - [x] São Paulo swap — real Octávio Frias bridge footage replaces the AI Hotel Fasano Rio clip (flagged to Henrik, can be repositioned)
 - [x] Club closing trim — cut before the turn-around, fast fade (his "too hard/Jason Statham" note)
 - [x] TV Tower regen — two Berlin men (dark bearded + leather jacket, blond + long coat), clock-free, no Henrik refs. Old avatar version backed up to videos/hero-v4/backups/clip-2b-berlin-tv-tower-avatar.mp4
-- [x] Voice on opening — advised DROP (hero muted by design, browser autoplay-sound blocked, premium silent montage). Not done.
-- [ ] Henrik to review staging + settle EUR 1,750 → launch
+- [x] Voice on opening — initially advised DROP; now **in scope** (+EUR 250) per 30 Jun deal → see Payment Fix Sprint Fix 2
+- [ ] Payment Fix Sprint (4 fixes) → sign-off → DNS cutover
 
 ---
 
@@ -222,8 +229,8 @@ Switched pipeline xAI Grok -> Google Veo 3.1 (reference_images asset preservatio
 - [x] Confirmed Vercel env vars all present in production
 - [x] Sent firm sign-off email to Henrik with 30 Apr 2026 deadline
 
-## HARD STOP (30 Apr 2026)
-No further work until €1,750 invoice is paid. Final delivery email sent 30 Apr 2026 to all 3 of Henrik's email addresses. Any further amends (including video revisions) to be quoted and paid separately.
+## HARD STOP (30 Apr 2026) — superseded 30 Jun 2026
+Original hard stop lifted when Henrik accepted EUR 2,000 deal (1,750 balance + 250 voice/music) with 4 scoped fixes. Standing by for payment — see Payment Fix Sprint above.
 
 **Project stats:** 29 working days, 295 commits, 6 months. £20k+ at market rates, delivered for £3,000.
 
