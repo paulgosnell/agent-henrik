@@ -11,20 +11,20 @@ Sister site to **Luxury Travel Sweden** (same client, shared Supabase backend). 
 **Deadline:** ITB Berlin, 3 March 2026
 **Master Spec:** `AGENTHENRIK_MASTER_SPEC_v2.md`
 
-## Current Status (30 Jun 2026)
-**Staging offline — awaiting payment.** Henrik accepted EUR 2,000 offer but did not pay same day. Staging disabled ~19:20 (`STAGING_DISABLED=true` → 503). LTS production unaffected.
+## Current Status (30 Jun 2026, EOD)
+**Payment submitted — verify then build.** Henrik sent Handelsbanken proof for EUR 2,000 at 20:47 (executes **1 Jul 2026**). Staging still offline until funds clear. LTS production unaffected.
 
 | Item | Status |
 |------|--------|
 | Platform build | Complete (code on GitHub) |
-| Staging | **Offline** — agent-henrik-alpha.vercel.app returns 503 |
-| Payment | Awaiting EUR 2,000 transfer |
-| Fixes | Prepped — execute on payment + restore staging |
+| Staging | **Offline** — 503 via `STAGING_DISABLED=true` |
+| Payment | Submitted EUR 2,000 — verify clears 1 Jul |
+| Fixes | Ready — Payment Fix Sprint in `TASKS.md` |
 | DNS cutover | After sign-off |
 
-**Next session:** Read `TASKS.md` Payment Fix Sprint section. Do nothing until payment confirmed. Then execute fixes Day 1 (AH) + Day 2 (LTS), deploy staging, email Henrik, launch on sign-off.
+**Next session:** (1) Confirm EUR 2,000 landed, (2) ack email to Henrik, (3) `vercel env rm STAGING_DISABLED`, (4) execute 4 fixes, (5) launch on sign-off.
 
-**Email thread:** `Agent Henrik - final video round complete and live on staging` (Gmail thread `19f1781659317c92`). Last send: Paul accepted offer 30 Jun 10:51. Awaiting Henrik payment confirmation.
+**Email thread:** `19f1781659317c92` — Henrik's last message 30 Jun 20:47 with payment proof PDF.
 
 ## Tech Stack
 - **Framework:** Next.js 16 (App Router) + TypeScript

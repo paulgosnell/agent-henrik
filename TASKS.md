@@ -1,6 +1,6 @@
 # Agent Henrik - Tasks
 
-> **STAGING OFF (30 Jun 2026, ~19:20):** No payment received. Staging disabled via `STAGING_DISABLED=true` on Vercel. Email sent to all 3 addresses. **Do not implement fixes until payment confirmed.** Restore: `vercel env rm STAGING_DISABLED production --scope p0stman --yes` then redeploy.
+> **PAYMENT SUBMITTED — VERIFY THEN FIX (1 Jul 2026):** Henrik sent Handelsbanken proof for EUR 2,000 (execution date **2026-07-01**). Staging still offline (`STAGING_DISABLED=true` → 503). **Next:** confirm funds landed → ack email → restore staging → Payment Fix Sprint → launch.
 
 ## Build Status: Feature Parity with LTS — Complete
 All 5 phases implemented: DB migrations, contact/lead capture, admin CRM with site switcher, map filters, voice mode.
@@ -8,9 +8,9 @@ Client feedback round 1 (45 items) fully addressed.
 
 ---
 
-## Payment Fix Sprint (30 Jun 2026) — AWAITING EUR 2,000
+## Payment Fix Sprint (30 Jun 2026) — READY TO EXECUTE
 
-**Trigger:** Henrik accepted offer (email sent 30 Jun). Pay EUR 1,750 + EUR 250 → we fix → launch.
+**Trigger:** Henrik submitted EUR 2,000 bank transfer 30 Jun 20:35 CET (Handelsbanken, executes 1 Jul). Verify funds before starting.
 **Repos:** Agent Henrik (`agent-henrik`) + LTS (`luxury-travel-sweden-nextjs`)
 **Timeline:** Start on payment receipt. Target: fixes live on staging same day + next day.
 
@@ -80,12 +80,14 @@ Client feedback round 1 (45 items) fully addressed.
 - [ ] DNS at Miss Hosting → Vercel
 - [ ] OneUptime monitor for agenthenrik.com
 
-### Execution order on payment
-1. Acknowledge payment receipt (email)
-2. **Day 1 (today):** Fix 2 code + Fix 3 mobile + download music (parallel with Fix 1 Veo regen)
-3. **Day 1:** Upload TV tower clip, deploy AH staging
-4. **Day 2:** Fix 4 LTS mobile, deploy LTS, full QA both sites
-5. Email Henrik for sign-off → DNS cutover
+### Execution order (once funds confirmed)
+1. Verify EUR 2,000 cleared in bank/Revolut
+2. Acknowledge payment receipt (email to all 3 addresses)
+3. Restore staging: `vercel env rm STAGING_DISABLED production --scope p0stman --yes` then redeploy
+4. **Day 1:** Fix 2 code + Fix 3 mobile + download music (parallel with Fix 1 Veo regen)
+5. **Day 1:** Upload TV tower clip, deploy AH staging
+6. **Day 2:** Fix 4 LTS mobile, deploy LTS, full QA both sites
+7. Email Henrik for sign-off → DNS cutover
 
 ---
 
@@ -96,7 +98,10 @@ Client feedback round 1 (45 items) fully addressed.
 - [x] Read Henrik email thread via `gog gmail` (hello@p0stman.com, thread `19f1781659317c92`)
 - [x] Drafted + sent acceptance email (EUR 2,000 offer, 4 fixes confirmed in writing)
 - [x] Payment Fix Sprint plan documented (4 fixes, files, execution order)
-- [x] SUMMARY.md + MEMORY.md updated for stand-by state
+- [x] Sent staging-off notice + disabled staging (`STAGING_DISABLED=true`, `middleware.ts` 503 gate)
+- [x] Henrik replied 20:47 with Handelsbanken payment proof (EUR 2,000, executes 1 Jul 2026)
+- [ ] Acknowledge payment + restore staging (next session, after funds clear)
+- [ ] Execute Payment Fix Sprint (4 fixes)
 
 ### LTS Feature Parity
 - [x] Database migrations (seasons, category on storyworlds; lat/long/show_on_map on storytellers)
@@ -234,11 +239,14 @@ Original hard stop lifted when Henrik accepted EUR 2,000 deal (1,750 balance + 2
 
 **Project stats:** 29 working days, 295 commits, 6 months. £20k+ at market rates, delivered for £3,000.
 
-## Blocked Until Payment
-- [ ] Henrik to pay EUR 2,000 (EUR 1,750 balance + EUR 250 voice/music) — offer accepted 30 Jun, awaiting transfer
-- [ ] Fixes prepped in Payment Fix Sprint section above — execute on receipt
+## Blocked Until Payment Clears
+- [x] Henrik submitted EUR 2,000 (Handelsbanken cross-border, execution **2026-07-01**) — PDF proof attached 30 Jun 20:47
+- [ ] Verify funds landed in Paul's account
+- [ ] Acknowledge payment email + restore staging + execute Payment Fix Sprint
 
 ### Chase Log
+- 30 Jun 2026 (20:47): Henrik paid — Handelsbanken receipt EUR 2,000 to Paul Martin Gosnell, Luxury Travel Sweden AB, execution date 1 Jul 2026. Tone positive: "genuinely excited to see the final version."
+- 30 Jun 2026 (20:26): Henrik holding note — out all day, will pay when home.
 - 30 Jun 2026 (~19:20): No payment by EOD. Staging taken offline (`STAGING_DISABLED=true`, 503 maintenance page). Email sent to all 3 addresses confirming disable + restore path on EUR 2,000 payment.
 - 30 Jun 2026 (17:42): Follow-up — "I'll be switching the hosting off soon as no payment received." No reply.
 - 30 Jun 2026 (09:49): Henrik replied positively on hero ("wow factor", Rio/São Paulo/Lofoten fantastic) but 4 items remain: TV tower casting, voice+music (+EUR 250), AH mobile hero, LTS mobile menu/footer.
