@@ -12,14 +12,14 @@ Sister site to **Luxury Travel Sweden** (same client, shared Supabase backend). 
 **Master Spec:** `AGENTHENRIK_MASTER_SPEC_v2.md`
 
 ## Current Status (30 Jun 2026)
-**Standing by for payment.** Henrik accepted our offer (EUR 2,000 = EUR 1,750 balance + EUR 250 voice/music). Four fixes agreed; work starts on payment receipt. Full implementation plan in `TASKS.md` → **Payment Fix Sprint (30 Jun 2026)**.
+**Staging offline — awaiting payment.** Henrik accepted EUR 2,000 offer but did not pay same day. Staging disabled ~19:20 (`STAGING_DISABLED=true` → 503). LTS production unaffected.
 
 | Item | Status |
 |------|--------|
-| Platform build | Complete on staging |
-| Hero video v4 | Mostly accepted — 4 amends scoped |
+| Platform build | Complete (code on GitHub) |
+| Staging | **Offline** — agent-henrik-alpha.vercel.app returns 503 |
 | Payment | Awaiting EUR 2,000 transfer |
-| Fixes | Prepped, not started |
+| Fixes | Prepped — execute on payment + restore staging |
 | DNS cutover | After sign-off |
 
 **Next session:** Read `TASKS.md` Payment Fix Sprint section. Do nothing until payment confirmed. Then execute fixes Day 1 (AH) + Day 2 (LTS), deploy staging, email Henrik, launch on sign-off.

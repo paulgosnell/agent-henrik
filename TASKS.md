@@ -1,6 +1,6 @@
 # Agent Henrik - Tasks
 
-> **STAND BY (30 Jun 2026):** Awaiting Henrik payment (EUR 2,000). Offer accepted, fixes scoped below. **Do not implement until payment confirmed.** Start at → [Payment Fix Sprint](#payment-fix-sprint-30-jun-2026--awaiting-eur-2000).
+> **STAGING OFF (30 Jun 2026, ~19:20):** No payment received. Staging disabled via `STAGING_DISABLED=true` on Vercel. Email sent to all 3 addresses. **Do not implement fixes until payment confirmed.** Restore: `vercel env rm STAGING_DISABLED production --scope p0stman --yes` then redeploy.
 
 ## Build Status: Feature Parity with LTS — Complete
 All 5 phases implemented: DB migrations, contact/lead capture, admin CRM with site switcher, map filters, voice mode.
@@ -239,6 +239,8 @@ Original hard stop lifted when Henrik accepted EUR 2,000 deal (1,750 balance + 2
 - [ ] Fixes prepped in Payment Fix Sprint section above — execute on receipt
 
 ### Chase Log
+- 30 Jun 2026 (~19:20): No payment by EOD. Staging taken offline (`STAGING_DISABLED=true`, 503 maintenance page). Email sent to all 3 addresses confirming disable + restore path on EUR 2,000 payment.
+- 30 Jun 2026 (17:42): Follow-up — "I'll be switching the hosting off soon as no payment received." No reply.
 - 30 Jun 2026 (09:49): Henrik replied positively on hero ("wow factor", Rio/São Paulo/Lofoten fantastic) but 4 items remain: TV tower casting, voice+music (+EUR 250), AH mobile hero, LTS mobile menu/footer.
 - 30 Jun 2026 (10:00): Paul hard stop — no more amends without payment, server switch-off threatened.
 - 30 Jun 2026 (10:15): Henrik counter — don't switch off server, mobile + voice are delivery requirements not amends. Offers EUR 2,000 same-day if Paul confirms in writing.
