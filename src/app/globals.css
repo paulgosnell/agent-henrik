@@ -586,3 +586,11 @@ img[src]:not([src=""]):not([alt="Agent Henrik"]):not(.leaflet-tile) {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 }
+
+/* Hero fills the real mobile viewport: 100vh ignores browser chrome on
+   iOS/Android, so dynamic viewport units take over where supported. */
+.hero-viewport {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100svh;
+}

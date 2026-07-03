@@ -64,7 +64,7 @@ async function fetchReferenceImages() {
   return refs;
 }
 
-async function startVeo({ prompt, referenceImages, aspectRatio = "16:9" }) {
+async function startVeo({ prompt, referenceImages, negativePrompt, aspectRatio = "16:9" }) {
   const instance = { prompt: prompt + CLEAN_SUFFIX };
   if (referenceImages?.length) {
     instance.referenceImages = referenceImages.map((img) => ({
@@ -75,9 +75,14 @@ async function startVeo({ prompt, referenceImages, aspectRatio = "16:9" }) {
       referenceType: "asset",
     }));
   }
+  const parameters = { aspectRatio };
+  // negativePrompt is rejected by the API when reference images are present
+  if (negativePrompt && !referenceImages?.length) {
+    parameters.negativePrompt = negativePrompt;
+  }
   const body = {
     instances: [instance],
-    parameters: { aspectRatio },
+    parameters,
   };
 
   const res = await fetch(`${BASE}/models/${MODEL}:predictLongRunning?key=${getKey()}`, {
@@ -128,7 +133,11 @@ async function generateClip(clip, referenceImages) {
   console.log(`\n>>> ${clip.name}`);
   const refs = clip.useRefs ? referenceImages : undefined;
   process.stdout.write("  submitting...");
-  const opName = await startVeo({ prompt: clip.prompt, referenceImages: refs });
+  const opName = await startVeo({
+    prompt: clip.prompt,
+    referenceImages: refs,
+    negativePrompt: clip.negativePrompt,
+  });
   process.stdout.write(" polling");
   const result = await waitForVeo(opName);
   console.log("");
@@ -181,17 +190,26 @@ const CLIPS = [
   {
     name: "clip-2b-berlin-tv-tower",
     useRefs: false,
-    // Henrik 25 Jun: avatar no longer reads as him (long hair). Replace with two
-    // mature Berlin hipster men walking happy. Still clock-free (no Weltzeituhr).
+    negativePrompt:
+      "clock, clock tower, clock face, church tower, cathedral, bell tower, spire, " +
+      "historic tower, Weltzeituhr, world clock",
+    // Henrik 25 Jun: two mature Berlin hipster men walking happy. Still clock-free
+    // (no Weltzeituhr). Henrik 30 Jun: both men European/Caucasian, "dark" meant
+    // dark-HAIRED, not Black. Refs: pin.it/7eszgMSGD (bearded, leather jacket),
+    // pin.it/6k5bp1hce (blond, long coat).
     prompt:
-      "Smooth cinematic tracking shot following two stylish mature men strolling side by side " +
-      "across a rain-slicked plaza at Alexanderplatz Berlin at blue hour. Behind them the " +
-      "Fernsehturm television tower rises against deep twilight, plain mirrored sphere and " +
-      "red-and-white antenna, no clock anywhere. One man has dark hair, a full beard, a black " +
-      "leather jacket and black trousers; the other is blond and handsome in a long wool coat, " +
-      "pullover and wide jeans. They walk and chat, laughing warmly, relaxed and confident. " +
-      "City lights reflecting in puddles, cinematic colour grade, shallow depth of field, " +
-      "showcasing Berlin's iconic skyline at dusk.",
+      "Smooth cinematic tracking shot following two stylish mature European men strolling side " +
+      "by side across a rain-slicked plaza at Alexanderplatz Berlin at blue hour. Behind them " +
+      "the Fernsehturm television tower rises against deep twilight, plain mirrored sphere and " +
+      "red-and-white antenna, no clock anywhere. The two men fill the frame walking toward the " +
+      "camera; behind them only the television tower and sleek modern glass office facades with " +
+      "warm lit windows, every rooftop flat: no churches, no clock towers, no clock faces, no " +
+      "historic towers anywhere in the scene. Both men are white Caucasian Germans in their " +
+      "forties: the first has dark brown hair, pale skin, a full trimmed beard, a black leather " +
+      "jacket and black trousers; the second is blond with fair skin, handsome in a long wool " +
+      "coat, pullover and wide jeans. Both men walk with hands relaxed in their pockets, " +
+      "chatting and laughing warmly, relaxed and confident. City lights reflecting in puddles, " +
+      "cinematic colour grade, shallow depth of field, showcasing Berlin's iconic skyline at dusk.",
   },
   {
     name: "clip-05-cox-bay",
