@@ -1,6 +1,6 @@
 # Agent Henrik - Tasks
 
-> **PAYMENT CLEARED — SPRINT EXECUTED (3 Jul 2026):** EUR 2,000 confirmed received. Staging restored, all 4 fixes done and verified live same session. **Next:** ack + review email to Henrik (draft with Paul) → his sign-off → DNS cutover.
+> **PAYMENT CLEARED — SPRINT EXECUTED (3 Jul 2026):** EUR 2,000 confirmed received. Staging restored, all 4 fixes done and verified live same session. **Next:** Paul sends approved ack email **Monday 6 Jul** (`drafts/henrik-payment-ack-email.txt`) → Henrik sign-off → DNS cutover.
 
 ## Build Status: Feature Parity with LTS — Complete
 All 5 phases implemented: DB migrations, contact/lead capture, admin CRM with site switcher, map filters, voice mode.
@@ -50,7 +50,7 @@ Client feedback round 1 (45 items) fully addressed.
 - [x] Committed 69df991, deployed to luxurytravelsweden.com
 
 ### Launch checklist (after fixes on staging)
-- [ ] Email Henrik: staging links (AH + LTS), payment ack, point-by-point confirmation — DRAFTED, awaiting Paul's go
+- [ ] Email Henrik: payment ack + point-by-point confirmation — draft approved, Paul sending **Monday 6 Jul** (`drafts/henrik-payment-ack-email.txt`, gitignored)
 - [ ] Henrik final sign-off
 - [ ] `npx vercel domains add agenthenrik.com --scope p0stman`
 - [ ] DNS at Miss Hosting → Vercel
