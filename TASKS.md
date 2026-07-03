@@ -1,6 +1,6 @@
 # Agent Henrik - Tasks
 
-> **PAYMENT SUBMITTED — VERIFY THEN FIX (1 Jul 2026):** Henrik sent Handelsbanken proof for EUR 2,000 (execution date **2026-07-01**). Staging still offline (`STAGING_DISABLED=true` → 503). **Next:** confirm funds landed → ack email → restore staging → Payment Fix Sprint → launch.
+> **PAYMENT CLEARED — SPRINT EXECUTED (3 Jul 2026):** EUR 2,000 confirmed received. Staging restored, all 4 fixes done and verified live same session. **Next:** ack + review email to Henrik (draft with Paul) → his sign-off → DNS cutover.
 
 ## Build Status: Feature Parity with LTS — Complete
 All 5 phases implemented: DB migrations, contact/lead capture, admin CRM with site switcher, map filters, voice mode.
@@ -8,86 +8,53 @@ Client feedback round 1 (45 items) fully addressed.
 
 ---
 
-## Payment Fix Sprint (30 Jun 2026) — READY TO EXECUTE
+## Payment Fix Sprint — EXECUTED 3 Jul 2026
 
-**Trigger:** Henrik submitted EUR 2,000 bank transfer 30 Jun 20:35 CET (Handelsbanken, executes 1 Jul). Verify funds before starting.
-**Repos:** Agent Henrik (`agent-henrik`) + LTS (`luxury-travel-sweden-nextjs`)
-**Timeline:** Start on payment receipt. Target: fixes live on staging same day + next day.
+**Trigger:** Henrik's EUR 2,000 cleared (confirmed by Paul 3 Jul). Staging restored (`STAGING_DISABLED` removed, redeployed, 200 verified).
+**Repos:** Agent Henrik (`agent-henrik` d7e36fe) + LTS (`luxury-travel-sweden-nextjs` 69df991)
 
-### Fix 1 — Berlin TV Tower clip (video regen)
+### Fix 1 — Berlin TV Tower clip (video regen) — DONE
 **Henrik ask:** "Dark" meant dark-haired European man, not a Black man. Match his reference look.
 **Refs:** Pinterest inspirations from 25 Jun email — https://pin.it/7eszgMSGD (bearded, leather jacket) + https://pin.it/6k5bp1hce (blond, long coat)
-**Prep done:** Veo script + prompt exist in `scripts/generate-veo-videos.mjs` (`clip-2b-berlin-tv-tower`, `useRefs: false`)
 
-- [ ] Update prompt — explicitly "two European/Caucasian men", "dark-haired bearded man (not Black)", blond man per refs. Keep: Alexanderplatz, Fernsehturm, no clock.
-- [ ] Backup current clip → `videos/hero-v4/backups/clip-2b-berlin-tv-tower-v1.mp4`
-- [ ] Regen: `GEMINI_API_KEY=... node scripts/generate-veo-videos.mjs clip-2b-berlin-tv-tower`
-- [ ] Upload to Supabase `videos/hero-v4/clip-2b-berlin-tv-tower.mp4` (same filename — no code change)
-- [ ] Review take; regen again if AI still mis-casts (~2 min / ~$0.30 per attempt)
+- [x] Prompt updated — explicit "white Caucasian Germans", dark-brown-haired bearded + blond, hands in pockets
+- [x] Backup → Supabase `videos/hero-v4/backups/clip-2b-berlin-tv-tower-v1.mp4`
+- [x] Took 4 generations: takes 3-5 kept re-adding background clock towers (Veo habit). Winning take: negativePrompt (allowed on non-ref clips — script now supports it) + "only modern glass facades, every rooftop flat" in-prompt
+- [x] Uploaded to `videos/hero-v4/clip-2b-berlin-tv-tower.mp4` (same filename, no code change)
+- [x] Frames verified: correct casting, no clocks, no hand gestures
 
-**Est:** 30–45 min (mostly generation + review)
-
-### Fix 2 — Opening voice + music + loop (EUR 250 scope)
+### Fix 2 — Opening voice + music + loop (EUR 250 scope) — DONE
 **Henrik ask:** Voice on opening clip, then music. Muted by default. Visible "Sound On" button. Preference in localStorage. Hero loops continuously.
-**Music:** https://pixabay.com/music/synthwave-electronic-114952/ — hard beats from **7.5s** when phrase "there is something I need to show you" ends (~5s into `clip-00`, 6s duration)
-**Primary file:** `src/components/hero/hero-video.tsx`
 
-- [ ] Download Pixabay MP3 → `public/audio/hero-music.mp3` (or Supabase `videos/` bucket)
-- [ ] Remove end-of-montage behaviour — loop back to clip 0 instead of `setEnded(true)` / fade-to-black
-- [ ] Keep headline CTAs visible throughout OR show only after first full loop (decide on implementation — Henrik didn't specify; default: hide overlay during montage, show after first loop)
-- [ ] Add hidden `<audio ref>` for background track
-- [ ] On clip 0: video carries embedded Veo voice — unmute video element when sound enabled
-- [ ] Sync music: when opening phrase ends (~5s mark), set `audio.currentTime = 7.5` and play
-- [ ] Add `Sound On` / `Sound Off` toggle (Lucide `Volume2` / `VolumeX`), fixed bottom-left of hero, z-20
-- [ ] localStorage key: `ah-hero-sound` (`"on"` | `"off"`, default `"off"`)
-- [ ] Respect autoplay policy: always start muted; only unmute after user clicks Sound On OR restored preference from localStorage on subsequent visits
-- [ ] Music continues across montage loop (don't restart each loop unless clip 0 restarts — fade music in at phrase end, loop music track independently)
+- [x] Pixabay MP3 (synthwave-electronic-114952) → `public/audio/hero-music.mp3` (grabbed CDN URL via Chrome, curl blocked by Cloudflare)
+- [x] Montage loops continuously (no more fade-to-black end state); overlay headline + CTAs appear after first full pass (~80s) and stay
+- [x] Hidden `<audio>` element, loop=true; music enters at 7.5s drop when opening phrase ends (~5s into clip 0)
+- [x] Clip 0 embedded Veo voice unmutes when sound on; all other clips always muted
+- [x] On each loop back to clip 0: voice replays, music ducks to 0.15, restores to 0.9 at phrase end
+- [x] Sound On/Off toggle (Volume2/VolumeX), bottom-left, z-20, localStorage `ah-hero-sound`, default off
+- [x] Autoplay policy respected: starts muted; restore-on-revisit attempts unmute with graceful fallback to muted + button reset
+- [x] All verified live on staging via Chrome (toggle, localStorage, drop-in timing, duck/restore, loop, overlay)
 
-**Est:** 2–3 hours
+### Fix 3 — Agent Henrik mobile hero responsiveness — DONE
+- [x] `.hero-viewport` class (100vh fallback → 100dvh, min-height 100svh) replaces `h-screen`
+- [x] Mobile video framing `object-[center_25%] sm:object-center` (face bias on phones)
+- [x] `overflow-hidden` confirmed on section; hero height == innerHeight verified live
+- [ ] Paul: quick glance on real iPhone to confirm face framing on clip-00 (only remaining check)
 
-### Fix 3 — Agent Henrik mobile hero responsiveness
-**Henrik ask:** Hero must fill mobile viewport; face visible without scrolling. Standard responsive, not optional.
-**Root cause (likely):** `h-screen` = `100vh` ignores mobile browser chrome. Legacy site used `100dvh`. Opening clip may crop face with `object-cover` centre framing.
-**Files:** `src/components/hero/hero-video.tsx`, possibly `src/app/globals.css`
-
-- [ ] Replace `h-screen` with `h-[100dvh] min-h-[100svh]` (fallback `min-h-screen`)
-- [ ] Mobile video framing: `object-cover object-[center_25%] sm:object-center` (tune after watching clip-00 on iPhone)
-- [ ] Ensure hero section is not inside a scrollable container; verify `overflow-hidden` on section
-- [ ] Test: iPhone Safari, Chrome Android, DevTools responsive mode
-- [ ] Also apply Fix 3 to AH if menu visibility issue found (AH header missing `updateFromScroll()` on mount — LTS has it at `header.tsx:63`)
-
-**Est:** 1 hour
-
-### Fix 4 — LTS mobile menu + footer links
-**Henrik ask:** Menu icon and footer links missing on LTS landing page (mobile). Flagged 18 Jun + 30 Jun.
-**Repo:** `/Users/paulgosnell/Sites/luxury-travel-sweden-nextjs` — deploy to `luxurytravelsweden.com`
-**Files to check:** `components/layout/header.tsx`, `components/layout/footer.tsx`, `app/globals.css`, `app/page.tsx`
-
-**Investigation checklist (do first on real mobile / DevTools):**
-- [ ] Confirm MENU button visible on homepage hero (white text on light video = invisible?)
-- [ ] Check `nav-header.hidden` not stuck on initial load (add `updateFromScroll()` on mount like LTS already has)
-- [ ] Check footer Explore/About/Legal links render in `grid-cols-2` mobile layout
-- [ ] Check `whiteSpace: nowrap` on map h2 (`app/page.tsx:89`) causing horizontal overflow / layout break
-- [ ] z-index stack: menu-toggle 99999, nav-menu 9999, LIV 10000 — menu should win when closed; verify nothing covers MENU on mobile
-- [ ] Compare against working desktop; git diff recent header/footer changes
-
-**Est:** 1–2 hours (depends on root cause)
+### Fix 4 — LTS mobile menu + footer links — DONE (root cause found)
+**Root cause:** map h2 "Where will LIV take you" had `whiteSpace: nowrap` → 560px fixed width → horizontal page overflow at phone widths → iOS Safari widens layout viewport → right-anchored fixed MENU pushed off the visual viewport. Footer links were rendering but the page overflow + the newsletter Subscribe button clipping made the footer look broken.
+- [x] Removed nowrap from map h2 (`app/page.tsx`)
+- [x] `overflow-x: clip` on html/body as safety net against future wide elements
+- [x] Newsletter email input `min-w-0` so Subscribe button no longer clips in narrow grid column
+- [x] Verified header/footer/menu code paths + media queries clean; MENU + footer confirmed rendering at mobile width in Chrome
+- [x] Committed 69df991, deployed to luxurytravelsweden.com
 
 ### Launch checklist (after fixes on staging)
-- [ ] Email Henrik: staging links (AH + LTS), point-by-point confirmation
+- [ ] Email Henrik: staging links (AH + LTS), payment ack, point-by-point confirmation — DRAFTED, awaiting Paul's go
 - [ ] Henrik final sign-off
 - [ ] `npx vercel domains add agenthenrik.com --scope p0stman`
 - [ ] DNS at Miss Hosting → Vercel
 - [ ] OneUptime monitor for agenthenrik.com
-
-### Execution order (once funds confirmed)
-1. Verify EUR 2,000 cleared in bank/Revolut
-2. Acknowledge payment receipt (email to all 3 addresses)
-3. Restore staging: `vercel env rm STAGING_DISABLED production --scope p0stman --yes` then redeploy
-4. **Day 1:** Fix 2 code + Fix 3 mobile + download music (parallel with Fix 1 Veo regen)
-5. **Day 1:** Upload TV tower clip, deploy AH staging
-6. **Day 2:** Fix 4 LTS mobile, deploy LTS, full QA both sites
-7. Email Henrik for sign-off → DNS cutover
 
 ---
 
