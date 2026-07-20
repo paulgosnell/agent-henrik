@@ -1,13 +1,16 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getPageMeta } from "@/lib/utils/page-meta";
+import { InstagramFeed } from "@/components/instagram/instagram-feed";
 import { HeroVideo } from "@/components/hero/hero-video";
 
-export const metadata: Metadata = {
-  title: "Agent Henrik — Luxury Underground Travel Curation",
-  description:
-    "Bespoke cultural experiences across ten extraordinary destinations. AI-powered concierge, insider access, and journeys crafted around your story.",
-};
+export async function generateMetadata() {
+  return getPageMeta("/", {
+    title: "Agent Henrik — Global Luxury Underground Travel",
+    description:
+      "Bespoke luxury travel experiences and private tours. Cultural journeys, insider access, and storytelling encounters across selected destinations around the world.",
+  });
+}
 import { BentoGrid } from "@/components/experiences/bento-grid";
 import { ArticleCard } from "@/components/journal/article-card";
 import { NewsletterForm } from "@/components/newsletter/newsletter-form";
@@ -236,25 +239,8 @@ export default async function HomePage() {
           <p className="mx-auto mb-8 max-w-xl text-muted-foreground">
             Behind-the-scenes moments, underground discoveries, and cinematic glimpses from the field.
           </p>
-          <div className="mx-auto mb-8 grid max-w-4xl grid-cols-2 gap-3 md:grid-cols-4">
-            {[
-              "photo-1507003211169-0a1dd7228f2d",
-              "photo-1502602898657-3e91760cbb34",
-              "photo-1517760444937-f6397edcbbcd",
-              "photo-1470219556762-1fd5b25f15e8",
-              "photo-1516483638261-f4dbaf036963",
-              "photo-1555939594-58d7cb561ad1",
-              "photo-1506929562872-bb421503ef21",
-              "photo-1476514525535-07fb3b4ae5f1",
-            ].map((id, i) => (
-              <div key={i} className="group relative aspect-square overflow-hidden">
-                <div
-                  className="h-full w-full bg-cover bg-center transition-transform duration-600 group-hover:scale-105"
-                  style={{ backgroundImage: `url(https://images.unsplash.com/${id}?w=400&q=80)` }}
-                />
-                <div className="absolute inset-0 bg-black/0 transition-colors duration-400 group-hover:bg-black/20" />
-              </div>
-            ))}
+          <div className="mb-8">
+            <InstagramFeed username="agenthenrik" limit={8} />
           </div>
           <div className="mt-0">
             <a
