@@ -1,6 +1,6 @@
 # Agent Henrik - Tasks
 
-> **STATUS (20 Jul 2026):** All 4 sprint fixes + 2 more original-scope items (CMS-editable homepage SEO meta, live @agenthenrik Instagram feed) done and verified live on staging (AH 32280c3). The 6 Jul ack email was never sent — Henrik chased 20 Jul. **Completion email rewritten** (`drafts/henrik-payment-ack-email.txt`, all 6 items) awaiting Paul's go. **Next:** send it → Henrik sign-off → DNS cutover (agenthenrik.com still on Miss Hosting, not Vercel) + OneUptime.
+> **STATUS (20 Jul 2026):** All 4 sprint fixes + 2 more original-scope items (CMS-editable homepage SEO meta, live @agenthenrik Instagram feed) done and verified live on staging (AH 32280c3). **Completion email SENT 20 Jul** (all 6 items, thread msg 19f7fd1ae040dbc8, all 3 addresses). **Next:** Henrik sign-off → DNS cutover (agenthenrik.com still on Miss Hosting 185.76.65.85, not Vercel) + OneUptime monitor.
 
 ## 20 Jul 2026 — Two original-scope items closed
 - [x] Homepage SEO meta CMS-editable: `src/app/page.tsx` now uses `generateMetadata` → `getPageMeta("/")` (was hardcoded, so /admin/pages edits had no effect). Seeded Henrik's requested title/description into `ah_page_meta`. Verified live: staging tab title = "Agent Henrik Tidefjärd | Bespoke Luxury Travel Designer".
@@ -55,7 +55,7 @@ Client feedback round 1 (45 items) fully addressed.
 - [x] Committed 69df991, deployed to luxurytravelsweden.com
 
 ### Launch checklist (after fixes on staging)
-- [ ] Email Henrik: payment ack + point-by-point confirmation — draft approved, Paul sending **Monday 6 Jul** (`drafts/henrik-payment-ack-email.txt`, gitignored)
+- [x] Email Henrik: completion + point-by-point confirmation (all 6 items) — SENT 20 Jul, thread msg 19f7fd1ae040dbc8, all 3 addresses
 - [ ] Henrik final sign-off
 - [ ] `npx vercel domains add agenthenrik.com --scope p0stman`
 - [ ] DNS at Miss Hosting → Vercel
