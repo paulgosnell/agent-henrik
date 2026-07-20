@@ -1,6 +1,11 @@
 # Agent Henrik - Tasks
 
-> **PAYMENT CLEARED — SPRINT EXECUTED (3 Jul 2026):** EUR 2,000 confirmed received. Staging restored, all 4 fixes done and verified live same session. **Next:** Paul sends approved ack email **Monday 6 Jul** (`drafts/henrik-payment-ack-email.txt`) → Henrik sign-off → DNS cutover.
+> **STATUS (20 Jul 2026):** All 4 sprint fixes + 2 more original-scope items (CMS-editable homepage SEO meta, live @agenthenrik Instagram feed) done and verified live on staging (AH 32280c3). The 6 Jul ack email was never sent — Henrik chased 20 Jul. **Completion email rewritten** (`drafts/henrik-payment-ack-email.txt`, all 6 items) awaiting Paul's go. **Next:** send it → Henrik sign-off → DNS cutover (agenthenrik.com still on Miss Hosting, not Vercel) + OneUptime.
+
+## 20 Jul 2026 — Two original-scope items closed
+- [x] Homepage SEO meta CMS-editable: `src/app/page.tsx` now uses `generateMetadata` → `getPageMeta("/")` (was hardcoded, so /admin/pages edits had no effect). Seeded Henrik's requested title/description into `ah_page_meta`. Verified live: staging tab title = "Agent Henrik Tidefjärd | Bespoke Luxury Travel Designer".
+- [x] Live @agenthenrik Instagram feed: replaced hardcoded Unsplash placeholder grid with `<InstagramFeed username="agenthenrik" limit={8} />`. Regenerated the StormLikes cache for the renamed account. Verified live: 8 real posts render on staging homepage.
+
 
 ## Build Status: Feature Parity with LTS — Complete
 All 5 phases implemented: DB migrations, contact/lead capture, admin CRM with site switcher, map filters, voice mode.
