@@ -1,5 +1,19 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { MAINTENANCE_MESSAGE, MAINTENANCE_MODE } from "@/lib/maintenance";
+
+// The only pages on this site that render with no Supabase call at all
+// (verified: no import of lib/supabase/server or lib/supabase/client in
+// any of these page.tsx files). Every other page, including "/", reads
+// its content from Supabase, so it is rewritten to /maintenance below.
+const STATIC_PAGES_EXEMPT_FROM_MAINTENANCE = [
+  "/legal/terms",
+  "/legal/data-protection",
+  "/legal/imprint",
+  "/about/story",
+  "/about/booking-process",
+  "/about/pricing-faq",
+];
 
 const STAGING_OFF_HTML = `<!DOCTYPE html>
 <html lang="en">
@@ -31,6 +45,25 @@ export async function middleware(request: NextRequest) {
   }
 
   const { pathname } = request.nextUrl;
+
+  // Maintenance mode: the database is down, so never call Supabase.
+  // Runs before the admin-auth check below, since that check itself
+  // calls Supabase (supabase.auth.getUser()).
+  if (MAINTENANCE_MODE) {
+    if (pathname === "/maintenance" || STATIC_PAGES_EXEMPT_FROM_MAINTENANCE.includes(pathname)) {
+      return NextResponse.next();
+    }
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json(
+        { error: MAINTENANCE_MESSAGE, maintenance: true },
+        { status: 503, headers: { "Retry-After": "3600" } }
+      );
+    }
+    const url = request.nextUrl.clone();
+    url.pathname = "/maintenance";
+    url.search = "";
+    return NextResponse.rewrite(url);
+  }
 
   // Only protect /admin routes (except login)
   if (!pathname.startsWith("/admin") || pathname === "/admin/login") {
