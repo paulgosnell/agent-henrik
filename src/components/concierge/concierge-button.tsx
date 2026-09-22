@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { MessageCircle } from "lucide-react";
 import { ChatWindow } from "./chat-window";
 import { createClient } from "@/lib/supabase/client";
-import { MAINTENANCE_MODE } from "@/lib/maintenance";
 
 type ChatContext = {
   theme_id?: string;
@@ -23,17 +22,6 @@ export function ConciergeButton() {
 
   useEffect(() => {
     async function resolvePageContext() {
-      // The pages this resolves context for (experiences/explore/storytellers
-      // detail pages) already read Supabase server-side to render at all, so
-      // middleware rewrites them to /maintenance and this never mounts on
-      // them. Guarded directly too, so a direct Supabase call from the
-      // browser never fires while the database is down (maintenance spec
-      // rule 5), independent of that redirect.
-      if (MAINTENANCE_MODE) {
-        setContext(undefined);
-        return;
-      }
-
       const segments = pathname.split("/").filter(Boolean);
 
       if (segments[0] === "experiences" && segments[1]) {

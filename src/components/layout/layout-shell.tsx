@@ -9,11 +9,10 @@ import { BackLink } from "@/components/ui/back-link";
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith("/admin");
-  const isMaintenance = pathname === "/maintenance";
   const isHomepage = pathname === "/";
   const isLiv = pathname === "/liv";
 
-  if (isAdmin || isMaintenance) {
+  if (isAdmin) {
     return <>{children}</>;
   }
 
