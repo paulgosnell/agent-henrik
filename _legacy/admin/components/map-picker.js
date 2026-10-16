@@ -32,10 +32,10 @@ class MapPicker {
     });
 
     // Add CartoDB tile layer (clean, modern style)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors Tiles &copy; <a href="https://www.esri.com/">Esri</a>',
       subdomains: 'abcd',
-      maxZoom: 19
+      maxZoom: 16
     }).addTo(this.map);
 
     // Add initial marker if coordinates provided

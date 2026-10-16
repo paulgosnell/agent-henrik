@@ -36,16 +36,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (window.mapInstance && currentTileLayer) {
                     currentTileLayer.remove();
                     if (theme === 'light') {
-                        currentTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-                            attribution: '© OpenStreetMap contributors © CARTO',
+                        currentTileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+                            attribution: '© OpenStreetMap contributors, Tiles © Esri',
                             subdomains: 'abcd',
-                            maxZoom: 19
+                            maxZoom: 16
                         }).addTo(window.mapInstance);
                     } else {
-                        currentTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                            attribution: '© OpenStreetMap contributors © CARTO',
+                        currentTileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+                            attribution: '© OpenStreetMap contributors, Tiles © Esri',
                             subdomains: 'abcd',
-                            maxZoom: 19
+                            maxZoom: 16
                         }).addTo(window.mapInstance);
                     }
                 }
@@ -1490,13 +1490,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Add tile layer based on current theme
                 const currentTheme = htmlElement.getAttribute('data-theme') || 'dark';
                 const tileUrl = currentTheme === 'light'
-                    ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
-                    : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+                    ? 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}'
+                    : 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
 
                 currentTileLayer = L.tileLayer(tileUrl, {
-                    attribution: '© OpenStreetMap contributors © CARTO',
+                    attribution: '© OpenStreetMap contributors, Tiles © Esri',
                     subdomains: 'abcd',
-                    maxZoom: 19
+                    maxZoom: 16
                 }).addTo(map);
 
                 console.log('Tile layer added');
