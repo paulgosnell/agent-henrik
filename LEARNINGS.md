@@ -32,7 +32,7 @@
 - **Must call `map.invalidateSize()`** after mount with a short delay (100ms). Without this, tiles don't load for areas outside the initial container size.
 - **Scroll wheel zoom disabled** to prevent hijacking page scroll. Users zoom with pinch or double-click.
 - **Z-index management:** Leaflet panes set to `z-index: 1`, popup pane to `z-index: 40`. Header is `z-50` so it stays on top.
-- Tile URLs: CARTO dark/light variants (`basemaps.cartocdn.com`).
+- Tile URLs: Esri World Dark/Light Gray Canvas (keyless, max zoom 16; CARTO now requires an API key).
 - Popup styling requires CSS overrides (not Tailwind classes) because Leaflet injects its own DOM. Use `.storyworld-popup .leaflet-popup-content-wrapper` etc.
 - Set `width` on `.leaflet-popup-content-wrapper` in CSS to control popup width — the React `maxWidth` prop is unreliable.
 - **Popup edge cutoff fix** — Add `autoPanPaddingTopLeft` and `autoPanPaddingBottomRight` props to `<Popup>` to prevent popups at map edges (e.g. Abisko) from being clipped.
