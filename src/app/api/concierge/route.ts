@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { buildSystemPrompt } from "@/lib/concierge/system-prompt";
+import {
+  REQUEST_FORM_TOOL_NAME,
+  REQUEST_FORM_TOOL_DESCRIPTION,
+  REQUEST_FORM_TOOL_PARAMETERS,
+  parseRequestPrefill,
+} from "@/lib/concierge/request-form-tool";
 import type { Theme, Storyworld, Storyteller, ConciergeInstruction, ConversationMessage } from "@/lib/supabase/types";
 
 export async function POST(req: NextRequest) {
@@ -115,6 +121,16 @@ export async function POST(req: NextRequest) {
             content: m.content,
           })),
         ],
+        tools: [
+          {
+            type: "function",
+            function: {
+              name: REQUEST_FORM_TOOL_NAME,
+              description: REQUEST_FORM_TOOL_DESCRIPTION,
+              parameters: REQUEST_FORM_TOOL_PARAMETERS,
+            },
+          },
+        ],
       }),
     });
 
@@ -125,7 +141,15 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await response.json();
-    const content = data.choices?.[0]?.message?.content || "I apologize, I couldn't generate a response.";
+    const message = data.choices?.[0]?.message;
+    const requestCall = (message?.tool_calls as { function?: { name?: string; arguments?: string } }[] | undefined)
+      ?.find((c) => c.function?.name === REQUEST_FORM_TOOL_NAME);
+    const requestForm = requestCall ? parseRequestPrefill(requestCall.function?.arguments) : null;
+    const content =
+      message?.content ||
+      (requestForm
+        ? "The request sheet is open. Please check your details and press Send, and it goes straight to our team."
+        : "I apologize, I couldn't generate a response.");
 
     // Save conversation snapshot to ah_concierge_sessions (fire-and-forget)
     if (sessionId) {
@@ -149,7 +173,7 @@ export async function POST(req: NextRequest) {
         .then(() => {});
     }
 
-    return NextResponse.json({ content });
+    return NextResponse.json({ content, requestForm });
   } catch (error) {
     console.error("Concierge error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

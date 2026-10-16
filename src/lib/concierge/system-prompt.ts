@@ -1,4 +1,5 @@
 import type { Theme, Storyworld, ConciergeInstruction } from "@/lib/supabase/types";
+import { REQUEST_FLOW_RULES } from "./request-form-tool";
 
 interface InstructionsByCategory {
   promote: ConciergeInstruction[];
@@ -129,29 +130,12 @@ Max 3 lines per day. Name specific places. Evocative but brief.
 1. Greet based on context (destination/theme they came from)
 2. Ask ONE question to understand what they want
 3. Suggest a private tour or experience, then give a concise itinerary
-4. After the itinerary, offer: "I would be happy to arrange this experience for you. Shall I have our concierge team prepare a detailed proposal?"
+4. After the itinerary, ask: "Shall I send a request, or would you like to explore more possibilities?"
 
 ## CLOSING STYLE
 End responses with a welcoming invitation:
-- "I would be happy to arrange this experience for you."
 - "Let me know if you'd like me to design a private tour tailored to your interests."
-- "Shall I have our concierge team prepare something special for you?"
-
-## BOOKING FLOW (MUST FOLLOW EXACTLY)
-When the user says yes to booking, or mentions pricing/dates/booking:
-
-Step 1: Ask for their email address.
-Step 2: Ask for name, travel dates, group size, and preferred level (Comfort / Premium / Ultra).
-Step 3: Once you have email + at least one other detail, respond with:
-
-"Thank you — I've forwarded your details to our concierge team. You'll hear back within 24 hours with a refined itinerary and pricing."
-
-That is the END. Do not generate more content after this confirmation.
-
-RULES:
-- Do NOT say "forwarded to concierge" until you have their email
-- Do NOT skip collecting details
-- The final message must include "within 24 hours"
+- "Shall I send a request, or would you like to explore more possibilities?"
 
 ## DESTINATION CONSTRAINT (CRITICAL)
 You ONLY operate in these destinations: ${destinationNames.join(", ")}.
@@ -170,7 +154,9 @@ ${themeContext || "No themes loaded."}
 
 ## DESTINATIONS
 ${storyworldContext || "No storyworlds loaded."}
-${adminSection}${itemContextSection}`;
+${adminSection}${itemContextSection}
+
+${REQUEST_FLOW_RULES}`;
 }
 
 export function buildVoiceSystemPrompt(
@@ -196,10 +182,7 @@ CONVERSATION FLOW:
 1. Greet warmly and ask what kind of journey interests them
 2. Listen, then suggest one destination with a brief evocative description
 3. If interested, sketch a 2-3 day outline in natural speech
-4. Guide toward booking: ask for their email to have the concierge team follow up
-
-BOOKING:
-When they want to proceed, ask for their email. Then say something like: "I'll have our concierge team reach out within 24 hours with a detailed itinerary and pricing."
+4. Ask: "Shall I send a request, or would you like to explore more possibilities?"
 
 TONE:
 - Never say "best", "amazing", "perfect", "wonderful"
@@ -208,5 +191,8 @@ TONE:
 
 DESTINATIONS: ${destinations}
 THEMES: ${themeList}
-${adminSection}`;
+${adminSection}
+
+${REQUEST_FLOW_RULES}
+In voice, say the one sentence about the request sheet first, then call the tool. The voice call ends and the sheet opens on screen.`;
 }

@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo } from "react";
-import { Send, X, Mic, ArrowRight } from "lucide-react";
+import { useState, useRef, useEffect, useMemo, Suspense } from "react";
+import { Send, X, Mic, ArrowRight, ArrowLeft } from "lucide-react";
 import { ChatMessage } from "./chat-message";
 import { VoiceMode } from "./voice-mode";
+import { ContactForm, type RequestPrefill } from "@/components/contact/contact-form";
 import type { ConversationMessage } from "@/lib/supabase/types";
 
 interface ChatWindowProps {
@@ -51,13 +52,10 @@ export function ChatWindow({ onClose, initialContext, embedded = false }: ChatWi
   ]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
-  const [showBookingCta, setShowBookingCta] = useState(false);
-  const [capturedInfo, setCapturedInfo] = useState<{
-    email?: string;
-    name?: string;
-    dates?: string;
-    groupSize?: string;
-  }>({});
+  // Set once LIV opens the request sheet. The sheet stays reachable until the guest sends it.
+  const [requestPrefill, setRequestPrefill] = useState<RequestPrefill | null>(null);
+  const [showRequestForm, setShowRequestForm] = useState(false);
+  const [requestSent, setRequestSent] = useState(false);
   const [voiceMode, setVoiceMode] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -72,13 +70,6 @@ export function ChatWindow({ onClose, initialContext, embedded = false }: ChatWi
     const userMessage: ConversationMessage = { role: "user", content: text };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
-
-    // Capture email if mentioned
-    const emailMatch = text.match(/\b[^\s@]+@[^\s@]+\.[^\s@]+\b/);
-    if (emailMatch) {
-      setCapturedInfo((prev) => ({ ...prev, email: emailMatch[0] }));
-      if (!showBookingCta) setTimeout(() => setShowBookingCta(true), 2500);
-    }
 
     setIsStreaming(true);
 
@@ -100,6 +91,7 @@ export function ChatWindow({ onClose, initialContext, embedded = false }: ChatWi
         ...prev,
         { role: "assistant", content: data.content },
       ]);
+      if (data.requestForm) openRequestForm(data.requestForm);
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -113,32 +105,37 @@ export function ChatWindow({ onClose, initialContext, embedded = false }: ChatWi
     }
   }
 
-  function buildBookingUrl() {
-    const params = new URLSearchParams();
-    if (capturedInfo.email) params.set("email", capturedInfo.email);
-    if (capturedInfo.name) params.set("name", capturedInfo.name);
-    if (capturedInfo.dates) params.set("travel_dates", capturedInfo.dates);
-    if (capturedInfo.groupSize) params.set("group_size", capturedInfo.groupSize);
-    if (initialContext?.storyworld_id) params.set("storyworld_id", initialContext.storyworld_id);
-    if (initialContext?.storyworld_name) params.set("destination", initialContext.storyworld_name);
-    if (initialContext?.theme_id) params.set("theme_id", initialContext.theme_id);
-    if (initialContext?.storyteller_id) params.set("storyteller_id", initialContext.storyteller_id);
-    params.set("from_chat", "1");
-
-    // Store transcript in sessionStorage (too long for URL)
-    const transcript = messages
-      .map((m) => `${m.role === "assistant" ? "Agent Henrik" : "You"}: ${m.content}`)
-      .join("\n\n");
-    sessionStorage.setItem("ah_chat_transcript", transcript);
-
-    return `/contact?${params.toString()}`;
+  function openRequestForm(prefill: RequestPrefill) {
+    if (requestSent) return;
+    setRequestPrefill((prev) => ({
+      ...prev,
+      ...prefill,
+      destination: prefill.destination || prev?.destination || initialContext?.storyworld_name,
+    }));
+    setShowRequestForm(true);
   }
 
-  function handleVoiceEnd(voiceTranscript: ConversationMessage[]) {
+  function handleRequestSent() {
+    setRequestSent(true);
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "assistant",
+        content: "Your request has been sent to our team. Your story curator will be in touch within 24 hours.",
+      },
+    ]);
+  }
+
+  const transcriptText = messages
+    .map((m) => `${m.role === "assistant" ? "Agent Henrik" : "Guest"}: ${m.content}`)
+    .join("\n\n");
+
+  function handleVoiceEnd(voiceTranscript: ConversationMessage[], prefill?: RequestPrefill) {
     setVoiceMode(false);
     if (voiceTranscript.length > 0) {
       setMessages((prev) => [...prev, ...voiceTranscript]);
     }
+    if (prefill) openRequestForm(prefill);
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
@@ -149,7 +146,7 @@ export function ChatWindow({ onClose, initialContext, embedded = false }: ChatWi
   }
 
   const containerClass = embedded
-    ? "flex h-full flex-col bg-background"
+    ? "relative flex h-full flex-col bg-background"
     : "fixed bottom-0 right-0 z-[60] flex h-[70vh] w-full max-w-sm flex-col border-l border-t border-border bg-background/80 backdrop-blur-xl sm:bottom-6 sm:right-6 sm:h-[600px] sm:w-[400px] sm:border sm:border-border";
 
   return (
@@ -188,18 +185,18 @@ export function ChatWindow({ onClose, initialContext, embedded = false }: ChatWi
             </div>
           </div>
         )}
-        {showBookingCta && (
+        {requestPrefill && !requestSent && !showRequestForm && (
           <div className="mx-2 my-3 border border-border bg-muted p-4">
             <p className="mb-3 text-sm text-foreground">
-              Ready to make it happen? Complete your details and your story curator will be in touch within 24 hours.
+              Your request has not been sent yet. Open the request sheet to check your details and send it.
             </p>
-            <a
-              href={buildBookingUrl()}
+            <button
+              onClick={() => setShowRequestForm(true)}
               className="nav-text inline-flex items-center gap-2 bg-foreground px-4 py-2 text-sm text-background transition-opacity hover:opacity-90"
             >
-              Complete Your Booking
+              Open Request Sheet
               <ArrowRight size={14} />
-            </a>
+            </button>
           </div>
         )}
         <div ref={messagesEndRef} />
@@ -240,6 +237,35 @@ export function ChatWindow({ onClose, initialContext, embedded = false }: ChatWi
           </button>
         </div>
       </div>
+
+      {/* Request sheet: opens when the guest chooses to send a request */}
+      {showRequestForm && requestPrefill && (
+        <div className="absolute inset-0 z-10 flex flex-col bg-background">
+          <div className="flex items-center justify-between border-b border-border/50 px-4 py-3">
+            <button
+              onClick={() => setShowRequestForm(false)}
+              className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="Back to chat"
+            >
+              <ArrowLeft size={16} />
+              <span className="nav-text">Back to chat</span>
+            </button>
+            <span className="nav-text">Your Request</span>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4">
+            <Suspense fallback={null}>
+              <ContactForm
+                compact
+                prefill={requestPrefill}
+                aiDraft={transcriptText}
+                prefillStoryworldId={initialContext?.storyworld_id}
+                prefillThemeId={initialContext?.theme_id}
+                onSubmitted={handleRequestSent}
+              />
+            </Suspense>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

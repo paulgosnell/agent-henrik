@@ -3,11 +3,13 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Mic, MicOff, Phone, Loader2 } from "lucide-react";
 import type { ConversationMessage } from "@/lib/supabase/types";
+import type { RequestPrefill } from "@/components/contact/contact-form";
+import { REQUEST_FORM_TOOL_NAME, parseRequestPrefill } from "@/lib/concierge/request-form-tool";
 
 type VoiceState = "idle" | "connecting" | "listening" | "processing" | "speaking";
 
 interface VoiceModeProps {
-  onEnd: (transcript: ConversationMessage[]) => void;
+  onEnd: (transcript: ConversationMessage[], requestPrefill?: RequestPrefill) => void;
   sessionId: string;
   context?: {
     storyworld_id?: string;
@@ -28,6 +30,13 @@ export function VoiceMode({ onEnd, sessionId, context }: VoiceModeProps) {
   const processorRef = useRef<ScriptProcessorNode | null>(null);
   const playbackQueueRef = useRef<Int16Array[]>([]);
   const isPlayingRef = useRef(false);
+  // Refs so handlers created inside startSession see the latest values
+  const transcriptRef = useRef<ConversationMessage[]>([]);
+  const pendingRequestRef = useRef<RequestPrefill | null>(null);
+
+  useEffect(() => {
+    transcriptRef.current = transcript;
+  }, [transcript]);
 
   const cleanup = useCallback(() => {
     if (wsRef.current) {
@@ -203,6 +212,18 @@ export function VoiceMode({ onEnd, sessionId, context }: VoiceModeProps) {
             setState("processing");
             break;
 
+          case "response.function_call_arguments.done":
+            if (msg.name === REQUEST_FORM_TOOL_NAME) {
+              pendingRequestRef.current = parseRequestPrefill(msg.arguments);
+            }
+            break;
+
+          case "response.done":
+            if (pendingRequestRef.current) {
+              finishWithRequest(pendingRequestRef.current);
+            }
+            break;
+
           case "error":
             console.error("Realtime error:", msg.error);
             setError(msg.error?.message || "Connection error");
@@ -233,9 +254,19 @@ export function VoiceMode({ onEnd, sessionId, context }: VoiceModeProps) {
     }
   }
 
-  function endSession() {
+  // Let LIV finish its sentence about the request sheet, then hand over to the sheet
+  async function finishWithRequest(prefill: RequestPrefill) {
+    pendingRequestRef.current = null;
+    while (isPlayingRef.current || playbackQueueRef.current.length > 0) {
+      await new Promise((resolve) => setTimeout(resolve, 200));
+    }
+    endSession(prefill);
+  }
+
+  function endSession(requestPrefill?: RequestPrefill) {
     cleanup();
     setState("idle");
+    const transcript = transcriptRef.current;
 
     // Save transcript
     if (transcript.length > 0) {
@@ -249,8 +280,9 @@ export function VoiceMode({ onEnd, sessionId, context }: VoiceModeProps) {
           saveOnly: true,
         }),
       }).catch(() => {});
-
-      onEnd(transcript);
+    }
+    if (transcript.length > 0 || requestPrefill) {
+      onEnd(transcript, requestPrefill);
     }
   }
 
@@ -284,7 +316,7 @@ export function VoiceMode({ onEnd, sessionId, context }: VoiceModeProps) {
         </div>
       ) : (
         <button
-          onClick={endSession}
+          onClick={() => endSession()}
           className={`flex h-16 w-16 items-center justify-center rounded-full transition-transform hover:scale-105 ${
             state === "listening"
               ? "bg-red-500 text-white animate-pulse"
@@ -321,7 +353,7 @@ export function VoiceMode({ onEnd, sessionId, context }: VoiceModeProps) {
       {/* End button when active */}
       {state !== "idle" && state !== "connecting" && (
         <button
-          onClick={endSession}
+          onClick={() => endSession()}
           className="text-xs text-muted-foreground hover:text-foreground transition-colors"
         >
           End conversation

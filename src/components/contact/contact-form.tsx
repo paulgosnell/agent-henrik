@@ -5,11 +5,24 @@ import { useSearchParams } from "next/navigation";
 import { Send, Check, MessageSquare } from "lucide-react";
 import { INVESTMENT_LEVELS } from "@/lib/constants";
 
+export interface RequestPrefill {
+  name?: string;
+  email?: string;
+  travel_dates?: string;
+  group_size?: number;
+  destination?: string;
+  preferences?: string;
+}
+
 interface ContactFormProps {
   prefillDestination?: string;
   prefillThemeId?: string;
   prefillStoryworldId?: string;
   aiDraft?: string;
+  // Set when the form opens inside the LIV chat instead of from URL params
+  prefill?: RequestPrefill;
+  compact?: boolean;
+  onSubmitted?: () => void;
 }
 
 export function ContactForm({
@@ -17,20 +30,24 @@ export function ContactForm({
   prefillThemeId,
   prefillStoryworldId,
   aiDraft: aiDraftProp,
+  prefill,
+  compact = false,
+  onSubmitted,
 }: ContactFormProps) {
   const searchParams = useSearchParams();
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(false);
-  const [fromChat, setFromChat] = useState(false);
+  const [fromChat, setFromChat] = useState(!!prefill);
   const [chatTranscript, setChatTranscript] = useState<string | null>(aiDraftProp || null);
 
   // Read prefill values from URL params (set by chat handoff)
-  const paramName = searchParams?.get("name") || "";
-  const paramEmail = searchParams?.get("email") || "";
-  const paramDates = searchParams?.get("travel_dates") || "";
-  const paramGroupSize = searchParams?.get("group_size") || "";
-  const paramDestination = searchParams?.get("destination") || prefillDestination || "";
+  const paramName = prefill?.name || searchParams?.get("name") || "";
+  const paramEmail = prefill?.email || searchParams?.get("email") || "";
+  const paramDates = prefill?.travel_dates || searchParams?.get("travel_dates") || "";
+  const paramGroupSize = prefill?.group_size?.toString() || searchParams?.get("group_size") || "";
+  const paramDestination = prefill?.destination || searchParams?.get("destination") || prefillDestination || "";
+  const gridClass = compact ? "grid gap-4" : "grid gap-4 md:grid-cols-2";
   const paramStoryworldId = searchParams?.get("storyworld_id") || prefillStoryworldId || "";
   const paramThemeId = searchParams?.get("theme_id") || prefillThemeId || "";
 
@@ -72,6 +89,7 @@ export function ContactForm({
 
       if (!res.ok) throw new Error("Failed");
       setSubmitted(true);
+      onSubmitted?.();
     } catch {
       setError(true);
     }
@@ -99,13 +117,13 @@ export function ContactForm({
         <div className="flex items-start gap-3 border border-border bg-muted p-4">
           <MessageSquare size={16} className="mt-0.5 shrink-0 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">
-            Details from your concierge conversation have been filled in below. Review and submit to complete your booking.
+            Details from your concierge conversation have been filled in below. Review them and press Send to submit your request.
           </p>
         </div>
       )}
 
       {/* Name & Email */}
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className={gridClass}>
         <div>
           <label htmlFor="name" className="mb-1 block text-xs uppercase tracking-wider text-muted-foreground">
             Name *
@@ -135,7 +153,7 @@ export function ContactForm({
       </div>
 
       {/* Phone & Destination */}
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className={gridClass}>
         <div>
           <label htmlFor="phone" className="mb-1 block text-xs uppercase tracking-wider text-muted-foreground">
             Phone
@@ -162,7 +180,7 @@ export function ContactForm({
       </div>
 
       {/* Dates & Group Size */}
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className={gridClass}>
         <div>
           <label htmlFor="travel_dates" className="mb-1 block text-xs uppercase tracking-wider text-muted-foreground">
             Travel Dates
@@ -220,6 +238,7 @@ export function ContactForm({
           name="preferences"
           rows={4}
           placeholder="Tell us about your ideal journey..."
+          defaultValue={prefill?.preferences}
           className="w-full border border-border bg-transparent px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground focus:outline-none"
         />
       </div>
@@ -231,7 +250,7 @@ export function ContactForm({
         className="nav-text inline-flex items-center gap-2 bg-foreground px-8 py-3 text-background transition-opacity hover:opacity-90 disabled:opacity-50"
       >
         <Send size={14} />
-        {submitting ? "Sending..." : "Send Inquiry"}
+        {submitting ? "Sending..." : compact ? "Send Request" : "Send Inquiry"}
       </button>
 
       {error && (

@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { buildVoiceSystemPrompt } from "@/lib/concierge/system-prompt";
+import {
+  REQUEST_FORM_TOOL_NAME,
+  REQUEST_FORM_TOOL_DESCRIPTION,
+  REQUEST_FORM_TOOL_PARAMETERS,
+} from "@/lib/concierge/request-form-tool";
 import type { Theme, Storyworld, ConciergeInstruction } from "@/lib/supabase/types";
 
 export async function POST() {
@@ -44,6 +49,15 @@ export async function POST() {
               voice: "echo",
             },
           },
+          tools: [
+            {
+              type: "function",
+              name: REQUEST_FORM_TOOL_NAME,
+              description: REQUEST_FORM_TOOL_DESCRIPTION,
+              parameters: REQUEST_FORM_TOOL_PARAMETERS,
+            },
+          ],
+          tool_choice: "auto",
         },
       }),
     });
