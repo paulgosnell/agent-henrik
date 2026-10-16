@@ -113,7 +113,7 @@ export function VoiceMode({ onEnd, sessionId, context }: VoiceModeProps) {
       const tokenRes = await fetch("/api/realtime-session", { method: "POST" });
       if (!tokenRes.ok) throw new Error("Failed to get session token");
       const tokenData = await tokenRes.json();
-      const clientSecret = tokenData.client_secret?.value;
+      const clientSecret = tokenData.value;
       if (!clientSecret) throw new Error("No client secret received");
 
       // Create audio context
@@ -122,8 +122,8 @@ export function VoiceMode({ onEnd, sessionId, context }: VoiceModeProps) {
 
       // Connect to WebSocket
       const ws = new WebSocket(
-        `wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview`,
-        ["realtime", `openai-insecure-api-key.${clientSecret}`, "openai-beta.realtime-v1"]
+        `wss://api.openai.com/v1/realtime?model=gpt-realtime`,
+        ["realtime", `openai-insecure-api-key.${clientSecret}`]
       );
       wsRef.current = ws;
 
@@ -168,7 +168,7 @@ export function VoiceMode({ onEnd, sessionId, context }: VoiceModeProps) {
         const msg = JSON.parse(event.data);
 
         switch (msg.type) {
-          case "response.audio.delta":
+          case "response.output_audio.delta":
             setState("speaking");
             if (msg.delta) {
               const audioData = base64ToInt16Array(msg.delta);
@@ -176,12 +176,12 @@ export function VoiceMode({ onEnd, sessionId, context }: VoiceModeProps) {
             }
             break;
 
-          case "response.audio_transcript.delta":
+          case "response.output_audio_transcript.delta":
             currentAssistantText += msg.delta || "";
             setCurrentText(currentAssistantText);
             break;
 
-          case "response.audio_transcript.done":
+          case "response.output_audio_transcript.done":
             if (currentAssistantText) {
               setTranscript((prev) => [...prev, { role: "assistant", content: currentAssistantText }]);
               currentAssistantText = "";

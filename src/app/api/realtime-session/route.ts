@@ -23,18 +23,27 @@ export async function POST() {
     const adminInstructions = (instructionsResult.data as ConciergeInstruction[]) || [];
     const instructions = buildVoiceSystemPrompt(themes, storyworlds, adminInstructions);
 
-    const response = await fetch("https://api.openai.com/v1/realtime/sessions", {
+    const response = await fetch("https://api.openai.com/v1/realtime/client_secrets", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "gpt-4o-realtime-preview",
-        voice: "echo",
-        instructions,
-        input_audio_transcription: {
-          model: "whisper-1",
+        session: {
+          type: "realtime",
+          model: "gpt-realtime",
+          instructions,
+          audio: {
+            input: {
+              format: { type: "audio/pcm", rate: 24000 },
+              transcription: { model: "whisper-1" },
+            },
+            output: {
+              format: { type: "audio/pcm", rate: 24000 },
+              voice: "echo",
+            },
+          },
         },
       }),
     });
@@ -46,7 +55,7 @@ export async function POST() {
     }
 
     const data = await response.json();
-    return NextResponse.json(data);
+    return NextResponse.json({ value: data.value, expires_at: data.expires_at });
   } catch (error) {
     console.error("Realtime session error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
