@@ -2,6 +2,14 @@
 
 > **STATUS (20 Jul 2026):** All 4 sprint fixes + 2 more original-scope items (CMS-editable homepage SEO meta, live @agenthenrik Instagram feed) done and verified live on staging (AH 32280c3). **Completion email SENT 20 Jul** (all 6 items, thread msg 19f7fd1ae040dbc8, all 3 addresses). **Next:** Henrik sign-off → DNS cutover (agenthenrik.com still on Miss Hosting 185.76.65.85, not Vercel) + OneUptime monitor.
 
+## 16 Oct 2026 — LIV key, voice migration, map tiles
+- [x] New OpenAI key in Vercel `OPENAI_API_KEY` (prod/preview/dev), old one was out of credit. /api/concierge verified 200 live.
+- [x] Voice: OpenAI removed beta `/v1/realtime/sessions`. Moved to GA `/v1/realtime/client_secrets` + `gpt-realtime` + renamed output_audio events (b082042). Live: session.created over websocket.
+- [x] Map: CARTO -> Esri grey canvas (#1). Verified live, no watermark.
+- [x] Booking order fix (305edd0, Paul-driven session): sheet pops up on "request", LIV no longer claims details were forwarded. Reply sent to Henrik with a checklist.
+- [ ] Henrik to run the checklist from the 16 Oct email.
+- [ ] Spoken voice round-trip with a real mic not yet tested.
+
 ## 20 Jul 2026 — Two original-scope items closed
 - [x] Homepage SEO meta CMS-editable: `src/app/page.tsx` now uses `generateMetadata` → `getPageMeta("/")` (was hardcoded, so /admin/pages edits had no effect). Seeded Henrik's requested title/description into `ah_page_meta`. Verified live: staging tab title = "Agent Henrik Tidefjärd | Bespoke Luxury Travel Designer".
 - [x] Live @agenthenrik Instagram feed: replaced hardcoded Unsplash placeholder grid with `<InstagramFeed username="agenthenrik" limit={8} />`. Regenerated the StormLikes cache for the renamed account. Verified live: 8 real posts render on staging homepage.
